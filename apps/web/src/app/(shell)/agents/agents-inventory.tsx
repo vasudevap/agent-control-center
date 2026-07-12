@@ -233,7 +233,6 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
           <span className="truncate">Issue: {issueLabel}</span>
         </p>
       )}
-      <p className="font-mono text-[11px] text-foreground-tertiary">{agent.id}</p>
     </div>
   );
 }
@@ -294,7 +293,6 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="text-sm font-semibold text-foreground">{agent.name}</h2>
-                    <p className="mt-1 font-mono text-[11px] text-foreground-tertiary">{agent.id}</p>
                   </div>
                 </div>
               </div>

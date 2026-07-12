@@ -32,6 +32,8 @@ actions, new dependencies, or runtime architecture changes.
 - Added mobile stacked agent summaries linking to Agent Details.
 - Trimmed visible inventory details so versions and full descriptions stay with
   the linked Agent Details experience.
+- Removed technical agent IDs from the visible inventory while preserving ID
+  search and link destinations.
 - Added deterministic loaded, initial-empty, filtered-empty, loading, and error
   component states.
 - Added component coverage for filtering, count updates, empty recovery, and

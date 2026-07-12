@@ -29,7 +29,8 @@ An operator can answer:
 The screen must make agent identity, status, health, ownership, recent activity,
 upcoming activity, and operational attention immediately scannable. Detailed
 metadata such as full descriptions and versions belongs on the linked Agent
-Details route.
+Details route. Technical IDs are searchable but are not shown in the inventory
+presentation.
 
 ---
 
@@ -188,7 +189,6 @@ At desktop widths, use an operational table with these visible columns:
 1. Agent
    - Name
    - Short one-line description
-   - Subtle support/debug agent ID
 2. Status
 3. Health
 4. Owner
@@ -218,7 +218,7 @@ At tablet widths:
 At mobile widths:
 
 - Transform each row into a stacked agent summary using existing card, badge, and typography patterns.
-- Show Name, subtle Agent ID, Status, Health, Last Run, Next Run, and Current Issue.
+- Show Name, Status, Health, Last Run, Next Run, and Current Issue.
 - Do not show Version or full Description in the mobile inventory summary.
 - The entire summary may link to Agent Details if it has a clear accessible name.
 - Do not reproduce a compressed desktop table.
