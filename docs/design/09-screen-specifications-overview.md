@@ -100,8 +100,7 @@ operations are excluded from this frontend-only milestone.
 The detailed field hierarchy, ordering, responsive behavior, screen states,
 interaction requirements, and acceptance criteria are defined by
 [`Work Order 006 — Agents Inventory`](../work-orders/006-agents-inventory.md).
-That Work Order becomes authoritative for `/agents` only after its Readiness
-Gate is approved.
+That Work Order is authoritative for `/agents`.
 
 ---
 

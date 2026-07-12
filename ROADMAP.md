@@ -118,7 +118,10 @@ Build the operational dashboard.
 
 ## Status
 
-Application-shell baseline completed through Work Order 005. Dashboard feature implementation remains governed by future approved work orders.
+Application-shell baseline completed through Work Order 005. Work Order 006 adds
+the frontend-only Agents Inventory for monitoring mock agents and navigating to
+agent details. Dashboard feature implementation remains governed by future
+approved work orders.
 
 ---
 
