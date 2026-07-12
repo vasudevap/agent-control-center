@@ -1,8 +1,8 @@
 # Review 001: Overview Dashboard Implementation Plan
 
-**Date:** 2026-07-10  
-**Reviewer:** Claude (Senior Product Designer & Frontend Engineer)  
-**Work Order:** 001-overview-dashboard.md  
+**Date:** 2026-07-10
+**Reviewer:** Claude (Senior Product Designer & Frontend Engineer)
+**Work Order:** 001-overview-dashboard.md
 **Status:** Under Review
 
 ---
@@ -322,7 +322,7 @@ Before implementation begins:
 
 **Critical (block implementation):**
 
-1. **What is the data model for dashboard data?**  
+1. **What is the data model for dashboard data?**
    Provide JSON schema or API documentation for:
    - `/api/dashboard/metrics` (Metric Cards)
    - `/api/dashboard/fleet-health` (Fleet Health)
@@ -331,49 +331,49 @@ Before implementation begins:
    - `/api/dashboard/alerts` (Alerts)
    - `/api/dashboard/schedule` (Upcoming Schedule)
 
-2. **Define "Fleet Health" calculation and representation.**  
+2. **Define "Fleet Health" calculation and representation.**
    - Is it a single score (0-100%)? Or breakdown (X healthy, Y degraded, Z offline)?
    - What data feeds it? (agent status poll? external system?)
    - Should it show trends?
 
-3. **Which 4-6 core metrics should appear in Metric Cards?**  
-   Example: Total Agents, Healthy Agents, Success Rate, Avg Runtime, Pending Approvals, Total Cost?  
+3. **Which 4-6 core metrics should appear in Metric Cards?**
+   Example: Total Agents, Healthy Agents, Success Rate, Avg Runtime, Pending Approvals, Total Cost?
    Or different set?
 
-4. **Define approval workflow state machine.**  
+4. **Define approval workflow state machine.**
    - What states? (pending, approved, rejected, expired?)
    - Single-level or multi-level approval?
    - Required metadata per approval?
    - What actions can user take? (approve, reject, comment?)
 
-5. **What is the real-time update strategy?**  
+5. **What is the real-time update strategy?**
    - Which sections should live-update? (frequency?)
    - Which can be static? (refresh on page load?)
    - WebSocket or polling? SLA for data freshness?
 
-6. **Provide the semantic color palette.**  
+6. **Provide the semantic color palette.**
    - Primary action color?
    - Secondary/tertiary button colors?
    - All six status colors (neutral, success, warning, error, info, brand)?
    - Should match enterprise aesthetic (not vibrant or pastel).
 
-7. **Define responsive layout for each section at 375px and 768px.**  
+7. **Define responsive layout for each section at 375px and 768px.**
    - Sidebar: always visible, collapsible, or hidden on mobile?
    - Metric cards: grid collapse? 2 cols on tablet, 1 on mobile?
    - Tables: horizontal scroll? Simplified view on mobile?
 
-8. **Provide sidebar navigation structure.**  
+8. **Provide sidebar navigation structure.**
    - What nav items? (Dashboard, Agents, Runs, Approvals, Settings?)
    - Hierarchical (expandable) or flat?
    - Icons only or icon + label?
    - Where do users navigate from sidebar?
 
-9. **Is user authentication and role-based access control in scope?**  
+9. **Is user authentication and role-based access control in scope?**
    - Should dashboard filter data by user role?
    - Are there permission levels that affect section visibility?
    - How is user context provided? (Next.js middleware? Session provider?)
 
-10. **Is dark mode required for launch or future nice-to-have?**  
+10. **Is dark mode required for launch or future nice-to-have?**
     - If required: needs to be designed from day one
     - If future: still structure CSS variables for easy retrofit
 
@@ -433,6 +433,6 @@ When this work order is "done":
 
 ---
 
-**Status:** Ready for stakeholder review.  
+**Status:** Ready for stakeholder review.
 **Next Step:** Address questions and approve changes, then proceed to Phase 1.
 
