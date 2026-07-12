@@ -370,6 +370,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
       <PageHeader
         title="Agents"
         description="Monitor the status, health, and activity of your AI workforce."
+        icon={Bot}
       />
 
       {state === "loading" && <InventorySkeleton />}
