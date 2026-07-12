@@ -1,0 +1,6 @@
+
+# Temporary Atlas consolidation source
+.migration-source/
+
+# macOS metadata
+.DS_Store
