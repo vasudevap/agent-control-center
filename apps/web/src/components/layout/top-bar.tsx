@@ -35,18 +35,18 @@ export function TopBar() {
           <Menu className="size-5" />
         </Button>
 
-        <div className="hidden max-w-xs flex-1 sm:block">
-          <SearchField
-            value={searchValue}
-            onChange={setSearchValue}
-            placeholder="Search agents, runs, artifacts..."
-            aria-label="Search"
-          />
-        </div>
+        <div className="flex-1" />
 
-        <div className="flex-1 sm:hidden" />
+        <div className="flex items-center justify-end gap-1">
+          <div className="hidden w-80 sm:block">
+            <SearchField
+              value={searchValue}
+              onChange={setSearchValue}
+              placeholder="Search agents, runs, artifacts..."
+              aria-label="Search"
+            />
+          </div>
 
-        <div className="flex items-center gap-1">
           <ThemeToggle />
 
           <NotificationsMenu unreadCount={0} />

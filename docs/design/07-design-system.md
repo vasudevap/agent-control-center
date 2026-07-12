@@ -136,6 +136,35 @@ Primary categories:
 
 Never assign color purely for decoration.
 
+## Approved Surface Hierarchy
+
+Atlas uses layered surfaces to create hierarchy before adding decoration.
+
+Light mode:
+
+- The app canvas uses a cool off-white background.
+- Primary content surfaces use white cards so important content stands forward.
+- Control/filter surfaces use a softer secondary surface when they should
+  support, not compete with, the main content.
+- Borders are visible enough to define structure without becoming outlines.
+
+Dark mode:
+
+- The app canvas uses the darkest neutral background.
+- Primary content surfaces use the next lighter neutral surface.
+- Secondary surfaces and hover states use restrained neutral elevation.
+
+Screen hierarchy rules:
+
+- One primary content region per screen should read as the dominant surface.
+- Supporting filters, summary controls, and secondary panels should be quieter
+  than the primary content.
+- Page-title icon chips use a white/primary surface, subtle border, and brand
+  icon color so the page identity remains legible across light and dark modes.
+- Avoid pure white-on-white light-mode compositions that flatten the interface.
+- Avoid adding decorative color to solve hierarchy; use surface, spacing,
+  typography, borders, and restrained elevation first.
+
 ---
 
 # Elevation

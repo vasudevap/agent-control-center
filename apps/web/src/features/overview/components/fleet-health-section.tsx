@@ -20,7 +20,7 @@ export interface FleetHealthSectionProps {
 
 export function FleetHealthSection({ agents, state = "success" }: FleetHealthSectionProps) {
   return (
-    <Card>
+    <Card className="border-border-strong shadow-atlas-md">
       <CardHeader>
         <CardTitle>Fleet Health</CardTitle>
         <CardDescription>Live status across every deployed agent</CardDescription>

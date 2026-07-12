@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { AgentsInventory } from "./agents-inventory";
 
 export default function AgentsPage() {
-  return (
-    <PlaceholderPage
-      title="Agents"
-      description="Manage and monitor every deployed agent in your fleet."
-    />
-  );
+  return <AgentsInventory />;
 }

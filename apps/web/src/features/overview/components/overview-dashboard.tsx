@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { LayoutDashboard, RefreshCw } from "lucide-react";
 import { MetricsRow } from "./metrics-row";
 import { FleetHealthSection } from "./fleet-health-section";
 import { ActiveRunsSection } from "./active-runs-section";
@@ -31,6 +31,7 @@ export function OverviewDashboard() {
       <PageHeader
         title="Overview"
         description="Fleet-wide status for your AI workforce"
+        icon={LayoutDashboard}
         actions={
           <Button variant="secondary" size="sm">
             <RefreshCw className="size-3.5" />

@@ -13,7 +13,7 @@ export interface ActiveRunsSectionProps {
 
 export function ActiveRunsSection({ runs, state = "success" }: ActiveRunsSectionProps) {
   return (
-    <Card>
+    <Card className="bg-surface-secondary">
       <CardHeader>
         <CardTitle>Active Runs</CardTitle>
         <CardDescription>Newest executions first</CardDescription>

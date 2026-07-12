@@ -12,7 +12,7 @@ export interface AlertsSectionProps {
 
 export function AlertsSection({ alerts, state = "success" }: AlertsSectionProps) {
   return (
-    <Card>
+    <Card className="bg-surface-secondary">
       <CardHeader>
         <CardTitle>Alerts</CardTitle>
         <CardDescription>Critical, warning, and informational events</CardDescription>

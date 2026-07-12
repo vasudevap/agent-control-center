@@ -26,7 +26,11 @@ An operator can answer:
 
 > Which agents exist, and what is their current operational state?
 
-The screen must make agent identity, status, health, ownership, recent activity, upcoming activity, and version immediately scannable.
+The screen must make agent identity, status, health, ownership, recent activity,
+upcoming activity, and operational attention immediately scannable. Detailed
+metadata such as full descriptions and versions belongs on the linked Agent
+Details route. Technical IDs are searchable but are not shown in the inventory
+presentation.
 
 ---
 
@@ -161,7 +165,7 @@ Do not introduce user-configurable sorting unless approved as a refinement.
 
 ### Agent Information
 
-Each agent record must include:
+Each typed agent record must include:
 
 - Agent ID
 - Name
@@ -171,7 +175,7 @@ Each agent record must include:
 - Owner
 - Last run
 - Next run
-- Version
+- Version, retained for Agent Details and future version-focused views
 - Current issue, when present
 
 Use realistic fictional data only.
@@ -184,15 +188,17 @@ At desktop widths, use an operational table with these visible columns:
 
 1. Agent
    - Name
-   - Short description
+   - Short one-line description
 2. Status
 3. Health
 4. Owner
 5. Last Run
 6. Next Run
-7. Version
 
-A current issue must be exposed within the Agent cell or an accessible supporting treatment without adding a separate visually dominant column.
+A current issue must be exposed within the Agent cell or an accessible
+supporting treatment without adding a separate visually dominant column. Use a
+compact issue summary in the inventory and reserve full issue investigation for
+Agent Details.
 
 Agent name must be the primary link to `/agents/[agentId]`.
 
@@ -202,7 +208,8 @@ At tablet widths:
 
 - Preserve the table.
 - Prioritize Agent, Status, Health, Last Run, and Next Run.
-- Owner and Version may be hidden from the visual table if they remain available through the linked detail route.
+- Owner may be hidden from the visual table if it remains available through the
+  linked detail route. Version is not shown in the inventory table.
 - Avoid horizontal page overflow.
 - Do not reduce text below approved token sizes.
 
@@ -211,7 +218,8 @@ At tablet widths:
 At mobile widths:
 
 - Transform each row into a stacked agent summary using existing card, badge, and typography patterns.
-- Show Name, Description, Status, Health, Last Run, Next Run, and Current Issue.
+- Show Name, Status, Health, Last Run, Next Run, and Current Issue.
+- Do not show Version or full Description in the mobile inventory summary.
 - The entire summary may link to Agent Details if it has a clear accessible name.
 - Do not reproduce a compressed desktop table.
 - Do not expose state-changing quick actions.

@@ -27,7 +27,7 @@ export function PendingApprovalsSection({
   onDecision,
 }: PendingApprovalsSectionProps) {
   return (
-    <Card>
+    <Card className="bg-surface-secondary">
       <CardHeader>
         <CardTitle>Pending Approvals</CardTitle>
         <CardDescription>Actions awaiting operator sign-off</CardDescription>
@@ -56,7 +56,7 @@ export function PendingApprovalsSection({
             return (
               <div
                 key={approval.id}
-                className="flex flex-col gap-3 rounded-atlas-md border border-border-default p-3"
+                className="flex flex-col gap-3 rounded-atlas-md border border-border-default bg-surface p-3"
               >
                 <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex flex-wrap items-center gap-2">
