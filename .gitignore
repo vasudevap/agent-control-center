@@ -1,6 +1,9 @@
 
-# Temporary Atlas consolidation source
+# Temporary source material used during Atlas consolidation
 .migration-source/
+
+# Codex task logs and local execution artifacts
+.codex-log/
 
 # macOS metadata
 .DS_Store
