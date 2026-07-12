@@ -236,8 +236,7 @@ Notion is the operational and learning workspace for:
 
 ## 14. Current Status
 
-- Project repository created
-- Notion internal connection created
-- Notion parent page connected
-- Foundation files created
-- Project definition in progress
+- Architecture, product requirements, brand, and product-design foundations are documented.
+- The canonical repository structure is established around `apps/web` and governed documentation under `docs/`.
+- The approved Work Order 005 Atlas application shell is implemented with responsive light and dark themes and placeholder routes.
+- Backend, authentication, APIs, connectors, and business workflows remain future work subject to architecture and work-order approval.

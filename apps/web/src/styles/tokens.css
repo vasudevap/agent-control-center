@@ -1,0 +1,172 @@
+/**
+ * Atlas Design Tokens
+ *
+ * Modern Infrastructure direction: neutral slate surfaces, a single
+ * restrained brand accent, and explicit status colors. No gradients,
+ * no glassmorphism, minimal shadows (per ui-standards.md).
+ *
+ * Spacing follows an 8px system: use Tailwind's even spacing steps
+ * (2, 4, 6, 8, 10, 12...) which resolve to 8px, 16px, 24px, 32px...
+ *
+ * Brand accent is a temporary, deliberately restrained neutral-blue
+ * placeholder — not the final Atlas identity. It will be replaced once
+ * brand color is derived from the approved logo/visual identity.
+ */
+
+:root {
+  /* ---- Neutral surface scale ---- */
+  --atlas-neutral-0: #ffffff;
+  --atlas-neutral-50: #f8fafc;
+  --atlas-neutral-100: #f1f5f9;
+  --atlas-neutral-200: #e2e8f0;
+  --atlas-neutral-300: #cbd5e1;
+  --atlas-neutral-400: #94a3b8;
+  --atlas-neutral-500: #64748b;
+  --atlas-neutral-600: #475569;
+  --atlas-neutral-700: #334155;
+  --atlas-neutral-800: #1e293b;
+  --atlas-neutral-900: #0f172a;
+  --atlas-neutral-950: #020617;
+
+  /* ---- Brand accent (temporary, refined neutral-blue placeholder) ---- */
+  --atlas-brand-50: #eef2f7;
+  --atlas-brand-100: #dde6f0;
+  --atlas-brand-200: #c2d3e3;
+  --atlas-brand-300: #9db9d1;
+  --atlas-brand-400: #7098bb;
+  --atlas-brand-500: #4d7aa3;
+  --atlas-brand-600: #3d6690;
+  --atlas-brand-700: #325577;
+  --atlas-brand-800: #2a465f;
+  --atlas-brand-900: #23394c;
+
+  /* ---- Status colors ---- */
+  --atlas-success-500: #10b981;
+  --atlas-success-600: #059669;
+  --atlas-success-bg: #ecfdf5;
+  --atlas-success-border: #a7f3d0;
+
+  --atlas-warning-500: #f59e0b;
+  --atlas-warning-600: #d97706;
+  --atlas-warning-bg: #fffbeb;
+  --atlas-warning-border: #fde68a;
+
+  --atlas-error-500: #ef4444;
+  --atlas-error-600: #dc2626;
+  --atlas-error-bg: #fef2f2;
+  --atlas-error-border: #fecaca;
+
+  --atlas-info-500: #3b82f6;
+  --atlas-info-600: #2563eb;
+  --atlas-info-bg: #eff6ff;
+  --atlas-info-border: #bfdbfe;
+
+  /* ---- Semantic surface tokens (light mode) ---- */
+  --background: var(--atlas-neutral-0);
+  --surface: var(--atlas-neutral-0);
+  --surface-secondary: var(--atlas-neutral-50);
+  --surface-tertiary: var(--atlas-neutral-100);
+  --surface-hover: var(--atlas-neutral-100);
+  --surface-active: var(--atlas-neutral-200);
+
+  --foreground: var(--atlas-neutral-900);
+  --foreground-secondary: var(--atlas-neutral-600);
+  --foreground-tertiary: var(--atlas-neutral-400);
+  --foreground-on-brand: var(--atlas-neutral-0);
+
+  /* Borders separate primarily through spacing; these are hairlines,
+     not outlines — kept low-contrast and theme-relative (alpha over
+     the current surface) rather than solid neutral swatches. */
+  --border-default: rgb(15 23 42 / 0.08);
+  --border-strong: rgb(15 23 42 / 0.16);
+  --border-subtle: rgb(15 23 42 / 0.05);
+
+  /* --brand: text/icon/accent tone, tuned per-theme for contrast.
+     --brand-solid: button/chip backgrounds — stays constant across
+     themes so solid-fill contrast with white text is never in question. */
+  --brand: var(--atlas-brand-600);
+  --brand-hover: var(--atlas-brand-700);
+  --brand-subtle: var(--atlas-brand-100);
+  --brand-solid: var(--atlas-brand-600);
+  --brand-solid-hover: var(--atlas-brand-700);
+
+  --success: var(--atlas-success-600);
+  --success-bg: var(--atlas-success-bg);
+  --success-border: var(--atlas-success-border);
+
+  --warning: var(--atlas-warning-600);
+  --warning-bg: var(--atlas-warning-bg);
+  --warning-border: var(--atlas-warning-border);
+
+  --error: var(--atlas-error-600);
+  --error-bg: var(--atlas-error-bg);
+  --error-border: var(--atlas-error-border);
+
+  --info: var(--atlas-info-600);
+  --info-bg: var(--atlas-info-bg);
+  --info-border: var(--atlas-info-border);
+
+  --focus-ring: var(--atlas-brand-500);
+
+  /* ---- Shadows (minimal, per ui-standards.md) ---- */
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-md: 0 1px 3px 0 rgb(15 23 42 / 0.08), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+
+  /* ---- Radius ---- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* ---- Sidebar ---- */
+  --sidebar-width: 15rem;
+  --sidebar-width-collapsed: 4rem;
+  --topbar-height: 3.5rem;
+}
+
+.dark {
+  --background: var(--atlas-neutral-950);
+  --surface: var(--atlas-neutral-900);
+  --surface-secondary: var(--atlas-neutral-800);
+  --surface-tertiary: var(--atlas-neutral-800);
+  --surface-hover: var(--atlas-neutral-800);
+  --surface-active: var(--atlas-neutral-700);
+
+  --foreground: var(--atlas-neutral-50);
+  --foreground-secondary: var(--atlas-neutral-400);
+  --foreground-tertiary: var(--atlas-neutral-500);
+  --foreground-on-brand: var(--atlas-neutral-0);
+
+  --border-default: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
+  --border-subtle: rgb(255 255 255 / 0.05);
+
+  /* Lighter than light-mode --brand for AA text contrast on dark
+     surfaces; --brand-solid stays the same dark tone in both themes
+     so button fills read identically regardless of theme. */
+  --brand: #86a8c7;
+  --brand-hover: #9fbdd6;
+  --brand-subtle: rgb(134 168 199 / 0.14);
+  --brand-solid: var(--atlas-brand-600);
+  --brand-solid-hover: var(--atlas-brand-700);
+
+  --success: #34d399;
+  --success-bg: rgb(16 185 129 / 0.12);
+  --success-border: rgb(16 185 129 / 0.32);
+
+  --warning: #fbbf24;
+  --warning-bg: rgb(245 158 11 / 0.12);
+  --warning-border: rgb(245 158 11 / 0.32);
+
+  --error: #f87171;
+  --error-bg: rgb(239 68 68 / 0.12);
+  --error-border: rgb(239 68 68 / 0.32);
+
+  --info: #60a5fa;
+  --info-bg: rgb(59 130 246 / 0.12);
+  --info-border: rgb(59 130 246 / 0.32);
+
+  --focus-ring: #86a8c7;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.24);
+  --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.36), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+}

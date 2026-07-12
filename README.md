@@ -1,6 +1,6 @@
-# Agent Control Center
+# Atlas
 
-> Designing and building an enterprise-inspired platform for creating, governing, and operating AI agents.
+> Enterprise Agent Control Center and unified control plane for AI workforces.
 
 ---
 
@@ -63,27 +63,41 @@ The project follows several core principles:
 
 ```text
 agent-control-center/
-
-docs/
-    architecture/
-    decisions/
-    specifications/
-    diagrams/
-    learning/
-    linkedin/
-
-agents/
-
-backend/
-
-dashboard/
-
-infrastructure/
-
-notion/
-
-scripts/
+├── apps/
+│   └── web/                  # Approved Atlas Next.js frontend baseline
+├── docs/
+│   ├── architecture/
+│   ├── design/
+│   ├── specifications/
+│   ├── engineering-specifications/
+│   ├── work-orders/
+│   ├── reviews/
+│   ├── decisions/
+│   ├── recommendations/
+│   └── references/
+├── .claude/                 # Claude-specific guidance
+├── AGENTS.md                # Tool-neutral repository guidance
+├── PROJECT.md
+└── ROADMAP.md
 ```
+
+---
+
+# Current Implementation
+
+`apps/web` contains the approved Atlas application-shell baseline from Work Order 005. It includes the shared shell, responsive navigation, light and dark themes, shared route boundaries, and placeholder routes. Business APIs, authentication, backend services, and new product behavior are not part of this baseline.
+
+From the repository root:
+
+```bash
+npm ci
+npm run dev
+npm run typecheck
+npm run lint
+npm run build
+```
+
+ES-000 consolidation work is maintained on `chore/canonical-repository-consolidation` pending review and merge.
 
 ---
 
@@ -190,9 +204,7 @@ Notion serves as the operational workspace for:
 
 # Current Status
 
-The project is currently completing the Architecture Foundation phase.
-
-The next milestone is establishing the repository standards, ADR process, and automated Notion workspace provisioning before implementation begins.
+The architecture and product-design foundations are documented. The approved Work Order 005 frontend shell has been consolidated into `apps/web`; subsequent application features require their own reviewed work orders.
 
 ---
 

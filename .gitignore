@@ -1,6 +1,21 @@
 
-# Temporary Atlas consolidation source
+# Temporary source material used during Atlas consolidation
 .migration-source/
+
+# Codex task logs and local execution artifacts
+.codex-log/
+
+# Dependencies and generated frontend output
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+
+# Local environment files (examples remain trackable)
+.env*
+!.env.example
 
 # macOS metadata
 .DS_Store

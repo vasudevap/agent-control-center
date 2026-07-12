@@ -73,6 +73,10 @@ Prepare the repository for implementation.
 - GitHub Repository
 - Repository Automation
 
+## Status
+
+In progress. ES-000 establishes the canonical repository and frontend workspace; remaining repository-foundation deliverables continue under their own specifications.
+
 ---
 
 # Phase 3 — Platform Foundation
@@ -111,6 +115,10 @@ Build the operational dashboard.
 - Settings
 - Dark Mode
 - Responsive Layout
+
+## Status
+
+Application-shell baseline completed through Work Order 005. Dashboard feature implementation remains governed by future approved work orders.
 
 ---
 
