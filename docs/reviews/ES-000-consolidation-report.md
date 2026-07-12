@@ -21,7 +21,7 @@ ES-000 consolidated the approved Atlas frontend and its governance record into t
 - Preserved and committed the legitimate Atlas design and documentation baseline on `main` as `e65e391`.
 - Pushed the cleaned baseline to `origin/main` before consolidation.
 - Corrected `docs/engineering specificaitons/` to `docs/engineering-specifications/` on the consolidation branch.
-- During independent final review, normalized trailing whitespace in migrated review records so `git diff --check` passes.
+- During independent final review, normalized trailing whitespace and final blank lines in migrated review records so `git diff --check` passes.
 
 ## Safety Tag
 
