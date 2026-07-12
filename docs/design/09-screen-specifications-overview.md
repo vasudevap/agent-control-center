@@ -66,7 +66,7 @@ Provide an operational summary of the platform.
 
 ## Purpose
 
-View and manage all agents.
+Monitor all agents and investigate their operational state.
 
 ## Primary Question
 
@@ -75,9 +75,9 @@ View and manage all agents.
 ## Layout
 
 - Search
-- Filters
+- Status and health filters
 - Agent Table
-- Bulk Actions
+- Mobile agent summaries
 - Detail Navigation
 
 ## Columns
@@ -92,10 +92,16 @@ View and manage all agents.
 
 ## Primary Actions
 
-- Open
-- Run
-- Pause
-- Disable
+- Open Agent Details
+
+Registration, bulk actions, Run, Pause, Disable, and other state-changing
+operations are excluded from this frontend-only milestone.
+
+The detailed field hierarchy, ordering, responsive behavior, screen states,
+interaction requirements, and acceptance criteria are defined by
+[`Work Order 006 — Agents Inventory`](../work-orders/006-agents-inventory.md).
+That Work Order becomes authoritative for `/agents` only after its Readiness
+Gate is approved.
 
 ---
 
