@@ -18,6 +18,7 @@
   --atlas-neutral-0: #ffffff;
   --atlas-neutral-50: #f8fafc;
   --atlas-neutral-100: #f1f5f9;
+  --atlas-neutral-150: #edf2f7;
   --atlas-neutral-200: #e2e8f0;
   --atlas-neutral-300: #cbd5e1;
   --atlas-neutral-400: #94a3b8;
@@ -62,9 +63,9 @@
   --atlas-info-border: #bfdbfe;
 
   /* ---- Semantic surface tokens (light mode) ---- */
-  --background: var(--atlas-neutral-50);
+  --background: var(--atlas-neutral-150);
   --surface: var(--atlas-neutral-0);
-  --surface-secondary: var(--atlas-neutral-100);
+  --surface-secondary: var(--atlas-neutral-50);
   --surface-tertiary: var(--atlas-neutral-100);
   --surface-hover: var(--atlas-neutral-100);
   --surface-active: var(--atlas-neutral-200);

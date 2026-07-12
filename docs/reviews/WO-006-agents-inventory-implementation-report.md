@@ -34,6 +34,9 @@ actions, new dependencies, or runtime architecture changes.
   the linked Agent Details experience.
 - Removed technical agent IDs from the visible inventory while preserving ID
   search and link destinations.
+- Established the approved Atlas surface hierarchy: off-white light-mode app
+  canvas, white primary content surfaces, quieter secondary control surfaces,
+  and bordered white page-title icon chips.
 - Added deterministic loaded, initial-empty, filtered-empty, loading, and error
   component states.
 - Added component coverage for filtering, count updates, empty recovery, and

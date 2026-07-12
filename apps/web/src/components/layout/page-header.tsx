@@ -20,7 +20,7 @@ export function PageHeader({ title, description, icon: Icon, actions, className 
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-3">
           {Icon && (
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-atlas-md bg-brand-subtle text-brand">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-atlas-md border border-border-default bg-surface text-brand shadow-atlas-sm">
               <Icon className="size-4.5" aria-hidden="true" />
             </span>
           )}
