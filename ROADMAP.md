@@ -75,7 +75,7 @@ Prepare the repository for implementation.
 
 ## Status
 
-In progress. ES-000 establishes the canonical repository and frontend workspace; remaining repository-foundation deliverables continue under their own specifications.
+Completed. ES-000 established and closed the canonical repository and frontend workspace. ES-001 established engineering governance, pull-request controls, continuous integration, release management, and dependency-risk tracking.
 
 ---
 

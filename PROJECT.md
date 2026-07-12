@@ -239,4 +239,6 @@ Notion is the operational and learning workspace for:
 - Architecture, product requirements, brand, and product-design foundations are documented.
 - The canonical repository structure is established around `apps/web` and governed documentation under `docs/`.
 - The approved Work Order 005 Atlas application shell is implemented with responsive light and dark themes and placeholder routes.
+- ES-000 canonical repository consolidation is closed.
+- ES-001 is the approved engineering-governance baseline: short-lived branches, pull-request review, required CI, readiness/done criteria, release controls, and dependency-risk tracking govern subsequent work.
 - Backend, authentication, APIs, connectors, and business workflows remain future work subject to architecture and work-order approval.

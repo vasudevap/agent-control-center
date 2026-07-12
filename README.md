@@ -70,6 +70,7 @@ agent-control-center/
 │   ├── design/
 │   ├── specifications/
 │   ├── engineering-specifications/
+│   ├── governance/
 │   ├── work-orders/
 │   ├── reviews/
 │   ├── decisions/
@@ -97,7 +98,13 @@ npm run lint
 npm run build
 ```
 
-ES-000 consolidation work is maintained on `chore/canonical-repository-consolidation` pending review and merge.
+ES-000 is closed. ES-001 establishes the engineering-governance and continuous-integration baseline for subsequent approved work.
+
+# Engineering Governance and CI
+
+Repository changes follow the [Atlas engineering-governance handbook](./docs/governance/README.md), including the [branching strategy](./docs/governance/branching-strategy.md), [pull-request process](./docs/governance/pull-request-and-review-process.md), [Definition of Ready](./docs/governance/definition-of-ready.md), and [Definition of Done](./docs/governance/definition-of-done.md).
+
+GitHub Actions runs `npm ci`, typecheck, lint, and the production build for pull requests targeting `main` and pushes to `main`. Atlas currently has no automated test suite; tests will become a required CI step only when approved test infrastructure exists.
 
 ---
 
@@ -204,7 +211,7 @@ Notion serves as the operational workspace for:
 
 # Current Status
 
-The architecture and product-design foundations are documented. The approved Work Order 005 frontend shell has been consolidated into `apps/web`; subsequent application features require their own reviewed work orders.
+The architecture and product-design foundations are documented. The approved Work Order 005 frontend shell has been consolidated into `apps/web`; ES-000 is closed and ES-001 provides the governance and CI baseline. Subsequent application features require their own reviewed work orders or engineering specifications.
 
 ---
 
