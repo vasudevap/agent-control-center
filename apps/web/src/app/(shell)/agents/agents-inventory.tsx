@@ -35,6 +35,7 @@ export interface AgentRecord {
   nextRun: string;
   version: string;
   currentIssue?: string;
+  issueSummary?: string;
 }
 
 interface AgentsInventoryProps {
@@ -54,6 +55,7 @@ const MOCK_AGENTS: AgentRecord[] = [
     nextRun: "In 22 minutes",
     version: "v1.8.3",
     currentIssue: "Three invoices are waiting on policy review.",
+    issueSummary: "Policy review needed",
   },
   {
     id: "agent-calendar-briefing",
@@ -88,6 +90,7 @@ const MOCK_AGENTS: AgentRecord[] = [
     nextRun: "Not scheduled",
     version: "v0.9.5",
     currentIssue: "Paused after repeated evidence export failures.",
+    issueSummary: "Export failures",
   },
   {
     id: "agent-recruiting-triage",
@@ -211,6 +214,8 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
 }
 
 function AgentIdentity({ agent }: { agent: AgentRecord }) {
+  const issueLabel = agent.issueSummary ?? agent.currentIssue;
+
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <Link
@@ -219,16 +224,16 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
       >
         {agent.name}
       </Link>
-      <p className="max-w-xl whitespace-normal text-xs leading-relaxed text-foreground-secondary">
+      <p className="max-w-md truncate text-xs text-foreground-secondary">
         {agent.description}
       </p>
-      <p className="font-mono text-[11px] text-foreground-tertiary">{agent.id}</p>
-      {agent.currentIssue && (
-        <p className="mt-1 flex items-start gap-1.5 whitespace-normal text-xs leading-relaxed text-warning">
-          <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-          <span>Current issue: {agent.currentIssue}</span>
+      {issueLabel && (
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-warning">
+          <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+          <span className="truncate">Issue: {issueLabel}</span>
         </p>
       )}
+      <p className="font-mono text-[11px] text-foreground-tertiary">{agent.id}</p>
     </div>
   );
 }
@@ -246,7 +251,6 @@ function AgentsTable({ agents }: { agents: AgentRecord[] }) {
             <TableHead className="hidden lg:table-cell">Owner</TableHead>
             <TableHead>Last Run</TableHead>
             <TableHead>Next Run</TableHead>
-            <TableHead className="hidden lg:table-cell">Version</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -266,9 +270,6 @@ function AgentsTable({ agents }: { agents: AgentRecord[] }) {
               </TableCell>
               <TableCell className="text-sm text-foreground-secondary">{agent.lastRun}</TableCell>
               <TableCell className="text-sm text-foreground-secondary">{agent.nextRun}</TableCell>
-              <TableCell className="hidden font-mono text-xs text-foreground-secondary lg:table-cell">
-                {agent.version}
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -295,9 +296,7 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
                     <h2 className="text-sm font-semibold text-foreground">{agent.name}</h2>
                     <p className="mt-1 font-mono text-[11px] text-foreground-tertiary">{agent.id}</p>
                   </div>
-                  <span className="font-mono text-xs text-foreground-secondary">{agent.version}</span>
                 </div>
-                <p className="text-xs leading-relaxed text-foreground-secondary">{agent.description}</p>
               </div>
 
               <dl className="grid grid-cols-2 gap-4">
@@ -313,9 +312,9 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
                 <FieldPair label="Next Run" value={agent.nextRun} />
               </dl>
 
-              {agent.currentIssue && (
+              {(agent.issueSummary ?? agent.currentIssue) && (
                 <div className="rounded-atlas-md border border-warning-border bg-warning-bg px-3 py-2 text-xs leading-relaxed text-warning">
-                  <span className="font-medium">Current issue:</span> {agent.currentIssue}
+                  <span className="font-medium">Issue:</span> {agent.issueSummary ?? agent.currentIssue}
                 </div>
               )}
             </CardContent>

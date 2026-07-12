@@ -11,7 +11,9 @@
 Work Order 006 replaces the `/agents` placeholder with a frontend-only Agents
 Inventory. The screen lets operators monitor fictional mock agents, search by
 name, description, or ID, filter by lifecycle status and health, understand
-current issues, and navigate to the existing Agent Details route.
+current operational attention, and navigate to the existing Agent Details route.
+It intentionally presents a scan-first inventory rather than a detail-heavy
+agent profile.
 
 The implementation preserves the Work Order 005 application shell and does not
 introduce backend integration, authentication, persistence, state-changing
@@ -28,6 +30,8 @@ actions, new dependencies, or runtime architecture changes.
 - Added accurate visible result count and a working Clear Filters action.
 - Added desktop/tablet semantic table presentation.
 - Added mobile stacked agent summaries linking to Agent Details.
+- Trimmed visible inventory details so versions and full descriptions stay with
+  the linked Agent Details experience.
 - Added deterministic loaded, initial-empty, filtered-empty, loading, and error
   component states.
 - Added component coverage for filtering, count updates, empty recovery, and
