@@ -53,16 +53,21 @@ Before implementing new capabilities:
 
 # Repository Structure
 
+```text
+apps/web/                         # Atlas frontend
+docs/architecture/               # Canonical architecture
+docs/design/                     # Approved product design
+docs/specifications/             # Product specifications
+docs/engineering-specifications/ # Engineering execution specifications
+docs/work-orders/                # Authorized implementation scope
+docs/reviews/                    # Review and handoff records
+docs/decisions/                  # Decision indexes and non-design decisions
+docs/recommendations/            # Advisory guidance
+docs/references/                 # Supporting and historical material
+.claude/                         # Claude-specific instructions
 ```
-backend/
-dashboard/
-agents/
-docs/
-infrastructure/
-notion/
-scripts/
-tests/
-```
+
+Root `AGENTS.md` is tool-neutral. Tool-specific instructions belong in their scoped configuration directories and must not override repository-wide policy.
 
 Do not create new top-level folders without architectural justification.
 
