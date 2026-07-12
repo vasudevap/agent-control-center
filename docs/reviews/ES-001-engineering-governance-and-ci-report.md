@@ -28,7 +28,7 @@ ES-001 established the approved engineering specification, GitHub Actions CI, pu
 
 ## CI workflow
 
-The `CI` workflow runs for pull requests targeting `main` and pushes to `main`. The `Validate` job uses `ubuntu-latest`, Node.js 22, npm caching, official `actions/checkout@v4` and `actions/setup-node@v4`, read-only `contents` permission, a 20-minute timeout, and concurrency cancellation. It runs from the repository root and sequentially executes `npm ci`, `npm run typecheck`, `npm run lint`, and `npm run build`. It uses no production secrets, write permissions, repository mutation, deployment, preview, release, automated review, or security-scanning workflow.
+The `CI` workflow runs for pull requests targeting `main` and pushes to `main`. The `Validate` job uses `ubuntu-latest`, Node.js 22, npm caching, official `actions/checkout@v6` and `actions/setup-node@v6`, read-only `contents` permission, a 20-minute timeout, and concurrency cancellation. It runs from the repository root and sequentially executes `npm ci`, `npm run typecheck`, `npm run lint`, and `npm run build`. It uses no production secrets, write permissions, repository mutation, deployment, preview, release, automated review, or security-scanning workflow.
 
 Atlas has no automated test suite, so no placeholder test step was introduced.
 
@@ -59,6 +59,8 @@ The sandboxed build initially could not reach the existing Google Fonts endpoint
 - Merge date: `2026-07-12T17:22:33Z`
 
 The remote feature branch was deleted after merge.
+
+The first report-publication run passed but warned that the original v4 action runtimes used deprecated Node.js 20. Official action documentation identified v6 as the maintained Node.js 24 generation. The workflow and report were therefore updated on `main`; the final main CI run verified the maintained action versions without the deprecation warning.
 
 ## Branch protection and ruleset result
 
