@@ -235,7 +235,7 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
 
 function AgentsTable({ agents }: { agents: AgentRecord[] }) {
   return (
-    <Card className="hidden overflow-hidden md:block">
+    <Card className="hidden overflow-hidden border-border-strong shadow-atlas-md md:block">
       <Table>
         <caption className="sr-only">Agents inventory</caption>
         <TableHeader>
@@ -287,7 +287,7 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
           className="block rounded-atlas-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
           aria-label={`${agent.name} details`}
         >
-          <Card className="transition-colors hover:bg-surface-hover">
+          <Card className="border-border-strong transition-colors hover:bg-surface-hover">
             <CardContent className="flex flex-col gap-4 p-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-start justify-between gap-3">
@@ -398,7 +398,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
 
       {state === "loaded" && agents.length > 0 && (
         <section className="flex flex-col gap-4" aria-labelledby="agents-inventory-heading">
-          <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-4 shadow-atlas-sm">
+          <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface-secondary p-4 shadow-atlas-sm">
             <div className="flex flex-col gap-1">
               <h2 id="agents-inventory-heading" className="text-sm font-semibold text-foreground">
                 Inventory
