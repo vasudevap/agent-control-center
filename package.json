@@ -10,6 +10,7 @@
     "build": "npm --workspace @atlas/web run build",
     "start": "npm --workspace @atlas/web run start",
     "lint": "npm --workspace @atlas/web run lint",
-    "typecheck": "npm --workspace @atlas/web run typecheck"
+    "typecheck": "npm --workspace @atlas/web run typecheck",
+    "test": "npm --workspace @atlas/web run test"
   }
 }

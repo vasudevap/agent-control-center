@@ -95,8 +95,14 @@ npm ci
 npm run dev
 npm run typecheck
 npm run lint
+npm test
 npm run build
 ```
+
+Frontend component tests use Vitest, React Testing Library, and jsdom. Run
+`npm test` for the canonical one-shot suite or
+`npm --workspace @atlas/web run test:watch` during local development. Tests are
+colocated with feature code using the `*.test.ts` or `*.test.tsx` suffix.
 
 ES-000 is closed. ES-001 establishes the engineering-governance and continuous-integration baseline for subsequent approved work.
 
@@ -104,7 +110,7 @@ ES-000 is closed. ES-001 establishes the engineering-governance and continuous-i
 
 Repository changes follow the [Atlas engineering-governance handbook](./docs/governance/README.md), including the [branching strategy](./docs/governance/branching-strategy.md), [pull-request process](./docs/governance/pull-request-and-review-process.md), [Definition of Ready](./docs/governance/definition-of-ready.md), and [Definition of Done](./docs/governance/definition-of-done.md).
 
-GitHub Actions runs `npm ci`, typecheck, lint, and the production build for pull requests targeting `main` and pushes to `main`. Atlas currently has no automated test suite; tests will become a required CI step only when approved test infrastructure exists.
+GitHub Actions runs `npm ci`, typecheck, lint, frontend tests, and the production build for pull requests targeting `main` and pushes to `main`.
 
 ---
 
