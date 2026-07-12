@@ -186,3 +186,16 @@ Recommend merging after normal branch review. ES-000 completion criteria are sat
 ## Recommendation on Original Source Folders
 
 Retain both `.migration-source` and the external original `atlas-ai` folder until the consolidation branch is reviewed and merged. After merge and a final provenance check, the ignored `.migration-source` copy may be deleted locally. Retain or back up the external original until the user is satisfied that the canonical repository contains every needed artifact; deletion should be a separate explicit decision.
+
+## Post-Merge Closeout
+
+- Pull request: #1, <https://github.com/vasudevap/agent-control-center/pull/1>
+- Merge commit: `5b0cd74fc3484cb9efd48ba867813b0d791268c2`
+- Merge date: `2026-07-12T16:56:40Z`
+- Post-merge validation on `main`: `npm ci` passed; `npm run typecheck` passed; `npm run lint` passed; `npm run build` passed.
+- Post-merge route confirmation: production build output retained `/`, `/agents`, `/agents/[agentId]`, `/alerts`, `/approvals`, `/artifacts`, `/audit`, `/connectors`, `/policies`, `/runs`, `/runs/[runId]`, and `/settings`.
+- Release tag: annotated tag `v0.2.0-alpha.1`, pushed to origin with message `Canonical repository consolidation and application shell baseline`.
+- Local migration-source cleanup: ignored local `.migration-source` directory deleted after merge, post-merge validation, and release tag push.
+- External source confirmation: `/Users/pv/bootcamp/projects/atlas-ai` remains present and untouched as the provenance backup.
+- Final Git status: clean working tree on `main` after this final report update is committed and pushed.
+- ES-000 final disposition: Closed.
