@@ -1,14 +1,14 @@
 # Work Order 006 — Agents Inventory
 
 **ID:** AGENTS-006
-**Status:** Draft — Pending Readiness Approval
+**Status:** Ready
 **Priority:** P0
 **Owner:** Frontend Implementation
 **Review Owner:** Product Owner and Design Director
 **Architecture Review:** Required
 **Design Review:** Required
 **Security/Privacy Review:** Required
-**Implementation Authorization:** Not granted until the Readiness Gate is approved
+**Implementation Authorization:** Granted
 
 ---
 
@@ -94,25 +94,25 @@ Approval of this Work Order does not ratify unrelated sections of the draft
 design-system, component-library, screen-specification, or developer-handoff
 documents.
 
-This section does not grant implementation authorization while the Work Order
-status remains `Draft — Pending Readiness Approval`.
+Implementation authorization is granted because this Work Order has passed the
+Readiness Gate.
 
 ---
 
 ## Readiness Prerequisites
 
-Implementation may begin only after:
+Implementation may begin because:
 
 1. The review owner ratifies the applicable design-system, component-library,
    screen-specification, and developer-handoff documents, or approves this Work
    Order as the authoritative Agents screen specification.
-2. The automated frontend testing gap is resolved through a separately approved
-   Engineering Specification (`ES-002 — Frontend Testing Infrastructure`) or a
-   documented temporary manual-testing exception with an owner and revisit trigger.
+2. The automated frontend testing gap is resolved through approved and completed
+   Engineering Specification `ES-002 — Frontend Testing Infrastructure`.
 3. The Product Owner and Design Director approve the field hierarchy,
    responsive behavior, state behavior, and exclusion of state-changing actions.
-4. The Work Order status is changed to `Ready`.
-5. A short-lived branch is created from current synchronized `main`.
+4. The Work Order status is `Ready`.
+5. Implementation will proceed from a short-lived branch created from current
+   synchronized `main`.
 
 ---
 
@@ -577,9 +577,9 @@ this Work Order are accepted.
 ### Readiness Condition
 
 These approvals resolve the product, design, architecture, security, and privacy
-review prerequisites. Final implementation authorization remains withheld until
-ES-002 is merged and closed, the review owner confirms the Definition of Ready,
-and this Work Order's status is changed to `Ready`.
+review prerequisites. ES-002 is merged and closed, and the review owner confirms
+that the Definition of Ready is satisfied. Implementation authorization is
+granted.
 
 ---
 
@@ -587,11 +587,11 @@ and this Work Order's status is changed to `Ready`.
 
 This Work Order contains the required scope, states, responsive behavior, accessibility, security/privacy constraints, dependencies, acceptance criteria, verification, review, and rollback requirements.
 
-It remains `Draft — Pending Readiness Approval` until:
+It is `Ready` because:
 
 - design authority is ratified;
-- the frontend testing gap is resolved or explicitly accepted;
-- Product Owner and Design Director approve this Work Order; and
-- the review owner changes its status to `Ready`.
+- the frontend testing gap is resolved by completed ES-002;
+- Product Owner and Design Director approved this Work Order; and
+- the review owner changed its status to `Ready`.
 
-Do not implement before that decision.
+Implementation may now begin on a short-lived branch from synchronized `main`.

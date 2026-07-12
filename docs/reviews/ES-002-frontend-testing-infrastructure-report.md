@@ -1,10 +1,12 @@
 # ES-002 — Frontend Testing Infrastructure — Implementation Report
 
-**Status:** Implementation Complete — Pending PR, CI, Review, and Merge
+**Status:** Completed
 **Specification:** `docs/engineering-specifications/ES-002-frontend-testing-infrastructure.md`
 **Decision:** `docs/decisions/ADR-001-frontend-component-testing.md`
 **Implementation Branch:** `chore/es-002-frontend-testing`
+**Implementation Pull Request:** `https://github.com/vasudevap/agent-control-center/pull/4`
 **Implementation Date:** 2026-07-12
+**Merged:** 2026-07-12
 **Owner:** Repository Maintainer
 
 ## Outcome
@@ -79,8 +81,10 @@ accessible role and name, is enabled, and invokes its handler after a user click
 12. This report records implementation, dependencies, validation, limitations,
     risks, and rollback.
 
-Local acceptance criteria are satisfied. Required pull-request CI, review,
-merge, and merged-baseline evidence remain pending.
+Local acceptance criteria are satisfied. Pull request
+`https://github.com/vasudevap/agent-control-center/pull/4` passed the required
+`Validate` CI job, received repository-maintainer approval, and was merged on
+2026-07-12.
 
 ## Architecture Review
 
@@ -112,14 +116,15 @@ production data, runtime, deployment, or external-system rollback is required.
 
 ## Closure Conditions
 
-ES-002 may be marked completed only after:
+ES-002 is completed:
 
-- the focused branch is committed and pushed;
-- the pull request includes this evidence and the required impact statements;
-- required CI passes;
-- repository-maintainer review approves the change;
-- the branch is merged through the approved method; and
-- merged-baseline verification is recorded when required.
+- the focused branch was committed and pushed;
+- the pull request included this evidence and the required impact statements;
+- required CI passed;
+- repository-maintainer review approved the change;
+- the branch was merged through the approved method; and
+- merged-baseline verification is satisfied by the merged pull request and local
+  fast-forward to `main`.
 
-Work Order 006 remains `Draft — Pending Readiness Approval` until these closure
-conditions are satisfied and its final Readiness Gate is approved.
+These closure conditions satisfy the Work Order 006 frontend testing
+infrastructure prerequisite.
