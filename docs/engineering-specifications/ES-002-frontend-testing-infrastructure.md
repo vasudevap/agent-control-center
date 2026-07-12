@@ -1,6 +1,6 @@
 # ES-002 — Frontend Testing Infrastructure
 
-**Status:** Implemented — Pending PR, CI, Review, and Merge
+**Status:** Completed
 **Owner:** Repository Maintainer
 **Review Owner:** Repository Maintainer
 **Related ADR:** `docs/decisions/ADR-001-frontend-component-testing.md`
@@ -10,6 +10,8 @@
 **Implementation Authorization:** Granted
 **Implemented:** 2026-07-12
 **Implementation Branch:** `chore/es-002-frontend-testing`
+**Implementation Pull Request:** `https://github.com/vasudevap/agent-control-center/pull/4`
+**Merged:** 2026-07-12
 
 ## Purpose
 
@@ -222,9 +224,9 @@ This specification passed its readiness decision on 2026-07-12:
   implementation under the approved dependency set.
 - The status is `Ready` and implementation is authorized.
 
-Work Order 006 remains blocked until ES-002 is implemented, validated, reviewed,
-merged, and closed with its implementation report.
+ES-002 was implemented, validated, reviewed, merged, and closed on 2026-07-12.
+Pull request `https://github.com/vasudevap/agent-control-center/pull/4` passed
+the required `Validate` CI job before merge.
 
-Local implementation and validation completed on 2026-07-12. Final closure
-remains pending the required pull request, CI result, review, merge, and any
-required merged-baseline verification.
+Work Order 006 is no longer blocked by the frontend testing infrastructure
+prerequisite.

@@ -4,4 +4,4 @@ This directory contains migrated Atlas implementation work orders. They record a
 
 Work Order 005 is the approved application-shell baseline now implemented in `apps/web`.
 
-Work Order 006 defines the proposed Agents Inventory and remains `Draft — Pending Readiness Approval`. Implementation is not authorized until its readiness gate is approved.
+Work Order 006 defines the approved Agents Inventory and is `Ready`. Implementation is authorized on a short-lived branch from synchronized `main`.
