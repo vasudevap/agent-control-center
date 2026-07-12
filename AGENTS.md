@@ -344,6 +344,16 @@ Which ADRs changed?
 
 How was it tested?
 
+All contributions must follow the canonical engineering controls under `docs/governance/`:
+
+- meet the Definition of Ready before implementation
+- use a short-lived branch linked to an approved Work Order, Engineering Specification, defect, or maintenance task
+- merge through a pull request after required CI passes
+- provide the evidence required by the pull-request and review process
+- meet the Definition of Done before the work is closed or released
+
+Do not bypass, disable, or weaken required CI. Failed required checks block merge. Exceptions must follow the documented exception process and must not silently change architecture, product, design, or security authority.
+
 ---
 
 # Commit Messages
