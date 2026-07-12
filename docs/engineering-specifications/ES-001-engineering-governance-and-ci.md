@@ -1,8 +1,11 @@
 # ES-001 — Engineering Governance and Continuous Integration
 
-**Status:** Approved for implementation by the ES-001 task  
-**Owner:** Repository maintainer  
-**Approved:** 2026-07-12  
+**Status:** Approved for implementation by the ES-001 task
+
+**Owner:** Repository maintainer
+
+**Approved:** 2026-07-12
+
 **Target release:** `v0.2.0-alpha.2`
 
 ## Purpose
