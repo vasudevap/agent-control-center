@@ -20,6 +20,7 @@ export function MetricsRow({ metrics, state = "success" }: MetricsRowProps) {
         icon={Bot}
         tone="default"
         state={state}
+        className="bg-surface-secondary"
       />
       <MetricCard
         label="Running Agents"
@@ -27,6 +28,7 @@ export function MetricsRow({ metrics, state = "success" }: MetricsRowProps) {
         icon={PlayCircle}
         tone="default"
         state={state}
+        className="bg-surface-secondary"
       />
       <MetricCard
         label="Healthy Agents"
@@ -34,6 +36,7 @@ export function MetricsRow({ metrics, state = "success" }: MetricsRowProps) {
         icon={HeartPulse}
         tone="success"
         state={state}
+        className="bg-surface-secondary"
       />
       <MetricCard
         label="Pending Approvals"
@@ -41,6 +44,7 @@ export function MetricsRow({ metrics, state = "success" }: MetricsRowProps) {
         icon={CheckSquare}
         tone="warning"
         state={state}
+        className="bg-surface-secondary"
       />
     </div>
   );

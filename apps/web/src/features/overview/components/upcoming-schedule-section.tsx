@@ -12,7 +12,7 @@ export interface UpcomingScheduleSectionProps {
 
 export function UpcomingScheduleSection({ items, state = "success" }: UpcomingScheduleSectionProps) {
   return (
-    <Card>
+    <Card className="bg-surface-secondary">
       <CardHeader>
         <CardTitle>Upcoming Schedule</CardTitle>
         <CardDescription>Next scheduled agent activity</CardDescription>
