@@ -411,6 +411,62 @@ AI coding assistants should:
 - recommend ADRs when appropriate
 - update documentation when needed
 
+## Codex Settings Recommendations
+
+When recommending Codex settings for a next step, always specify the exact:
+
+- Model
+- Effort
+- Speed
+
+Do not recommend the generic `GPT-5` family name. Do not invent or recommend
+model names that are not available in the user's Codex model selector.
+
+As confirmed by the user from the Codex model selector on 2026-07-12, the
+available model labels are:
+
+- `5.6 Sol`
+- `5.6 Terra`
+- `5.6 Luna`
+- `5.5`
+- `5.4`
+- `5.4 Mini`
+- `5.3 Codex Spark`
+
+The selector label `5.3 Codex Spark` refers to OpenAI's
+`GPT-5.3-Codex-Spark`. It is not the full `GPT-5.3-Codex` model. The full
+`GPT-5.3-Codex` model is not available in the user's selector and must not be
+recommended.
+
+OpenAI documents Codex Spark as a smaller, research-preview model optimized
+for ultra-fast, real-time coding collaboration. Its documented characteristics
+and limitations include:
+
+- 128k context window
+- text-only input and output
+- optimized for minimal, targeted edits and rapid iteration
+- lightweight default working style
+- does not automatically run tests unless explicitly asked
+- separate research-preview rate limits
+- possible limited access or temporary queuing during high demand
+- lower agentic software-engineering benchmark performance than the full
+  `GPT-5.3-Codex` model, in exchange for substantially faster inference
+
+Use `5.3 Codex Spark` for small, focused, interactive coding tasks where fast
+iteration is more important than long-horizon reasoning. Do not recommend it
+for architecture or functional specifications, broad repository changes,
+large feature implementations, deep code reviews, complex debugging,
+governance-heavy work, or autonomous tasks requiring sustained context and
+reasoning. Select an appropriate available full model for those tasks.
+
+Official reference:
+`https://openai.com/index/introducing-gpt-5-3-codex-spark/`
+
+Select among the available labels according to the task's complexity and
+desired usage balance. If current availability is uncertain or the selector
+has changed, ask the user or rely on a newly provided selector rather than
+guessing.
+
 When uncertain:
 
 Ask rather than invent.

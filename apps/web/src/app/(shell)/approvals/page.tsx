@@ -1,10 +1,6 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { APPROVAL_FIXTURES } from "./approval-data";
+import { ApprovalsWorkspace } from "./approvals-workspace";
 
 export default function ApprovalsPage() {
-  return (
-    <PlaceholderPage
-      title="Approvals"
-      description="Review and act on requests awaiting operator sign-off."
-    />
-  );
+  return <ApprovalsWorkspace approvals={APPROVAL_FIXTURES} />;
 }

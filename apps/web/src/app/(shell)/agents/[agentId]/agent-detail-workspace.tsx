@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   ArrowDown,
@@ -54,13 +55,6 @@ interface RunRecord {
   work: string;
   outcome: string;
   duration: string;
-}
-
-interface ApprovalRecord {
-  title: string;
-  confidence: string;
-  reason: string;
-  received: string;
 }
 
 const toneStyles: Record<MetricCard["tone"], { icon: React.ElementType; className: string }> = {
@@ -151,18 +145,21 @@ function getDetailProfile(agent: AgentRecord) {
     approvals: hasIssue
       ? [
           {
+            approvalId: agent.id === "agent-beta" ? "apr-2026-001" : undefined,
             title: agent.issueSummary ?? "Operator review required",
             confidence: "84%",
             reason: agent.currentIssue ?? "Confidence was below the approved threshold.",
             received: "Jul 12, 2026",
           },
           {
+            approvalId: agent.id === "agent-beta" ? "apr-2026-002" : undefined,
             title: "Policy exception confirmation",
             confidence: "78%",
             reason: "The agent found an ambiguous category and needs a human decision.",
             received: "Jul 10, 2026",
           },
           {
+            approvalId: agent.id === "agent-gamma" ? "apr-2026-003" : undefined,
             title: "Evidence packet review",
             confidence: "89%",
             reason: "The generated summary should be checked before audit archive.",
@@ -435,7 +432,11 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                           <Badge variant="warning">Confidence: {approval.confidence}</Badge>
                           <span className="text-xs text-foreground-tertiary">{approval.received}</span>
                         </div>
-                        <h3 className="mt-4 text-sm font-semibold text-foreground">{approval.title}</h3>
+                        {approval.approvalId ? (
+                          <Link href={`/approvals/${approval.approvalId}`} className="mt-4 block text-sm font-semibold text-foreground hover:text-brand hover:underline">
+                            {approval.title}
+                          </Link>
+                        ) : <h3 className="mt-4 text-sm font-semibold text-foreground">{approval.title}</h3>}
                         <p className="mt-2 text-sm leading-relaxed text-foreground-secondary">{approval.reason}</p>
                       </div>
                     ))}
