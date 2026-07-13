@@ -14,6 +14,11 @@ const testAgents: AgentRecord[] = [
     lastRun: "10 minutes ago",
     nextRun: "In 20 minutes",
     version: "v1.0.0",
+    responsibilities: ["Draft support responses for review."],
+    capabilities: ["Response drafting"],
+    connectors: ["Support queue"],
+    permissions: ["Draft responses"],
+    recentActivity: ["Prepared one draft response."],
   },
   {
     id: "agent-beta",
@@ -26,6 +31,11 @@ const testAgents: AgentRecord[] = [
     nextRun: "Not scheduled",
     version: "v1.1.0",
     currentIssue: "Evidence export failed.",
+    responsibilities: ["Review exception evidence."],
+    capabilities: ["Evidence review"],
+    connectors: ["Policy queue"],
+    permissions: ["Read evidence metadata"],
+    recentActivity: ["Detected one failed evidence export."],
   },
   {
     id: "agent-gamma",
@@ -37,6 +47,11 @@ const testAgents: AgentRecord[] = [
     lastRun: "2 minutes ago",
     nextRun: "In 8 minutes",
     version: "v1.2.0",
+    responsibilities: ["Check connector health."],
+    capabilities: ["Connector polling"],
+    connectors: ["Connector registry"],
+    permissions: ["Read connector status"],
+    recentActivity: ["Checked connector health signals."],
   },
 ];
 
