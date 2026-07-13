@@ -1,6 +1,6 @@
 # Work Order 009: Human Approvals Frontend Experience
 
-**Status:** Implementation Complete - Pending Pull Request
+**Status:** Implementation Complete - Pull Request Review
 **Work Order ID:** WO-009
 **Type:** Frontend prototype
 **Implementation Authorization:** Granted
@@ -342,4 +342,4 @@ This approved Work Order authorizes only the bounded frontend prototype describe
 
 The implementation evidence is recorded in [WO-009 Human Approvals Frontend Implementation Review](../reviews/WO-009-human-approvals-frontend-implementation-review.md).
 
-Before this Work Order can be closed, the pull request link, final merge review, and completed pull-request controls must be added to that record.
+Before this Work Order can be closed, pull-request CI, the final merge review, and completed pull-request controls must be added to that record.

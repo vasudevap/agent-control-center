@@ -1,12 +1,13 @@
 # Work Order 009: Human Approvals Frontend Implementation Review
 
-**Status:** Implementation Review Complete - Pending Pull Request
+**Status:** Implementation Review Complete - Pull Request Review
 **Work Order:** [WO-009 Human Approvals Frontend Experience](../work-orders/009-human-approvals-frontend-experience.md)
 **Governing Engineering Specification:** [ES-003 Human Approvals Frontend Experience](../engineering-specifications/ES-003-human-approvals-frontend-experience.md)
 **Product Specification:** [Human Approvals Functional Specification](../specifications/human-approvals-functional-specification.md)
 **Architecture Authority:** [Human Approvals Architecture](../architecture/13-human-approvals.md)
 **Decision Authority:** [ADR-002 Human Approvals Decision Integrity](../decisions/ADR-002-human-approvals-decision-integrity.md)
 **Implementation branch:** `codex/wo-009-human-approvals-frontend`
+**Pull request:** [#8 Implement Human Approvals frontend prototype](https://github.com/vasudevap/agent-control-center/pull/8)
 **Date:** 2026-07-13
 
 ---
@@ -67,22 +68,20 @@ The delivered interface does not call an API, persist data, authenticate a user,
 - [x] Accessibility verification evidence
 - [x] Responsive verification evidence
 - [x] Automated test evidence
-- [ ] Pull request link
+- [x] Pull request link: [#8](https://github.com/vasudevap/agent-control-center/pull/8)
 - [x] Final implementation summary
 - [x] Final implementation review record
 - [ ] Final merge review
 
 ## 6. Remaining Closure Items
 
-The implementation is ready to commit and open as a pull request. WO-009 cannot be closed until:
+The implementation is open for pull-request review. WO-009 cannot be closed until:
 
-1. The branch changes are committed.
-2. A pull request link is recorded.
-3. Required CI passes on the pull request.
-4. The final merge review is completed and recorded.
+1. Required CI passes on the pull request.
+2. The final merge review is completed and recorded.
 
 ## 7. Disposition
 
-**Recommendation:** Ready to commit and open a pull request.
+**Recommendation:** Ready for pull-request review.
 **Implementation authorization:** Complete for the bounded frontend prototype only.
 **Work Order closure:** Pending pull request, CI, and merge review.
