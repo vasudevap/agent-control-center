@@ -17,14 +17,14 @@ export function PageHeader({ title, description, icon: Icon, actions, className 
         className
       )}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
+      <div className="min-w-0 flex flex-col gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           {Icon && (
             <span className="flex size-9 shrink-0 items-center justify-center rounded-atlas-md border border-border-default bg-surface text-brand shadow-atlas-sm">
               <Icon className="size-4.5" aria-hidden="true" />
             </span>
           )}
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="min-w-0 break-words text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {title}
           </h1>
         </div>
@@ -32,7 +32,7 @@ export function PageHeader({ title, description, icon: Icon, actions, className 
           <p className="text-sm leading-relaxed text-foreground-secondary">{description}</p>
         )}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+      {actions && <div className="flex min-w-0 flex-wrap items-center gap-2 sm:justify-end">{actions}</div>}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 # Work Order 006 — Agents Inventory — Implementation Report
 
-**Status:** Implementation Complete — Pending PR, CI, Review, and Merge
+**Status:** Completed — PR Merged
 **Work Order:** `docs/work-orders/006-agents-inventory.md`
 **Implementation Branch:** `codex/agents-006-inventory`
 **Implementation Date:** 2026-07-12
+**Pull Request:** `https://github.com/vasudevap/agent-control-center/pull/6`
+**Merge Commit:** `698c1cb875de8bd868f09aa39ee6cee5fff2423a`
 **Owner:** Frontend Implementation
 
 ## Outcome
@@ -63,7 +65,7 @@ No additional ADR is required.
 
 ## Validation Evidence
 
-Local validation to be recorded before merge:
+Local validation recorded before merge:
 
 | Command | Result |
 | --- | --- |
@@ -110,3 +112,9 @@ Screenshot evidence:
 Revert the Work Order 006 implementation pull request to restore the previous
 `/agents` placeholder. No data migration, backend rollback, deployment rollback,
 or external-system rollback is required.
+
+## Closeout
+
+Work Order 006 was approved by the Product Owner across product, design,
+architecture, security, and privacy decisions. Pull request #6 passed required
+CI, was marked ready for review, and merged on 2026-07-12.
