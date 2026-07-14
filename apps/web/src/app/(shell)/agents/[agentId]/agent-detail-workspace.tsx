@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, ShieldCheck, TriangleAlert } from "lucide-react";
+import { ChevronDown, ShieldCheck } from "lucide-react";
 import type { AgentRecord } from "../agent-data";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
@@ -59,15 +59,17 @@ function SystemPromptDisclosure({ agent }: { agent: AgentRecord }) {
 
   return (
     <div className="rounded-atlas-md border border-border-default">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium text-foreground"
-      >
-        System prompt reference
-        <ChevronDown className={cn("size-4 shrink-0 text-foreground-tertiary transition-transform", open && "rotate-180")} aria-hidden="true" />
-      </button>
+      <h2>
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary"
+        >
+          System prompt reference
+          <ChevronDown className={cn("size-4 shrink-0 text-foreground-tertiary transition-transform", open && "rotate-180")} aria-hidden="true" />
+        </button>
+      </h2>
       {open && (
         <pre className="max-h-72 overflow-auto border-t border-border-default bg-surface-secondary p-4 font-mono text-xs leading-relaxed text-foreground-secondary">
           <code>{prompt}</code>
@@ -108,39 +110,38 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
   return (
     <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
       <aside className="grid content-start gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>At a glance</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <dl className="divide-y divide-border-subtle">
-              <SidebarFact label="Health" value={<StatusBadge status={agent.health} plain />} />
-              <SidebarFact label="Status" value={<StatusBadge status={agent.status} plain />} />
-              <SidebarFact label="Owner" value={agent.owner} />
-              <SidebarFact label="Version" value={agent.version} />
-              <SidebarFact label="Last run" value={agent.lastRun} />
-              <SidebarFact label="Next run" value={agent.nextRun} />
-              <SidebarFact label="Change control" value="Approval required" />
-            </dl>
-            {agent.currentIssue && (
-              <div className="mt-3 flex items-start gap-2 rounded-atlas-sm border border-warning-border bg-warning-bg px-3 py-2 text-xs leading-relaxed text-warning">
-                <TriangleAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                {agent.currentIssue}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="sticky top-[calc(var(--statusbar-height)+var(--topbar-height)+1rem)] grid content-start gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>At a glance</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <dl className="divide-y divide-border-subtle">
+                <SidebarFact label="Health" value={<StatusBadge status={agent.health} plain />} />
+                <SidebarFact label="Status" value={<StatusBadge status={agent.status} plain />} />
+                <SidebarFact label="Owner" value={agent.owner} />
+                <SidebarFact label="Version" value={agent.version} />
+                <SidebarFact label="Last run" value={agent.lastRun} />
+                <SidebarFact label="Next run" value={agent.nextRun} />
+                <SidebarFact label="Change control" value="Approval required" />
+              </dl>
+              {agent.currentIssue && (
+                <p className="mt-3 text-xs leading-relaxed text-warning">{agent.currentIssue}</p>
+              )}
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Capabilities</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-1.5 pt-0">
-            {agent.capabilities.map((item) => (
-              <Badge key={item} variant="brand">{item}</Badge>
-            ))}
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Capabilities</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-1.5 pt-0">
+              {agent.capabilities.map((item) => (
+                <Badge key={item} variant="neutral">{item}</Badge>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       </aside>
 
       <Card className="overflow-hidden">
