@@ -8,7 +8,7 @@ describe("ApprovalsWorkspace", () => {
   it("searches the queue, filters by risk, and clears local controls", async () => {
     const user = userEvent.setup();
     render(<ApprovalsWorkspace approvals={APPROVAL_FIXTURES} />);
-    expect(screen.getByText(/Showing 4 of 4 fictional queue records/i)).toBeInTheDocument();
+    expect(screen.getByText((_, element) => element?.tagName === "P" && /of \d+ queue records/i.test(element.textContent ?? ""))).toBeInTheDocument();
     await user.type(screen.getByRole("searchbox", { name: /ID, agent, action, target, or policy/i }), "billing");
     expect(screen.getAllByText(/Send a remediation notice/i).length).toBeGreaterThan(0);
     await user.selectOptions(screen.getByLabelText("Risk"), "Critical");

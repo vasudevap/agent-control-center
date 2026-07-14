@@ -1,11 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bot } from "lucide-react";
-import { findAgentById } from "../agent-data";
+import { findAgentById, STATUS_LABELS } from "../agent-data";
 import { AgentDetailWorkspace } from "./agent-detail-workspace";
 import { AgentOperationalControls } from "./agent-operational-controls";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/badge/status-badge";
+import Link from "next/link";
 
 export default async function AgentDetailPage({
   params,
@@ -20,20 +21,27 @@ export default async function AgentDetailPage({
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="Agent"
         title={agent.name}
+        identifier={agent.id}
         icon={Bot}
+        description={agent.description}
+        meta={
+          <>
+            <StatusBadge status={agent.health} />
+            <span className="rounded-atlas-sm border border-border-default bg-surface-secondary px-2 py-0.5 text-xs text-foreground-secondary">
+              {STATUS_LABELS[agent.status]}
+            </span>
+          </>
+        }
         actions={
           <>
-            <Button asChild variant="ghost">
+            <Button asChild variant="ghost" size="sm">
               <Link href="/agents">Back to Agents</Link>
             </Button>
-            <AgentOperationalControls
-              agentId={agent.id}
-              agentName={agent.name}
-              initialStatus={agent.status}
-            />
+            <AgentOperationalControls agentId={agent.id} agentName={agent.name} initialStatus={agent.status} />
           </>
         }
       />
