@@ -36,7 +36,7 @@ export function ActiveRunsSection({ agents }: { agents: AgentRecord[] }) {
           {active.map((agent) => {
             const running = agent.status === "running" || agent.status === "active";
             return (
-              <div key={agent.id} className="flex items-center gap-3 rounded-atlas-sm border border-border-default bg-surface-secondary px-3 py-2.5">
+              <div key={agent.id} className="flex items-center gap-3 overflow-hidden rounded-atlas-sm border border-border-default bg-surface-secondary px-3 py-2.5">
                 {running ? (
                   <Loader2 className="size-4 shrink-0 animate-spin text-brand" aria-hidden="true" />
                 ) : (

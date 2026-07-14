@@ -110,8 +110,9 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready" 
     <div className={`flex min-w-0 flex-col gap-5 ${actionable ? "pb-20 xl:pb-0" : ""}`}>
       <PageHeader
         eyebrow="Approval"
-        title={current.action}
+        title={current.agent.name}
         identifier={current.id}
+        description={current.action}
         icon={ShieldAlert}
         meta={<><RiskChip risk={current.risk as RiskLevel} /><StateChip state={current.state} />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
         actions={<Button asChild variant="ghost" size="sm"><Link href={back}><ArrowLeft className="size-4" aria-hidden="true" />Return to Queue</Link></Button>}

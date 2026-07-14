@@ -18,7 +18,7 @@ export function UpcomingScheduleSection({ agents }: { agents: AgentRecord[] }) {
       ) : (
         <CardContent className="grid gap-2">
           {scheduled.map((agent) => (
-            <div key={agent.id} className="flex items-center gap-3 rounded-atlas-sm border border-border-default bg-surface-secondary px-3 py-2.5">
+            <div key={agent.id} className="flex items-center gap-3 overflow-hidden rounded-atlas-sm border border-border-default bg-surface-secondary px-3 py-2.5">
               <CalendarClock className="size-4 shrink-0 text-foreground-tertiary" aria-hidden="true" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{agent.name}</p>

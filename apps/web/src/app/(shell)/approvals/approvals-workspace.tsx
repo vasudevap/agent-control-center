@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RiskBar, RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indicator";
+import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indicator";
 import { cn } from "@/lib/utils";
 import { isQueueApproval, type ApprovalRecord } from "./approval-data";
 import { getExpiryPresentation, relativeTime } from "./approval-presentation";
@@ -176,9 +176,8 @@ function Select({ label, value, onChange, options, labels = {} }: { label: strin
 
 function Row({ approval, view }: { approval: ApprovalRecord; view: View }) {
   return (
-    <tr className="relative border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
-      <td className="relative px-4 py-3 align-top">
-        <RiskBar risk={approval.risk as RiskLevel} />
+    <tr className="border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
+      <td className="px-4 py-3 align-top">
         <Link className="font-medium text-foreground hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`}>{approval.action}</Link>
         <p className="mt-0.5 font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
       </td>
@@ -200,8 +199,7 @@ function Row({ approval, view }: { approval: ApprovalRecord; view: View }) {
 
 function ApprovalCard({ approval, view }: { approval: ApprovalRecord; view: View }) {
   return (
-    <Link href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`} className="relative block overflow-hidden rounded-atlas-md border border-border-default bg-surface p-4">
-      <RiskBar risk={approval.risk as RiskLevel} />
+    <Link href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`} className="block rounded-atlas-md border border-border-default bg-surface p-4">
       <div className="flex items-center justify-between gap-2">
         <RiskChip risk={approval.risk as RiskLevel} />
         {view === "queue" ? <ReviewProgressTag progress={approval.reviewProgress} /> : <StateChip state={approval.state} />}

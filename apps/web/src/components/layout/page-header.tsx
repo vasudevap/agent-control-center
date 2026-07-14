@@ -41,7 +41,7 @@ export function PageHeader({ eyebrow, title, identifier, description, icon: Icon
                 <Icon className="size-4" aria-hidden="true" />
               </span>
             )}
-            <h1 className="min-w-0 break-words text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+            <h1 className="min-w-0 break-words font-mono text-lg font-semibold uppercase tracking-[0.03em] text-foreground sm:text-xl">
               {title}
             </h1>
             {identifier && (

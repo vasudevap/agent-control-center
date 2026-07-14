@@ -2,15 +2,24 @@
 
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { CircleAlert, ServerCog, ShieldAlert, TriangleAlert } from "lucide-react";
+import { CircleAlert, ServerCog, ShieldAlert, TriangleAlert, Circle, Triangle, Diamond } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EmptyState } from "@/components/state/empty-state";
 import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indicator";
 import { getExpiryPresentation } from "@/app/(shell)/approvals/approval-presentation";
 import { APPROVAL_FIXTURES, isQueueApproval } from "@/app/(shell)/approvals/approval-data";
-import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
+import { MOCK_AGENTS, type AgentHealth } from "@/app/(shell)/agents/agent-data";
 import { mockAlerts } from "../data/mock-data";
-import { cn } from "@/lib/utils";
+
+function alertToRisk(severity: "critical" | "warning" | "information"): { risk: RiskLevel; label: string } {
+  if (severity === "critical") return { risk: "Critical", label: "Critical" };
+  if (severity === "warning") return { risk: "Medium", label: "Warning" };
+  return { risk: "Low", label: "Info" };
+}
+
+function healthToRisk(health: AgentHealth): { risk: RiskLevel; label: string } {
+  return health === "offline" ? { risk: "Critical", label: "Offline" } : { risk: "Medium", label: "Degraded" };
+}
 
 type Severity = 0 | 1 | 2 | 3;
 
@@ -25,13 +34,6 @@ interface AttentionItem {
   href: string;
   chip: React.ReactNode;
 }
-
-const SEVERITY_CLASS: Record<Severity, string> = {
-  0: "bg-risk-critical text-white",
-  1: "bg-risk-high text-white",
-  2: "bg-risk-medium-bg text-risk-medium border border-risk-medium-border",
-  3: "bg-risk-low-bg text-risk-low border border-risk-low-border",
-};
 
 function buildAttentionItems(): AttentionItem[] {
   const items: AttentionItem[] = [];
@@ -64,11 +66,7 @@ function buildAttentionItems(): AttentionItem[] {
       subtitle: `${alert.source} • Alert`,
       meta: alert.timestamp,
       href: alert.sourceAgentId ? `/agents/${alert.sourceAgentId}` : "/alerts",
-      chip: (
-        <span className={cn("rounded-atlas-sm px-2 py-0.5 text-xs font-semibold", SEVERITY_CLASS[severity])}>
-          {alert.severity === "critical" ? "Critical" : alert.severity === "warning" ? "Warning" : "Info"}
-        </span>
-      ),
+      chip: <RiskChip {...alertToRisk(alert.severity)} />,
     });
   });
 
@@ -83,11 +81,7 @@ function buildAttentionItems(): AttentionItem[] {
       subtitle: `${agent.name} • Agent health`,
       meta: agent.lastRun,
       href: `/agents/${agent.id}`,
-      chip: (
-        <span className={cn("rounded-atlas-sm px-2 py-0.5 text-xs font-semibold", SEVERITY_CLASS[severity])}>
-          {agent.health === "offline" ? "Offline" : "Degraded"}
-        </span>
-      ),
+      chip: <RiskChip {...healthToRisk(agent.health)} />,
     });
   });
 
@@ -117,6 +111,12 @@ export function AttentionQueue() {
         <div>
           <CardTitle>Attention queue</CardTitle>
           <CardDescription>Approvals, alerts, and agent health ranked by urgency</CardDescription>
+        </div>
+        <div className="hidden items-center gap-3 text-[11px] text-foreground-tertiary sm:flex">
+          <span className="flex items-center gap-1"><Diamond className="size-3 fill-current text-risk-critical" aria-hidden="true" />Critical</span>
+          <span className="flex items-center gap-1"><TriangleAlert className="size-3 text-risk-high" aria-hidden="true" />High</span>
+          <span className="flex items-center gap-1"><Triangle className="size-3 text-risk-medium" aria-hidden="true" />Medium</span>
+          <span className="flex items-center gap-1"><Circle className="size-3 text-risk-low" aria-hidden="true" />Low</span>
         </div>
         <span className="font-mono text-[11px] text-foreground-tertiary">{items.length} items</span>
       </CardHeader>

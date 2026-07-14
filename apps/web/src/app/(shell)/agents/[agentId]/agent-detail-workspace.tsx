@@ -105,8 +105,8 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
   ];
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[18rem_minmax(0,1fr)]">
-      <aside className="order-1 grid content-start gap-4 xl:order-2">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <aside className="grid content-start gap-4">
         <Card>
           <CardHeader>
             <CardTitle>At a glance</CardTitle>
@@ -142,7 +142,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
         </Card>
       </aside>
 
-      <Card className="order-2 overflow-hidden xl:order-1">
+      <Card className="overflow-hidden">
         <div className="flex border-b border-border-default bg-surface-secondary">
           {tabs.map((tab) => (
             <button
