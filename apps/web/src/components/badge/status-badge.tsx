@@ -88,6 +88,11 @@ const STATUS_CONFIG: Record<
 export interface StatusBadgeProps {
   status: AtlasStatus;
   iconOnly?: boolean;
+  /** Icon + label in the status color, no pill background/border. For
+   * contexts like a label/value fact list where every other value is
+   * plain text and a filled pill would look like a different kind of
+   * element rather than just another value in the same list. */
+  plain?: boolean;
   className?: string;
 }
 
@@ -98,7 +103,7 @@ export interface StatusBadgeProps {
  * legend that explains the icon vocabulary belongs wherever this is
  * used compactly, in the same header/control-bar slot each time.
  */
-export function StatusBadge({ status, iconOnly, className }: StatusBadgeProps) {
+export function StatusBadge({ status, iconOnly, plain, className }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
 
@@ -107,6 +112,15 @@ export function StatusBadge({ status, iconOnly, className }: StatusBadgeProps) {
       <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
         <Icon className={cn(config.iconSize ?? "size-[11px]", config.spin && "animate-spin")} aria-hidden="true" />
         <span className="sr-only">{config.label}</span>
+      </span>
+    );
+  }
+
+  if (plain) {
+    return (
+      <span className={cn("inline-flex items-center gap-1.5 font-medium", config.text, className)}>
+        <Icon className={cn(config.iconSize ?? "size-3.5", config.spin && "animate-spin")} aria-hidden="true" />
+        {config.label}
       </span>
     );
   }

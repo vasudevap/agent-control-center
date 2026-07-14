@@ -3,7 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { ChevronDown, ShieldCheck, TriangleAlert } from "lucide-react";
-import { STATUS_LABELS, HEALTH_LABELS, type AgentRecord } from "../agent-data";
+import type { AgentRecord } from "../agent-data";
+import { StatusBadge } from "@/components/badge/status-badge";
 import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
 import { RiskChip, type RiskLevel } from "@/components/risk/risk-indicator";
 import { Badge } from "@/components/ui/badge";
@@ -113,10 +114,10 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           </CardHeader>
           <CardContent className="pt-0">
             <dl className="divide-y divide-border-subtle">
-              <SidebarFact label="Health" value={HEALTH_LABELS[agent.health]} />
-              <SidebarFact label="Status" value={STATUS_LABELS[agent.status]} />
+              <SidebarFact label="Health" value={<StatusBadge status={agent.health} plain />} />
+              <SidebarFact label="Status" value={<StatusBadge status={agent.status} plain />} />
               <SidebarFact label="Owner" value={agent.owner} />
-              <SidebarFact label="Version" value={<span className="font-mono text-xs">{agent.version}</span>} />
+              <SidebarFact label="Version" value={agent.version} />
               <SidebarFact label="Last run" value={agent.lastRun} />
               <SidebarFact label="Next run" value={agent.nextRun} />
               <SidebarFact label="Change control" value="Approval required" />
