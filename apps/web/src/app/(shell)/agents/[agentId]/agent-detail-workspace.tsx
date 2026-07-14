@@ -105,7 +105,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
   ];
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
+    <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
       <aside className="grid content-start gap-4">
         <Card>
           <CardHeader>
