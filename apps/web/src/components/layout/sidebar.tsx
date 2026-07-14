@@ -33,7 +33,7 @@ function NavLink({
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex items-center gap-2.5 rounded-atlas-sm py-1.5 pl-3 pr-2 text-[13px] font-medium leading-none transition-colors",
+        "relative flex items-center gap-2.5 rounded-atlas-sm py-1.5 pl-3 pr-2 font-mono text-[11px] font-medium uppercase tracking-[0.03em] leading-none transition-colors",
         active ? "bg-surface-active text-foreground" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground"
       )}
     >

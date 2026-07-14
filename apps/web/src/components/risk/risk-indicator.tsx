@@ -31,16 +31,8 @@ export function RiskChip({ risk, label, iconOnly, className }: { risk: RiskLevel
 
   if (iconOnly) {
     return (
-      <span
-        className={cn(
-          "inline-flex size-6 shrink-0 items-center justify-center rounded-atlas-sm border",
-          config.text,
-          config.bg,
-          config.border,
-          className
-        )}
-      >
-        <Icon className={cn("size-3.5", risk === "Critical" && "fill-current")} aria-hidden="true" />
+      <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
+        <Icon className={cn("size-[11px]", risk === "Critical" && "fill-current")} aria-hidden="true" />
         <span className="sr-only">{text}</span>
       </span>
     );
