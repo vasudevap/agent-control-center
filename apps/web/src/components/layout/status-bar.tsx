@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Boxes, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { FLEET_PULSE } from "./nav-items";
 import { cn } from "@/lib/utils";
 
@@ -17,14 +17,12 @@ import { cn } from "@/lib/utils";
  * Each figure is a real link to the screen that explains it, and pairs
  * a numeral with a short label so it reads correctly without color.
  *
- * The logo block below is sized to `--sidebar-width`, the exact same
- * variable the Sidebar itself reads, at the same `lg:` breakpoint
- * where the sidebar becomes a persistent rail. That keeps the vertical
- * divider directly under this strip continuous with the sidebar/content
- * boundary, rather than two independently-sized widths that only
- * happen to line up by coincidence. Below `lg`, where the sidebar isn't
- * a persistent rail at all, the logo block reverts to its natural
- * width since there's no boundary to align to.
+ * The logo/app-name now lives in the Sidebar itself (see sidebar.tsx),
+ * not here. Sizing this strip to independently match the sidebar's
+ * width was solving the wrong problem — the actual fix is that this
+ * strip only ever renders in the content column next to the sidebar
+ * (see dashboard-layout.tsx), so there is no seam to keep aligned in
+ * the first place.
  */
 function PulseItem({ href, tone, label, value }: { href: string; tone: "neutral" | "warning" | "error" | "brand"; label: string; value: number }) {
   const toneClass = {
@@ -36,7 +34,7 @@ function PulseItem({ href, tone, label, value }: { href: string; tone: "neutral"
   return (
     <Link
       href={href}
-      className="flex items-center gap-1.5 rounded-atlas-sm px-1.5 py-0.5 text-xs hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+      className="flex items-center gap-1.5 rounded-atlas-sm px-1.5 py-0.5 text-xs hover:bg-surface-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
     >
       <span className={cn("font-mono text-[13px] font-semibold tabular-nums", toneClass)}>{value}</span>
       <span className="hidden text-foreground-secondary sm:inline">{label}</span>
@@ -44,9 +42,8 @@ function PulseItem({ href, tone, label, value }: { href: string; tone: "neutral"
   );
 }
 
-/** A quiet vertical rule between destination clusters, reusing the same
- * divider language already used next to the logo, so grouping reads as
- * "these numbers behave the same way" rather than one undifferentiated row. */
+/** A quiet vertical rule between destination clusters, so grouping reads
+ * as "these numbers behave the same way" rather than one undifferentiated row. */
 function ClusterDivider() {
   return <span className="h-4 w-px shrink-0 bg-border-default" aria-hidden="true" />;
 }
@@ -56,17 +53,10 @@ export function StatusBar() {
 
   return (
     <div
-      className="sticky top-0 z-30 flex h-(--statusbar-height) items-center gap-4 border-b border-border-default bg-surface-secondary px-3 text-xs sm:px-4"
+      className="sticky top-0 z-30 flex h-(--statusbar-height) items-center gap-2.5 border-b border-border-default bg-surface-secondary px-3 text-xs sm:px-4"
       role="region"
       aria-label="Fleet pulse"
     >
-      <div className="flex h-full shrink-0 items-center gap-1.5 lg:w-(--sidebar-width)">
-        <span className="flex size-5 items-center justify-center rounded-atlas-sm bg-brand-solid text-foreground-on-brand">
-          <Boxes className="size-3" aria-hidden="true" />
-        </span>
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground">Atlas</span>
-      </div>
-      <div className="h-4 w-px shrink-0 bg-border-default" aria-hidden="true" />
       <div className="flex flex-1 items-center gap-2.5 overflow-x-auto">
         <div className="flex items-center gap-1">
           <PulseItem href="/agents" tone="neutral" label="agents" value={FLEET_PULSE.totalAgents} />

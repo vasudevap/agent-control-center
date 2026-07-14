@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, ArrowUpDown, Search, ShieldAlert } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Circle, Diamond, Search, ShieldAlert, Triangle, TriangleAlert } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -112,7 +112,15 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
                 Showing <span className="font-mono font-semibold text-foreground">{listed.length}</span> of {view === "queue" ? queue.length : approvals.length - queue.length} {view} records.
                 {view === "queue" && expiringCount > 0 ? ` ${expiringCount} nearing expiry.` : ""}
               </p>
-              <Button variant="ghost" size="sm" onClick={reset}>Clear filters</Button>
+              <div className="flex items-center gap-3">
+                <div className="hidden items-center gap-2.5 text-[10px] text-foreground-tertiary sm:flex">
+                  <span className="flex items-center gap-1"><Diamond className="size-3 fill-current text-risk-critical" aria-hidden="true" />Critical</span>
+                  <span className="flex items-center gap-1"><TriangleAlert className="size-3 text-risk-high" aria-hidden="true" />High</span>
+                  <span className="flex items-center gap-1"><Triangle className="size-3 text-risk-medium" aria-hidden="true" />Medium</span>
+                  <span className="flex items-center gap-1"><Circle className="size-3 text-risk-low" aria-hidden="true" />Low</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={reset}>Clear filters</Button>
+              </div>
             </div>
             <div className="grid gap-2.5 md:grid-cols-3">
               <SearchField value={query} onChange={(v) => { setQuery(v); setPage(1); }} placeholder="ID, agent, action, target, or policy" />
@@ -181,7 +189,7 @@ function Row({ approval, view }: { approval: ApprovalRecord; view: View }) {
         <Link className="relative z-10 w-fit font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`}>{approval.action}</Link>
         <p className="mt-0.5 font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
       </td>
-      <td className="px-3 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} /></td>
+      <td className="px-3 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} iconOnly /></td>
       <td className="px-3 py-3 align-top text-foreground-secondary">{approval.agent.name}</td>
       <td className="px-3 py-3 align-top text-xs text-foreground-secondary">{relativeTime(approval.requestedAt)}</td>
       <td className="px-3 py-3 align-top"><ExpiryLabel approval={approval} /></td>
@@ -201,7 +209,7 @@ function ApprovalCard({ approval, view }: { approval: ApprovalRecord; view: View
   return (
     <Link href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`} className="block rounded-atlas-md border border-border-default bg-surface p-4">
       <div className="flex items-center justify-between gap-2">
-        <RiskChip risk={approval.risk as RiskLevel} />
+        <RiskChip risk={approval.risk as RiskLevel} iconOnly />
         {view === "queue" ? <ReviewProgressTag progress={approval.reviewProgress} /> : <StateChip state={approval.state} />}
       </div>
       <p className="mt-3 text-sm font-semibold text-foreground">{approval.action}</p>

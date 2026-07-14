@@ -29,7 +29,7 @@ export function TopBar() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden"
+          className="md:hidden"
           aria-label="Open navigation"
           onClick={() => setMobileNavOpen(true)}
         >

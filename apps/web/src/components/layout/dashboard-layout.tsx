@@ -6,9 +6,9 @@ import { PageContainer } from "./page-container";
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
-      <StatusBar />
       <Sidebar />
-      <div className="lg:pl-(--sidebar-width)">
+      <div className="md:pl-(--sidebar-width-collapsed) lg:pl-(--sidebar-width)">
+        <StatusBar />
         <TopBar />
         <main>
           <PageContainer>{children}</PageContainer>
