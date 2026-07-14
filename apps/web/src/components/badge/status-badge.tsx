@@ -1,4 +1,4 @@
-import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, Loader2, Power, PowerOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type AtlasStatus =
@@ -6,6 +6,8 @@ export type AtlasStatus =
   | "degraded"
   | "offline"
   | "running"
+  | "active"
+  | "paused"
   | "queued"
   | "pending"
   | "approved"
@@ -13,47 +15,67 @@ export type AtlasStatus =
 
 const STATUS_CONFIG: Record<
   AtlasStatus,
-  { label: string; icon: React.ComponentType<{ className?: string }>; className: string; spin?: boolean }
+  { label: string; icon: React.ComponentType<{ className?: string }>; text: string; className: string; spin?: boolean }
 > = {
   healthy: {
     label: "Healthy",
     icon: CheckCircle2,
+    text: "text-success",
     className: "bg-success-bg text-success border-success-border",
   },
   degraded: {
     label: "Degraded",
     icon: AlertTriangle,
+    text: "text-warning",
     className: "bg-warning-bg text-warning border-warning-border",
   },
   offline: {
     label: "Offline",
     icon: XCircle,
+    text: "text-error",
     className: "bg-error-bg text-error border-error-border",
   },
   running: {
     label: "Running",
     icon: Loader2,
+    text: "text-info",
     className: "bg-info-bg text-info border-info-border",
     spin: true,
+  },
+  active: {
+    label: "Active",
+    icon: Power,
+    text: "text-success",
+    className: "bg-success-bg text-success border-success-border",
+  },
+  paused: {
+    label: "Paused",
+    icon: PowerOff,
+    text: "text-foreground-secondary",
+    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
   queued: {
     label: "Queued",
     icon: CircleDashed,
+    text: "text-foreground-secondary",
     className: "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
   pending: {
     label: "Pending",
     icon: CircleDashed,
+    text: "text-warning",
     className: "bg-warning-bg text-warning border-warning-border",
   },
   approved: {
     label: "Approved",
     icon: CheckCircle2,
+    text: "text-success",
     className: "bg-success-bg text-success border-success-border",
   },
   rejected: {
     label: "Rejected",
     icon: XCircle,
+    text: "text-error",
     className: "bg-error-bg text-error border-error-border",
   },
 };
@@ -64,20 +86,21 @@ export interface StatusBadgeProps {
   className?: string;
 }
 
+/**
+ * `iconOnly` is bare (no filled background/border), matching the same
+ * convention RiskChip uses in compact contexts: a colored icon alone,
+ * with the label preserved for screen readers via sr-only text. The
+ * legend that explains the icon vocabulary belongs wherever this is
+ * used compactly, in the same header/control-bar slot each time.
+ */
 export function StatusBadge({ status, iconOnly, className }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
 
   if (iconOnly) {
     return (
-      <span
-        className={cn(
-          "inline-flex size-6 shrink-0 items-center justify-center rounded-full border",
-          config.className,
-          className
-        )}
-      >
-        <Icon className={cn("size-3.5", config.spin && "animate-spin")} aria-hidden="true" />
+      <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
+        <Icon className={cn("size-[11px]", config.spin && "animate-spin")} aria-hidden="true" />
         <span className="sr-only">{config.label}</span>
       </span>
     );

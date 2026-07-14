@@ -2,12 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, Bot, CircleOff, FilterX } from "lucide-react";
+import { AlertTriangle, Bot, CheckCircle2, CircleOff, FilterX, Loader2, Power, PowerOff, CircleDashed, XCircle } from "lucide-react";
 import {
   HEALTH_LABELS,
   MOCK_AGENTS,
   STATUS_LABELS,
-  STATUS_VARIANTS,
   type AgentHealth,
   type AgentRecord,
   type AgentStatus,
@@ -16,7 +15,6 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { ErrorState } from "@/components/state/error-state";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -51,10 +49,6 @@ function filterAgents(agents: AgentRecord[], query: string, status: AgentStatus 
   });
 }
 
-function AgentBadge({ label, variant }: { label: string; variant: BadgeProps["variant"] }) {
-  return <Badge variant={variant}>{label}</Badge>;
-}
-
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -68,9 +62,12 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
   const issueLabel = agent.issueSummary ?? agent.currentIssue;
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <Link href={`/agents/${agent.id}`} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
-        {agent.name}
-      </Link>
+      <span className="flex min-w-0 items-center gap-2">
+        <StatusBadge status={agent.health} iconOnly />
+        <Link href={`/agents/${agent.id}`} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
+          {agent.name}
+        </Link>
+      </span>
       <p className="max-w-md truncate text-xs text-foreground-secondary">{agent.description}</p>
       {issueLabel && (
         <p className="mt-0.5 flex items-center gap-1.5 text-xs text-warning">
@@ -91,7 +88,6 @@ function AgentsTable({ agents }: { agents: AgentRecord[] }) {
           <TableRow>
             <TableHead>Agent</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Health</TableHead>
             <TableHead className="hidden lg:table-cell">Owner</TableHead>
             <TableHead>Last run</TableHead>
             <TableHead>Next run</TableHead>
@@ -101,8 +97,7 @@ function AgentsTable({ agents }: { agents: AgentRecord[] }) {
           {agents.map((agent) => (
             <TableRow key={agent.id} className="relative">
               <TableCell className="min-w-[18rem] py-2.5"><AgentIdentity agent={agent} /></TableCell>
-              <TableCell className="py-2.5"><AgentBadge label={STATUS_LABELS[agent.status]} variant={STATUS_VARIANTS[agent.status]} /></TableCell>
-              <TableCell className="py-2.5"><StatusBadge status={agent.health} /></TableCell>
+              <TableCell className="py-2.5"><StatusBadge status={agent.status} iconOnly /></TableCell>
               <TableCell className="hidden py-2.5 text-sm text-foreground-secondary lg:table-cell">{agent.owner}</TableCell>
               <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.lastRun}</TableCell>
               <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.nextRun}</TableCell>
@@ -121,10 +116,12 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
         <Link key={agent.id} href={`/agents/${agent.id}`} className="block rounded-atlas-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring" aria-label={`${agent.name} details`}>
           <Card className="transition-colors hover:bg-surface-hover">
             <CardContent className="flex flex-col gap-3 p-4">
-              <h2 className="text-sm font-semibold text-foreground">{agent.name}</h2>
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <StatusBadge status={agent.health} iconOnly />
+                {agent.name}
+              </h2>
               <dl className="grid grid-cols-2 gap-3">
-                <FieldPair label="Status" value={<AgentBadge label={STATUS_LABELS[agent.status]} variant={STATUS_VARIANTS[agent.status]} />} />
-                <FieldPair label="Health" value={<StatusBadge status={agent.health} />} />
+                <FieldPair label="Status" value={<StatusBadge status={agent.status} />} />
                 <FieldPair label="Last run" value={agent.lastRun} />
                 <FieldPair label="Next run" value={agent.nextRun} />
               </dl>
@@ -180,16 +177,28 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
       {state === "loaded" && agents.length > 0 && (
         <section className="flex flex-col gap-3" aria-labelledby="agents-inventory-heading">
           <div className="flex flex-col gap-3 rounded-atlas-md border border-border-default bg-surface-secondary p-3.5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 id="agents-inventory-heading" className="text-xs font-semibold uppercase tracking-wide text-foreground-secondary">
                 Showing {filteredAgents.length} of {agents.length}
               </h2>
-              {hasActiveFilters && (
-                <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
-                  <FilterX aria-hidden="true" />
-                  Clear
-                </Button>
-              )}
+              <div className="flex items-center gap-3">
+                <div className="hidden items-center gap-3 text-[10px] text-foreground-tertiary sm:flex">
+                  <span className="flex items-center gap-1"><CheckCircle2 className="size-3 text-success" aria-hidden="true" />Healthy</span>
+                  <span className="flex items-center gap-1"><AlertTriangle className="size-3 text-warning" aria-hidden="true" />Degraded</span>
+                  <span className="flex items-center gap-1"><XCircle className="size-3 text-error" aria-hidden="true" />Offline</span>
+                  <span className="mx-1 h-3 w-px bg-border-default" aria-hidden="true" />
+                  <span className="flex items-center gap-1"><Loader2 className="size-3 text-info" aria-hidden="true" />Running</span>
+                  <span className="flex items-center gap-1"><Power className="size-3 text-success" aria-hidden="true" />Active</span>
+                  <span className="flex items-center gap-1"><PowerOff className="size-3 text-foreground-secondary" aria-hidden="true" />Paused</span>
+                  <span className="flex items-center gap-1"><CircleDashed className="size-3 text-foreground-secondary" aria-hidden="true" />Queued</span>
+                </div>
+                {hasActiveFilters && (
+                  <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+                    <FilterX aria-hidden="true" />
+                    Clear
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_12rem_12rem]">
               <SearchField id="agent-search" value={searchQuery} onChange={setSearchQuery} placeholder="Search name, description, or ID" aria-label="Search agents by name, description, or ID" />
