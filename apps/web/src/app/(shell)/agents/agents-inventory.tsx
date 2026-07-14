@@ -5,7 +5,6 @@ import Link from "next/link";
 import { AlertTriangle, Bot, CircleOff, FilterX } from "lucide-react";
 import {
   HEALTH_LABELS,
-  HEALTH_VARIANTS,
   MOCK_AGENTS,
   STATUS_LABELS,
   STATUS_VARIANTS,
@@ -15,6 +14,7 @@ import {
 } from "./agent-data";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
+import { StatusBadge } from "@/components/badge/status-badge";
 import { ErrorState } from "@/components/state/error-state";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,7 +68,7 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
   const issueLabel = agent.issueSummary ?? agent.currentIssue;
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <Link href={`/agents/${agent.id}`} className="font-medium text-foreground underline-offset-4 hover:text-brand hover:underline">
+      <Link href={`/agents/${agent.id}`} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
         {agent.name}
       </Link>
       <p className="max-w-md truncate text-xs text-foreground-secondary">{agent.description}</p>
@@ -99,13 +99,13 @@ function AgentsTable({ agents }: { agents: AgentRecord[] }) {
         </TableHeader>
         <TableBody>
           {agents.map((agent) => (
-            <TableRow key={agent.id}>
+            <TableRow key={agent.id} className="relative">
               <TableCell className="min-w-[18rem] py-2.5"><AgentIdentity agent={agent} /></TableCell>
               <TableCell className="py-2.5"><AgentBadge label={STATUS_LABELS[agent.status]} variant={STATUS_VARIANTS[agent.status]} /></TableCell>
-              <TableCell className="py-2.5"><AgentBadge label={HEALTH_LABELS[agent.health]} variant={HEALTH_VARIANTS[agent.health]} /></TableCell>
+              <TableCell className="py-2.5"><StatusBadge status={agent.health} /></TableCell>
               <TableCell className="hidden py-2.5 text-sm text-foreground-secondary lg:table-cell">{agent.owner}</TableCell>
-              <TableCell className="py-2.5 font-mono text-xs text-foreground-secondary">{agent.lastRun}</TableCell>
-              <TableCell className="py-2.5 font-mono text-xs text-foreground-secondary">{agent.nextRun}</TableCell>
+              <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.lastRun}</TableCell>
+              <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.nextRun}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -124,7 +124,7 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
               <h2 className="text-sm font-semibold text-foreground">{agent.name}</h2>
               <dl className="grid grid-cols-2 gap-3">
                 <FieldPair label="Status" value={<AgentBadge label={STATUS_LABELS[agent.status]} variant={STATUS_VARIANTS[agent.status]} />} />
-                <FieldPair label="Health" value={<AgentBadge label={HEALTH_LABELS[agent.health]} variant={HEALTH_VARIANTS[agent.health]} />} />
+                <FieldPair label="Health" value={<StatusBadge status={agent.health} />} />
                 <FieldPair label="Last run" value={agent.lastRun} />
                 <FieldPair label="Next run" value={agent.nextRun} />
               </dl>

@@ -176,9 +176,9 @@ function Select({ label, value, onChange, options, labels = {} }: { label: strin
 
 function Row({ approval, view }: { approval: ApprovalRecord; view: View }) {
   return (
-    <tr className="border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
+    <tr className="relative border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
       <td className="px-4 py-3 align-top">
-        <Link className="font-medium text-foreground hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`}>{approval.action}</Link>
+        <Link className="relative z-10 w-fit font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`}>{approval.action}</Link>
         <p className="mt-0.5 font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
       </td>
       <td className="px-3 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} /></td>
