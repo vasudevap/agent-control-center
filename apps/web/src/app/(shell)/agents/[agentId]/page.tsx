@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Bot } from "lucide-react";
-import { findAgentById, STATUS_LABELS } from "../agent-data";
+import { findAgentById } from "../agent-data";
 import { AgentDetailWorkspace } from "./agent-detail-workspace";
 import { AgentOperationalControls } from "./agent-operational-controls";
 import { PageHeader } from "@/components/layout/page-header";
@@ -31,9 +31,7 @@ export default async function AgentDetailPage({
         meta={
           <>
             <StatusBadge status={agent.health} />
-            <span className="rounded-atlas-sm border border-border-default bg-surface-secondary px-2 py-0.5 text-xs text-foreground-secondary">
-              {STATUS_LABELS[agent.status]}
-            </span>
+            <StatusBadge status={agent.status} />
           </>
         }
         actions={

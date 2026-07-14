@@ -18,8 +18,9 @@ describe("ApprovalsWorkspace", () => {
   it("shows the distinct history view", async () => {
     const user = userEvent.setup();
     render(<ApprovalsWorkspace approvals={APPROVAL_FIXTURES} />);
-    await user.click(screen.getByRole("tab", { name: "History" }));
-    expect(screen.getByRole("heading", { name: "Approval History" })).toBeInTheDocument();
+    const historyTab = screen.getByRole("tab", { name: "History" });
+    await user.click(historyTab);
+    expect(historyTab).toHaveAttribute("aria-selected", "true");
     expect(screen.getAllByText(/Outcome: Indeterminate/i).length).toBeGreaterThan(0);
   });
 });

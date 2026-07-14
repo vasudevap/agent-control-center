@@ -5,11 +5,15 @@ export type RiskLevel = "Low" | "Medium" | "High" | "Critical";
 
 const RISK_CONFIG: Record<
   RiskLevel,
-  { icon: React.ComponentType<{ className?: string }>; text: string; bg: string; border: string }
+  { icon: React.ComponentType<{ className?: string }>; text: string; bg: string; border: string; iconSize?: string }
 > = {
+  // Triangle-shaped icons occupy noticeably less of their bounding box
+  // than Circle/Diamond at the same nominal size (the same optical-size
+  // issue fixed in StatusBadge's degraded/AlertTriangle icon) — bumped
+  // so every risk icon reads as the same visual weight.
   Low: { icon: Circle, text: "text-risk-low", bg: "bg-risk-low-bg", border: "border-risk-low-border" },
-  Medium: { icon: Triangle, text: "text-risk-medium", bg: "bg-risk-medium-bg", border: "border-risk-medium-border" },
-  High: { icon: TriangleAlert, text: "text-risk-high", bg: "bg-risk-high-bg", border: "border-risk-high-border" },
+  Medium: { icon: Triangle, text: "text-risk-medium", bg: "bg-risk-medium-bg", border: "border-risk-medium-border", iconSize: "size-[13px]" },
+  High: { icon: TriangleAlert, text: "text-risk-high", bg: "bg-risk-high-bg", border: "border-risk-high-border", iconSize: "size-[13px]" },
   Critical: { icon: Diamond, text: "text-risk-critical", bg: "bg-risk-critical-bg", border: "border-risk-critical-border" },
 };
 
@@ -32,7 +36,7 @@ export function RiskChip({ risk, label, iconOnly, className }: { risk: RiskLevel
   if (iconOnly) {
     return (
       <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
-        <Icon className={cn("size-[11px]", risk === "Critical" && "fill-current")} aria-hidden="true" />
+        <Icon className={cn(config.iconSize ?? "size-[11px]", risk === "Critical" && "fill-current")} aria-hidden="true" />
         <span className="sr-only">{text}</span>
       </span>
     );

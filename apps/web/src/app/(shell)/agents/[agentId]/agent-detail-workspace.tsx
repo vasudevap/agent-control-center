@@ -168,7 +168,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           {activeTab === "activity" && (
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-sm font-semibold text-foreground">Execution history</h2>
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Execution history</h2>
                 <p className="text-xs text-foreground-secondary">Recent fictional runs for investigation context.</p>
               </div>
               <div className="overflow-hidden rounded-atlas-md border border-border-default">
@@ -203,7 +203,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           {activeTab === "approvals" && (
             <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-sm font-semibold text-foreground">Pending human review</h2>
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Pending human review</h2>
                 <p className="text-xs text-foreground-secondary">Requests routed to canonical Approval Detail. Nothing here decides in place.</p>
               </div>
               {approvals.length > 0 ? (
@@ -227,7 +227,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           {activeTab === "governance" && (
             <div className="flex flex-col gap-5">
               <div>
-                <h2 className="text-sm font-semibold text-foreground">Responsibilities</h2>
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Responsibilities</h2>
                 <ul className="mt-2 grid gap-1.5 text-sm text-foreground-secondary">
                   {agent.responsibilities.map((item) => (
                     <li key={item} className="flex gap-2">
@@ -238,7 +238,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                 </ul>
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-foreground">Permission boundary</h2>
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Permission boundary</h2>
                 <ul className="mt-2 grid gap-1.5 text-sm text-foreground-secondary">
                   {agent.permissions.map((item) => (
                     <li key={item} className="flex gap-2">
@@ -249,7 +249,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                 </ul>
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-foreground">Connectors</h2>
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Connectors</h2>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {agent.connectors.map((item) => (
                     <Badge key={item} variant="neutral">{item}</Badge>

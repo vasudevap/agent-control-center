@@ -15,7 +15,7 @@ export type AtlasStatus =
 
 const STATUS_CONFIG: Record<
   AtlasStatus,
-  { label: string; icon: React.ComponentType<{ className?: string }>; text: string; className: string; spin?: boolean }
+  { label: string; icon: React.ComponentType<{ className?: string }>; text: string; className: string; spin?: boolean; iconSize?: string }
 > = {
   healthy: {
     label: "Healthy",
@@ -28,6 +28,11 @@ const STATUS_CONFIG: Record<
     icon: AlertTriangle,
     text: "text-warning",
     className: "bg-warning-bg text-warning border-warning-border",
+    // AlertTriangle occupies noticeably less of its bounding box than
+    // CheckCircle2/XCircle at the same nominal size, so it reads as
+    // smaller next to them even though the size is identical. Bumped
+    // to compensate, so every health icon reads as the same weight.
+    iconSize: "size-[13px]",
   },
   offline: {
     label: "Offline",
@@ -100,7 +105,7 @@ export function StatusBadge({ status, iconOnly, className }: StatusBadgeProps) {
   if (iconOnly) {
     return (
       <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
-        <Icon className={cn("size-[11px]", config.spin && "animate-spin")} aria-hidden="true" />
+        <Icon className={cn(config.iconSize ?? "size-[11px]", config.spin && "animate-spin")} aria-hidden="true" />
         <span className="sr-only">{config.label}</span>
       </span>
     );

@@ -84,30 +84,32 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
     <div className="flex min-w-0 flex-col gap-5">
       <PageHeader eyebrow="Governance" title="Approvals" icon={ShieldAlert} description="Review and authorize proposed actions before an agent may proceed." meta={<span className="rounded-atlas-sm border border-info-border bg-info-bg px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-info">Frontend prototype</span>} />
 
-      <div className="flex gap-1 rounded-atlas-md border border-border-default bg-surface-secondary p-1" role="tablist" aria-label="Approvals views">
-        {(["queue", "history"] as View[]).map((item) => (
-          <button
-            key={item}
-            type="button"
-            role="tab"
-            aria-selected={view === item}
-            onClick={() => { setView(item); setPage(1); }}
-            className={cn("flex-1 rounded-atlas-sm px-4 py-1.5 text-sm font-medium transition-colors sm:flex-none", view === item ? "bg-surface text-foreground shadow-atlas-sm" : "text-foreground-secondary hover:text-foreground")}
-          >
-            {item === "queue" ? `Queue (${queue.length})` : "History"}
-          </button>
-        ))}
-      </div>
-
       {presentationState === "loading" ? (
         <div className="grid gap-3"><Skeleton className="h-32 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : presentationState === "error" ? (
         <StateCard title="Approval data is unavailable" detail="This controlled error state did not contact a real approval service." />
       ) : (
         <section className="grid gap-3" aria-label={view === "queue" ? "Approval Queue" : "Approval History"}>
-          <h2 className="sr-only">{view === "queue" ? "Approval Queue" : "Approval History"}</h2>
-          <div className="grid gap-3 rounded-atlas-md border border-border-default bg-surface-secondary p-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="grid overflow-hidden rounded-atlas-md border border-border-default bg-surface-secondary">
+            <div className="flex border-b border-border-default" role="tablist" aria-label="Approvals views">
+              {(["queue", "history"] as View[]).map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  role="tab"
+                  aria-selected={view === item}
+                  onClick={() => { setView(item); setPage(1); }}
+                  className={cn("relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors", view === item ? "text-foreground" : "text-foreground-secondary hover:text-foreground")}
+                >
+                  {view === item && <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-brand" aria-hidden="true" />}
+                  {item === "queue" ? "Queue" : "History"}
+                  {item === "queue" && queue.length > 0 && (
+                    <span className="rounded-atlas-sm bg-surface-tertiary px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground-secondary">{queue.length}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3">
               <p className="text-xs text-foreground-secondary">
                 Showing <span className="font-mono font-semibold text-foreground">{listed.length}</span> of {view === "queue" ? queue.length : approvals.length - queue.length} {view} records.
                 {view === "queue" && expiringCount > 0 ? ` ${expiringCount} nearing expiry.` : ""}
@@ -122,7 +124,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
                 <Button variant="ghost" size="sm" onClick={reset}>Clear filters</Button>
               </div>
             </div>
-            <div className="grid gap-2.5 md:grid-cols-3">
+            <div className="grid gap-2.5 p-3 pt-0 md:grid-cols-3">
               <SearchField value={query} onChange={(v) => { setQuery(v); setPage(1); }} placeholder="ID, agent, action, target, or policy" />
               <Select label="Risk" value={risk} onChange={(v) => { setRisk(v); setPage(1); }} options={["all", "Low", "Medium", "High", "Critical"]} />
               <Select label="Agent" value={agent} onChange={(v) => { setAgent(v); setPage(1); }} options={["all", ...agents.map(([id]) => id)]} labels={Object.fromEntries(agents)} />

@@ -68,12 +68,15 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
           {agent.name}
         </Link>
       </span>
-      <p className="max-w-md truncate text-xs text-foreground-secondary">{agent.description}</p>
+      <p className="max-w-md truncate pl-[1.1875rem] text-xs text-foreground-secondary">{agent.description}</p>
       {issueLabel && (
-        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-warning">
-          <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
-          <span className="truncate">{issueLabel}</span>
-        </p>
+        // No icon here: the leading health indicator already carries
+        // "something needs a look" via AlertTriangle for Degraded. A
+        // second AlertTriangle on this line would visually claim to be
+        // that same signal when it's actually just explaining why —
+        // the color alone (already an established, not sole, channel
+        // elsewhere) is enough supporting context for a caption line.
+        <p className="truncate pl-[1.1875rem] text-xs text-warning">{issueLabel}</p>
       )}
     </div>
   );
