@@ -13,10 +13,21 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   );
 }
 
-export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+/**
+ * `actionable` marks a card whose content is itself clickable/navigable
+ * (a queue or roster you drill into), distinct from a card that is
+ * read-only status. The shaded band is a second, non-typographic
+ * channel for that distinction — plain header stays reserved for
+ * cards that are for reading only, not for doing or going somewhere.
+ */
+export function CardHeader({ className, actionable, ...props }: React.HTMLAttributes<HTMLDivElement> & { actionable?: boolean }) {
   return (
     <div
-      className={cn("flex flex-col gap-1 p-4 sm:p-6", className)}
+      className={cn(
+        "flex flex-col gap-1 p-4 sm:p-6",
+        actionable && "bg-surface-secondary border-b border-border-default",
+        className
+      )}
       {...props}
     />
   );

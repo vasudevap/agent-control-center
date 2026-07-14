@@ -24,9 +24,28 @@ const RISK_CONFIG: Record<
  * strong color for that single pill (instead of duplicating it in a
  * second chrome element) also keeps rows from all shouting at once.
  */
-export function RiskChip({ risk, label, className }: { risk: RiskLevel; label?: string; className?: string }) {
+export function RiskChip({ risk, label, iconOnly, className }: { risk: RiskLevel; label?: string; iconOnly?: boolean; className?: string }) {
   const config = RISK_CONFIG[risk];
   const Icon = config.icon;
+  const text = label ?? risk;
+
+  if (iconOnly) {
+    return (
+      <span
+        className={cn(
+          "inline-flex size-6 shrink-0 items-center justify-center rounded-atlas-sm border",
+          config.text,
+          config.bg,
+          config.border,
+          className
+        )}
+      >
+        <Icon className={cn("size-3.5", risk === "Critical" && "fill-current")} aria-hidden="true" />
+        <span className="sr-only">{text}</span>
+      </span>
+    );
+  }
+
   return (
     <span
       className={cn(
@@ -38,7 +57,7 @@ export function RiskChip({ risk, label, className }: { risk: RiskLevel; label?: 
       )}
     >
       <Icon className={cn("size-3 shrink-0", risk === "Critical" && "fill-current")} aria-hidden="true" />
-      {label ?? risk}
+      {text}
     </span>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import { CircleAlert, ServerCog, ShieldAlert, TriangleAlert, Circle, Triangle, Diamond } from "lucide-react";
+import { ShieldAlert, Circle, Triangle, TriangleAlert, Diamond } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EmptyState } from "@/components/state/empty-state";
 import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indicator";
@@ -26,13 +25,12 @@ type Severity = 0 | 1 | 2 | 3;
 interface AttentionItem {
   key: string;
   severity: Severity;
-  kind: "approval" | "alert" | "agent";
-  icon: LucideIcon;
+  risk: RiskLevel;
+  chipLabel: string;
   title: string;
   subtitle: string;
   meta: string;
   href: string;
-  chip: React.ReactNode;
 }
 
 function buildAttentionItems(): AttentionItem[] {
@@ -45,43 +43,42 @@ function buildAttentionItems(): AttentionItem[] {
     items.push({
       key: `approval-${approval.id}`,
       severity,
-      kind: "approval",
-      icon: ShieldAlert,
+      risk: approval.risk as RiskLevel,
+      chipLabel: approval.risk,
       title: approval.action,
       subtitle: `${approval.agent.name} • Approval required`,
       meta: expiry.label,
       href: `/approvals/${approval.id}`,
-      chip: <RiskChip risk={approval.risk as RiskLevel} />,
     });
   });
 
   mockAlerts.forEach((alert) => {
     const severity: Severity = alert.severity === "critical" ? 0 : alert.severity === "warning" ? 2 : 3;
+    const { risk, label } = alertToRisk(alert.severity);
     items.push({
       key: `alert-${alert.id}`,
       severity,
-      kind: "alert",
-      icon: alert.severity === "critical" ? CircleAlert : TriangleAlert,
+      risk,
+      chipLabel: label,
       title: alert.title,
       subtitle: `${alert.source} • Alert`,
       meta: alert.timestamp,
       href: alert.sourceAgentId ? `/agents/${alert.sourceAgentId}` : "/alerts",
-      chip: <RiskChip {...alertToRisk(alert.severity)} />,
     });
   });
 
   MOCK_AGENTS.filter((agent) => agent.health === "degraded" || agent.health === "offline").forEach((agent) => {
     const severity: Severity = agent.health === "offline" ? 0 : 2;
+    const { risk, label } = healthToRisk(agent.health);
     items.push({
       key: `agent-${agent.id}`,
       severity,
-      kind: "agent",
-      icon: ServerCog,
+      risk,
+      chipLabel: label,
       title: agent.currentIssue ?? `${agent.name} health is ${agent.health}.`,
       subtitle: `${agent.name} • Agent health`,
       meta: agent.lastRun,
       href: `/agents/${agent.id}`,
-      chip: <RiskChip {...healthToRisk(agent.health)} />,
     });
   });
 
@@ -101,47 +98,50 @@ function buildAttentionItems(): AttentionItem[] {
  * Every entry is a link to its real destination. None decide anything
  * inline: approvals route to canonical Approval Detail, matching the
  * hard product requirement that decisions occur only there.
+ *
+ * Header is the shaded/"actionable" treatment: every row here routes
+ * somewhere, so the card is a queue you act on, not a status you read.
+ * The leading icon per row is the severity indicator itself (not a
+ * separate "kind" icon) since kind is already stated in the subtitle
+ * text ("Approval required" / "Alert" / "Agent health") — one icon per
+ * row instead of two, and it is the one that matters most for triage.
  */
 export function AttentionQueue() {
   const items = buildAttentionItems();
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
+      <CardHeader actionable className="flex-row items-start justify-between gap-3 space-y-0">
         <div>
           <CardTitle>Attention queue</CardTitle>
           <CardDescription>Approvals, alerts, and agent health ranked by urgency</CardDescription>
         </div>
-        <div className="hidden items-center gap-3 text-[11px] text-foreground-tertiary sm:flex">
-          <span className="flex items-center gap-1"><Diamond className="size-3 fill-current text-risk-critical" aria-hidden="true" />Critical</span>
-          <span className="flex items-center gap-1"><TriangleAlert className="size-3 text-risk-high" aria-hidden="true" />High</span>
-          <span className="flex items-center gap-1"><Triangle className="size-3 text-risk-medium" aria-hidden="true" />Medium</span>
-          <span className="flex items-center gap-1"><Circle className="size-3 text-risk-low" aria-hidden="true" />Low</span>
+        <div className="flex flex-col items-end gap-1">
+          <span className="font-mono text-[11px] text-foreground-tertiary">{items.length} items</span>
+          <div className="hidden items-center gap-2.5 text-[10px] text-foreground-tertiary sm:flex">
+            <span className="flex items-center gap-1"><Diamond className="size-3 fill-current text-risk-critical" aria-hidden="true" />Critical</span>
+            <span className="flex items-center gap-1"><TriangleAlert className="size-3 text-risk-high" aria-hidden="true" />High</span>
+            <span className="flex items-center gap-1"><Triangle className="size-3 text-risk-medium" aria-hidden="true" />Medium</span>
+            <span className="flex items-center gap-1"><Circle className="size-3 text-risk-low" aria-hidden="true" />Low</span>
+          </div>
         </div>
-        <span className="font-mono text-[11px] text-foreground-tertiary">{items.length} items</span>
       </CardHeader>
       {items.length === 0 ? (
         <EmptyState icon={ShieldAlert} title="Nothing needs attention" description="No pending approvals, active alerts, or degraded agents right now." className="py-10" />
       ) : (
         <ul className="divide-y divide-border-subtle">
-          {items.map((item) => {
-            const Icon = item.icon;
-            return (
-              <li key={item.key}>
-                <Link href={item.href} className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-hover sm:px-6">
-                  <Icon className="mt-0.5 size-4 shrink-0 text-foreground-tertiary" aria-hidden="true" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-foreground">{item.title}</p>
-                    <p className="mt-0.5 truncate text-xs text-foreground-secondary">{item.subtitle}</p>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1">
-                    {item.chip}
-                    <span className="text-[11px] text-foreground-tertiary">{item.meta}</span>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
+          {items.map((item) => (
+            <li key={item.key}>
+              <Link href={item.href} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-surface-hover sm:px-6">
+                <RiskChip risk={item.risk} label={item.chipLabel} iconOnly />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">{item.title}</p>
+                  <p className="mt-0.5 truncate text-xs text-foreground-secondary">{item.subtitle}</p>
+                </div>
+                <span className="shrink-0 text-[11px] text-foreground-tertiary">{item.meta}</span>
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
     </Card>

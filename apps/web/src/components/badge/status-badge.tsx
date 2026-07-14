@@ -60,12 +60,28 @@ const STATUS_CONFIG: Record<
 
 export interface StatusBadgeProps {
   status: AtlasStatus;
+  iconOnly?: boolean;
   className?: string;
 }
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function StatusBadge({ status, iconOnly, className }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
+
+  if (iconOnly) {
+    return (
+      <span
+        className={cn(
+          "inline-flex size-6 shrink-0 items-center justify-center rounded-full border",
+          config.className,
+          className
+        )}
+      >
+        <Icon className={cn("size-3.5", config.spin && "animate-spin")} aria-hidden="true" />
+        <span className="sr-only">{config.label}</span>
+      </span>
+    );
+  }
 
   return (
     <span
