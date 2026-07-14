@@ -5,7 +5,6 @@ import { AgentDetailWorkspace } from "./agent-detail-workspace";
 import { AgentOperationalControls } from "./agent-operational-controls";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/badge/status-badge";
 import Link from "next/link";
 
 export default async function AgentDetailPage({
@@ -28,12 +27,6 @@ export default async function AgentDetailPage({
         identifier={agent.id}
         icon={Bot}
         description={agent.description}
-        meta={
-          <>
-            <StatusBadge status={agent.health} />
-            <StatusBadge status={agent.status} />
-          </>
-        }
         actions={
           <>
             <Button asChild variant="ghost" size="sm">

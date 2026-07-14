@@ -186,7 +186,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                   <TableBody>
                     {runs.map((run) => (
                       <TableRow key={`${run.time}-${run.status}`}>
-                        <TableCell className="font-mono text-xs">{run.time}</TableCell>
+                        <TableCell className="text-xs text-foreground-secondary">{run.time}</TableCell>
                         <TableCell>
                           <Badge variant={run.status === "Success" ? "success" : run.status === "Failed" ? "error" : "warning"}>{run.status}</Badge>
                         </TableCell>
