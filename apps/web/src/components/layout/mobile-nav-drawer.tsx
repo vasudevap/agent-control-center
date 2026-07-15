@@ -59,7 +59,7 @@ export function MobileNavDrawer({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-40 lg:hidden">
+    <div className="fixed inset-0 z-40 md:hidden">
       <div
         className="absolute inset-0 bg-neutral-950/50"
         onClick={onClose}

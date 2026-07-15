@@ -2,37 +2,68 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface PageHeaderProps {
+  eyebrow?: string;
   title: string;
+  identifier?: string;
   description?: string;
   icon?: LucideIcon;
   actions?: React.ReactNode;
+  meta?: React.ReactNode;
   className?: string;
 }
 
-export function PageHeader({ title, description, icon: Icon, actions, className }: PageHeaderProps) {
+/**
+ * Compact, identity-first header. The baseline direction uses a large
+ * display-scale title with a description paragraph beneath it on every
+ * screen, including object-detail pages. That costs vertical space an
+ * operator triaging many objects per session does not want to keep
+ * scrolling past.
+ *
+ * Here the title sits at a single, moderate size; a mono-set eyebrow
+ * carries section context; an optional mono identifier (an approval or
+ * agent ID) sits inline next to the title instead of buried in body
+ * text; and description becomes a single trailing line only where it
+ * adds information the title/meta row does not already carry.
+ *
+ * The icon sits in its own column, outside the text stack, so eyebrow,
+ * title, and description all share one left edge instead of the icon
+ * pushing only the title line rightward while eyebrow/description stay
+ * flush with the icon above and below it.
+ */
+export function PageHeader({ eyebrow, title, identifier, description, icon: Icon, actions, meta, className }: PageHeaderProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-4 border-b border-border-default pb-6 sm:flex-row sm:items-center sm:justify-between",
-        className
-      )}
-    >
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
-          {Icon && (
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-atlas-md border border-border-default bg-surface text-brand shadow-atlas-sm">
-              <Icon className="size-4.5" aria-hidden="true" />
-            </span>
+    <div className={cn("flex flex-col gap-1 border-b border-border-default pb-4", className)}>
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:justify-between">
+        <div className="flex w-full min-w-0 flex-col gap-1 sm:w-auto sm:flex-1">
+          {eyebrow && (
+            <p className={cn("font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground-tertiary", Icon && "pl-[2.375rem]")}>
+              {eyebrow}
+            </p>
           )}
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            {title}
-          </h1>
+          <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+            {Icon && (
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-atlas-sm border border-border-default bg-surface-secondary text-brand">
+                <Icon className="size-4" aria-hidden="true" />
+              </span>
+            )}
+            <h1 className="min-w-0 break-words font-mono text-lg font-semibold uppercase tracking-[0.03em] text-foreground sm:text-xl">
+              {title}
+            </h1>
+            {identifier && (
+              <span className="rounded-atlas-sm border border-border-default bg-surface-secondary px-1.5 py-0.5 font-mono text-[11px] text-foreground-tertiary">
+                {identifier}
+              </span>
+            )}
+          </div>
         </div>
-        {description && (
-          <p className="text-sm leading-relaxed text-foreground-secondary">{description}</p>
-        )}
+        {actions && <div className="flex min-w-0 flex-wrap items-center gap-2">{actions}</div>}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+      {(description || meta) && (
+        <div className={cn("flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between", Icon && "pl-[2.375rem]")}>
+          {description && <p className="text-sm leading-relaxed text-foreground-secondary">{description}</p>}
+          {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
+        </div>
+      )}
     </div>
   );
 }

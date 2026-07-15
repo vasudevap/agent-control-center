@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { FLEET_PULSE } from "./nav-items";
 
 export function TopBar() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -24,11 +25,11 @@ export function TopBar() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <header className="sticky top-0 z-20 flex h-(--topbar-height) items-center gap-3 border-b border-border-default bg-surface/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-surface/80 sm:px-6">
+      <header className="sticky top-(--statusbar-height) z-20 flex h-(--topbar-height) items-center gap-3 border-b border-border-default bg-surface/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-surface/80 sm:px-4">
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden"
+          className="md:hidden"
           aria-label="Open navigation"
           onClick={() => setMobileNavOpen(true)}
         >
@@ -38,23 +39,23 @@ export function TopBar() {
         <div className="flex-1" />
 
         <div className="flex items-center justify-end gap-1">
-          <div className="hidden w-80 sm:block">
+          <div className="hidden w-72 sm:block">
             <SearchField
               value={searchValue}
               onChange={setSearchValue}
-              placeholder="Search agents, runs, artifacts..."
+              placeholder="Search agents, approvals, artifacts..."
               aria-label="Search"
             />
           </div>
 
           <ThemeToggle />
 
-          <NotificationsMenu unreadCount={0} />
+          <NotificationsMenu unreadCount={FLEET_PULSE.activeAlerts} />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className="ml-1 flex items-center gap-2 rounded-atlas-md p-1 pr-2 transition-colors hover:bg-surface-hover"
+                className="ml-1 flex items-center gap-2 rounded-atlas-sm p-1 pr-2 transition-colors hover:bg-surface-hover"
                 aria-label="User menu"
               >
                 <Avatar className="size-7">

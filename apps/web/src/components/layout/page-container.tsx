@@ -6,13 +6,15 @@ export interface PageContainerProps {
 }
 
 /**
- * Consistent max-width and padding for content rendered inside the app
- * shell's main region. Every route's content sits inside exactly one of
- * these — never a raw <main> or a bespoke width/padding per screen.
+ * Slightly denser than the baseline's PageContainer (max-w-[1600px],
+ * py-6/py-8): this exploration keeps operational content tighter to
+ * the viewport edges and reduces vertical breathing room between the
+ * shell and content, in line with the "denser for scanning" half of
+ * the exploration's density thesis.
  */
 export function PageContainer({ children, className }: PageContainerProps) {
   return (
-    <div className={cn("mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8", className)}>
+    <div className={cn("mx-auto max-w-[1520px] px-3 py-5 sm:px-5 sm:py-6", className)}>
       {children}
     </div>
   );
