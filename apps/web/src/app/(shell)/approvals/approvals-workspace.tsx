@@ -35,7 +35,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
   const [view, setView] = React.useState<View>(params.get("view") === "history" ? "history" : "queue");
   const [query, setQuery] = React.useState(params.get("q") ?? "");
   const [risk, setRisk] = React.useState(params.get("risk") ?? "all");
-  const [agent, setAgent] = React.useState(params.get("agent") ?? "all");
+  const [review, setReview] = React.useState(params.get("review") ?? "all");
   const [sort, setSort] = React.useState<SortKey>((params.get("sort") as SortKey) ?? "attention");
   const [direction, setDirection] = React.useState<"asc" | "desc">("desc");
   const [page, setPage] = React.useState(Number(params.get("page")) || 1);
@@ -44,11 +44,11 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
     const next = new URLSearchParams({ view });
     if (query) next.set("q", query);
     if (risk !== "all") next.set("risk", risk);
-    if (agent !== "all") next.set("agent", agent);
+    if (review !== "all") next.set("review", review);
     if (sort !== "attention") next.set("sort", sort);
     if (page > 1) next.set("page", String(page));
     window.history.replaceState(null, "", `${window.location.pathname}?${next}`);
-  }, [agent, page, query, risk, sort, view]);
+  }, [review, page, query, risk, sort, view]);
 
   const queue = approvals.filter(isQueueApproval);
   const expiringCount = queue.filter((item) => ["nearing", "imminent"].includes(getExpiryPresentation(item.expiresAt, item.requestedAt).urgency)).length;
@@ -64,7 +64,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
       .filter((item) => (view === "queue" ? isQueueApproval(item) : !isQueueApproval(item)))
       .filter((item) => {
         const text = [item.id, item.agent.id, item.agent.name, item.action, item.target, item.runId, item.policy].join(" ").toLowerCase();
-        return (!query || text.includes(query.toLowerCase())) && (risk === "all" || item.risk === risk) && (agent === "all" || item.agent.id === agent);
+        return (!query || text.includes(query.toLowerCase())) && (risk === "all" || item.risk === risk) && (review === "all" || item.reviewProgress === review);
       })
       .sort((a, b) => {
         if (sort === "risk") return (riskRank(b.risk) - riskRank(a.risk)) * dirMul * -1;
@@ -73,12 +73,11 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
         const expiryUrgencyRank = (item: ApprovalRecord) => ({ imminent: 0, nearing: 1, scheduled: 2, none: 3, expired: 4 })[getExpiryPresentation(item.expiresAt, item.requestedAt).urgency];
         return expiryUrgencyRank(a) - expiryUrgencyRank(b) || riskRank(b.risk) - riskRank(a.risk);
       });
-  }, [agent, approvals, direction, query, risk, sort, view]);
+  }, [review, approvals, direction, query, risk, sort, view]);
 
   const maxPage = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
   const shown = listed.slice((Math.min(page, maxPage) - 1) * PAGE_SIZE, Math.min(page, maxPage) * PAGE_SIZE);
-  const reset = () => { setQuery(""); setRisk("all"); setAgent("all"); setSort("attention"); setPage(1); };
-  const agents = Array.from(new Map(approvals.map((item) => [item.agent.id, item.agent.name])).entries());
+  const reset = () => { setQuery(""); setRisk("all"); setReview("all"); setSort("attention"); setPage(1); };
 
   return (
     <div className="flex min-w-0 flex-col gap-5">
@@ -127,7 +126,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
             <div className="grid gap-2.5 p-3 pt-0 md:grid-cols-3">
               <SearchField value={query} onChange={(v) => { setQuery(v); setPage(1); }} placeholder="ID, agent, action, target, or policy" />
               <Select label="Risk" value={risk} onChange={(v) => { setRisk(v); setPage(1); }} options={["all", "Low", "Medium", "High", "Critical"]} />
-              <Select label="Agent" value={agent} onChange={(v) => { setAgent(v); setPage(1); }} options={["all", ...agents.map(([id]) => id)]} labels={Object.fromEntries(agents)} />
+              <Select label="Review" value={review} onChange={(v) => { setReview(v); setPage(1); }} options={["all", "Unopened", "In review", "Awaiting information", "Blocked"]} />
             </div>
           </div>
 
@@ -141,8 +140,8 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
                 <table className="w-full caption-bottom text-sm">
                   <thead className="border-b border-border-subtle">
                     <tr>
-                      <th className="h-10 px-4 text-left"><SortHeader label="Approval" sortKey="attention" active={sort === "attention"} direction={direction} onSort={onSort} /></th>
-                      <th className="h-10 px-3 text-left"><SortHeader label="Risk" sortKey="risk" active={sort === "risk"} direction={direction} onSort={onSort} /></th>
+                      <th className="h-10 px-4 text-left"><SortHeader label="Risk" sortKey="risk" active={sort === "risk"} direction={direction} onSort={onSort} /></th>
+                      <th className="h-10 px-3 text-left"><SortHeader label="Approval" sortKey="attention" active={sort === "attention"} direction={direction} onSort={onSort} /></th>
                       <th className="h-10 px-3 text-left font-mono text-[11px] font-medium uppercase tracking-wider text-foreground-tertiary">Agent</th>
                       <th className="h-10 px-3 text-left"><SortHeader label="Requested" sortKey="requested" active={sort === "requested"} direction={direction} onSort={onSort} /></th>
                       <th className="h-10 px-3 text-left"><SortHeader label="Expiry" sortKey="expiry" active={sort === "expiry"} direction={direction} onSort={onSort} /></th>
@@ -187,11 +186,11 @@ function Select({ label, value, onChange, options, labels = {} }: { label: strin
 function Row({ approval, view }: { approval: ApprovalRecord; view: View }) {
   return (
     <tr className="relative border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
-      <td className="px-4 py-3 align-top">
+      <td className="px-4 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} iconOnly /></td>
+      <td className="px-3 py-3 align-top">
         <Link className="relative z-10 w-fit font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`}>{approval.action}</Link>
         <p className="mt-0.5 font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
       </td>
-      <td className="px-3 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} iconOnly /></td>
       <td className="px-3 py-3 align-top text-foreground-secondary">{approval.agent.name}</td>
       <td className="px-3 py-3 align-top text-xs text-foreground-secondary">{relativeTime(approval.requestedAt)}</td>
       <td className="px-3 py-3 align-top"><ExpiryLabel approval={approval} /></td>

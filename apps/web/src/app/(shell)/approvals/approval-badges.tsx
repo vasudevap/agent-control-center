@@ -1,4 +1,4 @@
-import { Ban, Circle, Eye, MessageCircleQuestion } from "lucide-react";
+import { Ban, Eye, Inbox, MessageCircleQuestion } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ApprovalRecord, ApprovalState, ReviewProgress } from "./approval-data";
@@ -8,7 +8,7 @@ export const stateVariant = (state: ApprovalState): BadgeProps["variant"] =>
   state === "Approved" ? "success" : state === "Rejected" ? "error" : state === "Expired" ? "neutral" : state === "Cancelled" ? "neutral" : "brand";
 
 export const REVIEW_CONFIG: Record<ReviewProgress, { icon: React.ComponentType<{ className?: string }>; label: string; className: string }> = {
-  Unopened: { icon: Circle, label: "Unopened", className: "text-foreground-tertiary" },
+  Unopened: { icon: Inbox, label: "Unopened", className: "text-foreground-tertiary" },
   "In review": { icon: Eye, label: "In review", className: "text-brand" },
   "Awaiting information": { icon: MessageCircleQuestion, label: "Awaiting information", className: "text-warning" },
   Blocked: { icon: Ban, label: "Blocked", className: "text-warning" },
