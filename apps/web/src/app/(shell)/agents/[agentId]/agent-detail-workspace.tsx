@@ -112,11 +112,11 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
       <aside className="grid content-start gap-4">
         <div className="sticky top-[calc(var(--statusbar-height)+var(--topbar-height)+1rem)] grid content-start gap-4">
           <Card>
-            <CardHeader>
+            <CardHeader divided>
               <CardTitle>At a glance</CardTitle>
               <CardDescription>Health, ownership, and schedule at a glance</CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-4">
               <dl className="divide-y divide-border-subtle">
                 <SidebarFact label="Health" value={<StatusBadge status={agent.health} plain />} />
                 <SidebarFact label="Status" value={<StatusBadge status={agent.status} plain />} />
@@ -133,11 +133,11 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader divided>
               <CardTitle>Capabilities</CardTitle>
               <CardDescription>What this agent is capable of doing</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-wrap gap-1.5 pt-0">
+            <CardContent className="flex flex-wrap gap-1.5 pt-4">
               {agent.capabilities.map((item) => (
                 <Badge key={item} variant="neutral">{item}</Badge>
               ))}

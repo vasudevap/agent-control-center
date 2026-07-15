@@ -31,8 +31,8 @@ function Notice() {
 function InfoCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <Card>
-      <CardHeader><CardTitle>{title}</CardTitle>{description && <CardDescription>{description}</CardDescription>}</CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardHeader divided><CardTitle>{title}</CardTitle>{description && <CardDescription>{description}</CardDescription>}</CardHeader>
+      <CardContent className="pt-4">{children}</CardContent>
     </Card>
   );
 }
