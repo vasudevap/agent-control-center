@@ -75,13 +75,13 @@ function SystemPromptDisclosure({ agent }: { agent: AgentRecord }) {
   ].join("\n");
 
   return (
-    <div className="rounded-atlas-md border border-border-default">
+    <div className="overflow-hidden rounded-atlas-md border border-border-default">
       <h2>
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
           aria-expanded={open}
-          className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary"
+          className="flex w-full items-center justify-between gap-2 bg-surface-secondary px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary transition-colors hover:bg-surface-hover"
         >
           System prompt reference
           <ChevronDown className={cn("size-4 shrink-0 text-foreground-tertiary transition-transform", open && "rotate-180")} aria-hidden="true" />
