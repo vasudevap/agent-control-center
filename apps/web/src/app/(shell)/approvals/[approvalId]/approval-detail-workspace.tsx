@@ -32,7 +32,7 @@ function InfoCard({ title, description, children }: { title: string; description
   return (
     <Card>
       <CardHeader divided><CardTitle>{title}</CardTitle>{description && <CardDescription>{description}</CardDescription>}</CardHeader>
-      <CardContent className="pt-4">{children}</CardContent>
+      <CardContent className="pt-3 sm:pt-3">{children}</CardContent>
     </Card>
   );
 }
