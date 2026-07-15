@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/badge/status-badge";
 import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
 import { RiskChip, type RiskLevel } from "@/components/risk/risk-indicator";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/state/empty-state";
 import { cn } from "@/lib/utils";
@@ -114,6 +114,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           <Card>
             <CardHeader>
               <CardTitle>At a glance</CardTitle>
+              <CardDescription>Health, ownership, and schedule at a glance</CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
               <dl className="divide-y divide-border-subtle">
@@ -134,6 +135,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           <Card>
             <CardHeader>
               <CardTitle>Capabilities</CardTitle>
+              <CardDescription>What this agent is capable of doing</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-1.5 pt-0">
               {agent.capabilities.map((item) => (
