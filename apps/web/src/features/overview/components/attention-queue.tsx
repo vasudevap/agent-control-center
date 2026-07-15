@@ -8,6 +8,7 @@ import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indic
 import { getExpiryPresentation } from "@/app/(shell)/approvals/approval-presentation";
 import { APPROVAL_FIXTURES, isQueueApproval } from "@/app/(shell)/approvals/approval-data";
 import { MOCK_AGENTS, type AgentHealth } from "@/app/(shell)/agents/agent-data";
+import { cn } from "@/lib/utils";
 import { mockAlerts } from "../data/mock-data";
 
 function alertToRisk(severity: "critical" | "warning" | "information"): { risk: RiskLevel; label: string } {
@@ -21,6 +22,8 @@ function healthToRisk(health: AgentHealth): { risk: RiskLevel; label: string } {
 }
 
 type Severity = 0 | 1 | 2 | 3;
+type ItemKind = "Approval" | "Alert" | "Agent health";
+type MetaUrgency = "imminent" | "nearing";
 
 interface AttentionItem {
   key: string;
@@ -28,8 +31,10 @@ interface AttentionItem {
   risk: RiskLevel;
   chipLabel: string;
   title: string;
-  subtitle: string;
+  kind: ItemKind;
+  source: string;
   meta: string;
+  metaUrgency?: MetaUrgency;
   href: string;
 }
 
@@ -46,8 +51,10 @@ function buildAttentionItems(): AttentionItem[] {
       risk: approval.risk as RiskLevel,
       chipLabel: approval.risk,
       title: approval.action,
-      subtitle: `${approval.agent.name} • Approval required`,
+      kind: "Approval",
+      source: approval.agent.name,
       meta: expiry.label,
+      metaUrgency: expiry.urgency === "imminent" || expiry.urgency === "nearing" ? expiry.urgency : undefined,
       href: `/approvals/${approval.id}`,
     });
   });
@@ -61,7 +68,8 @@ function buildAttentionItems(): AttentionItem[] {
       risk,
       chipLabel: label,
       title: alert.title,
-      subtitle: `${alert.source} • Alert`,
+      kind: "Alert",
+      source: alert.source,
       meta: alert.timestamp,
       href: alert.sourceAgentId ? `/agents/${alert.sourceAgentId}` : "/alerts",
     });
@@ -76,7 +84,8 @@ function buildAttentionItems(): AttentionItem[] {
       risk,
       chipLabel: label,
       title: agent.currentIssue ?? `${agent.name} health is ${agent.health}.`,
-      subtitle: `${agent.name} • Agent health`,
+      kind: "Agent health",
+      source: agent.name,
       meta: agent.lastRun,
       href: `/agents/${agent.id}`,
     });
@@ -102,9 +111,16 @@ function buildAttentionItems(): AttentionItem[] {
  * Header is the shaded/"actionable" treatment: every row here routes
  * somewhere, so the card is a queue you act on, not a status you read.
  * The leading icon per row is the severity indicator itself (not a
- * separate "kind" icon) since kind is already stated in the subtitle
- * text ("Approval required" / "Alert" / "Agent health") — one icon per
- * row instead of two, and it is the one that matters most for triage.
+ * separate "kind" icon) since kind now has its own labeled slot on the
+ * trailing edge, mirroring how Agents/Approvals give every fact its
+ * own recognizable column rather than folding it into freeform text.
+ *
+ * This list stays fixed-order by urgency rather than gaining the
+ * sortable columns and filters Agents/Approvals have. Those two pages
+ * are full inventories of one entity type, where letting the operator
+ * pick an order is the point. This panel is a small, already-triaged
+ * feed across three unrelated entity types; the ranking is the value
+ * it adds, so it is not exposed as a user-controlled sort.
  */
 export function AttentionQueue() {
   const items = buildAttentionItems();
@@ -136,9 +152,19 @@ export function AttentionQueue() {
                 <RiskChip risk={item.risk} label={item.chipLabel} iconOnly />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-foreground">{item.title}</p>
-                  <p className="mt-0.5 truncate text-xs text-foreground-secondary">{item.subtitle}</p>
+                  <p className="mt-0.5 truncate text-xs text-foreground-secondary">{item.source}</p>
                 </div>
-                <span className="shrink-0 text-[11px] text-foreground-tertiary">{item.meta}</span>
+                <div className="flex shrink-0 flex-col items-end gap-0.5">
+                  <span className="font-mono text-[10px] font-medium uppercase tracking-wide text-foreground-tertiary">{item.kind}</span>
+                  <span
+                    className={cn(
+                      "text-[11px]",
+                      item.metaUrgency === "imminent" ? "font-semibold text-error" : item.metaUrgency === "nearing" ? "font-semibold text-warning" : "text-foreground-tertiary"
+                    )}
+                  >
+                    {item.meta}
+                  </span>
+                </div>
               </Link>
             </li>
           ))}
