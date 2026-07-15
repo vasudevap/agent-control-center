@@ -88,4 +88,16 @@ describe("AgentsInventory", () => {
     expect(screen.getByText("Showing 3 of 3")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Alpha Support Agent" }).length).toBeGreaterThan(0);
   });
+
+  it("shares accessible sortable-header behavior with Approvals", async () => {
+    const user = userEvent.setup();
+    render(<AgentsInventory agents={testAgents} />);
+    const table = screen.getByRole("table", { name: "Agents inventory" });
+    const agentHeader = within(table).getByRole("columnheader", { name: "Agent" });
+
+    expect(agentHeader).toHaveAttribute("aria-sort", "none");
+    await user.click(within(agentHeader).getByRole("button", { name: "Agent" }));
+    expect(agentHeader).toHaveAttribute("aria-sort", "ascending");
+    expect(within(table).getAllByRole("link")[0]).toHaveTextContent("Alpha Support Agent");
+  });
 });

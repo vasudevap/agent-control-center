@@ -22,6 +22,7 @@ The documentation is organized so each architectural concern can be reviewed, up
 10. [Connector Framework](./10-connector-framework.md)
 11. [Observability Architecture](./11-observability.md)
 12. [Technology Strategy](./12-technology-strategy.md)
+13. [Human Approvals](./13-human-approvals.md)
 
 ---
 
@@ -48,6 +49,7 @@ For governance and operations:
 1. Security Architecture
 2. Observability Architecture
 3. Architecture Decision Records
+4. Human Approvals
 
 ---
 

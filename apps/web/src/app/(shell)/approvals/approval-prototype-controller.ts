@@ -12,6 +12,32 @@ export function canSimulateDecision(approval: ApprovalRecord, decision: Simulate
   return true;
 }
 
+export function isExpiredAt(approval: ApprovalRecord, referenceTime: number) {
+  return Boolean(approval.expiresAt && new Date(approval.expiresAt).getTime() <= referenceTime);
+}
+
+export function expireDuringSimulatedReview(approval: ApprovalRecord, referenceTime: number): ApprovalRecord {
+  const decidedAt = new Date(referenceTime).toISOString();
+  const at = new Date(referenceTime).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  return {
+    ...approval,
+    state: "Expired",
+    executionOutcome: "Not available",
+    decidedAt,
+    reviewer: "Prototype review clock",
+    correlationId: `corr-sim-expiry-${approval.id}`,
+    activity: [
+      ...approval.activity,
+      {
+        at,
+        actor: "Prototype review clock",
+        detail: "Detected expiry before simulated decision confirmation. No decision was applied.",
+        simulated: true,
+      },
+    ],
+  };
+}
+
 /**
  * Request clarification never changes approval state (it remains
  * Pending) and never extends expiry, per HA-FR-027/028 and
@@ -19,7 +45,8 @@ export function canSimulateDecision(approval: ApprovalRecord, decision: Simulate
  * progress moves, to "Awaiting information".
  */
 export function applySimulatedDecision(approval: ApprovalRecord, decision: SimulatedDecision, reason: string): ApprovalRecord {
-  const now = new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  const decidedAt = new Date().toISOString();
+  const now = new Date(decidedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 
   if (decision === "request-clarification") {
     return {
@@ -35,6 +62,9 @@ export function applySimulatedDecision(approval: ApprovalRecord, decision: Simul
     state,
     reviewProgress: "In review",
     decisionReason: reason.trim() || undefined,
+    decidedAt,
+    reviewer: "Prototype reviewer",
+    correlationId: `corr-sim-${approval.id}`,
     executionOutcome: decision === "approve" ? "Pending" : "Not available",
     activity: [...approval.activity, { at: now, actor: "Prototype reviewer", detail: `Simulated ${state.toLowerCase()} this local fixture${reason.trim() ? `. Reason: ${reason.trim()}` : "."}`, simulated: true }],
   };

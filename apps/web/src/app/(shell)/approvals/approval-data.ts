@@ -37,6 +37,7 @@ export interface ApprovalRecord {
   scope: string;
   agent: { id: string; name: string };
   runId: string;
+  artifact?: { id: string; name: string };
   requestedAt: string;
   expiresAt?: string;
   policy: string;
@@ -46,6 +47,9 @@ export interface ApprovalRecord {
   activity: Array<{ at: string; actor: string; detail: string; simulated?: boolean }>;
   executionOutcome: ExecutionOutcome;
   decisionReason?: string;
+  decidedAt?: string;
+  reviewer?: string;
+  correlationId?: string;
 }
 
 const HOUR = 60 * 60 * 1000;
@@ -73,6 +77,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     scope: "One enterprise account; no financial transaction.",
     agent: { id: "agent-policy-digest", name: "Policy Digest Agent" },
     runId: "run-2026-07-12-001",
+    artifact: { id: "art-2026-0712-001", name: "Billing remediation evidence packet" },
     requestedAt: hoursAgo(3),
     expiresAt: hoursFromNow(1.5),
     policy: "External Communications P-214",
@@ -187,6 +192,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     ],
     executionOutcome: "Succeeded",
     decisionReason: "The note is consistent with the supplied evidence.",
+    decidedAt: hoursAgo(118),
+    reviewer: "Prototype reviewer",
+    correlationId: "corr-apr-2026-005",
   },
   {
     id: "apr-2026-006",
@@ -210,6 +218,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     ],
     executionOutcome: "Not available",
     decisionReason: "The required evidence is incomplete.",
+    decidedAt: hoursAgo(147),
+    reviewer: "Prototype reviewer",
+    correlationId: "corr-apr-2026-006",
   },
   {
     id: "apr-2026-007",
@@ -230,6 +241,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     evidence: evidence("Connector investigation record"),
     activity: [{ at: hoursAgo(296), actor: "System", detail: "Approval window expired." }],
     executionOutcome: "Indeterminate",
+    decidedAt: hoursAgo(296),
+    reviewer: "System",
+    correlationId: "corr-apr-2026-007",
   },
   {
     id: "apr-2026-009",
@@ -252,6 +266,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
       { at: hoursAgo(180), actor: "System", detail: "Cancelled because the requesting workflow withdrew the request." },
     ],
     executionOutcome: "Not available",
+    decidedAt: hoursAgo(180),
+    reviewer: "System",
+    correlationId: "corr-apr-2026-009",
   },
 ];
 

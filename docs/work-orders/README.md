@@ -11,3 +11,7 @@ Work Order 007 has the Agent Details design direction locked for this milestone.
 Work Order 008 authorizes the frontend prototype for governed agent operational
 controls. Runtime mutation integration remains pending a dedicated engineering
 specification and implementation work order.
+
+Work Order 009 authorizes the frontend-only Human Approvals experience. Its
+selected design direction is integrated on `main`; final functional
+conformance review and closure evidence remain pending.

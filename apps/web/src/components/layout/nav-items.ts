@@ -15,6 +15,8 @@ import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
 import { APPROVAL_FIXTURES, isQueueApproval } from "@/app/(shell)/approvals/approval-data";
 import { mockAlerts } from "@/features/overview/data/mock-data";
 
+export const APPROVALS_ICON = CheckSquare;
+
 export interface NavItem {
   label: string;
   href: string;
@@ -35,7 +37,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Overview", href: "/", icon: LayoutDashboard },
   { label: "Agents", href: "/agents", icon: Bot },
   { label: "Runs", href: "/runs", icon: Workflow },
-  { label: "Approvals", href: "/approvals", icon: CheckSquare, badge: pendingApprovalsCount },
+  { label: "Approvals", href: "/approvals", icon: APPROVALS_ICON, badge: pendingApprovalsCount },
   { label: "Alerts", href: "/alerts", icon: Bell, badge: activeAlertsCount },
   { label: "Connectors", href: "/connectors", icon: Plug },
   { label: "Policies", href: "/policies", icon: ShieldCheck },
