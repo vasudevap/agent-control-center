@@ -1,14 +1,10 @@
-# Atlas GUI: Designer Handoff
+# Atlas Frontend Design: Designer Handoff
 
-This branch (`codex/gui-alternate-second-opinion`) is an alternate GUI direction for Atlas, built as a frontend-only prototype and refined through many review rounds. This document tells you what exists, why it looks the way it does, and how to extend it. Read `design-principles.md` first; this document assumes it.
-
-## Status and scope
-
-Everything here is a frontend prototype. All data comes from local fixtures (`agent-data.ts`, `approval-data.ts`, `mock-data.ts`); no backend, runtime, or policy engine is contacted, and every mutating control is an explicit local simulation. Product behavior, backend contracts, and architecture are defined by the canonical documentation on the repository's `main` branch, not here. This branch deliberately carries only the app code and these design documents.
+This is the working guide for continuing the Atlas frontend design. It assumes you know the product from the main project's documentation; nothing here covers product behavior, objectives, or architecture. Read `design-principles.md` first; this document maps those rules onto the code and tells you how to build the remaining pages.
 
 ## Running and verifying
 
-From the repository root:
+From this folder's root:
 
     npm install
     npm run dev        # Next.js dev server
@@ -18,7 +14,7 @@ From the repository root:
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 
-## Repository layout
+## Layout of this folder
 
     apps/web/src/
       app/(shell)/            route pages: overview (page.tsx), agents/, approvals/, runs/, plus placeholder routes
@@ -46,9 +42,9 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **SortHeader** (defined locally in both `agents-inventory.tsx` and `approvals-workspace.tsx`). Mono column-header button with direction arrows. The two copies are intentionally identical; if you touch one, mirror the other, or extract a shared component.
 
-## Page-by-page state
+## Established design state, page by page
 
-**Overview.** Answers "what needs my attention right now." Attention Queue merges pending approvals, alerts, and unhealthy agents into one urgency-ranked, actionable-header card; each row leads with a severity glyph, has a mono kind label (Approval / Alert / Agent health) and an urgency-colored timestamp on the trailing edge, and navigates to its real destination. Deliberately not sortable or filterable. Active Work and Upcoming Schedule are informational cards with title+description headers and tiled rows. A metrics row and fleet roster were removed as redundant with the status bar and Agents page.
+**Overview.** Answers "what requires my attention right now." Attention Queue merges pending approvals, alerts, and unhealthy agents into one urgency-ranked, actionable-header card; each row leads with a severity glyph, has a mono kind label (Approval / Alert / Agent health) and an urgency-colored timestamp on the trailing edge, and navigates to its real destination. Deliberately not sortable or filterable. Active Work and Upcoming Schedule are informational cards with title+description headers and tiled rows. A metrics row and fleet roster were removed as redundant with the status bar and Agents page.
 
 **Agents.** Full inventory table. Columns: Health (leading, icon-only, sortable), Agent (sortable, name + description + optional issue caption, stretched-link row), Status (icon-only, sortable), Owner (sortable, `lg:` and up), Last run / Next run (sortable via `lastRunAt`/`nextRunAt` ISO fields; "Not scheduled" sorts last). Control bar holds search, status and health filters, both icon legends, and a clear button. Mobile renders cards with labeled field pairs.
 
@@ -58,9 +54,9 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **Approval Detail.** Main column of InfoCards (Proposed action, Policy rationale, Evidence and context with the untrusted-evidence callout, Activity timeline), sticky aside with the Decide card (shaded actionable header, simulation buttons, icon-carrying status lines) and Request context. Mobile gets the decision card inline plus a fixed bottom bar. Dialogs enforce reason-required rules and simulated step-up for high risk.
 
-## History of the work
+## Decision log
 
-The full rationale for each decision is in this branch's commit history; every commit message describes one review round. Read `git log --oneline main..codex/gui-alternate-second-opinion` for the sequence. Several component docblocks (RiskChip, StatusBadge, CardHeader, AttentionQueue, PageHeader) also carry the reasoning inline where it matters most.
+The rationale for each design decision is in this branch's commit history; every commit message describes one review round. Read `git log --oneline main..codex/gui-alternate-second-opinion` for the sequence. Several component docblocks (RiskChip, StatusBadge, CardHeader, AttentionQueue, PageHeader) also carry the reasoning inline where it matters most.
 
 ## Checklist for building a new page
 
@@ -74,4 +70,4 @@ The full rationale for each decision is in this branch's commit history; every c
 
 ## Known gaps and next candidates
 
-Alerts, Runs, Artifacts, Audit, Connectors, Policies, and Settings exist as routes but are placeholders (PlaceholderPage) or have not been through this review process; they are the pages the next designer builds, using the checklist above. The two SortHeader copies could be extracted into a shared component. The History view's default sort is still attention-rank, which is meaningless for resolved items; a "decided at" timestamp field and default would be more useful. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
+Alerts, Runs, Artifacts, Audit, Connectors, Policies, and Settings exist as routes but are placeholders (PlaceholderPage) or have not been through this review process; they are the pages to build next, using the checklist above. The two SortHeader copies could be extracted into a shared component. The History view's default sort is still attention-rank, which is meaningless for resolved items; a "decided at" timestamp field and default would be more useful. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
