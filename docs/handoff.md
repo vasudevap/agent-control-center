@@ -10,7 +10,7 @@ From this folder's root:
     npm run dev        # Next.js dev server
     npm run typecheck  # tsc --noEmit
     npm run lint       # eslint
-    npm run test       # Vitest: 49 passing tests across 8 files; no pending tests
+    npm run test       # Vitest: 53 passing tests across 9 files; no pending tests
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 

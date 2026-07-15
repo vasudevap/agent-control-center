@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { APPROVAL_FIXTURES } from "../approval-data";
@@ -31,17 +31,51 @@ describe("ApprovalDetailWorkspace", () => {
     );
   });
 
-  it("keeps a long payload summary readable in the full-width detail field", () => {
+  it("keeps long approval identity, action, policy, and payload values readable", () => {
+    const longToken = "governedcontent".repeat(18);
     const longPayload = `${"Fictional governed parameter ".repeat(18)}final value.`;
     render(
       <ApprovalDetailWorkspace
-        approval={{ ...fixture("apr-2026-001"), payloadSummary: longPayload }}
+        approval={{
+          ...fixture("apr-2026-001"),
+          id: `apr-${longToken}`,
+          agent: { id: `agent-${longToken}`, name: `Agent ${longToken}` },
+          action: `Review ${longToken}`,
+          policy: `Policy ${longToken}`,
+          payloadSummary: longPayload,
+        }}
       />
     );
 
     const payloadValue = screen.getByText(longPayload);
     expect(payloadValue).toHaveClass("break-words");
     expect(payloadValue.closest("div")).toHaveClass("sm:col-span-2");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveClass("break-words");
+    expect(screen.getAllByText(`Review ${longToken}`)[0]).toHaveClass("break-words");
+    expect(screen.getByText(`Policy ${longToken}`)).toHaveClass("break-words");
+    expect(screen.getByText(`apr-${longToken}`)).toHaveClass("break-all");
+  });
+
+  it("restates the governed action context in every simulated decision dialog", async () => {
+    const user = userEvent.setup();
+    const approval = fixture("apr-2026-001");
+    render(<ApprovalDetailWorkspace approval={approval} />);
+
+    for (const [trigger, dialogName] of [
+      ["Simulate approval", "Simulate approval"],
+      ["Simulate rejection", "Simulate rejection"],
+      ["Simulate clarification request", "Simulate clarification request"],
+    ] as const) {
+      await user.click(firstButton(trigger));
+      const dialog = screen.getByRole("dialog", { name: dialogName });
+      expect(within(dialog).getByText(approval.id)).toBeInTheDocument();
+      expect(within(dialog).getByText(approval.action)).toBeInTheDocument();
+      expect(within(dialog).getByText(approval.target)).toBeInTheDocument();
+      expect(within(dialog).getByText(approval.payloadSummary)).toBeInTheDocument();
+      expect(within(dialog).getByText(approval.consequence)).toBeInTheDocument();
+      expect(within(dialog).getByText(approval.risk)).toBeInTheDocument();
+      await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    }
   });
 
   it("simulates a low-risk approval without requiring a reason or step-up", async () => {

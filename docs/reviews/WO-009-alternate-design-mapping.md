@@ -63,11 +63,11 @@ WO-009.
 
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| Canonical Queue, History, and detail routes | `approvals/page.tsx`, `approvals-workspace.tsx`, and `[approvalId]/page.tsx` | Candidate match | Confirm navigation in a real browser. |
-| Typed fictional fixtures | `approval-data.ts` defines typed records and local fixtures using canonical agents. | Candidate match | Review every fixture for safe, fictional content and required variety. |
-| Frontend-only mutation boundary | `approval-prototype-controller.ts` accepts records and values only; it has no network client. | Candidate match | Run a scoped source review for network, persistence, server actions, and provider SDKs. |
-| Session-only, non-persistent simulation | Approval Detail disclosure and controller state are component-local. | Candidate match | Confirm refresh restores fixtures and all outcome copy remains non-operational. |
-| No backend, auth, runtime, policy, audit, or execution implementation | No such implementation is evident in the selected approval files. | Manual verification required | Perform and record the structural source scan required by ES-003. |
+| Canonical Queue, History, and detail routes | `approvals/page.tsx`, `approvals-workspace.tsx`, and `[approvalId]/page.tsx` are covered by component and browser navigation evidence. | Candidate match with automated, browser, and owner evidence | No mapping gap remains. |
+| Typed fictional fixtures | `approval-data.ts` defines typed records using canonical fictional agents, reserved `.example` contacts, and explicit local provenance. | Candidate match with owner and source-review evidence | No mapping gap remains. |
+| Frontend-only mutation boundary | `approval-prototype-controller.ts` accepts records and values only; the scoped structural scan found no service or persistence primitive. | Candidate match with source-review evidence | Repeat the scan if the approval feature later gains a data client. |
+| Session-only, non-persistent simulation | Approval Detail disclosure and controller state are component-local; refresh/remount restoration is covered by automated and owner browser evidence. | Candidate match with automated, browser, and owner evidence | No mapping gap remains. |
+| No backend, auth, runtime, policy, audit, or execution implementation | The recorded structural scan found no operational network, persistence, authentication, policy, audit, runtime, or execution dependency in the WO-009 surface. | Candidate match with source-review evidence | No mapping gap remains. |
 
 ### Step 1 evidence captured for owner review
 
@@ -89,39 +89,34 @@ state:
 - Run references are plain metadata labeled unavailable; Agent references use
   internal Atlas routes.
 
-Still pending before Step 1 can be confirmed:
-
-- manually change a simulated decision, refresh, and verify that canonical
-  fixture state returns;
-- review every fixture string for fictional, non-sensitive provenance; and
-- decide whether the structural scan should be captured as an automated test
-  or retained as review evidence.
+Step 1 evidence is retained as source-review, automated, browser, and owner
+confirmation evidence. It does not mark the Work Order complete.
 
 ## Step 2 - Information architecture and navigation
 
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| `/approvals` is canonical Queue destination | `ApprovalsWorkspace` defaults `view` to `queue`. | Candidate match | Confirm default URL and browser behavior. |
+| `/approvals` is canonical Queue destination | `ApprovalsWorkspace` defaults `view` to Queue, with URL and browser behavior covered. | Candidate match with automated and browser evidence | No mapping gap remains. |
 | Queue and History are URL-backed sibling views | Tab state reads and writes the `view` query parameter; a `popstate` listener restores collection controls during Back/Forward navigation. | Candidate match with component and browser evidence | No mapping gap remains; retain final accessibility and responsive review. |
-| `/approvals/[approvalId]` is canonical detail | Dynamic route resolves fixture IDs and renders unavailable state for unknown IDs. | Candidate match | Add route-level navigation and unknown-ID tests. |
+| `/approvals/[approvalId]` is canonical detail | Dynamic route resolves fixture IDs and renders a tested unavailable state for unknown IDs. | Candidate match with automated and browser evidence | Retain final keyboard review. |
 | Return navigation preserves collection context | Detail reads a guarded `from` value, and row/card links now preserve view, search, Risk, Review, sort, direction, and page. | Candidate match with automated evidence | Verify the final detail-to-collection keyboard workflow during accessibility review. |
-| Agent Details deep-links only canonical fixtures | Agent Detail derives links from the shared approval fixture set. | Candidate match | Add the required focused test for linked and unlinked agents. |
+| Agent Details deep-links only canonical fixtures | Agent Detail derives links from the shared fixture set; focused tests cover linked and unlinked agents. | Candidate match with automated evidence | No mapping gap remains. |
 
 ## Step 3 - Queue experience
 
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| Title, operational description, and persistent prototype disclosure | `PageHeader` uses `Approvals`, an operational description, and a `Frontend prototype` marker. | Partial candidate | Decide whether the shorter selected title amends the literal `Human Approvals` title requirement. |
-| Visible count versus total | Results summary displays visible and total Queue counts plus nearing-expiry count. | Candidate match | Add an accurate-count test after filters and pagination. |
+| Title, operational description, and persistent prototype disclosure | `PageHeader` uses the owner-approved concise `Approvals` title, an operational description, and a persistent `Frontend prototype` marker. | Owner-approved prototype amendment | Revisit explanatory disclosure during production-readiness review. |
+| Visible count versus total | Results summary displays visible and total Queue counts plus nearing-expiry count, with filter-sensitive tests. | Candidate match with automated evidence | No mapping gap remains. |
 | Approved full-text search fields | Search covers ID, agent ID/name, action, target, run, policy, and evidence-source labels. | Candidate match with automated evidence | No mapping gap remains. |
-| State, risk, agent, policy, and expiry filters | The selected design exposes Risk and Review only. Commit `7baa928` deliberately replaced Agent with Review. | Partial candidate | Decide whether to amend WO-009 to the selected concise filter set or add the missing filters without weakening the design. |
+| State, risk, agent, policy, and expiry filters | Queue uses the owner-approved concise Search, Risk, and Review controls. State, Agent, Policy, and Expiry remain formally deferred until production scale justifies them. | Owner-approved prototype amendment | Revisit the deferred controls when collection scale or operator count increases. |
 | Sortable attention, requested, expiry, risk, and agent values | Commit `6b21b33` introduced the controls; the reconciliation round corrected direction handling and added focused tests for every supported sort. | Candidate match with automated evidence | Complete the remaining manual responsive and assistive-technology review. |
 | Active-filter summary with individual removal and Clear filters | Active values remain visible in the Search, Risk, and Review controls, and Clear filters resets the collection. | Owner-approved prototype amendment | Keep the concise toolbar without duplicate chips; revisit chips if filters become numerous or move behind a collapsed control. |
 | Accessible semantic desktop table | The table now has a screen-reader caption and the active sortable header exposes `aria-sort`; inactive sortable headers omit it. | Candidate match with automated evidence | Complete manual screen-reader and responsive review. |
 | Equivalent mobile card list | `ApprovalCard` replaces the table below `md` and preserves state, risk, action, target, agent, identifier, requested time, expiry, and review/outcome context. The owner visually accepted the current content and formatting after a 320 px no-overflow check. | Candidate match with automated and owner visual evidence | Complete touch-target and accessibility evidence during the final manual review. |
 | URL-backed view, search, filters, sort, direction, and page | View, query, Risk, Review, sort, direction, and page are written to and restored from the URL for the owner-approved concise control set, including Back/Forward replay. | Candidate match for the approved prototype controls | State, Agent, Policy, and Expiry filters remain formally deferred by owner decision. |
-| Finite local pagination | `PAGE_SIZE` and Previous/Next controls are present. | Candidate match | Add pagination, URL restoration, and boundary tests. |
-| Loading, error, no-data, and filtered-empty states | `presentationState` and `StateCard` cover all four representations. | Candidate match | Add the required tests; confirm the controlled states in browser review. |
+| Finite local pagination | `PAGE_SIZE`, Previous/Next controls, boundary behavior, and URL page restoration have focused coverage. | Candidate match with automated evidence | No mapping gap remains. |
+| Loading, error, no-data, and filtered-empty states | `presentationState` and `StateCard` cover all four representations with focused tests. | Candidate match with automated evidence | Retain final visual evidence capture. |
 | Row/card activation opens canonical detail | Desktop rows use stretched links and mobile cards are links; both encode the complete originating collection URL. | Candidate match with automated evidence | Verify the final keyboard and mobile navigation flow during accessibility review. |
 | Attention prioritization without color alone | Default ordering combines expiry urgency and risk; Risk, Review, and State use icon vocabulary. | Candidate match | Verify urgency presentation and keyboard/screen-reader meaning. |
 | No bulk, assignment, transfer, or escalation controls | None appear in the selected Queue. | Candidate match | Confirm through UI and source review. |
@@ -143,55 +138,55 @@ Still pending before Step 1 can be confirmed:
 | --- | --- | --- | --- |
 | Identifier, state, risk, urgency, agent, requested time, and disclosure | Header metadata, Request context, Expiry label, and prototype notice provide these facts. | Candidate match | Confirm no duplicate or missing facts at all widths. |
 | Exact action, target, payload summary, effect, and scope | Every local fixture models a distinct payload summary. Approval Detail presents it as a full-width, wrapping field alongside action, target, consequence, scope, and environment, and repeats it in the simulated-decision confirmation. | Candidate match with automated evidence | Retain final responsive and assistive-technology review. |
-| Policy and governance rationale | Dedicated divided card presents policy and review rationale. | Candidate match | Confirm long policy references wrap and remain readable. |
+| Policy and governance rationale | Dedicated divided card presents policy and review rationale; all detail values use breakable wrapping and stress coverage includes a long policy reference. | Candidate match with automated evidence | Retain final visual evidence capture. |
 | Evidence separated from untrusted content | System metadata, untrusted preview, and missing-evidence alert are visually separated. | Candidate match | Verify accessible association and inert rendering. |
 | Related Agent, Run, and Artifact treatment | Agent links canonically; Run is visibly unavailable; optional fictional Artifact metadata is modeled and displayed with an explicit unavailable-in-prototype treatment. | Candidate match with automated evidence | Extend fixture variety only if later Artifact-page work requires it. |
 | Activity timeline with `Simulated` labeling | Activity renders simulated entries with an explicit badge. | Candidate match | Test clarification and approval activity, not rejection only. |
 | Accessible Approval-unavailable explanation | Missing evidence appears visibly, and every rendered Decision region references the canonical explanation through `aria-describedby`. | Candidate match with automated and browser evidence | Retain final assistive-technology review. |
 | Reason behavior for approve, reject, and clarification | Reject and High/Critical approve require text; Low/Medium approve is optional; clarification requires a question. | Candidate match with automated evidence | Retain final keyboard and announcement review. |
-| Confirmation restates approval and outcome | Dialog restates ID, action, target, consequence, risk, expiry, and simulated outcome. | Candidate match | Add tests for all three decision paths. |
+| Confirmation restates approval and outcome | All three dialogs restate ID, action, target, payload summary, consequence, risk, expiry, and the requested simulated outcome, with focused coverage. | Candidate match with automated evidence | Retain final keyboard and screen-reader review. |
 | Simulated step-up for Critical and applicable High risk | Controller and dialog require the acknowledgement for all High/Critical fixtures. | Candidate match | Confirm which High-risk policies should require it and test both required and non-required boundaries if applicable. |
 | Indeterminate treatment is distinct, blocks Retry, and directs investigation | Desktop and mobile flows label Indeterminate, block Retry, and direct the operator to investigate evidence before refreshing or returning. | Candidate match with automated and browser evidence | Retain final assistive-technology review. |
-| Historical approvals are read-only | Non-Pending records disable/hide decision paths. | Candidate match | Add terminal-state tests at desktop and mobile widths. |
+| Historical approvals are read-only | Non-Pending records disable decision paths; focused tests and responsive browser evidence cover terminal detail behavior. | Candidate match with automated and browser evidence | Retain final assistive-technology review. |
 
 ## Step 6 - Fixtures and controlled states
 
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
 | Low, Medium, High, and Critical pending approvals | Queue fixtures cover all four risk levels. | Candidate match | Confirm default ordering and exact risk labels. |
-| Approaching expiry | Relative expiry fixtures and presentation helper provide near/imminent states. | Candidate match | Add deterministic threshold tests and exact timestamp access. |
+| Approaching expiry | Relative expiry fixtures and the presentation helper provide near/imminent states; pure tests cover none, expired, imminent, nearing, and scheduled thresholds against a fixed clock. | Candidate match with automated evidence | No mapping gap remains. |
 | Blocked/incomplete evidence | `apr-2026-003` remains Pending with Blocked review progress and missing evidence. | Candidate match | Confirm state/facet separation and approval gating. |
-| Clarification requested | `apr-2026-002` uses Awaiting information plus simulated activity. | Candidate match | Clarification provenance currently says `policy owner`, which must be checked against the trusted internal-source rule. |
+| Clarification requested | `apr-2026-002` uses Awaiting information and records the fictional authenticated `Prototype reviewer` as the requesting actor. No returned clarification is accepted from an untrusted source. | Candidate match with source-review evidence | Retain final activity-timeline review. |
 | Approved, Rejected, Expired, Cancelled, and Indeterminate examples | History fixtures and focused collection/detail tests contain these states/outcomes. | Candidate match with automated evidence | Retain final visual evidence capture. |
-| Long agent, policy, and action values | No deliberately long stress fixture is evident. | No candidate found | Add safe long-content fixtures and responsive evidence. |
-| No-data, filtered-empty, loading, and recoverable-error states | Component inputs can deterministically render these states. | Candidate match | Add tests and current-design screenshots; do not ship a debug switcher. |
-| Step-up-required example | Critical and High fixtures activate the simulated step-up boundary. | Candidate match | Add explicit coverage for both risk levels. |
-| Deterministic time strategy | Fixtures derive timestamps relative to load time. | Partial candidate | Tests need a controlled reference clock for expiry thresholds and exact assertions. |
+| Long agent, policy, and action values | Controlled test fixtures exercise long unbroken identifiers, agent names, actions, policies, and payloads across collection and detail surfaces; shared fields use explicit breakable wrapping. | Candidate match with automated evidence | Retain final 200% zoom review. |
+| No-data, filtered-empty, loading, and recoverable-error states | Component inputs deterministically render all four states with focused coverage; no debug switcher ships. | Candidate match with automated evidence | Retain final visual evidence capture. |
+| Step-up-required example | Critical and High fixtures activate the simulated step-up boundary, with focused coverage across approval and rejection paths. | Candidate match with automated evidence | No mapping gap remains. |
+| Deterministic time strategy | Presentation helpers accept an explicit reference clock; fixed-clock tests cover threshold classification and relative labels, and decision confirmation uses an injected clock for expiry-at-confirmation behavior. | Candidate match with automated evidence | No mapping gap remains. |
 
 ## Step 7 - Dialogs, accessibility, and responsive behavior
 
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| Accessible dialog title and description | Shared Radix wrapper and decision dialog provide both. | Candidate match | Expand tests beyond one name assertion. |
-| Focus containment, restoration, and Escape | Radix supplies the behavior; Escape has one focused test. | Partial candidate | Add focus-containment/restoration tests and manual keyboard evidence. |
+| Accessible dialog title and description | Shared Radix wrapper and decision dialogs provide both, with focused accessible-name coverage. | Candidate match with automated evidence | Retain final assistive-technology review. |
+| Focus containment, restoration, and Escape | Focused tests cover Escape, trigger restoration, and bidirectional containment. | Candidate match with automated evidence | Retain final browser keyboard evidence. |
 | Unambiguous primary and destructive actions | Buttons use explicit simulated labels and destructive styling for rejection. | Candidate match | Confirm focus order and 200% zoom. |
-| Dynamic outcome and validation announcements | Validation uses `role=alert`. | Partial candidate | The post-decision state/activity update has no explicit live-region behavior. |
+| Dynamic outcome and validation announcements | Validation uses `role=alert`; post-decision and expiry-at-confirmation outcomes use polite status announcements with focused tests. | Candidate match with automated evidence | Retain final screen-reader evidence. |
 | State, urgency, risk, availability, and errors never rely on color alone | StatusBadge, RiskChip, ReviewProgressTag, ExpiryLabel, icons, and visible explanations provide candidate evidence. | Candidate match | Verify every state in both themes and with assistive semantics. |
-| 320 px reflow, mobile cards, sticky controls, and touch targets | Mobile card fallback and fixed decision bar exist. | Manual verification required | Review 320/375 px, 200% zoom, safe-area spacing, and no document overflow. |
-| Long content and reduced-motion behavior | Shared layout and Radix primitives may support these cases. | Manual verification required | Add stress fixtures; inspect wrapping, focus, motion, and dialog usability. |
+| 320 px reflow, mobile cards, sticky controls, and touch targets | Mobile card fallback and fixed decision bar have browser no-overflow evidence at narrow widths; tall dialogs remain viewport-contained and internally scrollable. | Candidate match with browser and automated evidence | Retain final 200% zoom, safe-area, and touch-target review. |
+| Long content and reduced-motion behavior | Controlled stress fixtures cover long collection/detail content and tall dialog usability. The scoped source scan found only short color transitions in the approval collection and no spatial, continuous, or essential motion. | Candidate match with automated, source-review, and browser evidence | Retain final 200% browser-zoom evidence. |
 
 ## Step 8 - Automated verification
 
 | Required coverage | Existing alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| Search, multiple filters, sort, reset, and URL context | One test covers search, Risk, and Clear filters. | Partial candidate | Add multiple-filter, every-sort, URL restoration, direction, page, and Back/Forward coverage. |
+| Search, multiple filters, sort, reset, and URL context | Focused tests cover combined filters, view-specific filters, every supported sort, reset, URL restoration, direction, pagination, and Back/Forward replay. | Candidate match with automated and browser evidence | No mapping gap remains. |
 | Queue/History distinction | Focused tests cover History selection, direct URL restoration, decision metadata, default/reversed decision-time ordering, terminal detail, and return context. | Candidate match with automated and browser evidence | Retain final keyboard and assistive-technology review. |
-| Row/card navigation and return context | No focused test found. | No candidate found | Add collection-to-detail and full return-context tests. |
-| Loading, error, no-data, filtered-empty | No focused test found. | No candidate found | Add deterministic state tests. |
+| Row/card navigation and return context | Focused tests cover canonical row/card links and complete encoded collection return context. | Candidate match with automated evidence | Retain final keyboard and touch navigation review. |
+| Loading, error, no-data, filtered-empty | Focused tests cover every deterministic collection state. | Candidate match with automated evidence | Retain final visual evidence capture. |
 | Approve, reject, clarification, and reason rules | Low/High/Critical approval, rejection, required clarification question, step-up, refresh, session-only state, live announcement, and expired-during-review behavior are covered. | Candidate match with automated evidence | Retain final keyboard and screen-reader workflow review. |
 | Unavailable, terminal, and Indeterminate detail | Missing-evidence, terminal read-only, unknown ID, controlled expiry, and Indeterminate states are covered; mobile Indeterminate guidance is in normal reading order. | Candidate match with automated and browser evidence | Retain final responsive and theme evidence capture. |
 | Dialog accessibility | Accessible name, Escape, focus restoration, and bidirectional focus containment are covered. | Candidate match with automated evidence | Retain the final 200% zoom and browser keyboard review. |
-| Agent Details deep links | No focused test found. | No candidate found | Add canonical fixture-link and empty-state tests. |
+| Agent Details deep links | Focused tests cover canonical fixture links and the no-approval empty state. | Candidate match with automated evidence | No mapping gap remains. |
 | Typecheck, lint, tests, and production build | These checks passed for pull request #9 and merged `main`. | Candidate match | Re-run after all WO-009 gap work; green commands alone do not satisfy missing coverage. |
 
 ### Dependency-free automation checkpoint
@@ -202,7 +197,7 @@ was introduced.
 
 Current results on 2026-07-15:
 
-- `npm run test`: 8 test files, 49 passing tests, no pending tests.
+- `npm run test`: 9 test files, 53 passing tests, no pending tests.
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
 - `npm run build`: pass; all 13 application routes generated successfully.
@@ -248,7 +243,10 @@ Passing coverage now includes:
 - viewport-contained, internally scrolling tall dialogs at desktop and mobile sizes;
 - mobile Indeterminate investigation guidance;
 - polite post-decision live announcements;
-- controlled expired-during-review behavior; and
+- controlled expired-during-review behavior;
+- fixed-clock expiry thresholds and relative-time labels;
+- long identity, identifier, action, policy, and payload wrapping;
+- governed-context restatement across all three decision dialogs; and
 - bidirectional dialog focus containment.
 
 No explicit pending test remains in the dependency-free WO-009 suite. This
@@ -312,5 +310,6 @@ The review proceeds in order from Step 1 through Step 9. For each step:
 | Step 4 | Concise History filter contract | Confirmed by owner and verified through automated evidence | History replaces the inapplicable Review-progress filter with terminal State while retaining Search and Risk. Reviewer, Agent, Action type, Decision date, Execution outcome, Environment, and Policy filters are deferred until production-scale needs justify them. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 5 | Proposed payload summary | Confirmed by owner and verified through automated evidence | Every fictional approval now declares a payload summary. Detail and final simulated-decision confirmation present it in a full-width wrapping field so the operator can inspect what would be authorized. No service connection or Definition of Done completion was introduced. | 2026-07-15 |
 | Step 5 / Step 7 | Payload dialog viewport correction | Verified through automated and browser evidence | Adding payload context exposed excessive dialog height. The shared dialog now remains inside desktop and mobile viewports and scrolls internally; focused component coverage guards the constraint. No Definition of Done item is marked complete. | 2026-07-15 |
+| Step 6 / Step 8 | Deterministic timing and long-content stress coverage | Verified through automated, source-review, and browser evidence | Fixed-clock tests cover all expiry urgency thresholds and relative labels. Controlled fixtures exercise long identifiers, agents, actions, policies, and payloads; constrained viewports retain internal dialog scrolling without document overflow. No Definition of Done item is marked complete. | 2026-07-15 |
 
 No WO-009 Definition of Done item has been marked complete.

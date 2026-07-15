@@ -304,11 +304,11 @@ function Row({ approval, view, from }: { approval: ApprovalRecord; view: View; f
     <tr className="relative border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
       <td className="px-4 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} iconOnly /></td>
       <td className="px-3 py-3 align-top">
-        <Link className="relative z-10 w-fit font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(from)}`}>{approval.action}</Link>
-        <p className="mt-0.5 font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
+        <Link className="relative z-10 w-fit break-words font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(from)}`}>{approval.action}</Link>
+        <p className="mt-0.5 break-words font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
         {view === "history" && <p className="mt-1 text-[11px] text-foreground-secondary">Reason: {approval.decisionReason ?? "Not provided"}</p>}
       </td>
-      <td className="px-3 py-3 align-top text-xs text-foreground-secondary">
+      <td className="break-words px-3 py-3 align-top text-xs text-foreground-secondary">
         {approval.agent.name}
         {view === "history" && <span className="mt-0.5 block text-[11px] text-foreground-tertiary">Reviewer: {approval.reviewer ?? "Not recorded"}</span>}
       </td>
@@ -339,11 +339,11 @@ function ApprovalCard({ approval, view, from }: { approval: ApprovalRecord; view
           <RiskChip risk={approval.risk as RiskLevel} iconOnly />
           <StateChip state={approval.state} className="text-xs" />
         </div>
-        <p className="mt-3 text-sm font-semibold text-foreground">{approval.action}</p>
+        <p className="mt-3 break-words text-sm font-semibold text-foreground">{approval.action}</p>
         <p className="mt-1 break-words text-xs text-foreground-secondary">
           <span className="font-medium text-foreground">Target:</span> {approval.target}
         </p>
-        <p className="mt-2 text-xs text-foreground-secondary">{approval.agent.name} • <span className="font-mono">{approval.id}</span></p>
+        <p className="mt-2 break-words text-xs text-foreground-secondary">{approval.agent.name} • <span className="break-all font-mono">{approval.id}</span></p>
         <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border-subtle pt-3 text-xs">
           <div>
             <dt className="font-mono text-[10px] uppercase tracking-wide text-foreground-tertiary">{view === "queue" ? "Requested" : "Decided"}</dt>

@@ -222,6 +222,27 @@ describe("ApprovalsWorkspace", () => {
     expect(within(card).getByText("Review")).toBeInTheDocument();
   });
 
+  it("keeps deliberately long action, agent, policy, and identifier values breakable", () => {
+    const longToken = "governedcontent".repeat(18);
+    const approval: ApprovalRecord = {
+      ...APPROVAL_FIXTURES.find((item) => item.id === "apr-2026-008")!,
+      id: `apr-${longToken}`,
+      action: `Review ${longToken}`,
+      agent: { id: `agent-${longToken}`, name: `Agent ${longToken}` },
+      policy: `Policy ${longToken}`,
+    };
+    render(<ApprovalsWorkspace approvals={[approval]} />);
+
+    const table = screen.getByRole("table", { name: "Approval Queue" });
+    expect(within(table).getByRole("link", { name: approval.action })).toHaveClass("break-words");
+    expect(within(table).getByRole("cell", { name: approval.agent.name })).toHaveClass("break-words");
+    expect(within(table).getByText((_, element) => element?.tagName === "P" && element.textContent?.includes(approval.policy) === true)).toHaveClass("break-words");
+
+    const mobileCard = within(screen.getByRole("list", { name: "Approval Queue mobile list" })).getByRole("link");
+    expect(within(mobileCard).getByText(approval.action)).toHaveClass("break-words");
+    expect(within(mobileCard).getByText((_, element) => element?.tagName === "P" && element.textContent?.includes(approval.agent.name) === true)).toHaveClass("break-words");
+  });
+
   it("paginates a finite local fixture collection", async () => {
     const user = userEvent.setup();
     const template = APPROVAL_FIXTURES.find((approval) => approval.id === "apr-2026-008")!;
