@@ -4,4 +4,10 @@ This directory contains migrated Atlas implementation work orders. They record a
 
 Work Order 005 is the approved application-shell baseline now implemented in `apps/web`.
 
-Work Order 006 defines the approved Agents Inventory and is `Ready`. Implementation is authorized on a short-lived branch from synchronized `main`.
+Work Order 006 implemented the approved Agents Inventory and is `Completed`.
+
+Work Order 007 has the Agent Details design direction locked for this milestone.
+
+Work Order 008 authorizes the frontend prototype for governed agent operational
+controls. Runtime mutation integration remains pending a dedicated engineering
+specification and implementation work order.
