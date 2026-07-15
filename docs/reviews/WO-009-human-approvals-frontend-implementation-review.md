@@ -1,6 +1,6 @@
 # Work Order 009: Human Approvals Frontend Implementation Review
 
-**Status:** Implementation Review Complete - Pull Request Review
+**Status:** Implementation Revision In Progress
 **Work Order:** [WO-009 Human Approvals Frontend Experience](../work-orders/009-human-approvals-frontend-experience.md)
 **Governing Engineering Specification:** [ES-003 Human Approvals Frontend Experience](../engineering-specifications/ES-003-human-approvals-frontend-experience.md)
 **Product Specification:** [Human Approvals Functional Specification](../specifications/human-approvals-functional-specification.md)
@@ -18,6 +18,8 @@ WO-009 replaces the Approvals placeholder with a local, frontend-only Human Appr
 
 The delivered interface does not call an API, persist data, authenticate a user, execute an action, evaluate policy, write audit data, or present assignment, escalation, delegation, or bulk-decision controls.
 
+On 2026-07-14, a bounded presentation revision began to improve expiry/SLA visibility and detail-page visual consistency. The established proposed-action, impact, policy, evidence, and single request-context sections remain the canonical decision context. The revision remains within the approved specification and WO-009 scope. Its automated checks and manual evidence must be refreshed before this record can return to pull-request review.
+
 ## 2. Scope and Prototype Boundary Review
 
 | Review area | Result | Evidence |
@@ -29,7 +31,7 @@ The delivered interface does not call an API, persist data, authenticate a user,
 | Accessibility | Pass | Semantic controls, named search/filter fields, state text in addition to color, keyboard-operable dialogs, focus-managed Radix dialog behavior, and live validation feedback are covered. |
 | Deferred capabilities | Pass | Assignment, ownership transfer, escalation, delegation, bulk actions, authentication, real audit completion, and real approval behavior remain absent. |
 
-## 3. Automated Validation
+## 3. Automated Validation Before the 2026-07-14 Presentation Revision
 
 | Check | Result |
 | --- | --- |
@@ -82,6 +84,6 @@ The implementation is open for pull-request review. WO-009 cannot be closed unti
 
 ## 7. Disposition
 
-**Recommendation:** Ready for pull-request review.
-**Implementation authorization:** Complete for the bounded frontend prototype only.
-**Work Order closure:** Pending pull request, CI, and merge review.
+**Recommendation:** Not ready for pull-request review until the in-progress presentation revision is validated and documented.
+**Implementation authorization:** Active for the bounded frontend prototype only.
+**Work Order closure:** Pending refreshed validation and evidence, pull request CI, and merge review.

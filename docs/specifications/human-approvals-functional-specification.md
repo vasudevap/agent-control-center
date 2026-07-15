@@ -189,7 +189,7 @@ Every approval must have a canonical, deep-linkable detail destination.
 
 Approval Detail must support:
 
-- Breadcrumb navigation.
+- A header-level return action to the originating queue context.
 - Browser history.
 - Return to previous queue context.
 - Direct links to the related agent.

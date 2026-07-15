@@ -119,6 +119,37 @@ Typography should support dense operational interfaces.
 
 ---
 
+# Page Headers and Navigation Labels
+
+Top-level product screens must use a consistent title treatment so that moving
+between primary navigation destinations does not shift or duplicate the page
+hierarchy.
+
+- The page title must use the exact concise label shown for its primary left-rail
+  navigation destination. For example, the `Approvals` destination uses the
+  `Approvals` page title.
+- Put qualifiers, audience, scope, or explanatory context in the page
+  description, not in a different or expanded primary title. For example,
+  describe the Approvals page as human approval work in its description.
+- A top-level destination must not render a breadcrumb that only repeats its
+  left-rail label. Its shared page header begins at the same vertical position
+  as other top-level destinations.
+- Every product route must use the shared `PageContainer`, a `flex flex-col
+  gap-8` content root, and `PageHeader` for its primary title. The title,
+  optional description, icon, and contextual actions must not be recreated as
+  bespoke page markup.
+- Every primary and detail page header must include a concise description. For
+  detail pages, use the object description when it is available.
+- Section cards must use the shared `CardHeader`, `CardTitle`, and
+  `CardDescription` hierarchy established by Fleet Health; page-header and
+  card-header typography serve different semantic levels and must not be
+  mixed.
+- For a one-level detail destination, use a return action in the shared page
+  header actions instead of a separate breadcrumb row. Use breadcrumbs only
+  when they communicate multi-level hierarchy that a return action cannot.
+
+---
+
 # Color System
 
 Color is semantic.

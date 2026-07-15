@@ -1,6 +1,6 @@
 # Work Order 009: Human Approvals Frontend Experience
 
-**Status:** Implementation Complete - Pull Request Review
+**Status:** Implementation Revision In Progress
 **Work Order ID:** WO-009
 **Type:** Frontend prototype
 **Implementation Authorization:** Granted
@@ -56,7 +56,7 @@ The experience must read as an enterprise operations surface for governing an AI
 - Implement URL-backed queue and history context for view, search, filter, sort, and pagination.
 - Implement queue search, filters, filter-summary chips, sort, reset, empty, loading, and error states.
 - Implement desktop table and mobile card representations of the same queue content.
-- Implement approval detail sections, contextual breadcrumbs, related artifact and agent metadata, decision reason capture, clarification, and an activity timeline.
+- Implement approval detail sections, a header-level queue return action, related artifact and agent metadata, decision reason capture, clarification, and an activity timeline.
 - Implement simulated approve, reject, request-clarification, and indeterminate-outcome experiences.
 - Implement the simulated step-up confirmation interaction required for critical approvals and applicable high-risk approvals.
 - Add an accessible reusable dialog primitive aligned with the existing shared component conventions.
@@ -128,7 +128,7 @@ No other files are in scope without an approved Work Order amendment.
 - `/approvals` is the canonical destination for the approval queue.
 - Queue and History are sibling views within `/approvals`; the active view is URL-backed.
 - `/approvals/[approvalId]` is the canonical detail destination.
-- Detail breadcrumbs must represent `Approvals / [Queue or History] / [Approval identifier]`.
+- Detail return navigation must appear in the shared page-header action area and preserve the originating queue context when available.
 - Returning from detail must preserve the originating queue context when it is available in navigation history or the return affordance.
 - Existing Agent Details approval entries must deep-link only when their fixture record is represented by the canonical approval data. Otherwise, keep them as non-interactive context.
 
@@ -290,8 +290,8 @@ WO-009 cannot be closed until the implementation review contains all of the foll
 - [x] No API, backend, runtime, policy, persistence, auth, or execution behavior has been introduced.
 - [x] The shared dialog satisfies its accessibility requirements.
 - [x] Existing Agent Details approval entries deep-link only where fixture identity permits.
-- [x] Automated tests and required quality checks pass.
-- [x] Manual responsive and accessibility evidence is attached to the implementation review.
+- [ ] Automated tests and required quality checks pass.
+- [ ] Manual responsive and accessibility evidence is attached to the implementation review.
 - [ ] All required closure artifacts in Section 7.3 are attached and complete.
 - [x] Documentation, code comments, and UI copy do not overstate prototype behavior.
 - [x] The implementation review confirms conformance with the functional specification, architecture, ADR-002, and ES-003.

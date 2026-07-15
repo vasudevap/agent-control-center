@@ -23,6 +23,7 @@ export default async function AgentDetailPage({
     <div className="flex flex-col gap-8">
       <PageHeader
         title={agent.name}
+        description={agent.description}
         icon={Bot}
         actions={
           <>
