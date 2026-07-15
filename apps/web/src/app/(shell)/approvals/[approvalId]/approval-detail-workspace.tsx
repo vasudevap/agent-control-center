@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, FileWarning, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ArrowLeft, FileWarning, History, ShieldAlert } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,17 +91,27 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready" 
   };
 
   const DecisionCard = (
-    <Card className="overflow-hidden border-brand">
+    <Card className="overflow-hidden">
       <CardHeader className="border-b border-border-default bg-surface-secondary">
         <CardTitle>Decide</CardTitle>
         <CardDescription>Controls change only this local screen state for the current session.</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-2.5 pt-4">
+      <CardContent className="grid gap-2.5 pt-3 sm:pt-3">
         <Button onClick={() => open("approve")} disabled={!actionable || !approveAvailable}>Simulate approval</Button>
         <Button variant="destructive" onClick={() => open("reject")} disabled={!actionable}>Simulate rejection</Button>
         <Button variant="secondary" onClick={() => open("request-clarification")} disabled={!actionable}>Simulate clarification request</Button>
-        {!approveAvailable && actionable && <p role="status" className="text-xs text-error">Approval unavailable: required fictional evidence is incomplete.</p>}
-        {!actionable && <p className="text-xs text-foreground-secondary">This approval is historical or no longer actionable in the prototype.</p>}
+        {!approveAvailable && actionable && (
+          <p role="status" className="flex items-start gap-1.5 text-xs text-error">
+            <FileWarning className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+            Approval unavailable: required fictional evidence is incomplete.
+          </p>
+        )}
+        {!actionable && (
+          <p className="flex items-start gap-1.5 text-xs text-foreground-secondary">
+            <History className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+            This approval is historical or no longer actionable in the prototype.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
