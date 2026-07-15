@@ -45,6 +45,6 @@ export function ExpiryLabel({ approval }: { approval: ApprovalRecord }) {
   );
 }
 
-export function StateChip({ state }: { state: ApprovalState }) {
-  return <StatusBadge status={STATE_TO_ATLAS_STATUS[state]} plain />;
+export function StateChip({ state, className }: { state: ApprovalState; className?: string }) {
+  return <StatusBadge status={STATE_TO_ATLAS_STATUS[state]} plain className={className} />;
 }

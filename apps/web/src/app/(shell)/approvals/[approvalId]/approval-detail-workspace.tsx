@@ -124,7 +124,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready" 
         identifier={current.id}
         description={current.action}
         icon={ShieldAlert}
-        meta={<><RiskChip risk={current.risk as RiskLevel} /><StateChip state={current.state} />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
+        meta={<><RiskChip risk={current.risk as RiskLevel} /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
         actions={<Button asChild variant="ghost" size="sm"><Link href={back}><ArrowLeft className="size-4" aria-hidden="true" />Return to Queue</Link></Button>}
       />
       <Notice />
