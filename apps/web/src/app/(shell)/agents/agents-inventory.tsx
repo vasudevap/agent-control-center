@@ -24,7 +24,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export type { AgentRecord } from "./agent-data";
 
 type InventoryState = "loaded" | "loading" | "error";
-type SortKey = "attention" | "health" | "agent" | "status" | "owner";
+type SortKey = "attention" | "health" | "agent" | "status" | "owner" | "lastRun" | "nextRun";
 
 interface AgentsInventoryProps {
   agents?: AgentRecord[];
@@ -58,6 +58,8 @@ function sortAgents(agents: AgentRecord[], sort: SortKey, direction: "asc" | "de
     if (sort === "agent") return a.name.localeCompare(b.name) * dirMul;
     if (sort === "status") return (STATUS_RANK[a.status] - STATUS_RANK[b.status]) * dirMul || a.name.localeCompare(b.name);
     if (sort === "owner") return a.owner.localeCompare(b.owner) * dirMul || a.name.localeCompare(b.name);
+    if (sort === "lastRun") return (+new Date(a.lastRunAt) - +new Date(b.lastRunAt)) * dirMul;
+    if (sort === "nextRun") return (+new Date(a.nextRunAt ?? "9999-01-01") - +new Date(b.nextRunAt ?? "9999-01-01")) * dirMul;
     return getAttentionRank(a) - getAttentionRank(b) || a.name.localeCompare(b.name);
   });
 }
@@ -112,8 +114,8 @@ function AgentsTable({ agents, sort, direction, onSort }: { agents: AgentRecord[
             <TableHead><SortHeader label="Agent" sortKey="agent" active={sort === "agent"} direction={direction} onSort={onSort} /></TableHead>
             <TableHead><SortHeader label="Status" sortKey="status" active={sort === "status"} direction={direction} onSort={onSort} /></TableHead>
             <TableHead className="hidden lg:table-cell"><SortHeader label="Owner" sortKey="owner" active={sort === "owner"} direction={direction} onSort={onSort} /></TableHead>
-            <TableHead>Last run</TableHead>
-            <TableHead>Next run</TableHead>
+            <TableHead><SortHeader label="Last run" sortKey="lastRun" active={sort === "lastRun"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead><SortHeader label="Next run" sortKey="nextRun" active={sort === "nextRun"} direction={direction} onSort={onSort} /></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -1,5 +1,10 @@
 import type { BadgeProps } from "@/components/ui/badge";
 
+const MINUTE = 60 * 1000;
+const now = () => Date.now();
+const minutesAgo = (m: number) => new Date(now() - m * MINUTE).toISOString();
+const minutesFromNow = (m: number) => new Date(now() + m * MINUTE).toISOString();
+
 export type AgentStatus = "running" | "active" | "paused" | "queued";
 export type AgentHealth = "healthy" | "degraded" | "offline";
 
@@ -11,7 +16,9 @@ export interface AgentRecord {
   health: AgentHealth;
   owner: string;
   lastRun: string;
+  lastRunAt: string;
   nextRun: string;
+  nextRunAt?: string;
   version: string;
   currentIssue?: string;
   issueSummary?: string;
@@ -57,7 +64,9 @@ export const MOCK_AGENTS: AgentRecord[] = [
     health: "degraded",
     owner: "Finance Operations",
     lastRun: "8 minutes ago",
+    lastRunAt: minutesAgo(8),
     nextRun: "In 22 minutes",
+    nextRunAt: minutesFromNow(22),
     version: "v1.8.3",
     currentIssue: "Three invoices are waiting on policy review.",
     issueSummary: "Policy review needed",
@@ -88,7 +97,9 @@ export const MOCK_AGENTS: AgentRecord[] = [
     health: "healthy",
     owner: "Executive Operations",
     lastRun: "18 minutes ago",
+    lastRunAt: minutesAgo(18),
     nextRun: "Tomorrow 6:00 AM",
+    nextRunAt: minutesFromNow(840),
     version: "v2.1.0",
     responsibilities: [
       "Assemble meeting context for upcoming executive calendar events.",
@@ -112,7 +123,9 @@ export const MOCK_AGENTS: AgentRecord[] = [
     health: "healthy",
     owner: "Platform Reliability",
     lastRun: "2 minutes ago",
+    lastRunAt: minutesAgo(2),
     nextRun: "In 13 minutes",
+    nextRunAt: minutesFromNow(13),
     version: "v1.4.7",
     responsibilities: [
       "Monitor connector freshness across approved integration surfaces.",
@@ -136,6 +149,7 @@ export const MOCK_AGENTS: AgentRecord[] = [
     health: "offline",
     owner: "Governance Office",
     lastRun: "Yesterday 4:20 PM",
+    lastRunAt: minutesAgo(1200),
     nextRun: "Not scheduled",
     version: "v0.9.5",
     currentIssue: "Paused after repeated evidence export failures.",
@@ -162,7 +176,9 @@ export const MOCK_AGENTS: AgentRecord[] = [
     health: "degraded",
     owner: "Talent Operations",
     lastRun: "43 minutes ago",
+    lastRunAt: minutesAgo(43),
     nextRun: "In 7 minutes",
+    nextRunAt: minutesFromNow(7),
     version: "v1.2.2",
     responsibilities: [
       "Classify fictional candidate intake items into recruiter review buckets.",
@@ -186,7 +202,9 @@ export const MOCK_AGENTS: AgentRecord[] = [
     health: "healthy",
     owner: "Customer Operations",
     lastRun: "11 minutes ago",
+    lastRunAt: minutesAgo(11),
     nextRun: "In 19 minutes",
+    nextRunAt: minutesFromNow(19),
     version: "v3.0.1",
     responsibilities: [
       "Draft support responses from approved fictional knowledge articles.",
