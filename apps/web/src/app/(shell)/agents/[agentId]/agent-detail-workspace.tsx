@@ -207,12 +207,12 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                     {runs.map((run) => (
                       <TableRow key={`${run.time}-${run.status}`}>
                         <TableCell className="text-xs text-foreground-secondary">{run.time}</TableCell>
-                        <TableCell>
+                        <TableCell className="text-xs">
                           <RunStatusTag status={run.status} />
                         </TableCell>
-                        <TableCell className="hidden text-foreground-secondary sm:table-cell">{run.work}</TableCell>
-                        <TableCell className="hidden text-foreground-secondary md:table-cell">{run.outcome}</TableCell>
-                        <TableCell className="text-foreground-secondary">{run.duration}</TableCell>
+                        <TableCell className="hidden text-xs text-foreground-secondary sm:table-cell">{run.work}</TableCell>
+                        <TableCell className="hidden text-xs text-foreground-secondary md:table-cell">{run.outcome}</TableCell>
+                        <TableCell className="text-xs text-foreground-secondary">{run.duration}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

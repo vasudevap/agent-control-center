@@ -32,7 +32,7 @@ export interface PageHeaderProps {
  */
 export function PageHeader({ eyebrow, title, identifier, description, icon: Icon, actions, meta, className }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col gap-3 border-b border-border-default pb-4", className)}>
+    <div className={cn("flex flex-col gap-1 border-b border-border-default pb-4", className)}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex flex-col gap-1">
           {eyebrow && (

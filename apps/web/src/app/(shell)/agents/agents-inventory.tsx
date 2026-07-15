@@ -124,7 +124,7 @@ function AgentsTable({ agents, sort, direction, onSort }: { agents: AgentRecord[
               <TableCell className="py-2.5"><StatusBadge status={agent.health} iconOnly /></TableCell>
               <TableCell className="min-w-[18rem] py-2.5"><AgentIdentity agent={agent} /></TableCell>
               <TableCell className="py-2.5"><StatusBadge status={agent.status} iconOnly /></TableCell>
-              <TableCell className="hidden py-2.5 text-sm text-foreground-secondary lg:table-cell">{agent.owner}</TableCell>
+              <TableCell className="hidden py-2.5 text-xs text-foreground-secondary lg:table-cell">{agent.owner}</TableCell>
               <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.lastRun}</TableCell>
               <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.nextRun}</TableCell>
             </TableRow>

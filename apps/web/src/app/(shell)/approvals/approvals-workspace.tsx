@@ -199,13 +199,13 @@ function Row({ approval, view }: { approval: ApprovalRecord; view: View }) {
         <Link className="relative z-10 w-fit font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(`/approvals?view=${view}`)}`}>{approval.action}</Link>
         <p className="mt-0.5 font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
       </td>
-      <td className="px-3 py-3 align-top text-foreground-secondary">{approval.agent.name}</td>
+      <td className="px-3 py-3 align-top text-xs text-foreground-secondary">{approval.agent.name}</td>
       <td className="px-3 py-3 align-top text-xs text-foreground-secondary">{relativeTime(approval.requestedAt)}</td>
-      <td className="px-3 py-3 align-top"><ExpiryLabel approval={approval} /></td>
-      <td className="px-4 py-3 align-top">
+      <td className="px-3 py-3 align-top text-xs"><ExpiryLabel approval={approval} /></td>
+      <td className="px-4 py-3 align-top text-xs">
         {view === "queue" ? <ReviewProgressTag progress={approval.reviewProgress} /> : (
           <div className="flex flex-col gap-0.5">
-            <StateChip state={approval.state} />
+            <StateChip state={approval.state} className="text-xs" />
             <span className="text-[11px] text-foreground-tertiary">Outcome: {approval.executionOutcome}</span>
           </div>
         )}
