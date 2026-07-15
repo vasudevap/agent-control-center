@@ -37,13 +37,13 @@ function InfoCard({ title, description, children }: { title: string; description
   );
 }
 
-function Details({ items }: { items: Record<string, React.ReactNode> }) {
+function Details({ items, fullWidth = [] }: { items: Record<string, React.ReactNode>; fullWidth?: string[] }) {
   return (
     <dl className="grid gap-4 sm:grid-cols-2">
       {Object.entries(items).map(([label, value]) => (
-        <div key={label} className="grid gap-1">
+        <div key={label} className={fullWidth.includes(label) ? "grid gap-1 sm:col-span-2" : "grid gap-1"}>
           <dt className="font-mono text-[10px] font-semibold uppercase tracking-wide text-foreground-tertiary">{label}</dt>
-          <dd className="text-sm leading-relaxed text-foreground">{value}</dd>
+          <dd className="break-words text-sm leading-relaxed text-foreground">{value}</dd>
         </div>
       ))}
     </dl>
@@ -150,7 +150,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="grid gap-5">
           <InfoCard title="Proposed action" description="The exact fictional action being reviewed.">
-            <Details items={{ Action: current.action, Target: current.target, Consequence: current.consequence, "Affected scope": current.scope, Environment: current.environment }} />
+            <Details items={{ Action: current.action, Target: current.target, "Payload summary": current.payloadSummary, Consequence: current.consequence, "Affected scope": current.scope, Environment: current.environment }} fullWidth={["Payload summary"]} />
           </InfoCard>
           <InfoCard title="Policy and governance rationale" description="Why an operator review is required.">
             <Details items={{ "Governing policy": current.policy, "Review rationale": current.policyReason }} />
@@ -245,7 +245,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
               <div className="grid gap-2 rounded-atlas-sm border border-border-default bg-surface-secondary p-3 text-sm">
                 <p className="font-mono text-xs text-foreground-tertiary">{current.id}</p>
                 <p className="font-medium text-foreground">{current.action}</p>
-                <Details items={{ Target: current.target, Consequence: current.consequence, Risk: <RiskChip risk={current.risk as RiskLevel} />, Expiry: <ExpiryLabel approval={current} /> }} />
+                <Details items={{ Target: current.target, "Payload summary": current.payloadSummary, Consequence: current.consequence, Risk: <RiskChip risk={current.risk as RiskLevel} />, Expiry: <ExpiryLabel approval={current} /> }} fullWidth={["Payload summary"]} />
               </div>
               <label className="grid gap-1 text-sm font-medium text-foreground">
                 {inputLabel} {reasonRequired ? "(required)" : "(optional)"}

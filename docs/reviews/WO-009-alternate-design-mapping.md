@@ -142,7 +142,7 @@ Still pending before Step 1 can be confirmed:
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
 | Identifier, state, risk, urgency, agent, requested time, and disclosure | Header metadata, Request context, Expiry label, and prototype notice provide these facts. | Candidate match | Confirm no duplicate or missing facts at all widths. |
-| Exact action, target, payload summary, effect, and scope | Proposed action card includes action, target, consequence, scope, and environment. | Partial candidate | Decide whether a distinct payload/content summary is required by the fixture model. |
+| Exact action, target, payload summary, effect, and scope | Every local fixture models a distinct payload summary. Approval Detail presents it as a full-width, wrapping field alongside action, target, consequence, scope, and environment, and repeats it in the simulated-decision confirmation. | Candidate match with automated evidence | Retain final responsive and assistive-technology review. |
 | Policy and governance rationale | Dedicated divided card presents policy and review rationale. | Candidate match | Confirm long policy references wrap and remain readable. |
 | Evidence separated from untrusted content | System metadata, untrusted preview, and missing-evidence alert are visually separated. | Candidate match | Verify accessible association and inert rendering. |
 | Related Agent, Run, and Artifact treatment | Agent links canonically; Run is visibly unavailable; optional fictional Artifact metadata is modeled and displayed with an explicit unavailable-in-prototype treatment. | Candidate match with automated evidence | Extend fixture variety only if later Artifact-page work requires it. |
@@ -202,7 +202,7 @@ was introduced.
 
 Current results on 2026-07-15:
 
-- `npm run test`: 8 test files, 47 passing tests, no pending tests.
+- `npm run test`: 8 test files, 49 passing tests, no pending tests.
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
 - `npm run build`: pass; all 13 application routes generated successfully.
@@ -244,6 +244,8 @@ Passing coverage now includes:
 - semantic association between unavailable Decision regions and their evidence
   explanation;
 - fictional Artifact relationship presentation;
+- explicit local payload summaries in detail and decision confirmation, including long-content wrapping;
+- viewport-contained, internally scrolling tall dialogs at desktop and mobile sizes;
 - mobile Indeterminate investigation guidance;
 - polite post-decision live announcements;
 - controlled expired-during-review behavior; and
@@ -308,5 +310,7 @@ The review proceeds in order from Step 1 through Step 9. For each step:
 | Step 5 | Repeatable Approval Detail and dialog gaps | Verified through automated and browser evidence | Required clarification questions, unavailable-region semantics, Artifact context, mobile Indeterminate guidance, live announcements, controlled expiry, and dialog focus containment now have executable evidence. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 4 | History decision context and ordering | Verified through automated and browser evidence | History now restores safely from its direct URL, exposes explicit decision time, reviewer, reason, outcome, and correlation context across desktop, mobile, and detail views, and defaults to newest decision first. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 4 | Concise History filter contract | Confirmed by owner and verified through automated evidence | History replaces the inapplicable Review-progress filter with terminal State while retaining Search and Risk. Reviewer, Agent, Action type, Decision date, Execution outcome, Environment, and Policy filters are deferred until production-scale needs justify them. No Definition of Done item is marked complete. | 2026-07-15 |
+| Step 5 | Proposed payload summary | Confirmed by owner and verified through automated evidence | Every fictional approval now declares a payload summary. Detail and final simulated-decision confirmation present it in a full-width wrapping field so the operator can inspect what would be authorized. No service connection or Definition of Done completion was introduced. | 2026-07-15 |
+| Step 5 / Step 7 | Payload dialog viewport correction | Verified through automated and browser evidence | Adding payload context exposed excessive dialog height. The shared dialog now remains inside desktop and mobile viewports and scrolls internally; focused component coverage guards the constraint. No Definition of Done item is marked complete. | 2026-07-15 |
 
 No WO-009 Definition of Done item has been marked complete.

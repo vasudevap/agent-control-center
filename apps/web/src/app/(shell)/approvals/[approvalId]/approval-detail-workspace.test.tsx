@@ -20,6 +20,8 @@ describe("ApprovalDetailWorkspace", () => {
 
     expect(screen.getByText(/Frontend prototype/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Send a remediation notice/i)).not.toHaveLength(0);
+    expect(screen.getAllByText("Payload summary")).not.toHaveLength(0);
+    expect(screen.getAllByText(/corrected evidence within five business days/i)).not.toHaveLength(0);
     expect(screen.getByText("External Communications P-214")).toBeInTheDocument();
     expect(screen.getByText("Untrusted evidence preview")).toBeInTheDocument();
     expect(screen.getAllByText(/run-2026-07-12-001 \(unavailable in prototype\)/i)).not.toHaveLength(0);
@@ -27,6 +29,19 @@ describe("ApprovalDetailWorkspace", () => {
       "href",
       "/agents/agent-policy-digest"
     );
+  });
+
+  it("keeps a long payload summary readable in the full-width detail field", () => {
+    const longPayload = `${"Fictional governed parameter ".repeat(18)}final value.`;
+    render(
+      <ApprovalDetailWorkspace
+        approval={{ ...fixture("apr-2026-001"), payloadSummary: longPayload }}
+      />
+    );
+
+    const payloadValue = screen.getByText(longPayload);
+    expect(payloadValue).toHaveClass("break-words");
+    expect(payloadValue.closest("div")).toHaveClass("sm:col-span-2");
   });
 
   it("simulates a low-risk approval without requiring a reason or step-up", async () => {

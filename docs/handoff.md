@@ -10,7 +10,7 @@ From this folder's root:
     npm run dev        # Next.js dev server
     npm run typecheck  # tsc --noEmit
     npm run lint       # eslint
-    npm run test       # Vitest: 47 passing tests across 8 files; no pending tests
+    npm run test       # Vitest: 49 passing tests across 8 files; no pending tests
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 
@@ -52,7 +52,7 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **Approvals.** Queue/History as underline tabs merged into the results panel header with a queue count chip. The page header reuses the exact Approvals icon exported by the navigation model. Control bar: search, Risk, a view-specific Review filter on Queue or State filter on History, risk legend, and clear button. The agent filter was deliberately replaced; agent search still works through the text field. Table columns: Risk (leading, icon-only, sortable), Approval (sortable by attention rank; action + mono id/policy caption; stretched-link), Agent (sortable), Requested on Queue or Decided on History (both sortable), Expiry (sortable, urgency-colored), and Review on Queue (sortable, pictographic tag) or Outcome on History (State via StatusBadge `plain` + outcome caption). History rows also expose reason, reviewer, and correlation context. Mobile cards preserve state, risk, action, target, agent, identifier, expiry, review/outcome context, Queue request time, and History decision metadata. Queue defaults to attention ordering: expiry urgency first, then risk. History defaults to the newest explicit decision timestamp.
 
-**Approval Detail.** Main column of InfoCards (Proposed action, Policy rationale, Evidence and context with the untrusted-evidence callout, Activity timeline), sticky aside with the Decide card (shaded actionable header, simulation buttons, icon-carrying status lines) and Request context. Request context models Agent, Run, and optional Artifact relationships without linking unavailable prototype routes. Mobile gets the decision card inline plus a fixed bottom bar and keeps Indeterminate investigation guidance in normal reading order. Dialogs enforce decision-specific required text, simulated step-up for high risk, focus containment, controlled expiry-at-confirmation behavior, and polite live announcements.
+**Approval Detail.** Main column of InfoCards (Proposed action with a full-width payload summary, Policy rationale, Evidence and context with the untrusted-evidence callout, Activity timeline), sticky aside with the Decide card (shaded actionable header, simulation buttons, icon-carrying status lines) and Request context. The payload summary also appears in the final simulated-decision confirmation. Request context models Agent, Run, and optional Artifact relationships without linking unavailable prototype routes. Mobile gets the decision card inline plus a fixed bottom bar and keeps Indeterminate investigation guidance in normal reading order. Dialogs enforce decision-specific required text, simulated step-up for high risk, focus containment, controlled expiry-at-confirmation behavior, and polite live announcements. Tall dialogs stay within the viewport and scroll internally.
 
 ## Decision log
 

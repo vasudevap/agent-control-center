@@ -13,6 +13,18 @@ describe("Dialog", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("keeps tall dialog content inside the viewport with internal scrolling", async () => {
+    const user = userEvent.setup();
+    render(<Dialog><DialogTrigger asChild><button type="button">Open tall review</button></DialogTrigger><DialogContent><DialogTitle>Tall simulated decision</DialogTitle><DialogDescription>Local-only prototype confirmation.</DialogDescription><div>Long content</div></DialogContent></Dialog>);
+
+    await user.click(screen.getByRole("button", { name: "Open tall review" }));
+    expect(screen.getByRole("dialog", { name: "Tall simulated decision" })).toHaveClass(
+      "max-h-[calc(100dvh-2rem)]",
+      "overflow-y-auto",
+      "overscroll-contain"
+    );
+  });
+
   it("restores focus to the trigger after closing", async () => {
     const user = userEvent.setup();
     render(<Dialog><DialogTrigger asChild><button type="button">Open review</button></DialogTrigger><DialogContent><DialogTitle>Review simulated decision</DialogTitle><DialogDescription>Local-only prototype confirmation.</DialogDescription></DialogContent></Dialog>);
