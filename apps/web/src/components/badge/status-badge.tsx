@@ -1,4 +1,4 @@
-import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, Loader2, Power, PowerOff } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, History, Loader2, Power, PowerOff, Undo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type AtlasStatus =
@@ -11,7 +11,9 @@ export type AtlasStatus =
   | "queued"
   | "pending"
   | "approved"
-  | "rejected";
+  | "rejected"
+  | "expired"
+  | "cancelled";
 
 const STATUS_CONFIG: Record<
   AtlasStatus,
@@ -82,6 +84,18 @@ const STATUS_CONFIG: Record<
     icon: XCircle,
     text: "text-error",
     className: "bg-error-bg text-error border-error-border",
+  },
+  expired: {
+    label: "Expired",
+    icon: History,
+    text: "text-foreground-secondary",
+    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
+  },
+  cancelled: {
+    label: "Cancelled",
+    icon: Undo2,
+    text: "text-foreground-secondary",
+    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
 };
 

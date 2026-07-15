@@ -1,11 +1,16 @@
 import { Ban, Eye, Inbox, MessageCircleQuestion } from "lucide-react";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { StatusBadge, type AtlasStatus } from "@/components/badge/status-badge";
 import { cn } from "@/lib/utils";
 import type { ApprovalRecord, ApprovalState, ReviewProgress } from "./approval-data";
 import { getExpiryPresentation } from "./approval-presentation";
 
-export const stateVariant = (state: ApprovalState): BadgeProps["variant"] =>
-  state === "Approved" ? "success" : state === "Rejected" ? "error" : state === "Expired" ? "neutral" : state === "Cancelled" ? "neutral" : "brand";
+const STATE_TO_ATLAS_STATUS: Record<ApprovalState, AtlasStatus> = {
+  Pending: "pending",
+  Approved: "approved",
+  Rejected: "rejected",
+  Expired: "expired",
+  Cancelled: "cancelled",
+};
 
 export const REVIEW_CONFIG: Record<ReviewProgress, { icon: React.ComponentType<{ className?: string }>; label: string; className: string }> = {
   Unopened: { icon: Inbox, label: "Unopened", className: "text-foreground-tertiary" },
@@ -41,5 +46,5 @@ export function ExpiryLabel({ approval }: { approval: ApprovalRecord }) {
 }
 
 export function StateChip({ state }: { state: ApprovalState }) {
-  return <Badge variant={stateVariant(state)}>{state}</Badge>;
+  return <StatusBadge status={STATE_TO_ATLAS_STATUS[state]} plain />;
 }
