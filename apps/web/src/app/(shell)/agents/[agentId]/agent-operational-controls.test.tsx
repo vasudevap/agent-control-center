@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { AgentOperationalControls } from "./agent-operational-controls";
@@ -14,7 +14,7 @@ describe("AgentOperationalControls", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "Run Now" }));
+    await user.click(screen.getByRole("button", { name: "Run now" }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Start a manual run?")).toBeInTheDocument();
@@ -32,11 +32,11 @@ describe("AgentOperationalControls", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "Pause Agent" }));
+    await user.click(screen.getByRole("button", { name: "Pause agent" }));
 
     expect(screen.getByText(/run already in progress will be allowed to finish/i)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Pause agent" }));
-    expect(screen.getByRole("button", { name: "Resume Agent" })).toBeInTheDocument();
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Pause agent" }));
+    expect(screen.getByRole("button", { name: "Resume agent" })).toBeInTheDocument();
   });
 
   it("prevents an accidental duplicate manual run", () => {
@@ -48,6 +48,6 @@ describe("AgentOperationalControls", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "Run Now" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Run now" })).toBeDisabled();
   });
 });

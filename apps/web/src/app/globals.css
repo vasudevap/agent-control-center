@@ -45,6 +45,19 @@
   --color-info-bg: var(--info-bg);
   --color-info-border: var(--info-border);
 
+  --color-risk-low: var(--risk-low);
+  --color-risk-low-bg: var(--risk-low-bg);
+  --color-risk-low-border: var(--risk-low-border);
+  --color-risk-medium: var(--risk-medium);
+  --color-risk-medium-bg: var(--risk-medium-bg);
+  --color-risk-medium-border: var(--risk-medium-border);
+  --color-risk-high: var(--risk-high);
+  --color-risk-high-bg: var(--risk-high-bg);
+  --color-risk-high-border: var(--risk-high-border);
+  --color-risk-critical: var(--risk-critical);
+  --color-risk-critical-bg: var(--risk-critical-bg);
+  --color-risk-critical-border: var(--risk-critical-border);
+
   --color-focus-ring: var(--focus-ring);
 
   --shadow-atlas-sm: var(--shadow-sm);

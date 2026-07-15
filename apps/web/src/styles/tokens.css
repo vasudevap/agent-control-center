@@ -1,73 +1,101 @@
 /**
- * Atlas Design Tokens
+ * Atlas Alternate Design Exploration Tokens
  *
- * Modern Infrastructure direction: neutral slate surfaces, a single
- * restrained brand accent, and explicit status colors. No gradients,
- * no glassmorphism, minimal shadows (per ui-standards.md).
+ * "Command Deck" direction: an operator-console visual language.
+ * Departures from the baseline Modern Infrastructure tokens are
+ * deliberate and documented in the exploration brief
+ * (docs/exploration/gui-alternate-second-opinion/00-brief.md):
  *
- * Spacing follows an 8px system: use Tailwind's even spacing steps
- * (2, 4, 6, 8, 10, 12...) which resolve to 8px, 16px, 24px, 32px...
+ * - Sharper, smaller radii (console/grid feel instead of soft cards).
+ * - Shadows removed almost entirely; hierarchy comes from borders,
+ *   accent bars, and surface layering, per Atlas's own stated
+ *   preference for minimal elevation, taken further here.
+ * - A four-step, distinctly hued risk scale (Low/Medium/High/Critical)
+ *   that does not double-book the same hue for two meanings, unlike
+ *   the baseline where Medium risk and informational badges share blue.
+ * - Dark is treated as the native/default operating mode for this
+ *   exploration (an operations-console framing); light remains a
+ *   fully engineered, equally complete second theme.
  *
- * Brand accent is a temporary, deliberately restrained neutral-blue
- * placeholder — not the final Atlas identity. It will be replaced once
- * brand color is derived from the approved logo/visual identity.
+ * Typography stays on the approved Inter + JetBrains Mono pairing
+ * (DDR-001). This exploration does not challenge typeface choice,
+ * only structure, density, and hierarchy.
  */
 
 :root {
   /* ---- Neutral surface scale ---- */
   --atlas-neutral-0: #ffffff;
-  --atlas-neutral-50: #f8fafc;
-  --atlas-neutral-100: #f1f5f9;
-  --atlas-neutral-150: #edf2f7;
-  --atlas-neutral-200: #e2e8f0;
-  --atlas-neutral-300: #cbd5e1;
-  --atlas-neutral-400: #94a3b8;
-  --atlas-neutral-500: #64748b;
-  --atlas-neutral-600: #475569;
-  --atlas-neutral-700: #334155;
-  --atlas-neutral-800: #1e293b;
-  --atlas-neutral-900: #0f172a;
-  --atlas-neutral-950: #020617;
+  --atlas-neutral-50: #f7f8fa;
+  --atlas-neutral-100: #eef0f3;
+  --atlas-neutral-150: #e7eaee;
+  --atlas-neutral-200: #dbdfe5;
+  --atlas-neutral-300: #c1c8d1;
+  --atlas-neutral-400: #8d97a5;
+  --atlas-neutral-500: #626d7c;
+  --atlas-neutral-600: #475363;
+  --atlas-neutral-700: #303948;
+  --atlas-neutral-800: #1b212c;
+  --atlas-neutral-900: #10141c;
+  --atlas-neutral-950: #080a0f;
 
-  /* ---- Brand accent (temporary, refined neutral-blue placeholder) ---- */
-  --atlas-brand-50: #eef2f7;
-  --atlas-brand-100: #dde6f0;
-  --atlas-brand-200: #c2d3e3;
-  --atlas-brand-300: #9db9d1;
-  --atlas-brand-400: #7098bb;
-  --atlas-brand-500: #4d7aa3;
-  --atlas-brand-600: #3d6690;
-  --atlas-brand-700: #325577;
-  --atlas-brand-800: #2a465f;
-  --atlas-brand-900: #23394c;
+  /* ---- Brand accent: cooler operational blue, distinct from the
+     baseline's warmer slate-blue ---- */
+  --atlas-brand-50: #eaf1fd;
+  --atlas-brand-100: #d3e2fb;
+  --atlas-brand-200: #a7c5f7;
+  --atlas-brand-300: #71a2ef;
+  --atlas-brand-400: #4382e6;
+  --atlas-brand-500: #2563d6;
+  --atlas-brand-600: #1d4ed8;
+  --atlas-brand-700: #1b3fae;
+  --atlas-brand-800: #1a3488;
+  --atlas-brand-900: #172a68;
 
-  /* ---- Status colors ---- */
+  /* ---- Status colors (approval/execution state axis) ---- */
   --atlas-success-500: #10b981;
-  --atlas-success-600: #059669;
-  --atlas-success-bg: #ecfdf5;
-  --atlas-success-border: #a7f3d0;
+  --atlas-success-600: #047857;
+  --atlas-success-bg: #e9fbf3;
+  --atlas-success-border: #a7ecd2;
 
   --atlas-warning-500: #f59e0b;
-  --atlas-warning-600: #d97706;
-  --atlas-warning-bg: #fffbeb;
-  --atlas-warning-border: #fde68a;
+  --atlas-warning-600: #b45309;
+  --atlas-warning-bg: #fef6e7;
+  --atlas-warning-border: #fbdba1;
 
   --atlas-error-500: #ef4444;
-  --atlas-error-600: #dc2626;
-  --atlas-error-bg: #fef2f2;
-  --atlas-error-border: #fecaca;
+  --atlas-error-600: #b91c1c;
+  --atlas-error-bg: #fdecec;
+  --atlas-error-border: #f7bcbc;
 
   --atlas-info-500: #3b82f6;
-  --atlas-info-600: #2563eb;
-  --atlas-info-bg: #eff6ff;
-  --atlas-info-border: #bfdbfe;
+  --atlas-info-600: #1d4ed8;
+  --atlas-info-bg: #eaf1fd;
+  --atlas-info-border: #a7c5f7;
+
+  /* ---- Risk scale (distinct axis from status; four hues, none
+     shared with a status meaning) ---- */
+  --atlas-risk-low: #626d7c;
+  --atlas-risk-low-bg: #eef0f3;
+  --atlas-risk-low-border: #c1c8d1;
+
+  --atlas-risk-medium: #b45309;
+  --atlas-risk-medium-bg: #fef6e7;
+  --atlas-risk-medium-border: #fbdba1;
+
+  --atlas-risk-high: #c2410c;
+  --atlas-risk-high-bg: #fdf0e7;
+  --atlas-risk-high-border: #f6c79a;
+
+  --atlas-risk-critical: #b91c1c;
+  --atlas-risk-critical-bg: #fdecec;
+  --atlas-risk-critical-border: #f7bcbc;
 
   /* ---- Semantic surface tokens (light mode) ---- */
-  --background: var(--atlas-neutral-150);
+  --background: var(--atlas-neutral-100);
   --surface: var(--atlas-neutral-0);
   --surface-secondary: var(--atlas-neutral-50);
-  --surface-tertiary: var(--atlas-neutral-100);
-  --surface-hover: var(--atlas-neutral-100);
+  --surface-tertiary: var(--atlas-neutral-150);
+  --surface-hover: var(--atlas-neutral-150);
   --surface-active: var(--atlas-neutral-200);
 
   --foreground: var(--atlas-neutral-900);
@@ -75,18 +103,12 @@
   --foreground-tertiary: var(--atlas-neutral-400);
   --foreground-on-brand: var(--atlas-neutral-0);
 
-  /* Borders separate primarily through spacing; these are hairlines,
-     not outlines — kept low-contrast and theme-relative (alpha over
-     the current surface) rather than solid neutral swatches. */
-  --border-default: rgb(15 23 42 / 0.10);
-  --border-strong: rgb(15 23 42 / 0.20);
-  --border-subtle: rgb(15 23 42 / 0.07);
+  --border-default: rgb(16 20 28 / 0.12);
+  --border-strong: rgb(16 20 28 / 0.24);
+  --border-subtle: rgb(16 20 28 / 0.08);
 
-  /* --brand: text/icon/accent tone, tuned per-theme for contrast.
-     --brand-solid: button/chip backgrounds — stays constant across
-     themes so solid-fill contrast with white text is never in question. */
-  --brand: var(--atlas-brand-600);
-  --brand-hover: var(--atlas-brand-700);
+  --brand: var(--atlas-brand-700);
+  --brand-hover: var(--atlas-brand-800);
   --brand-subtle: var(--atlas-brand-100);
   --brand-solid: var(--atlas-brand-600);
   --brand-solid-hover: var(--atlas-brand-700);
@@ -107,21 +129,36 @@
   --info-bg: var(--atlas-info-bg);
   --info-border: var(--atlas-info-border);
 
+  --risk-low: var(--atlas-risk-low);
+  --risk-low-bg: var(--atlas-risk-low-bg);
+  --risk-low-border: var(--atlas-risk-low-border);
+  --risk-medium: var(--atlas-risk-medium);
+  --risk-medium-bg: var(--atlas-risk-medium-bg);
+  --risk-medium-border: var(--atlas-risk-medium-border);
+  --risk-high: var(--atlas-risk-high);
+  --risk-high-bg: var(--atlas-risk-high-bg);
+  --risk-high-border: var(--atlas-risk-high-border);
+  --risk-critical: var(--atlas-risk-critical);
+  --risk-critical-bg: var(--atlas-risk-critical-bg);
+  --risk-critical-border: var(--atlas-risk-critical-border);
+
   --focus-ring: var(--atlas-brand-500);
 
-  /* ---- Shadows (minimal, per ui-standards.md) ---- */
-  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04);
-  --shadow-md: 0 1px 3px 0 rgb(15 23 42 / 0.08), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+  /* ---- Shadows: near-zero. Hierarchy comes from borders and
+     accent bars, not elevation. ---- */
+  --shadow-sm: 0 0 0 1px rgb(16 20 28 / 0.03);
+  --shadow-md: 0 1px 0 0 rgb(16 20 28 / 0.06);
 
-  /* ---- Radius ---- */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  /* ---- Radius: sharper, console-grid feel ---- */
+  --radius-sm: 0.1875rem;
+  --radius-md: 0.3125rem;
+  --radius-lg: 0.5rem;
 
-  /* ---- Sidebar ---- */
-  --sidebar-width: 15rem;
-  --sidebar-width-collapsed: 4rem;
-  --topbar-height: 3.5rem;
+  /* ---- Rail / bar ---- */
+  --sidebar-width: 13.5rem;
+  --sidebar-width-collapsed: 3.5rem;
+  --topbar-height: 3rem;
+  --statusbar-height: 2.25rem;
 }
 
 .dark {
@@ -129,45 +166,55 @@
   --surface: var(--atlas-neutral-900);
   --surface-secondary: var(--atlas-neutral-800);
   --surface-tertiary: var(--atlas-neutral-800);
-  --surface-hover: var(--atlas-neutral-800);
-  --surface-active: var(--atlas-neutral-700);
+  --surface-hover: #232a37;
+  --surface-active: #2b3341;
 
-  --foreground: var(--atlas-neutral-50);
-  --foreground-secondary: var(--atlas-neutral-400);
-  --foreground-tertiary: var(--atlas-neutral-500);
+  --foreground: #f2f4f7;
+  --foreground-secondary: #9aa5b4;
+  --foreground-tertiary: #6b7688;
   --foreground-on-brand: var(--atlas-neutral-0);
 
-  --border-default: rgb(255 255 255 / 0.08);
-  --border-strong: rgb(255 255 255 / 0.16);
-  --border-subtle: rgb(255 255 255 / 0.05);
+  --border-default: rgb(255 255 255 / 0.10);
+  --border-strong: rgb(255 255 255 / 0.20);
+  --border-subtle: rgb(255 255 255 / 0.06);
 
-  /* Lighter than light-mode --brand for AA text contrast on dark
-     surfaces; --brand-solid stays the same dark tone in both themes
-     so button fills read identically regardless of theme. */
-  --brand: #86a8c7;
-  --brand-hover: #9fbdd6;
-  --brand-subtle: rgb(134 168 199 / 0.14);
+  --brand: #8fb4f7;
+  --brand-hover: #aac6f9;
+  --brand-subtle: rgb(143 180 247 / 0.16);
   --brand-solid: var(--atlas-brand-600);
-  --brand-solid-hover: var(--atlas-brand-700);
+  --brand-solid-hover: var(--atlas-brand-500);
 
-  --success: #34d399;
-  --success-bg: rgb(16 185 129 / 0.12);
-  --success-border: rgb(16 185 129 / 0.32);
+  --success: #3ddba0;
+  --success-bg: rgb(16 185 129 / 0.14);
+  --success-border: rgb(16 185 129 / 0.34);
 
-  --warning: #fbbf24;
-  --warning-bg: rgb(245 158 11 / 0.12);
-  --warning-border: rgb(245 158 11 / 0.32);
+  --warning: #f0a83e;
+  --warning-bg: rgb(245 158 11 / 0.14);
+  --warning-border: rgb(245 158 11 / 0.34);
 
-  --error: #f87171;
-  --error-bg: rgb(239 68 68 / 0.12);
-  --error-border: rgb(239 68 68 / 0.32);
+  --error: #f38080;
+  --error-bg: rgb(239 68 68 / 0.14);
+  --error-border: rgb(239 68 68 / 0.34);
 
-  --info: #60a5fa;
-  --info-bg: rgb(59 130 246 / 0.12);
-  --info-border: rgb(59 130 246 / 0.32);
+  --info: #7eabf6;
+  --info-bg: rgb(59 130 246 / 0.14);
+  --info-border: rgb(59 130 246 / 0.34);
 
-  --focus-ring: #86a8c7;
+  --risk-low: #9aa5b4;
+  --risk-low-bg: rgb(154 165 180 / 0.12);
+  --risk-low-border: rgb(154 165 180 / 0.3);
+  --risk-medium: #f0a83e;
+  --risk-medium-bg: rgb(245 158 11 / 0.14);
+  --risk-medium-border: rgb(245 158 11 / 0.34);
+  --risk-high: #f2924f;
+  --risk-high-bg: rgb(234 111 30 / 0.16);
+  --risk-high-border: rgb(234 111 30 / 0.36);
+  --risk-critical: #f38080;
+  --risk-critical-bg: rgb(239 68 68 / 0.16);
+  --risk-critical-border: rgb(239 68 68 / 0.4);
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.24);
-  --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.36), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --focus-ring: #8fb4f7;
+
+  --shadow-sm: 0 0 0 1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 1px 0 0 rgb(0 0 0 / 0.4);
 }

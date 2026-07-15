@@ -1,76 +1,57 @@
-import { Activity } from "lucide-react";
+import { Loader2, CircleDashed } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { StatusBadge } from "@/components/badge/status-badge";
 import { EmptyState } from "@/components/state/empty-state";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import type { ActiveRun } from "../types/overview.types";
+import type { AgentRecord } from "@/app/(shell)/agents/agent-data";
 
-export interface ActiveRunsSectionProps {
-  runs: ActiveRun[];
-  state?: "success" | "loading" | "empty";
-}
+const ACTION_BY_AGENT: Record<string, string> = {
+  "agent-invoice-reconcile": "Matching invoices against approved purchase orders",
+  "agent-calendar-briefing": "Assembling tomorrow's meeting briefs",
+  "agent-connectors-health": "Polling connector freshness across integrations",
+  "agent-recruiting-triage": "Classifying queued candidate intake items",
+  "agent-support-drafts": "Drafting responses from approved knowledge articles",
+  "agent-policy-digest": "Awaiting operator investigation",
+};
 
-export function ActiveRunsSection({ runs, state = "success" }: ActiveRunsSectionProps) {
+/**
+ * Derived from MOCK_AGENTS status, not a separate run-history fixture.
+ * Run state (running/queued) and agent health are kept as two visibly
+ * distinct badges here rather than one mixed status vocabulary, unlike
+ * the baseline where a single status field mixed "queued" (a run
+ * state) with "offline" (a health state) in the same badge.
+ */
+export function ActiveRunsSection({ agents }: { agents: AgentRecord[] }) {
+  const active = agents.filter((agent) => agent.status === "running" || agent.status === "active" || agent.status === "queued");
+
   return (
-    <Card className="bg-surface-secondary">
+    <Card>
       <CardHeader>
-        <CardTitle>Active Runs</CardTitle>
-        <CardDescription>Newest executions first</CardDescription>
+        <CardTitle>Active work</CardTitle>
+        <CardDescription>Agents currently running or queued</CardDescription>
       </CardHeader>
-
-      {state === "loading" && (
-        <CardContent className="flex flex-col gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </CardContent>
-      )}
-
-      {state === "empty" && (
-        <EmptyState
-          icon={Activity}
-          title="No active runs"
-          description="Runs will appear here as agents execute."
-        />
-      )}
-
-      {state === "success" && (
-        <CardContent>
-          <ol className="flex flex-col">
-            {runs.map((run, i) => (
-              <li key={run.id} className="relative flex gap-4 pb-6 last:pb-0">
-                {i !== runs.length - 1 && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute left-[7px] top-4 h-full w-px bg-border-default"
-                  />
+      {active.length === 0 ? (
+        <EmptyState icon={CircleDashed} title="No active work" description="No agents are currently running or queued." className="py-10" />
+      ) : (
+        <CardContent className="grid gap-2">
+          {active.map((agent) => {
+            const running = agent.status === "running" || agent.status === "active";
+            return (
+              <div key={agent.id} className="flex items-center gap-3 overflow-hidden rounded-atlas-sm border border-border-default bg-surface-secondary px-3 py-2.5">
+                {running ? (
+                  <Loader2 className="size-4 shrink-0 animate-spin text-brand" aria-hidden="true" />
+                ) : (
+                  <CircleDashed className="size-4 shrink-0 text-foreground-tertiary" aria-hidden="true" />
                 )}
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "relative mt-1.5 size-3.5 shrink-0 rounded-full border-2 border-surface",
-                    run.status === "running" && "bg-info",
-                    run.status === "queued" && "bg-foreground-tertiary",
-                    run.status === "healthy" && "bg-success",
-                    run.status === "offline" && "bg-error"
-                  )}
-                />
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                    <span className="text-sm font-medium text-foreground">{run.agentName}</span>
-                    <StatusBadge status={run.status} />
-                  </div>
-                  <p className="text-xs text-foreground-secondary">{run.action}</p>
-                  <div className="flex gap-3 font-mono text-[11px] text-foreground-tertiary">
-                    <span>started {run.startedAt}</span>
-                    <span>·</span>
-                    <span>{run.duration}</span>
-                  </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">{agent.name}</p>
+                  <p className="truncate text-xs text-foreground-secondary">{ACTION_BY_AGENT[agent.id] ?? agent.description}</p>
                 </div>
-              </li>
-            ))}
-          </ol>
+                <span className={cn("shrink-0 rounded-atlas-sm px-2 py-0.5 text-[11px] font-medium", running ? "bg-brand-subtle text-brand" : "bg-surface-tertiary text-foreground-secondary")}>
+                  {running ? "Running" : "Queued"}
+                </span>
+              </div>
+            );
+          })}
         </CardContent>
       )}
     </Card>

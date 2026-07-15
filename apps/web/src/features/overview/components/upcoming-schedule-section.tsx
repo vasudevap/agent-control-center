@@ -1,57 +1,30 @@
-import { CalendarClock, CalendarX2 } from "lucide-react";
+import { CalendarClock, CalendarOff } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/state/empty-state";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { ScheduleItem } from "../types/overview.types";
+import type { AgentRecord } from "@/app/(shell)/agents/agent-data";
 
-export interface UpcomingScheduleSectionProps {
-  items: ScheduleItem[];
-  state?: "success" | "loading" | "empty";
-}
+/** Derived from MOCK_AGENTS.nextRun; agents with no scheduled next run are excluded. */
+export function UpcomingScheduleSection({ agents }: { agents: AgentRecord[] }) {
+  const scheduled = agents.filter((agent) => agent.nextRun !== "Not scheduled" && agent.nextRun !== "Paused");
 
-export function UpcomingScheduleSection({ items, state = "success" }: UpcomingScheduleSectionProps) {
   return (
-    <Card className="bg-surface-secondary">
+    <Card>
       <CardHeader>
-        <CardTitle>Upcoming Schedule</CardTitle>
-        <CardDescription>Next scheduled agent activity</CardDescription>
+        <CardTitle>Upcoming schedule</CardTitle>
+        <CardDescription>Next scheduled run per agent</CardDescription>
       </CardHeader>
-
-      {state === "loading" && (
-        <CardContent className="flex flex-col gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </CardContent>
-      )}
-
-      {state === "empty" && (
-        <EmptyState
-          icon={CalendarX2}
-          title="Nothing scheduled"
-          description="Scheduled runs will appear here."
-        />
-      )}
-
-      {state === "success" && (
-        <CardContent className="flex flex-col gap-1">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-3 rounded-atlas-md px-2 py-2.5 -mx-2 transition-colors hover:bg-surface-hover"
-            >
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-atlas-md bg-brand-subtle text-brand">
-                <CalendarClock className="size-4" aria-hidden="true" />
+      {scheduled.length === 0 ? (
+        <EmptyState icon={CalendarOff} title="Nothing scheduled" description="No agents have an upcoming scheduled run." className="py-10" />
+      ) : (
+        <CardContent className="grid gap-2">
+          {scheduled.map((agent) => (
+            <div key={agent.id} className="flex items-center gap-3 overflow-hidden rounded-atlas-sm border border-border-default bg-surface-secondary px-3 py-2.5">
+              <CalendarClock className="size-4 shrink-0 text-foreground-tertiary" aria-hidden="true" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-foreground">{agent.name}</p>
+                <p className="truncate text-xs text-foreground-secondary">{agent.description}</p>
               </div>
-              <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-sm font-medium text-foreground">{item.task}</span>
-                <span className="text-xs text-foreground-secondary">{item.agentName}</span>
-              </div>
-              <div className="flex shrink-0 flex-col items-end gap-1">
-                <span className="font-mono text-xs text-foreground">{item.time}</span>
-                <Badge variant="neutral">{item.cadence}</Badge>
-              </div>
+              <span className="shrink-0 font-mono text-xs text-foreground-secondary">{agent.nextRun}</span>
             </div>
           ))}
         </CardContent>

@@ -81,18 +81,20 @@ export function AgentOperationalControls({
     <>
       <Button
         variant="secondary"
+        size="sm"
         onClick={() => setAction(isPaused ? "resume" : "pause")}
       >
         {isPaused ? <RotateCcw aria-hidden="true" /> : <Pause aria-hidden="true" />}
-        {isPaused ? "Resume Agent" : "Pause Agent"}
+        {isPaused ? "Resume agent" : "Pause agent"}
       </Button>
       <Button
+        size="sm"
         onClick={() => setAction("run")}
         disabled={runBlocked}
         title={runBlocked ? "A run is already active or queued" : undefined}
       >
         <Play aria-hidden="true" />
-        Run Now
+        Run now
       </Button>
 
       {action && content && (
