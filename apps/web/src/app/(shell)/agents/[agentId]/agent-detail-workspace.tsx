@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronDown, ShieldCheck, XCircle } from "lucide-react";
 import type { AgentRecord } from "../agent-data";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
@@ -21,6 +21,23 @@ interface RunRecord {
   work: string;
   outcome: string;
   duration: string;
+}
+
+const RUN_STATUS_CONFIG: Record<RunRecord["status"], { icon: React.ComponentType<{ className?: string }>; iconSize: string; className: string }> = {
+  Success: { icon: CheckCircle2, iconSize: "size-3.5", className: "text-success" },
+  "Action Required": { icon: AlertTriangle, iconSize: "size-4", className: "text-warning" },
+  Failed: { icon: XCircle, iconSize: "size-3.5", className: "text-error" },
+};
+
+function RunStatusTag({ status }: { status: RunRecord["status"] }) {
+  const config = RUN_STATUS_CONFIG[status];
+  const Icon = config.icon;
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-xs font-medium", config.className)}>
+      <Icon className={config.iconSize} aria-hidden="true" />
+      {status}
+    </span>
+  );
 }
 
 function getRuns(agent: AgentRecord): RunRecord[] {
@@ -191,7 +208,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                       <TableRow key={`${run.time}-${run.status}`}>
                         <TableCell className="text-xs text-foreground-secondary">{run.time}</TableCell>
                         <TableCell>
-                          <Badge variant={run.status === "Success" ? "success" : run.status === "Failed" ? "error" : "warning"}>{run.status}</Badge>
+                          <RunStatusTag status={run.status} />
                         </TableCell>
                         <TableCell className="hidden text-foreground-secondary sm:table-cell">{run.work}</TableCell>
                         <TableCell className="hidden text-foreground-secondary md:table-cell">{run.outcome}</TableCell>
