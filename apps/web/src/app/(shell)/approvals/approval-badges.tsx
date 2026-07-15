@@ -14,6 +14,12 @@ export const REVIEW_CONFIG: Record<ReviewProgress, { icon: React.ComponentType<{
   Blocked: { icon: Ban, label: "Blocked", className: "text-warning" },
 };
 
+const REVIEW_RANK: Record<ReviewProgress, number> = { Unopened: 0, "In review": 1, "Awaiting information": 2, Blocked: 3 };
+
+export function reviewRank(progress: ReviewProgress) {
+  return REVIEW_RANK[progress];
+}
+
 export function ReviewProgressTag({ progress }: { progress: ReviewProgress }) {
   const config = REVIEW_CONFIG[progress];
   const Icon = config.icon;

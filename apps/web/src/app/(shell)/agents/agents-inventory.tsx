@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, Bot, CheckCircle2, CircleOff, FilterX, Loader2, Power, PowerOff, CircleDashed, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, Bot, CheckCircle2, CircleOff, FilterX, Loader2, Power, PowerOff, CircleDashed, XCircle } from "lucide-react";
 import {
   HEALTH_LABELS,
   MOCK_AGENTS,
@@ -24,11 +24,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export type { AgentRecord } from "./agent-data";
 
 type InventoryState = "loaded" | "loading" | "error";
+type SortKey = "attention" | "health" | "agent" | "status" | "owner";
 
 interface AgentsInventoryProps {
   agents?: AgentRecord[];
   state?: InventoryState;
 }
+
+// Ascending severity, mirroring risk's Low-to-Critical convention in Approvals.
+const HEALTH_RANK: Record<AgentHealth, number> = { healthy: 0, degraded: 1, offline: 2 };
+// Matches the legend order shown in the control bar (Running, Active, Paused, Queued).
+const STATUS_RANK: Record<AgentStatus, number> = { running: 0, active: 1, paused: 2, queued: 3 };
 
 function getAttentionRank(agent: AgentRecord) {
   if (agent.currentIssue) return 0;
@@ -37,16 +43,32 @@ function getAttentionRank(agent: AgentRecord) {
   return 3;
 }
 
-function orderAgentsByAttention(agents: AgentRecord[]) {
-  return [...agents].sort((a, b) => getAttentionRank(a) - getAttentionRank(b) || a.name.localeCompare(b.name));
-}
-
 function filterAgents(agents: AgentRecord[], query: string, status: AgentStatus | "all", health: AgentHealth | "all") {
   const q = query.trim().toLowerCase();
-  return orderAgentsByAttention(agents).filter((agent) => {
+  return agents.filter((agent) => {
     const matchesQuery = !q || agent.name.toLowerCase().includes(q) || agent.description.toLowerCase().includes(q) || agent.id.toLowerCase().includes(q);
     return matchesQuery && (status === "all" || agent.status === status) && (health === "all" || agent.health === health);
   });
+}
+
+function sortAgents(agents: AgentRecord[], sort: SortKey, direction: "asc" | "desc") {
+  const dirMul = direction === "asc" ? 1 : -1;
+  return [...agents].sort((a, b) => {
+    if (sort === "health") return (HEALTH_RANK[a.health] - HEALTH_RANK[b.health]) * dirMul || a.name.localeCompare(b.name);
+    if (sort === "agent") return a.name.localeCompare(b.name) * dirMul;
+    if (sort === "status") return (STATUS_RANK[a.status] - STATUS_RANK[b.status]) * dirMul || a.name.localeCompare(b.name);
+    if (sort === "owner") return a.owner.localeCompare(b.owner) * dirMul || a.name.localeCompare(b.name);
+    return getAttentionRank(a) - getAttentionRank(b) || a.name.localeCompare(b.name);
+  });
+}
+
+function SortHeader({ label, sortKey, active, direction, onSort }: { label: string; sortKey: SortKey; active: boolean; direction: "asc" | "desc"; onSort: (key: SortKey) => void }) {
+  return (
+    <button type="button" onClick={() => onSort(sortKey)} className="inline-flex items-center gap-1 font-mono text-[11px] font-medium uppercase tracking-wider text-foreground-tertiary hover:text-foreground">
+      {label}
+      {active ? direction === "asc" ? <ArrowUp className="size-3" aria-hidden="true" /> : <ArrowDown className="size-3" aria-hidden="true" /> : <ArrowUpDown className="size-3 opacity-40" aria-hidden="true" />}
+    </button>
+  );
 }
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
@@ -62,36 +84,34 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
   const issueLabel = agent.issueSummary ?? agent.currentIssue;
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <span className="flex min-w-0 items-center gap-2">
-        <StatusBadge status={agent.health} iconOnly />
-        <Link href={`/agents/${agent.id}`} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
-          {agent.name}
-        </Link>
-      </span>
-      <p className="max-w-md truncate pl-[1.1875rem] text-xs text-foreground-secondary">{agent.description}</p>
+      <Link href={`/agents/${agent.id}`} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
+        {agent.name}
+      </Link>
+      <p className="max-w-md truncate text-xs text-foreground-secondary">{agent.description}</p>
       {issueLabel && (
-        // No icon here: the leading health indicator already carries
+        // No icon here: the leading Health column already carries
         // "something needs a look" via AlertTriangle for Degraded. A
         // second AlertTriangle on this line would visually claim to be
         // that same signal when it's actually just explaining why —
         // the color alone (already an established, not sole, channel
         // elsewhere) is enough supporting context for a caption line.
-        <p className="truncate pl-[1.1875rem] text-xs text-warning">{issueLabel}</p>
+        <p className="truncate text-xs text-warning">{issueLabel}</p>
       )}
     </div>
   );
 }
 
-function AgentsTable({ agents }: { agents: AgentRecord[] }) {
+function AgentsTable({ agents, sort, direction, onSort }: { agents: AgentRecord[]; sort: SortKey; direction: "asc" | "desc"; onSort: (key: SortKey) => void }) {
   return (
     <Card className="hidden overflow-hidden md:block">
       <Table>
         <caption className="sr-only">Agents inventory</caption>
         <TableHeader>
           <TableRow>
-            <TableHead>Agent</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="hidden lg:table-cell">Owner</TableHead>
+            <TableHead><SortHeader label="Health" sortKey="health" active={sort === "health"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead><SortHeader label="Agent" sortKey="agent" active={sort === "agent"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead><SortHeader label="Status" sortKey="status" active={sort === "status"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead className="hidden lg:table-cell"><SortHeader label="Owner" sortKey="owner" active={sort === "owner"} direction={direction} onSort={onSort} /></TableHead>
             <TableHead>Last run</TableHead>
             <TableHead>Next run</TableHead>
           </TableRow>
@@ -99,6 +119,7 @@ function AgentsTable({ agents }: { agents: AgentRecord[] }) {
         <TableBody>
           {agents.map((agent) => (
             <TableRow key={agent.id} className="relative">
+              <TableCell className="py-2.5"><StatusBadge status={agent.health} iconOnly /></TableCell>
               <TableCell className="min-w-[18rem] py-2.5"><AgentIdentity agent={agent} /></TableCell>
               <TableCell className="py-2.5"><StatusBadge status={agent.status} iconOnly /></TableCell>
               <TableCell className="hidden py-2.5 text-sm text-foreground-secondary lg:table-cell">{agent.owner}</TableCell>
@@ -160,9 +181,16 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<AgentStatus | "all">("all");
   const [healthFilter, setHealthFilter] = React.useState<AgentHealth | "all">("all");
+  const [sort, setSort] = React.useState<SortKey>("attention");
+  const [direction, setDirection] = React.useState<"asc" | "desc">("desc");
+
+  const onSort = (key: SortKey) => {
+    if (key === sort) setDirection((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSort(key); setDirection("asc"); }
+  };
 
   const hasActiveFilters = searchQuery.trim() !== "" || statusFilter !== "all" || healthFilter !== "all";
-  const filteredAgents = filterAgents(agents, searchQuery, statusFilter, healthFilter);
+  const filteredAgents = sortAgents(filterAgents(agents, searchQuery, statusFilter, healthFilter), sort, direction);
   const clearFilters = () => { setSearchQuery(""); setStatusFilter("all"); setHealthFilter("all"); };
 
   return (
@@ -218,7 +246,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
 
           {filteredAgents.length > 0 ? (
             <>
-              <AgentsTable agents={filteredAgents} />
+              <AgentsTable agents={filteredAgents} sort={sort} direction={direction} onSort={onSort} />
               <MobileAgentsList agents={filteredAgents} />
             </>
           ) : (

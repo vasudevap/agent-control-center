@@ -12,11 +12,11 @@ import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indic
 import { cn } from "@/lib/utils";
 import { isQueueApproval, type ApprovalRecord } from "./approval-data";
 import { getExpiryPresentation, relativeTime } from "./approval-presentation";
-import { ExpiryLabel, ReviewProgressTag, StateChip } from "./approval-badges";
+import { ExpiryLabel, ReviewProgressTag, StateChip, reviewRank } from "./approval-badges";
 
 type View = "queue" | "history";
 type Presentation = "ready" | "loading" | "error" | "empty";
-type SortKey = "attention" | "risk" | "requested" | "expiry";
+type SortKey = "attention" | "risk" | "agent" | "review" | "requested" | "expiry";
 const PAGE_SIZE = 8;
 
 function SortHeader({ label, sortKey, active, direction, onSort }: { label: string; sortKey: SortKey; active: boolean; direction: "asc" | "desc"; onSort: (key: SortKey) => void }) {
@@ -68,6 +68,8 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
       })
       .sort((a, b) => {
         if (sort === "risk") return (riskRank(b.risk) - riskRank(a.risk)) * dirMul * -1;
+        if (sort === "agent") return a.agent.name.localeCompare(b.agent.name) * dirMul;
+        if (sort === "review") return (reviewRank(a.reviewProgress) - reviewRank(b.reviewProgress)) * dirMul;
         if (sort === "requested") return (+new Date(b.requestedAt) - +new Date(a.requestedAt)) * dirMul * -1;
         if (sort === "expiry") return (+new Date(a.expiresAt ?? "9999") - +new Date(b.expiresAt ?? "9999")) * dirMul * -1;
         const expiryUrgencyRank = (item: ApprovalRecord) => ({ imminent: 0, nearing: 1, scheduled: 2, none: 3, expired: 4 })[getExpiryPresentation(item.expiresAt, item.requestedAt).urgency];
@@ -142,10 +144,16 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
                     <tr>
                       <th className="h-10 px-4 text-left"><SortHeader label="Risk" sortKey="risk" active={sort === "risk"} direction={direction} onSort={onSort} /></th>
                       <th className="h-10 px-3 text-left"><SortHeader label="Approval" sortKey="attention" active={sort === "attention"} direction={direction} onSort={onSort} /></th>
-                      <th className="h-10 px-3 text-left font-mono text-[11px] font-medium uppercase tracking-wider text-foreground-tertiary">Agent</th>
+                      <th className="h-10 px-3 text-left"><SortHeader label="Agent" sortKey="agent" active={sort === "agent"} direction={direction} onSort={onSort} /></th>
                       <th className="h-10 px-3 text-left"><SortHeader label="Requested" sortKey="requested" active={sort === "requested"} direction={direction} onSort={onSort} /></th>
                       <th className="h-10 px-3 text-left"><SortHeader label="Expiry" sortKey="expiry" active={sort === "expiry"} direction={direction} onSort={onSort} /></th>
-                      <th className="h-10 px-4 text-left font-mono text-[11px] font-medium uppercase tracking-wider text-foreground-tertiary">{view === "queue" ? "Review" : "Outcome"}</th>
+                      <th className="h-10 px-4 text-left">
+                        {view === "queue" ? (
+                          <SortHeader label="Review" sortKey="review" active={sort === "review"} direction={direction} onSort={onSort} />
+                        ) : (
+                          <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-foreground-tertiary">Outcome</span>
+                        )}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
