@@ -80,9 +80,10 @@ Order amendment or follow-up Work Order. Real services, persistence,
 authentication, policy evaluation, audit writing, runtime continuation, and
 external execution remain explicitly out of scope.
 
-## 6. Recommended pull-request disposition
+## 6. Pull-request disposition
 
-Pull request #8 should remain open while the mapping review is in progress.
-Its final disposition will be decided only after the repository owner confirms
-that every authoritative record and useful implementation detail has been
-accounted for.
+Pull request #8 is obsolete and must not be merged. The authoritative records
+and useful implementation details have been reconciled into the selected
+design through the mapping review and follow-up pull request #10. Closing PR #8
+does not discard its Git history; it only prevents the superseded interface
+from being mistaken for the current implementation direction.
