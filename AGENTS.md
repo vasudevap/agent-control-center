@@ -8,6 +8,23 @@ This file is considered authoritative.
 
 ---
 
+# Codex Model Recommendation Preferences
+
+When the user asks what the next step is, include a task-appropriate Codex recommendation with the exact **Model**, **Effort**, and **Speed** settings. Balance output quality, latency, and usage rather than always recommending the most capable setting.
+
+Use the model names confirmed in the user's Codex picker on 2026-07-15:
+
+- `5.6 Sol · High · Standard` for complex or ambiguous architecture, frontend design, governance, and high-value multi-step implementation.
+- `5.6 Terra · Medium · Standard` for routine implementation, code review, and well-scoped feature work.
+- `5.6 Luna · Medium · Standard` for tests, cleanup, repetitive edits, and other predictable repository work.
+- `5.3 Codex Spark` with the lowest sufficient effort for very quick, simple iterations; do not recommend it for complex browser, visual, architectural, or multi-step work.
+
+Recommend `Fast` speed only when lower latency is worth the higher usage; otherwise prefer `Standard`. The user's current task selection in the Codex UI overrides global configuration for that task. Do not use vague or unconfirmed labels such as “GPT-5 Codex.” If the available model picker changes, use the updated choices the user provides and revise these preferences.
+
+The current Atlas design task uses `5.6 Sol · High · Standard`; treat this as task context, not a permanent default for every future task.
+
+---
+
 # Project Purpose
 
 The Agent Control Center is an enterprise-inspired platform for creating, governing, scheduling, monitoring, and operating AI agents.
