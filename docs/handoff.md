@@ -54,6 +54,10 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **Approval Detail.** Main column of InfoCards (Proposed action with a full-width payload summary, Policy rationale, Evidence and context with the untrusted-evidence callout, Activity timeline), sticky aside with the Decide card (shaded actionable header, simulation buttons, icon-carrying status lines) and Request context. The payload summary also appears in the final simulated-decision confirmation. Request context models Agent, Run, and optional Artifact relationships without linking unavailable prototype routes. Mobile gets the decision card inline plus a fixed bottom bar and keeps Indeterminate investigation guidance in normal reading order. Dialogs enforce decision-specific required text, simulated step-up for high risk, focus containment, controlled expiry-at-confirmation behavior, and polite live announcements. Tall dialogs stay within the viewport and scroll internally.
 
+**Runs.** Full local-fixture inventory with Search, Status, and Trigger controls; true-value sorting; semantic desktop table; mobile cards; and explicit prototype disclosure. Run Detail reuses the sticky-fact-aside skeleton and separates execution steps, normalized error context, operational log excerpts, approvals, and artifacts. Operational logs are explicitly not Audit records. Fixture timestamps are anchored to a deterministic reference so server and client markup remain identical.
+
+**Artifacts.** Metadata-first local-fixture inventory and canonical Artifact Detail route. Lifecycle state uses `StatusBadge`; sensitivity is a neutral classification. Artifact Detail never renders or downloads content and represents external storage as unavailable. Canonical Agent, Run, Approval, and Artifact links exist only when the target fixture is implemented.
+
 ## Decision log
 
 The rationale for each design decision is preserved in the archived branch history; every commit message describes one review round. Read `git log --oneline archive/gui-alternate-design` for the sequence. Several component docblocks (RiskChip, StatusBadge, CardHeader, AttentionQueue, PageHeader) also carry the reasoning inline where it matters most.
@@ -70,4 +74,4 @@ The rationale for each design decision is preserved in the archived branch histo
 
 ## Known gaps and next candidates
 
-Alerts, Runs, Artifacts, Audit, Connectors, Policies, and Settings exist as routes but are placeholders (PlaceholderPage) or have not been through this review process; they are the pages to build next, using the checklist above. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
+Alerts, Audit, Connectors, Policies, and Settings remain placeholders or have not yet completed this review process; they are the pages to build next, using the checklist above. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
