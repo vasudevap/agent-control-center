@@ -14,6 +14,7 @@ import {
   PackageCheck,
   FileWarning,
   SearchCheck,
+  Ban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +39,8 @@ export type AtlasStatus =
   | "available"
   | "review-required"
   | "investigating"
-  | "resolved";
+  | "resolved"
+  | "revoked";
 
 const STATUS_CONFIG: Record<
   AtlasStatus,
@@ -186,6 +188,12 @@ const STATUS_CONFIG: Record<
     icon: CheckCircle2,
     text: "text-success",
     className: "bg-success-bg text-success border-success-border",
+  },
+  revoked: {
+    label: "Revoked",
+    icon: Ban,
+    text: "text-error",
+    className: "bg-error-bg text-error border-error-border",
   },
 };
 

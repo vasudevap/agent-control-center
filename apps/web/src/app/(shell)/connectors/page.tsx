@@ -1,10 +1,6 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { CONNECTOR_FIXTURES } from "./connector-data";
+import { ConnectorsWorkspace } from "./connectors-workspace";
 
 export default function ConnectorsPage() {
-  return (
-    <PlaceholderPage
-      title="Connectors"
-      description="Manage integrations between Atlas and external systems."
-    />
-  );
+  return <ConnectorsWorkspace connectors={CONNECTOR_FIXTURES} />;
 }

@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { SettingsWorkspace } from "./settings-workspace";
 
 export default function SettingsPage() {
-  return (
-    <PlaceholderPage
-      title="Settings"
-      description="Configure your workspace and account preferences."
-    />
-  );
+  return <SettingsWorkspace />;
 }

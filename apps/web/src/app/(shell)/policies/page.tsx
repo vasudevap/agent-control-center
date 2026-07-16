@@ -1,10 +1,6 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { POLICY_FIXTURES } from "./policy-data";
+import { PoliciesWorkspace } from "./policies-workspace";
 
 export default function PoliciesPage() {
-  return (
-    <PlaceholderPage
-      title="Policies"
-      description="Define the rules that govern agent behavior and approvals."
-    />
-  );
+  return <PoliciesWorkspace policies={POLICY_FIXTURES} />;
 }
