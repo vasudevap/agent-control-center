@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { APPROVAL_FIXTURES } from "../approval-data";
@@ -76,6 +76,17 @@ describe("ApprovalDetailWorkspace", () => {
       expect(within(dialog).getByText(approval.risk)).toBeInTheDocument();
       await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
     }
+  });
+
+  it("restores focus to the decision button that opened the dialog", async () => {
+    const user = userEvent.setup();
+    render(<ApprovalDetailWorkspace approval={fixture("apr-2026-001")} />);
+    const trigger = firstButton("Simulate approval");
+
+    await user.click(trigger);
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => expect(trigger).toHaveFocus());
   });
 
   it("simulates a low-risk approval without requiring a reason or step-up", async () => {

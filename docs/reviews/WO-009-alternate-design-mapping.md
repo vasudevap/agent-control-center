@@ -168,12 +168,12 @@ confirmation evidence. It does not mark the Work Order complete.
 | WO-009 requirement | Candidate alternate-design evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
 | Accessible dialog title and description | Shared Radix wrapper and decision dialogs provide both, with focused accessible-name coverage. | Candidate match with automated evidence | Retain final assistive-technology review. |
-| Focus containment, restoration, and Escape | Focused tests cover Escape, trigger restoration, and bidirectional containment. | Candidate match with automated evidence | Retain final browser keyboard evidence. |
-| Unambiguous primary and destructive actions | Buttons use explicit simulated labels and destructive styling for rejection. | Candidate match | Confirm focus order and 200% zoom. |
+| Focus containment, restoration, and Escape | Focused tests cover Escape, trigger restoration, and bidirectional containment. A browser check exposed and then verified the correction of page-level focus restoration for the ordinary decision buttons used by Approval Detail. | Candidate match with automated and browser evidence | Retain final hands-on assistive-technology review. |
+| Unambiguous primary and destructive actions | Buttons use explicit simulated labels and destructive styling for rejection. The confirmation footer remains reachable through the dialog's internal scroll region at a 200%-equivalent reflow viewport. | Candidate match with browser evidence | Retain final hands-on assistive-technology review. |
 | Dynamic outcome and validation announcements | Validation uses `role=alert`; post-decision and expiry-at-confirmation outcomes use polite status announcements with focused tests. | Candidate match with automated evidence | Retain final screen-reader evidence. |
 | State, urgency, risk, availability, and errors never rely on color alone | StatusBadge, RiskChip, ReviewProgressTag, ExpiryLabel, icons, and visible explanations provide candidate evidence. | Candidate match | Verify every state in both themes and with assistive semantics. |
-| 320 px reflow, mobile cards, sticky controls, and touch targets | Mobile card fallback and fixed decision bar have browser no-overflow evidence at narrow widths; tall dialogs remain viewport-contained and internally scrollable. | Candidate match with browser and automated evidence | Retain final 200% zoom, safe-area, and touch-target review. |
-| Long content and reduced-motion behavior | Controlled stress fixtures cover long collection/detail content and tall dialog usability. The scoped source scan found only short color transitions in the approval collection and no spatial, continuous, or essential motion. | Candidate match with automated, source-review, and browser evidence | Retain final 200% browser-zoom evidence. |
+| 320 px reflow, mobile cards, sticky controls, and touch targets | Mobile card fallback and fixed decision bar have browser no-overflow evidence at narrow widths; tall dialogs remain viewport-contained and internally scrollable. A 640-by-400 CSS-pixel viewport was used as the layout equivalent of 200% zoom on a 1280-by-800 display. Queue, History, pending detail, terminal detail, and Indeterminate detail produced no document overflow. The visible search hit area was corrected from 20 px to 34 px, leaving no visible form control below 24 CSS pixels in the audited Queue. | Candidate match with browser and automated evidence | Retain final hands-on assistive-technology review and durable evidence capture. |
+| Long content and reduced-motion behavior | Controlled stress fixtures cover long collection/detail content and tall dialog usability. The scoped source scan found only short color transitions in the approval collection and no spatial, continuous, or essential motion. The 200%-equivalent browser audit kept long-content pages and the internally scrolling dialog free of document-level horizontal overflow. | Candidate match with automated, source-review, and browser evidence | Retain durable visual evidence capture. |
 
 ## Step 8 - Automated verification
 
@@ -185,9 +185,9 @@ confirmation evidence. It does not mark the Work Order complete.
 | Loading, error, no-data, filtered-empty | Focused tests cover every deterministic collection state. | Candidate match with automated evidence | Retain final visual evidence capture. |
 | Approve, reject, clarification, and reason rules | Low/High/Critical approval, rejection, required clarification question, step-up, refresh, session-only state, live announcement, and expired-during-review behavior are covered. | Candidate match with automated evidence | Retain final keyboard and screen-reader workflow review. |
 | Unavailable, terminal, and Indeterminate detail | Missing-evidence, terminal read-only, unknown ID, controlled expiry, and Indeterminate states are covered; mobile Indeterminate guidance is in normal reading order. | Candidate match with automated and browser evidence | Retain final responsive and theme evidence capture. |
-| Dialog accessibility | Accessible name, Escape, focus restoration, and bidirectional focus containment are covered. | Candidate match with automated evidence | Retain the final 200% zoom and browser keyboard review. |
+| Dialog accessibility | Accessible name, Escape, focus restoration, and bidirectional focus containment are covered. Approval Detail now explicitly returns focus to the ordinary decision button that opened its controlled dialog; the regression test and browser Escape workflow both pass. | Candidate match with automated and browser evidence | Retain final hands-on assistive-technology review. |
 | Agent Details deep links | Focused tests cover canonical fixture links and the no-approval empty state. | Candidate match with automated evidence | No mapping gap remains. |
-| Typecheck, lint, tests, and production build | These checks passed for pull request #9 and merged `main`. | Candidate match | Re-run after all WO-009 gap work; green commands alone do not satisfy missing coverage. |
+| Typecheck, lint, tests, and production build | These checks passed for pull request #9, merged `main`, and the current PR #10 branch after the accessibility corrections. | Candidate match | Re-run if PR #10 changes again; green commands alone do not satisfy remaining manual evidence. |
 
 ### Dependency-free automation checkpoint
 
@@ -197,7 +197,7 @@ was introduced.
 
 Current results on 2026-07-15:
 
-- `npm run test`: 9 test files, 53 passing tests, no pending tests.
+- `npm run test`: 9 test files, 54 passing tests, no pending tests.
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
 - `npm run build`: pass; all 13 application routes generated successfully.
@@ -246,8 +246,21 @@ Passing coverage now includes:
 - controlled expired-during-review behavior;
 - fixed-clock expiry thresholds and relative-time labels;
 - long identity, identifier, action, policy, and payload wrapping;
-- governed-context restatement across all three decision dialogs; and
-- bidirectional dialog focus containment.
+- governed-context restatement across all three decision dialogs;
+- bidirectional dialog focus containment; and
+- Approval Detail focus restoration to the exact decision button used to open
+  its controlled dialog.
+
+The 200%-equivalent browser checkpoint also verified:
+
+- Queue, History, pending detail, terminal detail, and Indeterminate detail at
+  a 640-by-400 CSS-pixel viewport with no document-level horizontal overflow;
+- the Critical approval dialog contained within the viewport with internal
+  scrolling for its complete payload, step-up, reason, and action content;
+- keyboard Escape dismissal returning focus to `Simulate approval`;
+- light- and dark-theme rendering without page-level overflow; and
+- no visible Queue form control below 24 CSS pixels after expanding the shared
+  search input's actual hit area to fill its visible field.
 
 No explicit pending test remains in the dependency-free WO-009 suite. This
 does not complete a Definition of Done item: subjective visual acceptance,
@@ -261,11 +274,11 @@ Definition of Done item.
 
 | Required artifact | Candidate evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| Desktop, tablet, mobile, light, and dark evidence | The selected design was manually reviewed during integration. | Manual verification required | Capture durable evidence for the current merged design; do not reuse superseded PR #8 screenshots. |
+| Desktop, tablet, mobile, light, and dark evidence | The selected design was manually reviewed during integration, and the automated browser checkpoint covered light/dark rendering and constrained reflow. | Manual verification required | Capture durable evidence for the current merged design; do not reuse superseded PR #8 screenshots. |
 | Queue, History, rich detail, validation, step-up, unavailable, Indeterminate, loading, error, and empty states | Current components represent most of these states. | Manual verification required | Review and capture every required scenario in the selected design. |
-| Keyboard-only and accessibility evidence | Radix and semantic controls provide candidate behavior. | Manual verification required | Record the complete keyboard workflow, focus behavior, announcements, and 200% zoom. |
-| Responsive evidence and no overflow | Phase 1 reviewed several widths. | Manual verification required | Repeat the WO-009 matrix, including 320 px and controlled states. |
-| Pull request link | PR #9 integrated the selected frontend; PR #8 remains open. | Partial candidate | Decide whether gap work uses an amended WO-009 PR or a follow-up governed PR. |
+| Keyboard-only and accessibility evidence | Automated tests cover focus containment, restoration, Escape, accessible names, and live regions. The browser checkpoint verifies page-level Escape dismissal and exact trigger focus restoration at the 200%-equivalent viewport. | Manual verification required | Record the remaining hands-on assistive-technology output review. |
+| Responsive evidence and no overflow | The 320 px audit and the 640-by-400 200%-equivalent audit found no document-level overflow across Queue, History, pending detail, terminal detail, or Indeterminate detail. | Candidate match with browser evidence | Capture the required durable screenshots with the review record. |
+| Pull request link | PR #9 integrated the selected frontend. Follow-up reconciliation work is in draft PR #10; superseded PR #8 is obsolete. | Candidate match | Keep PR #10 draft until the remaining owner evidence is recorded and the governed review is ready. |
 | Final implementation summary, final review, and completed checklist | No current-design WO-009 closure record exists. | No candidate found | Produce only after every prior step is confirmed and all gap work is merged. |
 
 ## 3. Review sequence and decision log
@@ -311,5 +324,6 @@ The review proceeds in order from Step 1 through Step 9. For each step:
 | Step 5 | Proposed payload summary | Confirmed by owner and verified through automated evidence | Every fictional approval now declares a payload summary. Detail and final simulated-decision confirmation present it in a full-width wrapping field so the operator can inspect what would be authorized. No service connection or Definition of Done completion was introduced. | 2026-07-15 |
 | Step 5 / Step 7 | Payload dialog viewport correction | Verified through automated and browser evidence | Adding payload context exposed excessive dialog height. The shared dialog now remains inside desktop and mobile viewports and scrolls internally; focused component coverage guards the constraint. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 6 / Step 8 | Deterministic timing and long-content stress coverage | Verified through automated, source-review, and browser evidence | Fixed-clock tests cover all expiry urgency thresholds and relative labels. Controlled fixtures exercise long identifiers, agents, actions, policies, and payloads; constrained viewports retain internal dialog scrolling without document overflow. No Definition of Done item is marked complete. | 2026-07-15 |
+| Step 7 / Step 9 | 200%-equivalent reflow, touch targets, and focus restoration | Verified through automated and browser evidence | Queue, History, and representative detail states have no document-level overflow at the 200%-equivalent viewport. The shared search input's actual hit area now fills its visible field, and Approval Detail returns focus to the exact decision button after Escape. Hands-on assistive-technology output and durable screenshots remain outstanding. No Definition of Done item is marked complete. | 2026-07-15 |
 
 No WO-009 Definition of Done item has been marked complete.
