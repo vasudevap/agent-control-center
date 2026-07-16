@@ -120,7 +120,9 @@ Build the operational dashboard.
 
 Application-shell baseline completed through Work Order 005. Work Order 006 adds
 the frontend-only Agents Inventory for monitoring mock agents and navigating to
-agent details. Dashboard feature implementation remains governed by future
+agent details. Work Order 009 completes the frontend-only Human Approvals Queue,
+History, Approval Detail, and simulated decision experience in the selected
+Atlas design direction. Remaining dashboard pages are governed by future
 approved work orders.
 
 ---
