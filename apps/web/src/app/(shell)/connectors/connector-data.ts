@@ -20,6 +20,7 @@ export interface ConnectorRecord {
   capabilities: string[];
   scopes: string[];
   lastCheck: string;
+  lastCheckAt: string | null;
   statusSummary: string;
 }
 
@@ -39,6 +40,7 @@ export const CONNECTOR_FIXTURES: ConnectorRecord[] = [
     ],
     scopes: ["mail.metadata.read", "mail.draft.create", "mail.label.apply"],
     lastCheck: "8 minutes ago",
+    lastCheckAt: "2026-07-16T10:52:00.000Z",
     statusSummary:
       "Fictional handshake and freshness checks are within threshold.",
   },
@@ -53,6 +55,7 @@ export const CONNECTOR_FIXTURES: ConnectorRecord[] = [
     capabilities: ["Read event metadata", "Read attendee display names"],
     scopes: ["calendar.events.read", "calendar.attendees.read"],
     lastCheck: "18 minutes ago",
+    lastCheckAt: "2026-07-16T10:42:00.000Z",
     statusSummary: "The local fixture reports elevated response latency.",
   },
   {
@@ -66,6 +69,7 @@ export const CONNECTOR_FIXTURES: ConnectorRecord[] = [
     capabilities: ["Read evidence metadata", "Write approved export manifest"],
     scopes: ["evidence.metadata.read", "manifest.approved.write"],
     lastCheck: "6 hours ago",
+    lastCheckAt: "2026-07-16T05:00:00.000Z",
     statusSummary:
       "The fictional authorization lease is expired; no credential exists in this prototype.",
   },
@@ -80,6 +84,7 @@ export const CONNECTOR_FIXTURES: ConnectorRecord[] = [
     capabilities: ["Receive normalized intake event"],
     scopes: ["intake.event.receive"],
     lastCheck: "Never",
+    lastCheckAt: null,
     statusSummary: "No connection instance is configured in the fixture.",
   },
 ];

@@ -199,7 +199,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                   {approvals.map((approval) => (
                     <li key={approval.id}>
                       <Link href={`/approvals/${approval.id}`} className="flex items-center gap-3 rounded-atlas-md border border-border-default bg-surface-secondary px-4 py-3 transition-colors hover:bg-surface-hover">
-                        <RiskChip risk={approval.risk as RiskLevel} />
+                        <RiskChip risk={approval.risk as RiskLevel} plain />
                         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{approval.action}</span>
                         <ShieldCheck className="size-4 shrink-0 text-foreground-tertiary" aria-hidden="true" />
                       </Link>

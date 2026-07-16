@@ -105,7 +105,7 @@ export function RunDetailWorkspace({
         identifier={run.id}
         description={run.summary}
         icon={Workflow}
-        meta={<StatusBadge status={run.status} />}
+        meta={<StatusBadge status={run.status} plain />}
         actions={
           <Button asChild size="sm" variant="ghost">
             <Link href="/runs">

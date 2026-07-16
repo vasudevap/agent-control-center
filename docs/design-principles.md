@@ -26,16 +26,16 @@ Button labels, dialog titles, empty states, and descriptions use sentence case (
 
 ### 5. State is never communicated by color alone
 
-Every status, risk, or outcome indicator pairs an icon with its color. A label is added when space allows and dropped only in dense layouts (tables, compact lists) where the legend carries the vocabulary. A colored pill with no icon is not an acceptable state indicator anywhere.
+Every status, risk, or outcome indicator pairs an icon, visible text, and its color. In inventories and inline operational context, use the quiet Alerts treatment: icon + text with no background, border, fixed width, or pill container. The only icon-only exception is the deliberately compact Overview attention queue, where the surrounding kind and action text provide context. A colored pill with no icon is not an acceptable state indicator anywhere.
 
 ### 6. One shared status vocabulary
 
 All entity states render through `StatusBadge` (`components/badge/status-badge.tsx`), which owns the icon, color, and label for every `AtlasStatus`: health (healthy, degraded, offline), run state (running, active, paused, queued), and approval state (pending, approved, rejected, expired, cancelled). Do not build ad-hoc colored pills with the generic `Badge` component for states. `expired` and `cancelled` are deliberately neutral-colored, since neither is inherently a bad outcome.
 
 `StatusBadge` has three render modes, chosen by context:
-- default pill (icon + label + tinted background/border) for standalone placement, such as mobile card fields;
-- `iconOnly` (bare colored glyph + `sr-only` label) for dense table columns, always with a visible legend nearby;
-- `plain` (icon + colored label, no pill) for fact lists and header meta rows where a filled pill would read as a different kind of element than its plain-text siblings. `plain` inherits font size from context, so set an explicit size (e.g. `text-xs`) when siblings have one.
+- `plain` (icon + coloured label, no pill) is the default for desktop inventory cells, inline operational metadata, fact lists, and header meta rows. It inherits font size from context, so set an explicit size (for example, `text-xs`) when siblings have one;
+- default pill (icon + label + tinted background/border) is reserved for contained state in a mobile card or a decision/action context;
+- `iconOnly` (bare colored glyph + `sr-only` label) is only for the compact Overview exception.
 
 ### 7. Urgency coloring for time
 
@@ -51,13 +51,13 @@ The risk vocabulary is Circle (Low), Triangle (Medium), TriangleAlert (High), Di
 
 An icon may not mean two different things within one screen. Examples enforced in code: the caption line under a degraded agent's name carries no AlertTriangle because the health indicator beside the name already uses that glyph for "degraded"; Rejected owns XCircle, so Cancelled uses Undo2 and Expired uses History.
 
-### 10. Icon-only indicators are bare and optically balanced
+### 10. Risk follows the same inline treatment
 
-An indicator without a visible label drops its pill background and border entirely, becoming a colored glyph. Glyph sizes are compensated per shape, because triangles occupy less of their bounding box than circles, diamonds, or crosses: the default is `size-[11px]` with triangle-based glyphs at `size-[13px]`. This compensation lives in the config objects (`RISK_CONFIG`, `STATUS_CONFIG`), not at call sites.
+`RiskChip plain` is the Alerts-style risk treatment: geometric glyph + visible label with no pill container. It is used in operational inventories, details, and inline context. The default risk pill is reserved for contained standalone state; the Overview attention queue alone drops the visible label for compact mixed-item scanning. Glyph sizes are compensated per shape in `RISK_CONFIG`, not at call sites.
 
-### 11. Icon-only columns require a legend
+### 11. Operational inventories use quiet inline indicators
 
-Wherever a table or list column shows bare glyphs, the vocabulary legend appears once in that surface's control bar or card header, right-aligned, in `text-[10px] text-foreground-tertiary`, hidden below `sm:`. See the Agents control bar (health + status vocabularies separated by a divider) and the Approvals results panel (risk vocabulary).
+Inventory, detail, and governance surfaces show the icon and its text together at the point of use without a pill container. This keeps Agents health and status, Approvals risk, and Alerts severity readable without asking operators to decode a separate legend.
 
 ## Cards
 
@@ -85,7 +85,7 @@ Table rows and list items that navigate are made fully clickable with exactly on
 
 ### 17. Severity leads the row
 
-In any listing where rows carry a severity-class signal (risk, health), that indicator is the first column, icon-only, with its own sortable column header. Approvals leads with Risk; Agents leads with Health; Attention Queue rows lead with the severity glyph.
+In any listing where rows carry a severity-class signal (risk, health), that indicator is the first column with its own sortable column header. Operational inventories use the quiet inline icon + text treatment; Approvals leads with Risk and Agents leads with Health. Overview Attention Queue rows retain the compact severity glyph exception.
 
 ### 18. Inventories sort; triage feeds do not
 

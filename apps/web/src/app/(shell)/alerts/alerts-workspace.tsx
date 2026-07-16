@@ -52,13 +52,7 @@ const STATUS_RANK: Record<AlertStatus, number> = {
   resolved: 2,
 };
 
-function Severity({
-  severity,
-  compact = false,
-}: {
-  severity: AlertSeverity;
-  compact?: boolean;
-}) {
+function Severity({ severity }: { severity: AlertSeverity }) {
   const config = {
     critical: {
       icon: AlertOctagon,
@@ -82,7 +76,7 @@ function Severity({
       )}
     >
       <Icon className="size-3.5" aria-hidden="true" />
-      <span className={compact ? "sr-only" : undefined}>{config.label}</span>
+      <span>{config.label}</span>
     </span>
   );
 }
@@ -232,7 +226,6 @@ export function AlertsWorkspace({
         title="Alerts"
         description="Triage fictional operational signals without contacting a runtime or provider."
         icon={BellRing}
-        meta={<StatusBadge status="active" />}
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         <strong>Frontend prototype.</strong> Alert evidence and status are local

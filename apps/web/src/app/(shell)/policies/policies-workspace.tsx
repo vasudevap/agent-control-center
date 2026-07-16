@@ -10,11 +10,15 @@ import {
 } from "./policy-data";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
-import { RiskChip } from "@/components/risk/risk-indicator";
 import { EmptyState } from "@/components/state/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
+import {
+  getAriaSort,
+  SortHeader,
+  type SortDirection,
+} from "@/components/ui/sort-header";
 import {
   Table,
   TableBody,
@@ -26,6 +30,33 @@ import {
 
 const SELECT_CLASS =
   "h-9 rounded-atlas-md border border-border-default bg-surface px-3 text-sm text-foreground outline-none hover:border-border-strong focus:border-brand";
+type SortKey = "status" | "policy" | "type" | "assignments";
+const STATUS_RANK: Record<PolicyStatus, number> = { active: 0, paused: 1 };
+
+function assignmentSortValue(policy: PolicyRecord) {
+  return policy.assignedAgents.map((agent) => agent.name).join(" ");
+}
+
+function sortPolicies(
+  policies: PolicyRecord[],
+  sort: SortKey,
+  direction: SortDirection,
+) {
+  const multiplier = direction === "asc" ? 1 : -1;
+  return [...policies].sort((a, b) => {
+    if (sort === "status")
+      return (STATUS_RANK[a.status] - STATUS_RANK[b.status]) * multiplier;
+    if (sort === "policy") return a.name.localeCompare(b.name) * multiplier;
+    if (sort === "type")
+      return (
+        a.type.localeCompare(b.type) * multiplier ||
+        a.scope.localeCompare(b.scope) * multiplier
+      );
+    return (
+      assignmentSortValue(a).localeCompare(assignmentSortValue(b)) * multiplier
+    );
+  });
+}
 
 function PolicyDetails({ policy }: { policy: PolicyRecord }) {
   return (
@@ -54,6 +85,8 @@ export function PoliciesWorkspace({ policies }: { policies: PolicyRecord[] }) {
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<PolicyStatus | "all">("all");
   const [type, setType] = React.useState<PolicyType | "all">("all");
+  const [sort, setSort] = React.useState<SortKey>("policy");
+  const [direction, setDirection] = React.useState<SortDirection>("asc");
   const [overrides, setOverrides] = React.useState<
     Record<string, PolicyStatus>
   >({});
@@ -63,27 +96,39 @@ export function PoliciesWorkspace({ policies }: { policies: PolicyRecord[] }) {
     status: overrides[policy.id] ?? policy.status,
   }));
   const normalized = query.trim().toLowerCase();
-  const visible = records.filter(
-    (policy) =>
-      (!normalized ||
-        [
-          policy.id,
-          policy.name,
-          policy.scope,
-          policy.summary,
-          ...policy.assignedAgents.map((agent) => agent.name),
-        ]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalized)) &&
-      (status === "all" || policy.status === status) &&
-      (type === "all" || policy.type === type),
+  const visible = sortPolicies(
+    records.filter(
+      (policy) =>
+        (!normalized ||
+          [
+            policy.id,
+            policy.name,
+            policy.scope,
+            policy.summary,
+            ...policy.assignedAgents.map((agent) => agent.name),
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalized)) &&
+        (status === "all" || policy.status === status) &&
+        (type === "all" || policy.type === type),
+    ),
+    sort,
+    direction,
   );
   const hasFilters = Boolean(query || status !== "all" || type !== "all");
   const clear = () => {
     setQuery("");
     setStatus("all");
     setType("all");
+  };
+  const onSort = (next: SortKey) => {
+    if (next === sort)
+      setDirection((value) => (value === "asc" ? "desc" : "asc"));
+    else {
+      setSort(next);
+      setDirection("asc");
+    }
   };
   const simulateToggle = (policy: PolicyRecord) => {
     const next = policy.status === "active" ? "paused" : "active";
@@ -196,20 +241,56 @@ export function PoliciesWorkspace({ policies }: { policies: PolicyRecord[] }) {
               <caption className="sr-only">Policy inventory</caption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Risk</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Policy</TableHead>
-                  <TableHead>Type and scope</TableHead>
-                  <TableHead>Assigned agents</TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "status", direction)}
+                  >
+                    <SortHeader
+                      label="Status"
+                      sortKey="status"
+                      active={sort === "status"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "policy", direction)}
+                  >
+                    <SortHeader
+                      label="Policy"
+                      sortKey="policy"
+                      active={sort === "policy"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "type", direction)}
+                  >
+                    <SortHeader
+                      label="Type and scope"
+                      sortKey="type"
+                      active={sort === "type"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "assignments", direction)}
+                  >
+                    <SortHeader
+                      label="Assigned agents"
+                      sortKey="assignments"
+                      active={sort === "assignments"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
                   <TableHead>Session-only action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {visible.map((policy) => (
                   <TableRow key={policy.id}>
-                    <TableCell className="align-top text-xs">
-                      <RiskChip risk={policy.risk} />
-                    </TableCell>
                     <TableCell className="align-top text-xs">
                       <StatusBadge
                         status={policy.status}
@@ -260,8 +341,7 @@ export function PoliciesWorkspace({ policies }: { policies: PolicyRecord[] }) {
                   <CardContent className="grid gap-3 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <RiskChip risk={policy.risk} />
-                        <h2 className="mt-2 font-medium">{policy.name}</h2>
+                        <h2 className="font-medium">{policy.name}</h2>
                         <p className="mt-1 font-mono text-[10px] text-foreground-tertiary">
                           {policy.id} · v{policy.version}
                         </p>

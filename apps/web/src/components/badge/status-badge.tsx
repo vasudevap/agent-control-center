@@ -209,11 +209,10 @@ export interface StatusBadgeProps {
 }
 
 /**
- * `iconOnly` is bare (no filled background/border), matching the same
- * convention RiskChip uses in compact contexts: a colored icon alone,
- * with the label preserved for screen readers via sr-only text. The
- * legend that explains the icon vocabulary belongs wherever this is
- * used compactly, in the same header/control-bar slot each time.
+ * `plain` is the quiet Alerts-style treatment for inventory cells and
+ * inline operational metadata: a colored icon + visible label with no
+ * container. The default pill is reserved for contained card state or
+ * a decision/action context. `iconOnly` is the compact Overview exception.
  */
 export function StatusBadge({
   status,

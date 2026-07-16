@@ -23,6 +23,11 @@ import {
 } from "@/components/ui/dialog";
 import { SearchField } from "@/components/ui/search-field";
 import {
+  getAriaSort,
+  SortHeader,
+  type SortDirection,
+} from "@/components/ui/sort-header";
+import {
   Table,
   TableBody,
   TableCell,
@@ -33,6 +38,42 @@ import {
 
 const SELECT_CLASS =
   "h-9 rounded-atlas-md border border-border-default bg-surface px-3 text-sm text-foreground outline-none hover:border-border-strong focus:border-brand";
+type SortKey =
+  | "status"
+  | "connector"
+  | "authentication"
+  | "account"
+  | "lastCheck";
+const STATUS_RANK: Record<ConnectorStatus, number> = {
+  healthy: 0,
+  degraded: 1,
+  expired: 2,
+  revoked: 3,
+  offline: 4,
+};
+
+function sortConnectors(
+  connectors: ConnectorRecord[],
+  sort: SortKey,
+  direction: SortDirection,
+) {
+  const multiplier = direction === "asc" ? 1 : -1;
+  return [...connectors].sort((a, b) => {
+    if (sort === "status")
+      return (STATUS_RANK[a.status] - STATUS_RANK[b.status]) * multiplier;
+    if (sort === "connector")
+      return a.name.localeCompare(b.name) * multiplier;
+    if (sort === "authentication")
+      return a.authenticationType.localeCompare(b.authenticationType) * multiplier;
+    if (sort === "account")
+      return a.accountLabel.localeCompare(b.accountLabel) * multiplier;
+    return (
+      (+new Date(a.lastCheckAt ?? "9999-01-01") -
+        +new Date(b.lastCheckAt ?? "9999-01-01")) *
+      multiplier
+    );
+  });
+}
 
 function ConnectorDetails({ connector }: { connector: ConnectorRecord }) {
   return (
@@ -80,6 +121,8 @@ export function ConnectorsWorkspace({
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<ConnectorStatus | "all">("all");
   const [auth, setAuth] = React.useState<AuthenticationType | "all">("all");
+  const [sort, setSort] = React.useState<SortKey>("connector");
+  const [direction, setDirection] = React.useState<SortDirection>("asc");
   const [overrides, setOverrides] = React.useState<
     Record<string, ConnectorStatus>
   >({});
@@ -91,26 +134,38 @@ export function ConnectorsWorkspace({
     status: overrides[connector.id] ?? connector.status,
   }));
   const normalized = query.trim().toLowerCase();
-  const visible = records.filter(
-    (connector) =>
-      (!normalized ||
-        [
-          connector.id,
-          connector.name,
-          connector.provider,
-          connector.accountLabel,
-        ]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalized)) &&
-      (status === "all" || connector.status === status) &&
-      (auth === "all" || connector.authenticationType === auth),
+  const visible = sortConnectors(
+    records.filter(
+      (connector) =>
+        (!normalized ||
+          [
+            connector.id,
+            connector.name,
+            connector.provider,
+            connector.accountLabel,
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalized)) &&
+        (status === "all" || connector.status === status) &&
+        (auth === "all" || connector.authenticationType === auth),
+    ),
+    sort,
+    direction,
   );
   const hasFilters = Boolean(query || status !== "all" || auth !== "all");
   const clear = () => {
     setQuery("");
     setStatus("all");
     setAuth("all");
+  };
+  const onSort = (next: SortKey) => {
+    if (next === sort)
+      setDirection((value) => (value === "asc" ? "desc" : "asc"));
+    else {
+      setSort(next);
+      setDirection("asc");
+    }
   };
   const setSimulated = (
     connector: ConnectorRecord,
@@ -269,11 +324,64 @@ export function ConnectorsWorkspace({
               <caption className="sr-only">Connector inventory</caption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Connector</TableHead>
-                  <TableHead>Authentication</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead>Last check</TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "status", direction)}
+                  >
+                    <SortHeader
+                      label="Status"
+                      sortKey="status"
+                      active={sort === "status"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "connector", direction)}
+                  >
+                    <SortHeader
+                      label="Connector"
+                      sortKey="connector"
+                      active={sort === "connector"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(
+                      sort === "authentication",
+                      direction,
+                    )}
+                  >
+                    <SortHeader
+                      label="Authentication"
+                      sortKey="authentication"
+                      active={sort === "authentication"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "account", direction)}
+                  >
+                    <SortHeader
+                      label="Account"
+                      sortKey="account"
+                      active={sort === "account"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    aria-sort={getAriaSort(sort === "lastCheck", direction)}
+                  >
+                    <SortHeader
+                      label="Last check"
+                      sortKey="lastCheck"
+                      active={sort === "lastCheck"}
+                      direction={direction}
+                      onSort={onSort}
+                    />
+                  </TableHead>
                   <TableHead>Session-only actions</TableHead>
                 </TableRow>
               </TableHeader>

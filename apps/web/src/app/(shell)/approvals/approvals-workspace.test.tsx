@@ -208,6 +208,8 @@ describe("ApprovalsWorkspace", () => {
     const table = screen.getByRole("table", { name: "Approval Queue" });
     const riskHeader = within(table).getByRole("columnheader", { name: "Risk" });
 
+    expect(within(table).getAllByText("Critical")[0]).not.toHaveClass("sr-only");
+    expect(within(table).getAllByText("Critical")[0]).not.toHaveClass("rounded-atlas-sm");
     expect(riskHeader).toHaveAttribute("aria-sort", "none");
     await user.click(within(riskHeader).getByRole("button", { name: "Risk" }));
     expect(riskHeader).toHaveAttribute("aria-sort", "descending");

@@ -66,6 +66,11 @@ describe("AgentsInventory", () => {
     render(<AgentsInventory agents={testAgents} />);
 
     expect(screen.getByText("Showing 3 of 3")).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Agents inventory" });
+    expect(within(table).getAllByText("Healthy")[0]).not.toHaveClass("sr-only");
+    expect(within(table).getAllByText("Healthy")[0]).not.toHaveClass("rounded-full");
+    expect(within(table).getAllByText("Active")[0]).not.toHaveClass("sr-only");
+    expect(within(table).getAllByText("Active")[0]).not.toHaveClass("rounded-full");
     expect(screen.getAllByRole("link", { name: "Beta Policy Agent" })[0]).toHaveAttribute("href", "/agents/agent-beta");
 
     await user.type(screen.getByRole("searchbox", { name: /search agents/i }), "policy");
