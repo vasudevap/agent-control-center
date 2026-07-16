@@ -4,6 +4,7 @@ import { AttentionQueue } from "./attention-queue";
 import { ActiveRunsSection } from "./active-runs-section";
 import { UpcomingScheduleSection } from "./upcoming-schedule-section";
 import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
+import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
 
 export function OverviewDashboard() {
   return (
@@ -12,7 +13,7 @@ export function OverviewDashboard() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="min-w-0 flex flex-col gap-6 xl:col-span-2">
-          <AttentionQueue />
+          <AttentionQueue approvals={APPROVAL_FIXTURES} />
         </div>
 
         <div className="min-w-0 flex flex-col gap-6">
