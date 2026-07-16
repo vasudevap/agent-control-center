@@ -16,3 +16,7 @@ records final conformance, validation, evidence, and closeout.
 The WO-010, WO-011, and WO-012 authorization reviews record the approved scope,
 prototype boundaries, Definition-of-Ready evidence, and required verification
 for the remaining Atlas frontend pages.
+
+The WO-011 implementation report records conformance, automated validation,
+browser evidence, known limitations, and the governed merge gate for Alerts and
+Audit.

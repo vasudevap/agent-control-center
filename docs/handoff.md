@@ -10,7 +10,7 @@ From this folder's root:
     npm run dev        # Next.js dev server
     npm run typecheck  # tsc --noEmit
     npm run lint       # eslint
-    npm run test       # Vitest: 53 passing tests across 9 files; no pending tests
+    npm run test       # Vitest: 71 passing tests across 14 files; no pending tests
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 
@@ -58,6 +58,10 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **Artifacts.** Metadata-first local-fixture inventory and canonical Artifact Detail route. Lifecycle state uses `StatusBadge`; sensitivity is a neutral classification. Artifact Detail never renders or downloads content and represents external storage as unavailable. Canonical Agent, Run, Approval, and Artifact links exist only when the target fixture is implemented.
 
+**Alerts.** Severity-led local-fixture inventory with Search, Severity, Status, and Source controls; true-value sorts; semantic desktop table; mobile cards; and inline details. Severity uses pictographic, labeled operational icons rather than the geometric risk vocabulary. Overview alert rows route to `/alerts?alert=<id>` and open the matching fixture detail. `Simulate investigation` changes only component-local display state and announces the reset-on-refresh boundary.
+
+**Audit.** Read-only fictional governance history with Search, Action, Result, Actor, and Resource controls; true-value sorts; desktop table; mobile cards; and correlation details. The page explicitly states that its append-only-looking fixtures are not operational audit records or a system of record, and exposes no write, edit, delete, or export affordance.
+
 ## Decision log
 
 The rationale for each design decision is preserved in the archived branch history; every commit message describes one review round. Read `git log --oneline archive/gui-alternate-design` for the sequence. Several component docblocks (RiskChip, StatusBadge, CardHeader, AttentionQueue, PageHeader) also carry the reasoning inline where it matters most.
@@ -74,4 +78,4 @@ The rationale for each design decision is preserved in the archived branch histo
 
 ## Known gaps and next candidates
 
-Alerts, Audit, Connectors, Policies, and Settings remain placeholders or have not yet completed this review process; they are the pages to build next, using the checklist above. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
+Connectors, Policies, and Settings remain placeholders and are the next approved delivery round under WO-012. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
