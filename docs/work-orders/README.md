@@ -26,4 +26,4 @@ Work Order 012 authorizes the frontend-only Connectors, Policies, and Settings
 prototype surfaces and is completed.
 
 Work Order 013 records the post-delivery indicator-consistency maintenance
-review across Atlas operational inventories.
+review across Atlas operational inventories and is completed.
