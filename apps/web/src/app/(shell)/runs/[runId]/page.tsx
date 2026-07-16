@@ -1,5 +1,5 @@
-import { Workflow } from "lucide-react";
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { findRunById } from "../run-data";
+import { RunDetailWorkspace } from "./run-detail-workspace";
 
 export default async function RunDetailPage({
   params,
@@ -8,12 +8,5 @@ export default async function RunDetailPage({
 }) {
   const { runId } = await params;
 
-  return (
-    <PlaceholderPage
-      title="Run Details"
-      description={`Execution timeline, logs, and output for run ${runId}.`}
-      breadcrumb={[{ label: "Runs", href: "/runs" }, { label: runId }]}
-      icon={Workflow}
-    />
-  );
+  return <RunDetailWorkspace run={findRunById(runId)} requestedId={runId} />;
 }

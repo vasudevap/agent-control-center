@@ -1,4 +1,4 @@
-import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, History, Loader2, Power, PowerOff, Undo2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, History, Loader2, Power, PowerOff, Undo2, Clock3, ListChecks, TimerOff, PackageCheck, FileWarning } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type AtlasStatus =
@@ -13,7 +13,14 @@ export type AtlasStatus =
   | "approved"
   | "rejected"
   | "expired"
-  | "cancelled";
+  | "cancelled"
+  | "waiting"
+  | "succeeded"
+  | "partially-succeeded"
+  | "failed"
+  | "timed-out"
+  | "available"
+  | "review-required";
 
 const STATUS_CONFIG: Record<
   AtlasStatus,
@@ -96,6 +103,48 @@ const STATUS_CONFIG: Record<
     icon: Undo2,
     text: "text-foreground-secondary",
     className: "bg-surface-tertiary text-foreground-secondary border-transparent",
+  },
+  waiting: {
+    label: "Waiting for approval",
+    icon: Clock3,
+    text: "text-warning",
+    className: "bg-warning-bg text-warning border-warning-border",
+  },
+  succeeded: {
+    label: "Succeeded",
+    icon: CheckCircle2,
+    text: "text-success",
+    className: "bg-success-bg text-success border-success-border",
+  },
+  "partially-succeeded": {
+    label: "Partially succeeded",
+    icon: ListChecks,
+    text: "text-warning",
+    className: "bg-warning-bg text-warning border-warning-border",
+  },
+  failed: {
+    label: "Failed",
+    icon: XCircle,
+    text: "text-error",
+    className: "bg-error-bg text-error border-error-border",
+  },
+  "timed-out": {
+    label: "Timed out",
+    icon: TimerOff,
+    text: "text-error",
+    className: "bg-error-bg text-error border-error-border",
+  },
+  available: {
+    label: "Available",
+    icon: PackageCheck,
+    text: "text-success",
+    className: "bg-success-bg text-success border-success-border",
+  },
+  "review-required": {
+    label: "Review required",
+    icon: FileWarning,
+    text: "text-warning",
+    className: "bg-warning-bg text-warning border-warning-border",
   },
 };
 

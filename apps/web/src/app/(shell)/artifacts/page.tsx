@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { ArtifactsWorkspace } from "./artifacts-workspace";
 
 export default function ArtifactsPage() {
-  return (
-    <PlaceholderPage
-      title="Artifacts"
-      description="Browse files and outputs produced by agent runs."
-    />
-  );
+  return <ArtifactsWorkspace />;
 }

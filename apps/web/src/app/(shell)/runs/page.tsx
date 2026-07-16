@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { RunsWorkspace } from "./runs-workspace";
 
 export default function RunsPage() {
-  return (
-    <PlaceholderPage
-      title="Runs"
-      description="Track every execution across your agent fleet."
-    />
-  );
+  return <RunsWorkspace />;
 }

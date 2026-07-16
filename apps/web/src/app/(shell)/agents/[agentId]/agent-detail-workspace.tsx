@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, ChevronDown, ShieldCheck, XCircle } from "lucide-react";
+import { ChevronDown, ShieldCheck } from "lucide-react";
 import type { AgentRecord } from "../agent-data";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
+import { RUN_FIXTURES } from "@/app/(shell)/runs/run-data";
 import { RiskChip, type RiskLevel } from "@/components/risk/risk-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,40 +15,6 @@ import { EmptyState } from "@/components/state/empty-state";
 import { cn } from "@/lib/utils";
 
 type TabId = "activity" | "approvals" | "governance";
-
-interface RunRecord {
-  time: string;
-  status: "Success" | "Action Required" | "Failed";
-  work: string;
-  outcome: string;
-  duration: string;
-}
-
-const RUN_STATUS_CONFIG: Record<RunRecord["status"], { icon: React.ComponentType<{ className?: string }>; iconSize: string; className: string }> = {
-  Success: { icon: CheckCircle2, iconSize: "size-3.5", className: "text-success" },
-  "Action Required": { icon: AlertTriangle, iconSize: "size-4", className: "text-warning" },
-  Failed: { icon: XCircle, iconSize: "size-3.5", className: "text-error" },
-};
-
-function RunStatusTag({ status }: { status: RunRecord["status"] }) {
-  const config = RUN_STATUS_CONFIG[status];
-  const Icon = config.icon;
-  return (
-    <span className={cn("inline-flex items-center gap-1 text-xs font-medium", config.className)}>
-      <Icon className={config.iconSize} aria-hidden="true" />
-      {status}
-    </span>
-  );
-}
-
-function getRuns(agent: AgentRecord): RunRecord[] {
-  const hasIssue = Boolean(agent.currentIssue);
-  return [
-    { time: "Jul 12, 2026, 09:00 AM", status: hasIssue ? "Action Required" : "Success", work: hasIssue ? "3 items reviewed" : "8 items reviewed", outcome: hasIssue ? "Queued for operator review" : "Completed within policy", duration: "24.2s" },
-    { time: "Jul 10, 2026, 11:24 AM", status: "Success", work: "5 items reviewed", outcome: "No exceptions detected", duration: "18.6s" },
-    { time: "Jul 05, 2026, 09:00 AM", status: agent.health === "offline" ? "Failed" : "Success", work: agent.health === "offline" ? "0 items reviewed" : "12 items reviewed", outcome: agent.health === "offline" ? "Connector export failed" : "Evidence archived", duration: agent.health === "offline" ? "4.1s" : "38.1s" },
-  ];
-}
 
 function SidebarFact({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -115,7 +82,7 @@ function SystemPromptDisclosure({ agent }: { agent: AgentRecord }) {
  */
 export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
   const [activeTab, setActiveTab] = React.useState<TabId>("activity");
-  const runs = getRuns(agent);
+  const runs = RUN_FIXTURES.filter((run) => run.agent.id === agent.id).slice(0, 3);
   const approvals = APPROVAL_FIXTURES.filter((approval) => approval.agent.id === agent.id && approval.state === "Pending");
 
   const tabs: Array<{ id: TabId; label: string; count?: number }> = [
@@ -205,13 +172,13 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                   </TableHeader>
                   <TableBody>
                     {runs.map((run) => (
-                      <TableRow key={`${run.time}-${run.status}`}>
-                        <TableCell className="text-xs text-foreground-secondary">{run.time}</TableCell>
+                      <TableRow key={run.id} className="relative">
+                        <TableCell className="text-xs text-foreground-secondary"><Link href={`/runs/${run.id}`} className="relative z-10 font-medium text-brand after:absolute after:inset-0 after:content-[''] hover:underline">{new Date(run.startedAt).toLocaleString()}</Link></TableCell>
                         <TableCell className="text-xs">
-                          <RunStatusTag status={run.status} />
+                          <StatusBadge status={run.status} plain className="text-xs" />
                         </TableCell>
-                        <TableCell className="hidden text-xs text-foreground-secondary sm:table-cell">{run.work}</TableCell>
-                        <TableCell className="hidden text-xs text-foreground-secondary md:table-cell">{run.outcome}</TableCell>
+                        <TableCell className="hidden max-w-xs truncate text-xs text-foreground-secondary sm:table-cell">{run.summary}</TableCell>
+                        <TableCell className="hidden text-xs text-foreground-secondary md:table-cell">{run.artifactIds.length ? `${run.artifactIds.length} artifact fixture` : "No artifact fixture"}</TableCell>
                         <TableCell className="text-xs text-foreground-secondary">{run.duration}</TableCell>
                       </TableRow>
                     ))}

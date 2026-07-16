@@ -24,7 +24,7 @@ describe("ApprovalDetailWorkspace", () => {
     expect(screen.getAllByText(/corrected evidence within five business days/i)).not.toHaveLength(0);
     expect(screen.getByText("External Communications P-214")).toBeInTheDocument();
     expect(screen.getByText("Untrusted evidence preview")).toBeInTheDocument();
-    expect(screen.getAllByText(/run-2026-07-12-001 \(unavailable in prototype\)/i)).not.toHaveLength(0);
+    expect(screen.getAllByRole("link", { name: "run-2026-07-12-001" })[0]).toHaveAttribute("href", "/runs/run-2026-07-12-001");
     expect(screen.getAllByRole("link", { name: "Policy Digest Agent" })[0]).toHaveAttribute(
       "href",
       "/agents/agent-policy-digest"
@@ -245,7 +245,7 @@ describe("ApprovalDetailWorkspace", () => {
   it("models and presents related Artifact metadata", () => {
     render(<ApprovalDetailWorkspace approval={fixture("apr-2026-001")} />);
 
-    expect(screen.getAllByText(/Billing remediation evidence packet \(art-2026-0712-001; unavailable in prototype\)/i)).not.toHaveLength(0);
+    expect(screen.getAllByRole("link", { name: /Billing remediation evidence packet \(art-2026-0712-001\)/i })[0]).toHaveAttribute("href", "/artifacts/art-2026-0712-001");
   });
 
   it("presents Indeterminate investigation guidance in the mobile reading flow", () => {

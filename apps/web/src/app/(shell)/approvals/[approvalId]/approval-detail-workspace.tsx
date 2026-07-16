@@ -13,6 +13,8 @@ import { RiskChip, type RiskLevel } from "@/components/risk/risk-indicator";
 import { StateChip, ReviewProgressTag, ExpiryLabel } from "../approval-badges";
 import { applySimulatedDecision, canSimulateDecision, expireDuringSimulatedReview, isExpiredAt, requiresSimulatedStepUp, type SimulatedDecision } from "../approval-prototype-controller";
 import type { ApprovalRecord } from "../approval-data";
+import { findRunById } from "@/app/(shell)/runs/run-data";
+import { findArtifactById } from "@/app/(shell)/artifacts/artifact-data";
 
 function Notice() {
   return (
@@ -139,6 +141,21 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
     </Card>
   );
 
+  const relatedRun = findRunById(current.runId);
+  const relatedArtifact = current.artifact ? findArtifactById(current.artifact.id) : undefined;
+  const requestContext = {
+    Agent: <Link className="text-brand hover:underline" href={`/agents/${current.agent.id}`}>{current.agent.name}</Link>,
+    Run: relatedRun ? <Link className="text-brand hover:underline" href={`/runs/${relatedRun.id}`}>{relatedRun.id}</Link> : `${current.runId} (unavailable in prototype)`,
+    Artifact: current.artifact ? relatedArtifact ? <Link className="text-brand hover:underline" href={`/artifacts/${relatedArtifact.id}`}>{relatedArtifact.name} ({relatedArtifact.id})</Link> : `${current.artifact.name} (${current.artifact.id}; unavailable in prototype)` : "No related artifact in this fixture",
+    Requested: new Date(current.requestedAt).toLocaleString(),
+    Expiry: <ExpiryLabel approval={current} />,
+    "Decision time": current.decidedAt ? new Date(current.decidedAt).toLocaleString() : "Not decided",
+    Reviewer: current.reviewer ?? "Not recorded",
+    "Decision reason": current.decisionReason ?? "Not provided",
+    Correlation: current.correlationId ?? "Not recorded",
+    "Execution outcome": current.executionOutcome,
+  };
+
   return (
     <div className={`flex min-w-0 flex-col gap-5 ${actionable ? "pb-20 xl:pb-0" : ""}`}>
       <PageHeader
@@ -207,7 +224,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
           <div className="sticky top-[calc(var(--statusbar-height)+var(--topbar-height)+1rem)] grid gap-4">
             {DecisionCard}
             <InfoCard title="Request context">
-              <Details items={{ Agent: <Link className="text-brand hover:underline" href={`/agents/${current.agent.id}`}>{current.agent.name}</Link>, Run: `${current.runId} (unavailable in prototype)`, Artifact: current.artifact ? `${current.artifact.name} (${current.artifact.id}; unavailable in prototype)` : "No related artifact in this fixture", Requested: new Date(current.requestedAt).toLocaleString(), Expiry: <ExpiryLabel approval={current} />, "Decision time": current.decidedAt ? new Date(current.decidedAt).toLocaleString() : "Not decided", Reviewer: current.reviewer ?? "Not recorded", "Decision reason": current.decisionReason ?? "Not provided", Correlation: current.correlationId ?? "Not recorded", "Execution outcome": current.executionOutcome }} />
+              <Details items={requestContext} />
             </InfoCard>
             {current.executionOutcome === "Indeterminate" && (
               <Card className="border-warning-border bg-warning-bg">
@@ -220,7 +237,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
         {/* Context card repeated in normal flow below the mobile decision card. */}
         <div className="xl:hidden">
           <InfoCard title="Request context">
-            <Details items={{ Agent: <Link className="text-brand hover:underline" href={`/agents/${current.agent.id}`}>{current.agent.name}</Link>, Run: `${current.runId} (unavailable in prototype)`, Artifact: current.artifact ? `${current.artifact.name} (${current.artifact.id}; unavailable in prototype)` : "No related artifact in this fixture", Requested: new Date(current.requestedAt).toLocaleString(), Expiry: <ExpiryLabel approval={current} />, "Decision time": current.decidedAt ? new Date(current.decidedAt).toLocaleString() : "Not decided", Reviewer: current.reviewer ?? "Not recorded", "Decision reason": current.decisionReason ?? "Not provided", Correlation: current.correlationId ?? "Not recorded", "Execution outcome": current.executionOutcome }} />
+            <Details items={requestContext} />
           </InfoCard>
         </div>
         {current.executionOutcome === "Indeterminate" && (
