@@ -15,3 +15,7 @@ specification and implementation work order.
 Work Order 009 authorizes the frontend-only Human Approvals experience. Its
 selected design direction is integrated on `main`; final functional
 conformance review and closure evidence remain pending.
+
+Work Order 010 authorizes the public Atlas website as a separate `apps/site`
+workspace, including its product-positioning evidence, independent validation,
+and private initial deployment.

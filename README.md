@@ -64,7 +64,8 @@ The project follows several core principles:
 ```text
 agent-control-center/
 ├── apps/
-│   └── web/                  # Approved Atlas Next.js frontend baseline
+│   ├── web/                  # Atlas control-center application
+│   └── site/                 # Public Atlas product website
 ├── docs/
 │   ├── architecture/
 │   ├── design/
@@ -86,23 +87,33 @@ agent-control-center/
 
 # Current Implementation
 
-`apps/web` contains the approved Atlas application-shell baseline from Work Order 005. It includes the shared shell, responsive navigation, light and dark themes, shared route boundaries, and placeholder routes. Business APIs, authentication, backend services, and new product behavior are not part of this baseline.
+`apps/web` contains the Atlas control-center frontend. Its approved prototypes
+cover the application shell, operational overview, agent inventory and detail,
+agent controls, and Human Approvals. These experiences use fictional local data;
+business APIs, authentication, backend services, and production agent behavior
+remain future work.
+
+`apps/site` contains the public Atlas website authorized by Work Order 010. It
+explains the product, architecture, and delivery status without sharing the
+future authenticated product boundary.
 
 From the repository root:
 
 ```bash
 npm ci
 npm run dev
+npm run dev:site
 npm run typecheck
 npm run lint
 npm test
 npm run build
 ```
 
-Frontend component tests use Vitest, React Testing Library, and jsdom. Run
-`npm test` for the canonical one-shot suite or
+Product component tests use Vitest, React Testing Library, and jsdom. The public
+site adds rendered-output checks against its production worker build. Run
+`npm test` for the canonical all-workspace suite or
 `npm --workspace @atlas/web run test:watch` during local development. Tests are
-colocated with feature code using the `*.test.ts` or `*.test.tsx` suffix.
+colocated with product feature code using the `*.test.ts` or `*.test.tsx` suffix.
 
 ES-000 is closed. ES-001 establishes the engineering-governance and continuous-integration baseline for subsequent approved work.
 
@@ -110,7 +121,8 @@ ES-000 is closed. ES-001 establishes the engineering-governance and continuous-i
 
 Repository changes follow the [Atlas engineering-governance handbook](./docs/governance/README.md), including the [branching strategy](./docs/governance/branching-strategy.md), [pull-request process](./docs/governance/pull-request-and-review-process.md), [Definition of Ready](./docs/governance/definition-of-ready.md), and [Definition of Done](./docs/governance/definition-of-done.md).
 
-GitHub Actions runs `npm ci`, typecheck, lint, frontend tests, and the production build for pull requests targeting `main` and pushes to `main`.
+GitHub Actions runs `npm ci`, typecheck, lint, tests, and production builds for
+both frontend workspaces on pull requests targeting `main` and pushes to `main`.
 
 ---
 
@@ -144,9 +156,10 @@ docs/architecture/
 | Area                   | Technology               |
 | ---------------------- | ------------------------ |
 | Frontend               | Next.js + TypeScript     |
+| Public Site            | Next.js-compatible vinext + TypeScript |
 | Backend                | FastAPI + Python         |
 | Database               | PostgreSQL               |
-| Hosting                | Netlify + Render         |
+| Hosting                | OpenAI Sites + Netlify + Render |
 | Agent Runtime          | Plain Python (initially) |
 | LLM                    | Direct Provider SDK      |
 | Authentication         | Google Identity          |
@@ -217,7 +230,11 @@ Notion serves as the operational workspace for:
 
 # Current Status
 
-The architecture and product-design foundations are documented. The approved Work Order 005 frontend shell has been consolidated into `apps/web`; ES-000 is closed and ES-001 provides the governance and CI baseline. Subsequent application features require their own reviewed work orders or engineering specifications.
+The architecture and product-design foundations are documented. `apps/web`
+contains the approved frontend prototypes, while `apps/site` provides the
+independently deployable public product narrative. ES-000 is closed and ES-001
+provides the governance and CI baseline. Production application behavior still
+requires reviewed work orders and engineering specifications.
 
 ---
 

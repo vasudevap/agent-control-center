@@ -7,10 +7,21 @@
   ],
   "scripts": {
     "dev": "npm --workspace @atlas/web run dev",
-    "build": "npm --workspace @atlas/web run build",
+    "dev:web": "npm --workspace @atlas/web run dev",
+    "dev:site": "npm --workspace @atlas/site run dev",
+    "build": "npm run build:web && npm run build:site",
+    "build:web": "npm --workspace @atlas/web run build",
+    "build:site": "npm --workspace @atlas/site run build",
     "start": "npm --workspace @atlas/web run start",
-    "lint": "npm --workspace @atlas/web run lint",
-    "typecheck": "npm --workspace @atlas/web run typecheck",
-    "test": "npm --workspace @atlas/web run test"
+    "start:site": "npm --workspace @atlas/site run start",
+    "lint": "npm run lint:web && npm run lint:site",
+    "lint:web": "npm --workspace @atlas/web run lint",
+    "lint:site": "npm --workspace @atlas/site run lint",
+    "typecheck": "npm run typecheck:web && npm run typecheck:site",
+    "typecheck:web": "npm --workspace @atlas/web run typecheck",
+    "typecheck:site": "npm --workspace @atlas/site run typecheck",
+    "test": "npm run test:web && npm run test:site",
+    "test:web": "npm --workspace @atlas/web run test",
+    "test:site": "npm --workspace @atlas/site run test"
   }
 }

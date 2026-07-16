@@ -37,8 +37,10 @@ The project will follow these principles:
 
 | Capability                | Initial Technology                                            |
 | ------------------------- | ------------------------------------------------------------- |
-| Frontend                  | Next.js and TypeScript                                        |
-| Frontend Hosting          | Netlify                                                       |
+| Product Frontend          | Next.js and TypeScript                                        |
+| Public Site               | Next.js-compatible vinext and TypeScript                      |
+| Product Frontend Hosting  | Netlify                                                       |
+| Public Site Hosting       | OpenAI Sites                                                   |
 | Backend API               | FastAPI and Python                                            |
 | Backend Hosting           | Render                                                        |
 | Database                  | PostgreSQL                                                    |
@@ -56,7 +58,7 @@ The project will follow these principles:
 | API Validation            | Pydantic                                                      |
 | ORM                       | SQLAlchemy                                                    |
 | Testing                   | Pytest and frontend test tooling                              |
-| Infrastructure Definition | Render and Netlify configuration initially                    |
+| Infrastructure Definition | Sites, Render, and Netlify configuration initially             |
 | Observability             | Structured logs and database metrics initially                |
 
 ---
@@ -87,7 +89,21 @@ It should not:
 - Connect directly to Gmail or Google Drive
 - contain privileged business logic
 
-## 4.2 TypeScript
+## 4.2 Public Site
+
+The public Atlas site is a separate `apps/site` workspace governed by ADR-003.
+It uses Next.js-compatible React conventions with the Sites Vite/vinext
+toolchain and has an independent read-only deployment.
+
+The public site must not:
+
+- import privileged product modules;
+- store secrets or operational data;
+- provide authentication or account behavior;
+- call production agent or connector APIs;
+- imply that planned capabilities are implemented.
+
+## 4.3 TypeScript
 
 TypeScript is required for frontend code.
 
@@ -101,7 +117,7 @@ Benefits:
 
 Use strict TypeScript configuration.
 
-## 4.3 UI Component Strategy
+## 4.4 UI Component Strategy
 
 A component library should be selected later through an ADR.
 

@@ -98,6 +98,29 @@ Build the platform infrastructure.
 
 ---
 
+# Public Site — Product Narrative and Portfolio Surface
+
+## Objectives
+
+Explain Atlas to technical operators and professional evaluators without
+overstating implementation maturity.
+
+## Deliverables
+
+- Audience and positioning discovery
+- Public-site experience specification
+- Independent `apps/site` workspace
+- Product, architecture, and status narrative
+- Responsive and accessible single-page website
+- Independent hosted release
+
+## Status
+
+In progress through Work Order 010. ADR-003 establishes the public-site
+application and hosting boundary.
+
+---
+
 # Phase 4 — Dashboard
 
 ## Objectives

@@ -108,6 +108,7 @@ Each document assumes the decisions made in the documents above it.
 | 07-component-library.md | Specifies reusable UI components and behaviors. |
 | 08-screen-specifications.md | Defines each production screen and its functional requirements. |
 | 09-developer-handoff.md | Provides implementation guidance for engineering. |
+| 12-public-site-experience.md | Defines the content architecture, wireframe, responsive behavior, and claim treatment for the public Atlas site. |
 
 ---
 

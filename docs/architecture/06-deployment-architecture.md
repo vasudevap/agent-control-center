@@ -2,7 +2,8 @@
 
 ## 1. Purpose
 
-This document defines how the Agent Control Center is deployed across local development, Netlify, Render, and external service providers.
+This document defines how the Agent Control Center is deployed across OpenAI
+Sites, Netlify, Render, and external service providers.
 
 It describes:
 
@@ -38,6 +39,7 @@ The initial deployment uses:
 
 | Layer              | Platform                                            |
 | ------------------ | --------------------------------------------------- |
+| Public Site        | OpenAI Sites                                        |
 | Dashboard          | Netlify                                             |
 | Backend API        | Render Web Service                                  |
 | Background Workers | Render Background Workers                           |
@@ -48,7 +50,11 @@ The initial deployment uses:
 | Source Control     | GitHub                                              |
 | Notion Provisioner | Local development machine initially                 |
 
-This split is selected because Netlify is well suited for frontend delivery, while Render is better suited for long-running backend services, workers, databases, and scheduled processes.
+This split is selected because the public site benefits from an independent,
+read-only publishing boundary, Netlify remains well suited for the product
+frontend, and Render is better suited for long-running backend services,
+workers, databases, and scheduled processes. ADR-003 governs the public-site
+boundary.
 
 ---
 
@@ -57,6 +63,11 @@ This split is selected because Netlify is well suited for frontend delivery, whi
 ```mermaid
 flowchart TB
     User[Project Owner Browser]
+    Visitor[Public Visitor Browser]
+
+    subgraph SitesBoundary[OpenAI Sites Boundary]
+        PublicSite[Atlas Public Site]
+    end
 
     subgraph NetlifyBoundary[Netlify Boundary]
         Dashboard[Next.js Dashboard]
@@ -97,6 +108,7 @@ flowchart TB
         Actions[GitHub Actions - Future]
     end
 
+    Visitor -->|HTTPS| PublicSite
     User -->|HTTPS| Dashboard
     Dashboard --> CDN
     Dashboard -->|HTTPS API calls| API
@@ -115,7 +127,8 @@ flowchart TB
     Worker -->|Model requests| LLM
 
     Dev -->|Push source and docs| Repo
-    Repo -->|Deploy frontend| NetlifyBoundary
+    Repo -->|Deploy public site| SitesBoundary
+    Repo -->|Deploy product frontend| NetlifyBoundary
     Repo -->|Deploy backend services| RenderBoundary
 
     Provisioner -->|Provision and sync| NotionAPI
@@ -595,6 +608,7 @@ The platform should support:
 
 Only these components should be publicly accessible:
 
+- OpenAI Sites public website
 - Netlify dashboard
 - Render API
 
@@ -612,6 +626,7 @@ These should remain private:
 
 | Source    | Destination  | Purpose               |
 | --------- | ------------ | --------------------- |
+| Visitor   | OpenAI Sites | Load public website   |
 | Browser   | Netlify      | Load dashboard        |
 | Dashboard | Render API   | Management operations |
 | API       | PostgreSQL   | Platform state        |
