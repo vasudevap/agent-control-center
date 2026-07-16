@@ -1,6 +1,6 @@
 # Work Order 009: Human Approvals Frontend Experience
 
-**Status:** Implementation Revision In Progress
+**Status:** Completed
 **Work Order ID:** WO-009
 **Type:** Frontend prototype
 **Implementation Authorization:** Granted
@@ -282,23 +282,24 @@ WO-009 cannot be closed until the implementation review contains all of the foll
 
 ## 8. Definition of Done
 
-Every item below is intentionally reset to pending. The selected alternate
-design must be mapped to and confirmed against each item before any item is
-marked complete. See the in-progress mapping record in Section 13.
+The selected alternate design was mapped to every requirement, corrected where
+necessary, and confirmed through automated, browser, visual, accessibility,
+source-review, and owner evidence. The completed mapping and final report are
+linked in Section 13.
 
-- [ ] The approved ES-003 requirements are implemented without expanding scope.
-- [ ] `/approvals` no longer renders the generic placeholder page.
-- [ ] Queue, History, and canonical detail routes are complete and navigable.
-- [ ] All operator actions remain visibly simulated, local-only, and non-persistent.
-- [ ] No frontend interaction creates the expectation that an approval has been executed against a real agent, runtime, service, policy engine, audit system, or persistent record.
-- [ ] No API, backend, runtime, policy, persistence, auth, or execution behavior has been introduced.
-- [ ] The shared dialog satisfies its accessibility requirements.
-- [ ] Existing Agent Details approval entries deep-link only where fixture identity permits.
-- [ ] Automated tests and required quality checks pass.
-- [ ] Manual responsive and accessibility evidence is attached to the implementation review.
-- [ ] All required closure artifacts in Section 7.3 are attached and complete.
-- [ ] Documentation, code comments, and UI copy do not overstate prototype behavior.
-- [ ] The implementation review confirms conformance with the functional specification, architecture, ADR-002, and ES-003.
+- [x] The approved ES-003 requirements are implemented without expanding scope.
+- [x] `/approvals` no longer renders the generic placeholder page.
+- [x] Queue, History, and canonical detail routes are complete and navigable.
+- [x] All operator actions remain visibly simulated, local-only, and non-persistent.
+- [x] No frontend interaction creates the expectation that an approval has been executed against a real agent, runtime, service, policy engine, audit system, or persistent record.
+- [x] No API, backend, runtime, policy, persistence, auth, or execution behavior has been introduced.
+- [x] The shared dialog satisfies its accessibility requirements.
+- [x] Existing Agent Details approval entries deep-link only where fixture identity permits.
+- [x] Automated tests and required quality checks pass.
+- [x] Manual responsive and accessibility evidence is attached to the implementation review.
+- [x] All required closure artifacts in Section 7.3 are attached and complete.
+- [x] Documentation, code comments, and UI copy do not overstate prototype behavior.
+- [x] The implementation review confirms conformance with the functional specification, architecture, ADR-002, and ES-003.
 
 ---
 
@@ -344,12 +345,14 @@ This approved Work Order authorizes only the bounded frontend prototype describe
 
 ## 13. Implementation Evidence
 
-The current disposition is recorded in the
-[WO-009 Alternate Design Mapping](../reviews/WO-009-alternate-design-mapping.md).
+The completed requirement-by-requirement evidence is recorded in the
+[WO-009 Alternate Design Mapping](../reviews/WO-009-alternate-design-mapping.md),
+and the final disposition is recorded in the
+[WO-009 Implementation Report](../reviews/WO-009-human-approvals-implementation-report.md).
 
-The implementation originally prepared in pull request #8 was not merged.
-Pull request #9 integrated the selected Atlas design direction instead. The
-mapping review must proceed step by step and must not mark an item complete
-until the repository owner confirms the mapped evidence and any required gap
-work. Obsolete screenshots and superseded UI code from pull request #8 are not
-closure evidence.
+Pull request #9 integrated the selected Atlas design direction. Pull request
+#10 completed the WO-009 reconciliation and gap corrections, and pull request
+#12 corrected the post-merge Overview hydration defect discovered during final
+verification. The implementation originally prepared in pull request #8 was
+not merged; its obsolete screenshots and superseded UI code are not closure
+evidence.
