@@ -349,6 +349,34 @@ describe("ApprovalsWorkspace", () => {
     );
   });
 
+  it("normalizes malformed and out-of-range page values", () => {
+    const template = APPROVAL_FIXTURES.find((approval) => approval.id === "apr-2026-003")!;
+    const approvals: ApprovalRecord[] = Array.from({ length: 9 }, (_, index) => ({
+      ...template,
+      id: `apr-page-${index + 1}`,
+      action: `Pagination fixture ${index + 1}`,
+    }));
+    window.history.replaceState(null, "", "/approvals?view=queue&page=999");
+
+    render(<ApprovalsWorkspace approvals={approvals} />);
+
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Previous" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
+    const detailHref = new URL(
+      screen.getAllByRole("link", { name: /Pagination fixture/i })[0].getAttribute("href")!,
+      "http://localhost"
+    );
+    expect(detailHref.searchParams.get("from")).toBe("/approvals?view=queue&page=2");
+
+    act(() => {
+      window.history.pushState(null, "", "/approvals?view=queue&page=-4");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Previous" })).toBeDisabled();
+  });
+
   it("replays collection state when browser Back or Forward emits popstate", () => {
     render(<ApprovalsWorkspace approvals={APPROVAL_FIXTURES} />);
 

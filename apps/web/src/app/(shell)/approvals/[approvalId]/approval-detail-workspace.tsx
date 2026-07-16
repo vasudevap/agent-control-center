@@ -56,6 +56,9 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
   const [announcement, setAnnouncement] = React.useState("");
   const lastDecisionTriggerRef = React.useRef<HTMLButtonElement | null>(null);
   const unavailableExplanationId = React.useId();
+  const returnLabel = new URLSearchParams(returnTo.split("?")[1] ?? "").get("view") === "history"
+    ? "Return to History"
+    : "Return to Queue";
 
   if (presentationState === "loading") return <div className="grid gap-4"><Skeleton className="h-16 w-1/2" /><Skeleton className="h-96 w-full" /></div>;
   if (presentationState === "error" || !current) {
@@ -145,7 +148,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
         description={current.action}
         icon={ShieldAlert}
         meta={<><RiskChip risk={current.risk as RiskLevel} /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
-        actions={<Button asChild variant="ghost" size="sm"><Link href={returnTo}><ArrowLeft className="size-4" aria-hidden="true" />Return to Queue</Link></Button>}
+        actions={<Button asChild variant="ghost" size="sm"><Link href={returnTo}><ArrowLeft className="size-4" aria-hidden="true" />{returnLabel}</Link></Button>}
       />
       <Notice />
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>

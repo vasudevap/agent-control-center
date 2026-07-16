@@ -115,7 +115,7 @@ confirmation evidence. It does not mark the Work Order complete.
 | Accessible semantic desktop table | The table now has a screen-reader caption and the active sortable header exposes `aria-sort`; inactive sortable headers omit it. | Candidate match with automated evidence | Complete manual screen-reader and responsive review. |
 | Equivalent mobile card list | `ApprovalCard` replaces the table below `md` and preserves state, risk, action, target, agent, identifier, requested time, expiry, and review/outcome context. The owner visually accepted the current content and formatting after a 320 px no-overflow check. | Candidate match with automated and owner visual evidence | Complete touch-target and accessibility evidence during the final manual review. |
 | URL-backed view, search, filters, sort, direction, and page | View, query, Risk, Review, sort, direction, and page are written to and restored from the URL for the owner-approved concise control set, including Back/Forward replay. | Candidate match for the approved prototype controls | State, Agent, Policy, and Expiry filters remain formally deferred by owner decision. |
-| Finite local pagination | `PAGE_SIZE`, Previous/Next controls, boundary behavior, and URL page restoration have focused coverage. | Candidate match with automated evidence | No mapping gap remains. |
+| Finite local pagination | `PAGE_SIZE`, Previous/Next controls, boundary behavior, URL page restoration, and malformed/out-of-range page normalization have focused coverage. | Candidate match with automated evidence | No mapping gap remains. |
 | Loading, error, no-data, and filtered-empty states | `presentationState` and `StateCard` cover all four representations with focused tests. | Candidate match with automated evidence | Retain final visual evidence capture. |
 | Row/card activation opens canonical detail | Desktop rows use stretched links and mobile cards are links; both encode the complete originating collection URL. | Candidate match with automated evidence | Verify the final keyboard and mobile navigation flow during accessibility review. |
 | Attention prioritization without color alone | Default ordering combines expiry urgency and risk; Risk, Review, and State use icon vocabulary. | Candidate match | Verify urgency presentation and keyboard/screen-reader meaning. |
@@ -197,7 +197,7 @@ was introduced.
 
 Current results on 2026-07-15:
 
-- `npm run test`: 9 test files, 56 passing tests, no pending tests.
+- `npm run test`: 9 test files, 57 passing tests, no pending tests.
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
 - `npm run build`: pass; all 13 application routes generated successfully.
@@ -224,11 +224,13 @@ Passing coverage now includes:
 - mobile-card preservation of state, risk, action, target, agent, identifier,
   requested time, expiry, and review/outcome context;
 - finite local pagination;
+- normalization of malformed and out-of-range pagination URLs;
 - error, initial-empty, filtered-empty, and loading representations;
 - Queue/History distinction and terminal/Indeterminate fixtures;
 - direct History URL hydration without new browser console errors;
 - server-validated detail return context without hydration-dependent URL reads
   or production hydration warnings;
+- collection-aware Approval Detail return labels for Queue and History;
 - History decision metadata in desktop rows, mobile cards, and terminal detail;
 - newest-first History decision-time ordering and reversible Decided sorting;
 - detail context, prototype boundaries, and canonical Agent links;
@@ -281,7 +283,7 @@ Definition of Done item.
 | Queue, History, rich detail, validation, step-up, unavailable, Indeterminate, loading, error, and empty states | The production evidence set covers every listed scenario, including filtered-empty as a separate collection state. The owner accepted the current formatting, hierarchy, spacing, readability, and GUI direction. | Candidate match with durable visual and owner evidence | Retain governed review. |
 | Keyboard-only and accessibility evidence | Automated tests cover focus containment, restoration, Escape, accessible names, and live regions. Browser evidence verifies page-level Escape dismissal and exact trigger focus restoration at the 200%-equivalent viewport. The owner confirmed the dialog workflow through VoiceOver. | Candidate match with automated, browser, and owner evidence | Retain governed review. |
 | Responsive evidence and no overflow | The 320 px audit and the 640-by-400 200%-equivalent audit found no document-level overflow across Queue, History, pending detail, terminal detail, or Indeterminate detail. Current production screenshots cover 1440, 768, and 375 px evidence, and the owner accepted the responsive visual direction. | Candidate match with browser, durable visual, and owner evidence | Retain governed review. |
-| Pull request link | PR #9 integrated the selected frontend. Follow-up reconciliation work is in draft PR #10; superseded PR #8 is obsolete. | Candidate match | Keep PR #10 draft until the remaining owner evidence is recorded and the governed review is ready. |
+| Pull request link | PR #9 integrated the selected frontend. Follow-up reconciliation work is in ready-for-review PR #10; superseded PR #8 is obsolete. | Candidate match | Complete the explicit evidence-based self-review before any merge decision. |
 | Final implementation summary, final review, and completed checklist | No current-design WO-009 closure record exists. | No candidate found | Produce only after every prior step is confirmed and all gap work is merged. |
 
 ### Current-design production evidence
@@ -356,5 +358,6 @@ The review proceeds in order from Step 1 through Step 9. For each step:
 | Step 2 / Step 9 | Hydration-safe return context | Verified through automated and production-browser evidence | Approval Detail receives the validated collection return path from its server page. A direct History detail load renders the History return link without hydration warnings or browser console errors. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 9 | Durable current-design evidence set | Captured through production-browser evidence | Thirteen current-design images cover the required responsive tiers, themes, core workflows, validation/step-up, unavailable/Indeterminate states, and controlled collection states. Governed closure remains separate. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 9 | Final visual-direction acceptance | Confirmed by owner | The owner accepted the current Queue, History, and Approval Detail formatting, visual hierarchy, spacing, readability, responsive presentation, themes, and overall GUI as the frontend direction Atlas should retain. This records subjective design acceptance only; governed review and all Definition of Done decisions remain separate. | 2026-07-15 |
+| Governed self-review | Navigation and pagination corrections | Identified and corrected during review | Approval Detail now labels History return navigation accurately, and collection pagination normalizes malformed or out-of-range URL values before rendering controls or encoding detail return context. Regression coverage passes. No Definition of Done item is marked complete. | 2026-07-15 |
 
 No WO-009 Definition of Done item has been marked complete.

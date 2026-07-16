@@ -68,6 +68,7 @@ function stateFromParams(params: URLSearchParams): CollectionState {
   const requestedSort = params.get("sort");
   const sort: SortKey = isSortKeyForView(requestedSort, view) ? requestedSort : DEFAULT_SORT[view];
   const requestedDirection = params.get("dir");
+  const requestedPage = Number(params.get("page"));
   return {
     view,
     query: params.get("q") ?? "",
@@ -78,7 +79,7 @@ function stateFromParams(params: URLSearchParams): CollectionState {
     direction: requestedDirection === "asc" || requestedDirection === "desc"
       ? requestedDirection
       : DEFAULT_DIRECTION[sort],
-    page: Number(params.get("page")) || 1,
+    page: Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1,
   };
 }
 
@@ -161,7 +162,8 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
   }, [approvalState, review, approvals, direction, query, risk, sort, view]);
 
   const maxPage = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
-  const shown = listed.slice((Math.min(page, maxPage) - 1) * PAGE_SIZE, Math.min(page, maxPage) * PAGE_SIZE);
+  const currentPage = Math.min(page, maxPage);
+  const shown = listed.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const reset = () => {
     setQuery("");
     setRisk("all");
@@ -173,7 +175,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
     setPage(1);
     writeLocation({ query: "", risk: "all", review: "all", approvalState: "all", sort: defaultSort, direction: DEFAULT_DIRECTION[defaultSort], page: 1 });
   };
-  const collectionHref = `/approvals?${collectionParams(currentState())}`;
+  const collectionHref = `/approvals?${collectionParams({ ...currentState(), page: currentPage })}`;
 
   return (
     <div className="flex min-w-0 flex-col gap-5">
@@ -277,10 +279,10 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
 
           {shown.length > 0 && (
             <div className="flex items-center justify-between">
-              <p className="text-xs text-foreground-secondary">Page {Math.min(page, maxPage)} of {maxPage}</p>
+              <p className="text-xs text-foreground-secondary">Page {currentPage} of {maxPage}</p>
               <div className="flex gap-2">
-                <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => { const nextPage = page - 1; setPage(nextPage); writeLocation({ page: nextPage }); }}>Previous</Button>
-                <Button variant="secondary" size="sm" disabled={page >= maxPage} onClick={() => { const nextPage = page + 1; setPage(nextPage); writeLocation({ page: nextPage }); }}>Next</Button>
+                <Button variant="secondary" size="sm" disabled={currentPage <= 1} onClick={() => { const nextPage = currentPage - 1; setPage(nextPage); writeLocation({ page: nextPage }); }}>Previous</Button>
+                <Button variant="secondary" size="sm" disabled={currentPage >= maxPage} onClick={() => { const nextPage = currentPage + 1; setPage(nextPage); writeLocation({ page: nextPage }); }}>Next</Button>
               </div>
             </div>
           )}
