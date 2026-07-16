@@ -110,6 +110,13 @@ describe("ApprovalsWorkspace", () => {
     ).toHaveTextContent("Showing 0 of 4 history records");
   });
 
+  it("ships an approaching-expiry representative fixture", () => {
+    render(<ApprovalsWorkspace approvals={APPROVAL_FIXTURES} />);
+
+    expect(queueSummary()).toHaveTextContent("1 nearing expiry");
+    expect(screen.getAllByText("Nearing")).not.toHaveLength(0);
+  });
+
   it("restores supported collection controls from the URL", () => {
     window.history.replaceState(
       null,

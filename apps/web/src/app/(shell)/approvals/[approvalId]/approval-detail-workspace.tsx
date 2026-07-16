@@ -14,9 +14,6 @@ import { StateChip, ReviewProgressTag, ExpiryLabel } from "../approval-badges";
 import { applySimulatedDecision, canSimulateDecision, expireDuringSimulatedReview, isExpiredAt, requiresSimulatedStepUp, type SimulatedDecision } from "../approval-prototype-controller";
 import type { ApprovalRecord } from "../approval-data";
 
-const returnPath = () =>
-  typeof window === "undefined" ? "/approvals?view=queue" : new URLSearchParams(window.location.search).get("from")?.startsWith("/approvals") ? new URLSearchParams(window.location.search).get("from")! : "/approvals?view=queue";
-
 function Notice() {
   return (
     <Card className="border-info-border bg-info-bg">
@@ -50,7 +47,7 @@ function Details({ items, fullWidth = [] }: { items: Record<string, React.ReactN
   );
 }
 
-export function ApprovalDetailWorkspace({ approval, presentationState = "ready", now = Date.now }: { approval?: ApprovalRecord; presentationState?: "ready" | "loading" | "error"; now?: () => number }) {
+export function ApprovalDetailWorkspace({ approval, presentationState = "ready", now = Date.now, returnTo = "/approvals?view=queue" }: { approval?: ApprovalRecord; presentationState?: "ready" | "loading" | "error"; now?: () => number; returnTo?: string }) {
   const [current, setCurrent] = React.useState(approval);
   const [decision, setDecision] = React.useState<SimulatedDecision | null>(null);
   const [reason, setReason] = React.useState("");
@@ -58,7 +55,6 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
   const [stepUp, setStepUp] = React.useState(false);
   const [announcement, setAnnouncement] = React.useState("");
   const lastDecisionTriggerRef = React.useRef<HTMLButtonElement | null>(null);
-  const back = React.useMemo(() => returnPath(), []);
   const unavailableExplanationId = React.useId();
 
   if (presentationState === "loading") return <div className="grid gap-4"><Skeleton className="h-16 w-1/2" /><Skeleton className="h-96 w-full" /></div>;
@@ -149,7 +145,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
         description={current.action}
         icon={ShieldAlert}
         meta={<><RiskChip risk={current.risk as RiskLevel} /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
-        actions={<Button asChild variant="ghost" size="sm"><Link href={back}><ArrowLeft className="size-4" aria-hidden="true" />Return to Queue</Link></Button>}
+        actions={<Button asChild variant="ghost" size="sm"><Link href={returnTo}><ArrowLeft className="size-4" aria-hidden="true" />Return to Queue</Link></Button>}
       />
       <Notice />
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>

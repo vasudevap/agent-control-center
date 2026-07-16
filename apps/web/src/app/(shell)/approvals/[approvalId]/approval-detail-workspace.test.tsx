@@ -31,6 +31,13 @@ describe("ApprovalDetailWorkspace", () => {
     );
   });
 
+  it("renders the server-validated collection return context without hydration-dependent URL reads", () => {
+    const returnTo = "/approvals?view=history&risk=High&state=Rejected&sort=decided&dir=asc&page=2";
+    render(<ApprovalDetailWorkspace approval={fixture("apr-2026-005")} returnTo={returnTo} />);
+
+    expect(screen.getByRole("link", { name: "Return to Queue" })).toHaveAttribute("href", returnTo);
+  });
+
   it("keeps long approval identity, action, policy, and payload values readable", () => {
     const longToken = "governedcontent".repeat(18);
     const longPayload = `${"Fictional governed parameter ".repeat(18)}final value.`;

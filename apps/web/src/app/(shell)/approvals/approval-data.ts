@@ -81,7 +81,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     runId: "run-2026-07-12-001",
     artifact: { id: "art-2026-0712-001", name: "Billing remediation evidence packet" },
     requestedAt: hoursAgo(3),
-    expiresAt: hoursFromNow(1.5),
+    expiresAt: hoursFromNow(0.5),
     policy: "External Communications P-214",
     policyReason: "Critical-risk external messaging requires human review.",
     environment: "Production",
