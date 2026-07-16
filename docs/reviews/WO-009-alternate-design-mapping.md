@@ -197,7 +197,7 @@ was introduced.
 
 Current results on 2026-07-15:
 
-- `npm run test`: 9 test files, 57 passing tests, no pending tests.
+- `npm run test`: 10 test files, 58 passing tests, no pending tests.
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
 - `npm run build`: pass; all 13 application routes generated successfully.
@@ -359,5 +359,6 @@ The review proceeds in order from Step 1 through Step 9. For each step:
 | Step 9 | Durable current-design evidence set | Captured through production-browser evidence | Thirteen current-design images cover the required responsive tiers, themes, core workflows, validation/step-up, unavailable/Indeterminate states, and controlled collection states. Governed closure remains separate. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 9 | Final visual-direction acceptance | Confirmed by owner | The owner accepted the current Queue, History, and Approval Detail formatting, visual hierarchy, spacing, readability, responsive presentation, themes, and overall GUI as the frontend direction Atlas should retain. This records subjective design acceptance only; governed review and all Definition of Done decisions remain separate. | 2026-07-15 |
 | Governed self-review | Navigation and pagination corrections | Identified and corrected during review | Approval Detail now labels History return navigation accurately, and collection pagination normalizes malformed or out-of-range URL values before rendering controls or encoding detail return context. Regression coverage passes. No Definition of Done item is marked complete. | 2026-07-15 |
+| Post-merge verification | Overview approval-expiry hydration | Defect identified and corrected on a governed follow-up branch | The Overview client previously imported relative-time approval fixtures directly, allowing server and browser module evaluation to produce different expiry timestamps. Overview now creates the fixtures on the server and passes the exact serialized approvals into `AttentionQueue`. A component regression test and a fresh-browser load confirm the attention queue renders with no warning or error logs. No Definition of Done item is marked complete. | 2026-07-15 |
 
 No WO-009 Definition of Done item has been marked complete.

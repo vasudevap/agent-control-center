@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { EmptyState } from "@/components/state/empty-state";
 import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indicator";
 import { getExpiryPresentation } from "@/app/(shell)/approvals/approval-presentation";
-import { APPROVAL_FIXTURES, isQueueApproval } from "@/app/(shell)/approvals/approval-data";
+import { isQueueApproval, type ApprovalRecord } from "@/app/(shell)/approvals/approval-data";
 import { MOCK_AGENTS, type AgentHealth } from "@/app/(shell)/agents/agent-data";
 import { cn } from "@/lib/utils";
 import { mockAlerts } from "../data/mock-data";
@@ -38,10 +38,10 @@ interface AttentionItem {
   href: string;
 }
 
-function buildAttentionItems(): AttentionItem[] {
+function buildAttentionItems(approvals: ApprovalRecord[]): AttentionItem[] {
   const items: AttentionItem[] = [];
 
-  APPROVAL_FIXTURES.filter(isQueueApproval).forEach((approval) => {
+  approvals.filter(isQueueApproval).forEach((approval) => {
     const expiry = getExpiryPresentation(approval.expiresAt, approval.requestedAt);
     const urgent = expiry.urgency === "imminent" || expiry.urgency === "nearing";
     const severity: Severity = riskRank(approval.risk) >= 3 ? 0 : urgent ? Math.max(0, riskRank(approval.risk) - 1) as Severity : (3 - riskRank(approval.risk)) as Severity;
@@ -122,8 +122,8 @@ function buildAttentionItems(): AttentionItem[] {
  * feed across three unrelated entity types; the ranking is the value
  * it adds, so it is not exposed as a user-controlled sort.
  */
-export function AttentionQueue() {
-  const items = buildAttentionItems();
+export function AttentionQueue({ approvals }: { approvals: ApprovalRecord[] }) {
+  const items = buildAttentionItems(approvals);
 
   return (
     <Card>
