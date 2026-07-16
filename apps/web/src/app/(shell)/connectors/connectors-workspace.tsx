@@ -1,0 +1,418 @@
+"use client";
+
+import * as React from "react";
+import { Activity, FilterX, PlugZap, RotateCw, ShieldOff } from "lucide-react";
+import {
+  type AuthenticationType,
+  type ConnectorRecord,
+  type ConnectorStatus,
+} from "./connector-data";
+import { StatusBadge } from "@/components/badge/status-badge";
+import { PageHeader } from "@/components/layout/page-header";
+import { EmptyState } from "@/components/state/empty-state";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { SearchField } from "@/components/ui/search-field";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+const SELECT_CLASS =
+  "h-9 rounded-atlas-md border border-border-default bg-surface px-3 text-sm text-foreground outline-none hover:border-border-strong focus:border-brand";
+
+function ConnectorDetails({ connector }: { connector: ConnectorRecord }) {
+  return (
+    <details className="mt-2 whitespace-normal">
+      <summary className="w-fit cursor-pointer text-xs font-medium text-brand hover:underline">
+        View declared access
+      </summary>
+      <div className="mt-3 grid gap-3 rounded-atlas-md border border-border-subtle bg-surface-secondary p-3 text-xs">
+        <div>
+          <p className="font-mono text-[10px] uppercase text-foreground-tertiary">
+            Capabilities
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {connector.capabilities.map((value) => (
+              <Badge key={value} variant="neutral">
+                {value}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="font-mono text-[10px] uppercase text-foreground-tertiary">
+            Fictional scopes
+          </p>
+          <ul className="mt-2 grid gap-1 font-mono text-foreground-secondary">
+            {connector.scopes.map((scope) => (
+              <li key={scope}>{scope}</li>
+            ))}
+          </ul>
+        </div>
+        <p className="text-foreground-secondary">
+          Descriptors only. No token, secret, provider client, or permission
+          grant exists.
+        </p>
+      </div>
+    </details>
+  );
+}
+
+export function ConnectorsWorkspace({
+  connectors,
+}: {
+  connectors: ConnectorRecord[];
+}) {
+  const [query, setQuery] = React.useState("");
+  const [status, setStatus] = React.useState<ConnectorStatus | "all">("all");
+  const [auth, setAuth] = React.useState<AuthenticationType | "all">("all");
+  const [overrides, setOverrides] = React.useState<
+    Record<string, ConnectorStatus>
+  >({});
+  const [confirmRevoke, setConfirmRevoke] =
+    React.useState<ConnectorRecord | null>(null);
+  const [notice, setNotice] = React.useState("");
+  const records = connectors.map((connector) => ({
+    ...connector,
+    status: overrides[connector.id] ?? connector.status,
+  }));
+  const normalized = query.trim().toLowerCase();
+  const visible = records.filter(
+    (connector) =>
+      (!normalized ||
+        [
+          connector.id,
+          connector.name,
+          connector.provider,
+          connector.accountLabel,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalized)) &&
+      (status === "all" || connector.status === status) &&
+      (auth === "all" || connector.authenticationType === auth),
+  );
+  const hasFilters = Boolean(query || status !== "all" || auth !== "all");
+  const clear = () => {
+    setQuery("");
+    setStatus("all");
+    setAuth("all");
+  };
+  const setSimulated = (
+    connector: ConnectorRecord,
+    next: ConnectorStatus,
+    action: string,
+  ) => {
+    setOverrides((current) => ({ ...current, [connector.id]: next }));
+    setNotice(
+      `Simulated ${action} for ${connector.name}. Refresh restores the fixture.`,
+    );
+  };
+  const primaryAction = (connector: ConnectorRecord) =>
+    connector.status === "offline"
+      ? {
+          label: "Simulate connection",
+          action: "connection",
+          status: "healthy" as const,
+        }
+      : connector.status === "expired" || connector.status === "revoked"
+        ? {
+            label: "Simulate reconnect",
+            action: "reconnect",
+            status: "healthy" as const,
+          }
+        : null;
+
+  const Actions = ({ connector }: { connector: ConnectorRecord }) => {
+    const primary = primaryAction(connector);
+    return (
+      <div className="relative z-20 flex flex-wrap gap-2">
+        {primary && (
+          <Button
+            size="sm"
+            onClick={() =>
+              setSimulated(connector, primary.status, primary.action)
+            }
+          >
+            <RotateCw aria-hidden="true" />
+            {primary.label}
+          </Button>
+        )}
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setNotice(
+              `Simulated health check for ${connector.name}. No provider was contacted.`,
+            );
+          }}
+        >
+          <Activity aria-hidden="true" />
+          Simulate health check
+        </Button>
+        {connector.status !== "offline" && connector.status !== "revoked" && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setConfirmRevoke(connector)}
+          >
+            <ShieldOff aria-hidden="true" />
+            Simulate revoke
+          </Button>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        eyebrow="Governance"
+        title="Connectors"
+        description="Review fictional connection descriptors and least-privilege declarations."
+        icon={PlugZap}
+      />
+      <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
+        <strong>Frontend prototype.</strong> No OAuth, provider, token,
+        credential, secret, or connection service exists. Every action is a
+        session-only simulation.
+      </div>
+      <p className="sr-only" aria-live="polite">
+        {notice}
+      </p>
+      <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder="Search connectors"
+          className="w-full sm:max-w-sm"
+        />
+        <label htmlFor="connector-status" className="sr-only">
+          Status
+        </label>
+        <select
+          id="connector-status"
+          className={SELECT_CLASS}
+          value={status}
+          onChange={(event) =>
+            setStatus(event.target.value as ConnectorStatus | "all")
+          }
+        >
+          <option value="all">All statuses</option>
+          <option value="healthy">Healthy</option>
+          <option value="degraded">Degraded</option>
+          <option value="expired">Expired</option>
+          <option value="revoked">Revoked</option>
+          <option value="offline">Offline</option>
+        </select>
+        <label htmlFor="connector-auth" className="sr-only">
+          Authentication type
+        </label>
+        <select
+          id="connector-auth"
+          className={SELECT_CLASS}
+          value={auth}
+          onChange={(event) =>
+            setAuth(event.target.value as AuthenticationType | "all")
+          }
+        >
+          <option value="all">All authentication types</option>
+          {[
+            ...new Set(
+              connectors.map((connector) => connector.authenticationType),
+            ),
+          ].map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={clear}>
+            <FilterX aria-hidden="true" />
+            Clear filters
+          </Button>
+        )}
+        <p className="text-xs text-foreground-secondary sm:ml-auto">
+          {visible.length} of {connectors.length} fictional connectors
+        </p>
+      </div>
+      {visible.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={PlugZap}
+            title="No connectors match these filters"
+            description="Clear filters to restore the fictional connector registry."
+            action={
+              <Button variant="secondary" size="sm" onClick={clear}>
+                Clear filters
+              </Button>
+            }
+          />
+        </Card>
+      ) : (
+        <>
+          <Card className="hidden overflow-hidden md:block">
+            <Table>
+              <caption className="sr-only">Connector inventory</caption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Connector</TableHead>
+                  <TableHead>Authentication</TableHead>
+                  <TableHead>Account</TableHead>
+                  <TableHead>Last check</TableHead>
+                  <TableHead>Session-only actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visible.map((connector) => (
+                  <TableRow key={connector.id}>
+                    <TableCell className="align-top text-xs">
+                      <StatusBadge
+                        status={connector.status}
+                        plain
+                        className="text-xs"
+                      />
+                    </TableCell>
+                    <TableCell className="min-w-72 align-top whitespace-normal text-xs">
+                      <p className="font-medium">{connector.name}</p>
+                      <p className="mt-1 text-foreground-secondary">
+                        {connector.provider} · v{connector.version}
+                      </p>
+                      <p className="mt-1 font-mono text-[10px] text-foreground-tertiary">
+                        {connector.id}
+                      </p>
+                      <ConnectorDetails connector={connector} />
+                    </TableCell>
+                    <TableCell className="align-top text-xs text-foreground-secondary">
+                      {connector.authenticationType}
+                    </TableCell>
+                    <TableCell className="align-top text-xs text-foreground-secondary">
+                      {connector.accountLabel}
+                    </TableCell>
+                    <TableCell className="align-top text-xs text-foreground-secondary">
+                      {connector.lastCheck}
+                    </TableCell>
+                    <TableCell className="min-w-64 align-top">
+                      <Actions connector={connector} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+          <ul className="grid gap-3 md:hidden">
+            {visible.map((connector) => (
+              <li key={connector.id}>
+                <Card>
+                  <CardContent className="grid gap-3 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h2 className="font-medium">{connector.name}</h2>
+                        <p className="mt-1 font-mono text-[10px] text-foreground-tertiary">
+                          {connector.id}
+                        </p>
+                      </div>
+                      <StatusBadge status={connector.status} />
+                    </div>
+                    <p className="text-sm text-foreground-secondary">
+                      {connector.statusSummary}
+                    </p>
+                    <dl className="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <dt className="font-mono text-[10px] uppercase text-foreground-tertiary">
+                          Provider
+                        </dt>
+                        <dd>{connector.provider}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-mono text-[10px] uppercase text-foreground-tertiary">
+                          Authentication
+                        </dt>
+                        <dd>{connector.authenticationType}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-mono text-[10px] uppercase text-foreground-tertiary">
+                          Account
+                        </dt>
+                        <dd>{connector.accountLabel}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-mono text-[10px] uppercase text-foreground-tertiary">
+                          Last check
+                        </dt>
+                        <dd>{connector.lastCheck}</dd>
+                      </div>
+                    </dl>
+                    <ConnectorDetails connector={connector} />
+                    <Actions connector={connector} />
+                  </CardContent>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {notice && (
+        <div
+          role="status"
+          className="rounded-atlas-md border border-success-border bg-success-bg px-4 py-3 text-sm text-foreground"
+        >
+          {notice}
+        </div>
+      )}
+      <Dialog
+        open={Boolean(confirmRevoke)}
+        onOpenChange={(open) => {
+          if (!open) setConfirmRevoke(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Simulate connector revocation?</DialogTitle>
+            <DialogDescription>
+              This changes only the selected fixture in memory. No provider
+              grant, token, connection, or credential will be touched.
+            </DialogDescription>
+          </DialogHeader>
+          {confirmRevoke && (
+            <div className="rounded-atlas-md border border-border-default bg-surface-secondary p-4 text-sm">
+              <p className="font-medium">{confirmRevoke.name}</p>
+              <p className="mt-1 font-mono text-xs text-foreground-tertiary">
+                {confirmRevoke.id}
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmRevoke(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirmRevoke)
+                  setSimulated(confirmRevoke, "revoked", "revocation");
+                setConfirmRevoke(null);
+              }}
+            >
+              Confirm simulated revocation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

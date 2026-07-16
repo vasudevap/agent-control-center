@@ -10,7 +10,7 @@ From this folder's root:
     npm run dev        # Next.js dev server
     npm run typecheck  # tsc --noEmit
     npm run lint       # eslint
-    npm run test       # Vitest: 71 passing tests across 14 files; no pending tests
+    npm run test       # Vitest: 77 passing tests across 17 files; no pending tests
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 
@@ -62,6 +62,12 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **Audit.** Read-only fictional governance history with Search, Action, Result, Actor, and Resource controls; true-value sorts; desktop table; mobile cards; and correlation details. The page explicitly states that its append-only-looking fixtures are not operational audit records or a system of record, and exposes no write, edit, delete, or export affordance.
 
+**Connectors.** Local-fixture lifecycle inventory with search, Status and Authentication filters, semantic desktop table, complete mobile cards, declared capabilities/scopes disclosure, and explicit connection/reconnect/health-check/revoke simulations. Revocation uses the shared focus-managed dialog and no credential or secret field exists.
+
+**Policies.** Local policy-declaration inventory with search, Status and Type filters, risk/state vocabulary, scope, version, agent assignments, readable rule summaries, and explicit local enable/disable simulation. Summaries never claim evaluation or enforcement.
+
+**Settings.** Session-only workspace, appearance, notification, scheduling, and retention preference form. Reset restores deterministic defaults; simulated save states that nothing was persisted or sent. The shell theme control remains the real local UI-theme mechanism, separate from the fictional appearance preference.
+
 ## Decision log
 
 The rationale for each design decision is preserved in the archived branch history; every commit message describes one review round. Read `git log --oneline archive/gui-alternate-design` for the sequence. Several component docblocks (RiskChip, StatusBadge, CardHeader, AttentionQueue, PageHeader) also carry the reasoning inline where it matters most.
@@ -78,4 +84,4 @@ The rationale for each design decision is preserved in the archived branch histo
 
 ## Known gaps and next candidates
 
-Connectors, Policies, and Settings remain placeholders and are the next approved delivery round under WO-012. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
+All authorized Atlas frontend routes now have reviewed local-fixture prototype surfaces. Remaining product gaps are service-backed capabilities—including authentication, persistence, runtime, connectors, policy evaluation, notifications, scheduling, and audit durability—which require architecture and new authorized Work Orders. Fleet pulse numbers in the status bar remain static fixtures and do not yet link to filtered views.

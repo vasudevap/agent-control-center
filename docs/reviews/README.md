@@ -20,3 +20,7 @@ for the remaining Atlas frontend pages.
 The WO-011 implementation report records conformance, automated validation,
 browser evidence, known limitations, and the governed merge gate for Alerts and
 Audit.
+
+The WO-012 implementation report records the final placeholder replacement for
+Connectors, Policies, and Settings, including simulation safety, accessibility,
+responsive evidence, validation, and the governed merge gate.
