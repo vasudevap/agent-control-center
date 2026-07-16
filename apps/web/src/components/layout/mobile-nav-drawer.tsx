@@ -77,7 +77,7 @@ export function MobileNavDrawer({
             <X className="size-4" />
           </Button>
         </div>
-        <SidebarNav onNavigate={onClose} />
+        <SidebarNav onNavigate={onClose} expanded />
       </div>
     </div>
   );

@@ -156,7 +156,7 @@
 
   /* ---- Rail / bar ---- */
   --sidebar-width: 13.5rem;
-  --sidebar-width-collapsed: 3.5rem;
+  --sidebar-width-collapsed: 5rem;
   --topbar-height: 3rem;
   --statusbar-height: 2.25rem;
 }

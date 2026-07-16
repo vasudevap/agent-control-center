@@ -10,7 +10,7 @@ From this folder's root:
     npm run dev        # Next.js dev server
     npm run typecheck  # tsc --noEmit
     npm run lint       # eslint
-    npm run test       # vitest, currently 10 tests across 6 files
+    npm run test       # Vitest: 53 passing tests across 9 files; no pending tests
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 
@@ -38,9 +38,9 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **PageHeader** (`components/layout/page-header.tsx`). Eyebrow / title / identifier chip / description at `gap-1`; icon in its own column; `meta` slot for chips; `actions` slot for small buttons. On mobile, actions and meta stack below the identity content so long object names retain a readable width.
 
-**Shell**. Sidebar extends to the viewport top and owns the logo; three responsive tiers (hidden below `md`, icon-only collapsed at `md`, full at `lg`), with tooltips labeling collapsed icons. StatusBar holds the fleet pulse in three clusters (fleet, approvals, alerts) and shares the sidebar offset through the same wrapper as TopBar and main. The mobile nav drawer intentionally preserves the icon-only vocabulary for brevity; every icon link carries an explicit accessible name even though its text label remains visually hidden.
+**Shell**. Sidebar extends to the viewport top and owns the logo; three responsive tiers (hidden below `md`, compact rail with labels beneath icons at `md`, full horizontal icon-and-label rows at `lg`). The middle tier uses the vertical treatment so every label remains readable without taking substantial width from the workspace. The mobile drawer uses the full horizontal icon-and-label rows with section headings and badges, so navigation choices never depend on icon recognition. StatusBar holds the fleet pulse in three clusters (fleet, approvals, alerts) and shares the sidebar offset through the same wrapper as TopBar and main.
 
-**SortHeader** (defined locally in both `agents-inventory.tsx` and `approvals-workspace.tsx`). Mono column-header button with direction arrows. The two copies are intentionally identical; if you touch one, mirror the other, or extract a shared component.
+**SortHeader** (`components/ui/sort-header.tsx`). Shared mono column-header button with direction arrows. It exposes the announced sort direction for the active column and is used by both Agents and Approvals.
 
 ## Established design state, page by page
 
@@ -50,9 +50,9 @@ All three checks pass on every commit on this branch. Keep it that way: every ch
 
 **Agent Detail.** Two-column grid: sticky aside (At a glance fact list with StatusBadge `plain` values, Capabilities as neutral tags; both cards use divided headers with descriptions) plus a tabbed main card (Activity / Human Approvals / Governance). Activity's execution history table uses icon+label run status, uniform `text-xs` cells. Governance ends with the System prompt reference disclosure (shaded trigger row). Header actions: Back link, Pause/Resume agent, Run now, all `size="sm"`, sentence case, with confirmation dialogs.
 
-**Approvals.** Queue/History as underline tabs merged into the results panel header with a queue count chip. Control bar: search, Risk filter, Review filter (the agent filter was deliberately replaced; agent search still works through the text field), risk legend, clear button. Table columns: Risk (leading, icon-only, sortable), Approval (sortable by attention rank; action + mono id/policy caption; stretched-link), Agent (sortable), Requested (sortable), Expiry (sortable, urgency-colored), Review on the queue view (sortable, pictographic tag) or Outcome on history (State via StatusBadge `plain` + outcome caption). Default sort is attention: expiry urgency first, then risk.
+**Approvals.** Queue/History as underline tabs merged into the results panel header with a queue count chip. The page header reuses the exact Approvals icon exported by the navigation model. Control bar: search, Risk, a view-specific Review filter on Queue or State filter on History, risk legend, and clear button. The agent filter was deliberately replaced; agent search still works through the text field. Table columns: Risk (leading, icon-only, sortable), Approval (sortable by attention rank; action + mono id/policy caption; stretched-link), Agent (sortable), Requested on Queue or Decided on History (both sortable), Expiry (sortable, urgency-colored), and Review on Queue (sortable, pictographic tag) or Outcome on History (State via StatusBadge `plain` + outcome caption). History rows also expose reason, reviewer, and correlation context. Mobile cards preserve state, risk, action, target, agent, identifier, expiry, review/outcome context, Queue request time, and History decision metadata. Queue defaults to attention ordering: expiry urgency first, then risk. History defaults to the newest explicit decision timestamp.
 
-**Approval Detail.** Main column of InfoCards (Proposed action, Policy rationale, Evidence and context with the untrusted-evidence callout, Activity timeline), sticky aside with the Decide card (shaded actionable header, simulation buttons, icon-carrying status lines) and Request context. Mobile gets the decision card inline plus a fixed bottom bar. Dialogs enforce reason-required rules and simulated step-up for high risk.
+**Approval Detail.** Main column of InfoCards (Proposed action with a full-width payload summary, Policy rationale, Evidence and context with the untrusted-evidence callout, Activity timeline), sticky aside with the Decide card (shaded actionable header, simulation buttons, icon-carrying status lines) and Request context. The payload summary also appears in the final simulated-decision confirmation. Request context models Agent, Run, and optional Artifact relationships without linking unavailable prototype routes. Mobile gets the decision card inline plus a fixed bottom bar and keeps Indeterminate investigation guidance in normal reading order. Dialogs enforce decision-specific required text, simulated step-up for high risk, focus containment, controlled expiry-at-confirmation behavior, and polite live announcements. Tall dialogs stay within the viewport and scroll internally.
 
 ## Decision log
 
@@ -70,4 +70,4 @@ The rationale for each design decision is preserved in the archived branch histo
 
 ## Known gaps and next candidates
 
-Alerts, Runs, Artifacts, Audit, Connectors, Policies, and Settings exist as routes but are placeholders (PlaceholderPage) or have not been through this review process; they are the pages to build next, using the checklist above. The two SortHeader copies could be extracted into a shared component. The History view's default sort is still attention-rank, which is meaningless for resolved items; a "decided at" timestamp field and default would be more useful. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.
+Alerts, Runs, Artifacts, Audit, Connectors, Policies, and Settings exist as routes but are placeholders (PlaceholderPage) or have not been through this review process; they are the pages to build next, using the checklist above. Fleet pulse numbers in the status bar are static fixtures and do not yet link to filtered views.

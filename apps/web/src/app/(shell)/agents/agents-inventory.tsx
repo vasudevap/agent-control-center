@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, Bot, CheckCircle2, CircleOff, FilterX, Loader2, Power, PowerOff, CircleDashed, XCircle } from "lucide-react";
+import { AlertTriangle, Bot, CheckCircle2, CircleOff, FilterX, Loader2, Power, PowerOff, CircleDashed, XCircle } from "lucide-react";
 import {
   HEALTH_LABELS,
   MOCK_AGENTS,
@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getAriaSort, SortHeader, type SortDirection } from "@/components/ui/sort-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export type { AgentRecord } from "./agent-data";
@@ -51,7 +52,7 @@ function filterAgents(agents: AgentRecord[], query: string, status: AgentStatus 
   });
 }
 
-function sortAgents(agents: AgentRecord[], sort: SortKey, direction: "asc" | "desc") {
+function sortAgents(agents: AgentRecord[], sort: SortKey, direction: SortDirection) {
   const dirMul = direction === "asc" ? 1 : -1;
   return [...agents].sort((a, b) => {
     if (sort === "health") return (HEALTH_RANK[a.health] - HEALTH_RANK[b.health]) * dirMul || a.name.localeCompare(b.name);
@@ -60,17 +61,8 @@ function sortAgents(agents: AgentRecord[], sort: SortKey, direction: "asc" | "de
     if (sort === "owner") return a.owner.localeCompare(b.owner) * dirMul || a.name.localeCompare(b.name);
     if (sort === "lastRun") return (+new Date(a.lastRunAt) - +new Date(b.lastRunAt)) * dirMul;
     if (sort === "nextRun") return (+new Date(a.nextRunAt ?? "9999-01-01") - +new Date(b.nextRunAt ?? "9999-01-01")) * dirMul;
-    return getAttentionRank(a) - getAttentionRank(b) || a.name.localeCompare(b.name);
+    return (getAttentionRank(a) - getAttentionRank(b) || a.name.localeCompare(b.name)) * dirMul;
   });
-}
-
-function SortHeader({ label, sortKey, active, direction, onSort }: { label: string; sortKey: SortKey; active: boolean; direction: "asc" | "desc"; onSort: (key: SortKey) => void }) {
-  return (
-    <button type="button" onClick={() => onSort(sortKey)} className="inline-flex items-center gap-1 font-mono text-[11px] font-medium uppercase tracking-wider text-foreground-tertiary hover:text-foreground">
-      {label}
-      {active ? direction === "asc" ? <ArrowUp className="size-3" aria-hidden="true" /> : <ArrowDown className="size-3" aria-hidden="true" /> : <ArrowUpDown className="size-3 opacity-40" aria-hidden="true" />}
-    </button>
-  );
 }
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
@@ -103,19 +95,19 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
   );
 }
 
-function AgentsTable({ agents, sort, direction, onSort }: { agents: AgentRecord[]; sort: SortKey; direction: "asc" | "desc"; onSort: (key: SortKey) => void }) {
+function AgentsTable({ agents, sort, direction, onSort }: { agents: AgentRecord[]; sort: SortKey; direction: SortDirection; onSort: (key: SortKey) => void }) {
   return (
     <Card className="hidden overflow-hidden md:block">
       <Table>
         <caption className="sr-only">Agents inventory</caption>
         <TableHeader>
           <TableRow>
-            <TableHead><SortHeader label="Health" sortKey="health" active={sort === "health"} direction={direction} onSort={onSort} /></TableHead>
-            <TableHead><SortHeader label="Agent" sortKey="agent" active={sort === "agent"} direction={direction} onSort={onSort} /></TableHead>
-            <TableHead><SortHeader label="Status" sortKey="status" active={sort === "status"} direction={direction} onSort={onSort} /></TableHead>
-            <TableHead className="hidden lg:table-cell"><SortHeader label="Owner" sortKey="owner" active={sort === "owner"} direction={direction} onSort={onSort} /></TableHead>
-            <TableHead><SortHeader label="Last run" sortKey="lastRun" active={sort === "lastRun"} direction={direction} onSort={onSort} /></TableHead>
-            <TableHead><SortHeader label="Next run" sortKey="nextRun" active={sort === "nextRun"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead aria-sort={getAriaSort(sort === "health", direction)}><SortHeader label="Health" sortKey="health" active={sort === "health"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead aria-sort={getAriaSort(sort === "agent", direction)}><SortHeader label="Agent" sortKey="agent" active={sort === "agent"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead aria-sort={getAriaSort(sort === "status", direction)}><SortHeader label="Status" sortKey="status" active={sort === "status"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead aria-sort={getAriaSort(sort === "owner", direction)} className="hidden lg:table-cell"><SortHeader label="Owner" sortKey="owner" active={sort === "owner"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead aria-sort={getAriaSort(sort === "lastRun", direction)}><SortHeader label="Last run" sortKey="lastRun" active={sort === "lastRun"} direction={direction} onSort={onSort} /></TableHead>
+            <TableHead aria-sort={getAriaSort(sort === "nextRun", direction)}><SortHeader label="Next run" sortKey="nextRun" active={sort === "nextRun"} direction={direction} onSort={onSort} /></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -184,7 +176,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
   const [statusFilter, setStatusFilter] = React.useState<AgentStatus | "all">("all");
   const [healthFilter, setHealthFilter] = React.useState<AgentHealth | "all">("all");
   const [sort, setSort] = React.useState<SortKey>("attention");
-  const [direction, setDirection] = React.useState<"asc" | "desc">("desc");
+  const [direction, setDirection] = React.useState<SortDirection>("asc");
 
   const onSort = (key: SortKey) => {
     if (key === sort) setDirection((d) => (d === "asc" ? "desc" : "asc"));

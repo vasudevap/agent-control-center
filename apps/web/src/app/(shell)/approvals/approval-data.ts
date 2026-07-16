@@ -33,10 +33,12 @@ export interface ApprovalRecord {
   risk: ApprovalRisk;
   action: string;
   target: string;
+  payloadSummary: string;
   consequence: string;
   scope: string;
   agent: { id: string; name: string };
   runId: string;
+  artifact?: { id: string; name: string };
   requestedAt: string;
   expiresAt?: string;
   policy: string;
@@ -46,6 +48,9 @@ export interface ApprovalRecord {
   activity: Array<{ at: string; actor: string; detail: string; simulated?: boolean }>;
   executionOutcome: ExecutionOutcome;
   decisionReason?: string;
+  decidedAt?: string;
+  reviewer?: string;
+  correlationId?: string;
 }
 
 const HOUR = 60 * 60 * 1000;
@@ -69,12 +74,14 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "Critical",
     action: "Send a remediation notice to the enterprise billing contact.",
     target: "billing-operations@northstar.example",
+    payloadSummary: "Subject: Billing remediation required. The message requests acknowledgement of the control exception and corrected evidence within five business days.",
     consequence: "One external contact would receive the controlled notice.",
     scope: "One enterprise account; no financial transaction.",
     agent: { id: "agent-policy-digest", name: "Policy Digest Agent" },
     runId: "run-2026-07-12-001",
+    artifact: { id: "art-2026-0712-001", name: "Billing remediation evidence packet" },
     requestedAt: hoursAgo(3),
-    expiresAt: hoursFromNow(1.5),
+    expiresAt: hoursFromNow(0.5),
     policy: "External Communications P-214",
     policyReason: "Critical-risk external messaging requires human review.",
     environment: "Production",
@@ -89,6 +96,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "High",
     action: "Approve an evidence-retention exception for a reviewed policy packet.",
     target: "Policy packet PP-8842",
+    payloadSummary: "Apply the exception label `retention-review-pending` to PP-8842 while preserving its current evidence attachments and access restrictions.",
     consequence: "One packet remains outside the standard retention class.",
     scope: "One evidence packet.",
     agent: { id: "agent-policy-digest", name: "Policy Digest Agent" },
@@ -112,6 +120,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "High",
     action: "Re-run the failed connector evidence export for a governed health check.",
     target: "Connector registry export CR-77",
+    payloadSummary: "Generate a replacement CR-77 export containing the governed health-check results, source identifiers, and a checksum manifest.",
     consequence: "A replacement evidence export would be generated.",
     scope: "One connector health-check artifact.",
     agent: { id: "agent-connectors-health", name: "Connector Health Sentinel" },
@@ -132,6 +141,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "Medium",
     action: "Publish a reviewed operations summary to the internal artifact catalog.",
     target: "Artifact OPS-2026-0712",
+    payloadSummary: "Publish the reviewed summary with internal classification, source run reference, operational recommendation, and owning team metadata.",
     consequence: "One internal catalog entry would be published.",
     scope: "One internal artifact.",
     agent: { id: "agent-support-drafts", name: "Support Draft Agent" },
@@ -152,6 +162,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "Low",
     action: "Tag a completed intake batch as reviewed in the recruiter queue.",
     target: "Intake batch RB-2026-0713",
+    payloadSummary: "Set the batch review marker to `reviewed` and attach the fictional reviewer timestamp without changing any candidate record.",
     consequence: "One internal batch record changes status.",
     scope: "One recruiting intake batch.",
     agent: { id: "agent-recruiting-triage", name: "Recruiting Triage Agent" },
@@ -172,6 +183,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "Low",
     action: "Add a reviewed categorization note to an internal support record.",
     target: "Support record SR-2194",
+    payloadSummary: "Add the note `Reviewed category: account access` with the fictional evidence reference and no change to the record's workflow state.",
     consequence: "One internal record would show the note.",
     scope: "One internal support record.",
     agent: { id: "agent-support-drafts", name: "Support Draft Agent" },
@@ -187,6 +199,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     ],
     executionOutcome: "Succeeded",
     decisionReason: "The note is consistent with the supplied evidence.",
+    decidedAt: hoursAgo(118),
+    reviewer: "Prototype reviewer",
+    correlationId: "corr-apr-2026-005",
   },
   {
     id: "apr-2026-006",
@@ -195,6 +210,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "High",
     action: "Send a vendor follow-up requesting revised evidence.",
     target: "vendor-assurance@northstar.example",
+    payloadSummary: "Subject: Revised assurance evidence requested. The message lists the missing contact verification and asks for a replacement packet.",
     consequence: "One vendor would receive a request for evidence.",
     scope: "One external vendor contact.",
     agent: { id: "agent-policy-digest", name: "Policy Digest Agent" },
@@ -210,6 +226,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     ],
     executionOutcome: "Not available",
     decisionReason: "The required evidence is incomplete.",
+    decidedAt: hoursAgo(147),
+    reviewer: "Prototype reviewer",
+    correlationId: "corr-apr-2026-006",
   },
   {
     id: "apr-2026-007",
@@ -218,6 +237,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "Medium",
     action: "Export a reviewed evidence bundle for a completed connector investigation.",
     target: "Evidence bundle EB-443",
+    payloadSummary: "Package the investigation summary, reviewed connector evidence, source references, and checksum manifest as internal bundle EB-443.",
     consequence: "A historical evidence bundle would be available internally.",
     scope: "One completed investigation.",
     agent: { id: "agent-connectors-health", name: "Connector Health Sentinel" },
@@ -230,6 +250,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     evidence: evidence("Connector investigation record"),
     activity: [{ at: hoursAgo(296), actor: "System", detail: "Approval window expired." }],
     executionOutcome: "Indeterminate",
+    decidedAt: hoursAgo(296),
+    reviewer: "System",
+    correlationId: "corr-apr-2026-007",
   },
   {
     id: "apr-2026-009",
@@ -238,6 +261,7 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
     risk: "Medium",
     action: "Archive a superseded calendar-briefing template.",
     target: "Briefing template BT-118",
+    payloadSummary: "Mark BT-118 archived, remove it from future template selection, and retain its existing historical usage references.",
     consequence: "One internal template would be archived.",
     scope: "One briefing template.",
     agent: { id: "agent-calendar-briefing", name: "Calendar Briefing Agent" },
@@ -252,6 +276,9 @@ export const APPROVAL_FIXTURES: ApprovalRecord[] = [
       { at: hoursAgo(180), actor: "System", detail: "Cancelled because the requesting workflow withdrew the request." },
     ],
     executionOutcome: "Not available",
+    decidedAt: hoursAgo(180),
+    reviewer: "System",
+    correlationId: "corr-apr-2026-009",
   },
 ];
 

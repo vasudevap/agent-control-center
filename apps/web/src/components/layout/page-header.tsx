@@ -50,7 +50,7 @@ export function PageHeader({ eyebrow, title, identifier, description, icon: Icon
               {title}
             </h1>
             {identifier && (
-              <span className="rounded-atlas-sm border border-border-default bg-surface-secondary px-1.5 py-0.5 font-mono text-[11px] text-foreground-tertiary">
+              <span className="break-all rounded-atlas-sm border border-border-default bg-surface-secondary px-1.5 py-0.5 font-mono text-[11px] text-foreground-tertiary">
                 {identifier}
               </span>
             )}
@@ -60,7 +60,7 @@ export function PageHeader({ eyebrow, title, identifier, description, icon: Icon
       </div>
       {(description || meta) && (
         <div className={cn("flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between", Icon && "pl-[2.375rem]")}>
-          {description && <p className="text-sm leading-relaxed text-foreground-secondary">{description}</p>}
+          {description && <p className="break-words text-sm leading-relaxed text-foreground-secondary">{description}</p>}
           {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
         </div>
       )}

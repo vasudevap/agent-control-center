@@ -52,14 +52,14 @@ export function SearchField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={ariaLabel ?? placeholder}
-        className="w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-foreground-tertiary [&::-webkit-search-cancel-button]:appearance-none"
+        className="h-full w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-foreground-tertiary [&::-webkit-search-cancel-button]:appearance-none"
       />
       {value && (
         <button
           type="button"
           onClick={handleClear}
           aria-label="Clear search"
-          className="flex shrink-0 items-center justify-center text-foreground-tertiary transition-colors hover:text-foreground"
+          className="flex size-6 shrink-0 items-center justify-center text-foreground-tertiary transition-colors hover:text-foreground"
         >
           <X className="size-3.5" aria-hidden="true" />
         </button>
