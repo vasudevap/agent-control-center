@@ -122,8 +122,12 @@ Application-shell baseline completed through Work Order 005. Work Order 006 adds
 the frontend-only Agents Inventory for monitoring mock agents and navigating to
 agent details. Work Order 009 completes the frontend-only Human Approvals Queue,
 History, Approval Detail, and simulated decision experience in the selected
-Atlas design direction. Remaining dashboard pages are governed by future
-approved work orders.
+Atlas design direction. The remaining frontend prototype is sequenced through
+three approved delivery rounds: WO-010 adds Runs, Run Detail, Artifacts, and
+Artifact Detail; WO-011 adds Alerts and Audit; and WO-012 adds Connectors,
+Policies, and Settings. These rounds remain local-fixture UI work and do not
+authorize services, persistence, authentication, connector calls, policy
+evaluation, or operational audit storage.
 
 ---
 
