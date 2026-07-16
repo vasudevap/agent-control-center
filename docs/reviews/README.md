@@ -12,3 +12,7 @@ The Human Approvals review records preserve the approval basis for ES-003 and
 WO-009. The WO-009 design-direction reconciliation and alternate-design mapping
 record the completed item-by-item review, and the WO-009 implementation report
 records final conformance, validation, evidence, and closeout.
+
+The WO-010, WO-011, and WO-012 authorization reviews record the approved scope,
+prototype boundaries, Definition-of-Ready evidence, and required verification
+for the remaining Atlas frontend pages.

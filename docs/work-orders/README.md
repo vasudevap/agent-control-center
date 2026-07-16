@@ -13,5 +13,14 @@ controls. Runtime mutation integration remains pending a dedicated engineering
 specification and implementation work order.
 
 Work Order 009 authorizes the frontend-only Human Approvals experience. Its
-selected design direction is integrated on `main`; final functional
-conformance review and closure evidence remain pending.
+selected design direction is integrated on `main`; functional conformance,
+implementation evidence, and formal closure are complete.
+
+Work Order 010 authorizes the frontend-only Runs, Run Detail, Artifacts, and
+Artifact Detail prototype surfaces.
+
+Work Order 011 authorizes the frontend-only Alerts and Audit prototype
+surfaces.
+
+Work Order 012 authorizes the frontend-only Connectors, Policies, and Settings
+prototype surfaces.
