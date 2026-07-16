@@ -1,6 +1,6 @@
 # Work Order 010: Atlas Public Site
 
-**Status:** Implementation In Progress
+**Status:** Completed
 **Work Order ID:** WO-010
 **Type:** Public website
 **Implementation Authorization:** Granted
@@ -135,17 +135,17 @@ requested during review.
 
 ## 9. Definition of Done
 
-- [ ] Discovery, design, and architecture records are approved and consistent.
-- [ ] `apps/site` exists as a sibling workspace to `apps/web`.
-- [ ] All required page sections and content are implemented.
-- [ ] Built, Designed, and Planned claims are distinct and accurate.
-- [ ] The site meets responsive and accessibility requirements.
-- [ ] No existing `apps/web` implementation file is changed.
-- [ ] Root scripts and CI validate both applications.
-- [ ] Documentation reflects the new public application and hosting boundary.
-- [ ] Required local checks pass.
-- [ ] A private Sites deployment succeeds.
-- [ ] A review record captures final evidence and deferred work.
+- [x] Discovery, design, and architecture records are approved and consistent.
+- [x] `apps/site` exists as a sibling workspace to `apps/web`.
+- [x] All required page sections and content are implemented.
+- [x] Built, Designed, and Planned claims are distinct and accurate.
+- [x] The site meets responsive and accessibility requirements.
+- [x] No existing `apps/web` implementation file is changed.
+- [x] Root scripts and CI validate both applications.
+- [x] Documentation reflects the new public application and hosting boundary.
+- [x] Required local checks pass.
+- [x] A private Sites deployment succeeds.
+- [x] A review record captures final evidence and deferred work.
 
 ## 10. Risks and Controls
 

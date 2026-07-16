@@ -116,8 +116,9 @@ overstating implementation maturity.
 
 ## Status
 
-In progress through Work Order 010. ADR-003 establishes the public-site
-application and hosting boundary.
+Completed through Work Order 010. ADR-003 establishes the public-site
+application and hosting boundary, and the initial release is privately hosted
+through OpenAI Sites.
 
 ---
 

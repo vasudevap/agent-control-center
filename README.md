@@ -95,7 +95,8 @@ remain future work.
 
 `apps/site` contains the public Atlas website authorized by Work Order 010. It
 explains the product, architecture, and delivery status without sharing the
-future authenticated product boundary.
+future authenticated product boundary. The current owner-only Sites release is
+available at [Atlas — Agent Control Center](https://atlas-control-center.prashant-vasudeva.chatgpt.site).
 
 From the repository root:
 
