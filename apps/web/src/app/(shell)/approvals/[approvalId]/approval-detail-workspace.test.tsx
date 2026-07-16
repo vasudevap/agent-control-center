@@ -29,6 +29,8 @@ describe("ApprovalDetailWorkspace", () => {
       "href",
       "/agents/agent-policy-digest"
     );
+    expect(screen.queryByRole("button", { name: "Approve" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reject" })).not.toBeInTheDocument();
   });
 
   it("renders the server-validated collection return context without hydration-dependent URL reads", () => {

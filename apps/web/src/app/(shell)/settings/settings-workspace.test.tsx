@@ -40,4 +40,14 @@ describe("SettingsWorkspace", () => {
       screen.getByText(/Values exist only in component memory/i),
     ).toBeInTheDocument();
   });
+
+  it("keeps the action area in normal flow so it cannot cover mobile fields", () => {
+    render(<SettingsWorkspace />);
+
+    const actionArea = screen
+      .getByText("Original fictional fixture values")
+      .closest("div");
+    expect(actionArea).not.toHaveClass("sticky");
+    expect(actionArea).not.toHaveClass("fixed");
+  });
 });

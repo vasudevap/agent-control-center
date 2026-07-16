@@ -189,7 +189,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader eyebrow="Fleet" title="Agents" icon={Bot} description="Monitor the status, health, and activity of your AI workforce." meta={<span className="font-mono text-[11px] text-foreground-tertiary">{agents.length} registered</span>} />
+      <PageHeader eyebrow="Fleet" title="Agents" icon={Bot} description="Monitor the status, health, and activity of your AI workforce." />
 
       {state === "loading" && <InventorySkeleton />}
 

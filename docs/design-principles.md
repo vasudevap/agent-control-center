@@ -97,13 +97,13 @@ Columns sort on true values, never on display strings. Human-readable time strin
 
 ### 20. No redundant restatement
 
-The same fact does not appear twice on one screen, or on a screen and a persistent surface simultaneously. This removed: the Overview metrics row (duplicated the status bar), the Overview fleet roster (duplicated the Agents page), and Agent Detail's header health/status pills (duplicated the At-a-glance card). When two surfaces need related information, one holds the canonical rendering and the other links to it.
+The same fact does not appear twice on one screen, or on a screen and a persistent surface simultaneously. This removed: the Overview metrics row (duplicated the status bar), the Overview fleet roster (duplicated the Agents page), Agent Detail's header health/status pills (duplicated the At-a-glance card), Agents' registered count (duplicated the inventory summary), and Approvals' prototype chip (duplicated the persistent shell boundary). Header meta is reserved for page-specific state, classification, or safety boundaries such as Audit `Read only` and Settings `Session-only simulation`.
 
 ## Page structure
 
 ### 21. Compact identity-first page headers
 
-`PageHeader` renders eyebrow, title, optional inline identifier chip, then description, at a uniform `gap-1` rhythm; the icon sits in its own column so eyebrow, title, and description share one left edge. Trailing meta chips (risk, state, review) render at `text-xs` to match one another.
+`PageHeader` renders eyebrow, title, optional inline identifier chip, then description, at a uniform rhythm; the icon remains attached to the title group when a long name wraps. On narrow screens the description precedes actions so identity and purpose read before controls. Trailing meta chips (risk, state, review) render at `text-xs` to match one another.
 
 ### 22. Equivalent page types share structure
 
@@ -119,4 +119,8 @@ Collapsible sections (System prompt reference) style the trigger row with `bg-su
 
 ### 25. Header buttons are small and sentence-cased
 
-Action buttons inside `PageHeader` use `size="sm"` and sentence case, matching their siblings. Confirmation dialogs reuse the same labels as their triggers.
+Action buttons inside `PageHeader` use `size="sm"` and sentence case, matching their siblings. Every prototype control that resembles a mutation begins with `Simulate` at its point of use; a later dialog disclaimer is not a substitute. Confirmation dialogs preserve the same simulated-action vocabulary.
+
+### 26. Mobile actions do not cover evidence or fields
+
+Primary action areas remain in normal document flow at narrow widths. Do not use fixed or bottom-sticky bars that cover the card, evidence, or form field currently being read. Approval decisions appear in the evidence-preceded Decide card; Settings actions follow the final settings section.

@@ -29,7 +29,7 @@ export default async function AgentDetailPage({
         description={agent.description}
         actions={
           <>
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="ghost" size="sm" className="w-full justify-start sm:w-auto">
               <Link href="/agents">Back to Agents</Link>
             </Button>
             <AgentOperationalControls agentId={agent.id} agentName={agent.name} initialStatus={agent.status} />

@@ -55,6 +55,7 @@ describe("ApprovalsWorkspace", () => {
   it("uses the owner-approved concise Queue filter set", () => {
     render(<ApprovalsWorkspace approvals={APPROVAL_FIXTURES} />);
 
+    expect(screen.queryByText("Frontend prototype")).not.toBeInTheDocument();
     expect(screen.getByLabelText("Risk")).toBeInTheDocument();
     expect(screen.getByLabelText("Review")).toBeInTheDocument();
     expect(screen.queryByLabelText("State")).not.toBeInTheDocument();

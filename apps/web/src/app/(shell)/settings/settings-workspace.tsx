@@ -314,7 +314,7 @@ export function SettingsWorkspace() {
           </CardContent>
         </Card>
       </div>
-      <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-atlas-lg border border-border-strong bg-surface p-3 shadow-atlas-md sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-strong bg-surface p-3 shadow-atlas-md sm:flex-row sm:items-center">
         <p className="text-xs text-foreground-secondary">
           {dirty
             ? "Unsaved session-only changes"
