@@ -1,4 +1,20 @@
-import { CheckCircle2, AlertTriangle, XCircle, CircleDashed, History, Loader2, Power, PowerOff, Undo2, Clock3, ListChecks, TimerOff, PackageCheck, FileWarning } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  CircleDashed,
+  History,
+  Loader2,
+  Power,
+  PowerOff,
+  Undo2,
+  Clock3,
+  ListChecks,
+  TimerOff,
+  PackageCheck,
+  FileWarning,
+  SearchCheck,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type AtlasStatus =
@@ -20,11 +36,20 @@ export type AtlasStatus =
   | "failed"
   | "timed-out"
   | "available"
-  | "review-required";
+  | "review-required"
+  | "investigating"
+  | "resolved";
 
 const STATUS_CONFIG: Record<
   AtlasStatus,
-  { label: string; icon: React.ComponentType<{ className?: string }>; text: string; className: string; spin?: boolean; iconSize?: string }
+  {
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    text: string;
+    className: string;
+    spin?: boolean;
+    iconSize?: string;
+  }
 > = {
   healthy: {
     label: "Healthy",
@@ -66,13 +91,15 @@ const STATUS_CONFIG: Record<
     label: "Paused",
     icon: PowerOff,
     text: "text-foreground-secondary",
-    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
+    className:
+      "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
   queued: {
     label: "Queued",
     icon: CircleDashed,
     text: "text-foreground-secondary",
-    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
+    className:
+      "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
   pending: {
     label: "Pending",
@@ -96,13 +123,15 @@ const STATUS_CONFIG: Record<
     label: "Expired",
     icon: History,
     text: "text-foreground-secondary",
-    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
+    className:
+      "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
   cancelled: {
     label: "Cancelled",
     icon: Undo2,
     text: "text-foreground-secondary",
-    className: "bg-surface-tertiary text-foreground-secondary border-transparent",
+    className:
+      "bg-surface-tertiary text-foreground-secondary border-transparent",
   },
   waiting: {
     label: "Waiting for approval",
@@ -146,6 +175,18 @@ const STATUS_CONFIG: Record<
     text: "text-warning",
     className: "bg-warning-bg text-warning border-warning-border",
   },
+  investigating: {
+    label: "Investigating",
+    icon: SearchCheck,
+    text: "text-info",
+    className: "bg-info-bg text-info border-info-border",
+  },
+  resolved: {
+    label: "Resolved",
+    icon: CheckCircle2,
+    text: "text-success",
+    className: "bg-success-bg text-success border-success-border",
+  },
 };
 
 export interface StatusBadgeProps {
@@ -166,14 +207,31 @@ export interface StatusBadgeProps {
  * legend that explains the icon vocabulary belongs wherever this is
  * used compactly, in the same header/control-bar slot each time.
  */
-export function StatusBadge({ status, iconOnly, plain, className }: StatusBadgeProps) {
+export function StatusBadge({
+  status,
+  iconOnly,
+  plain,
+  className,
+}: StatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
 
   if (iconOnly) {
     return (
-      <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
-        <Icon className={cn(config.iconSize ?? "size-[11px]", config.spin && "animate-spin")} aria-hidden="true" />
+      <span
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center",
+          config.text,
+          className,
+        )}
+      >
+        <Icon
+          className={cn(
+            config.iconSize ?? "size-[11px]",
+            config.spin && "animate-spin",
+          )}
+          aria-hidden="true"
+        />
         <span className="sr-only">{config.label}</span>
       </span>
     );
@@ -181,8 +239,20 @@ export function StatusBadge({ status, iconOnly, plain, className }: StatusBadgeP
 
   if (plain) {
     return (
-      <span className={cn("inline-flex items-center gap-1.5 font-medium", config.text, className)}>
-        <Icon className={cn(config.iconSize ?? "size-3.5", config.spin && "animate-spin")} aria-hidden="true" />
+      <span
+        className={cn(
+          "inline-flex items-center gap-1.5 font-medium",
+          config.text,
+          className,
+        )}
+      >
+        <Icon
+          className={cn(
+            config.iconSize ?? "size-3.5",
+            config.spin && "animate-spin",
+          )}
+          aria-hidden="true"
+        />
         {config.label}
       </span>
     );
@@ -193,10 +263,13 @@ export function StatusBadge({ status, iconOnly, plain, className }: StatusBadgeP
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
         config.className,
-        className
+        className,
       )}
     >
-      <Icon className={cn("size-3.5", config.spin && "animate-spin")} aria-hidden="true" />
+      <Icon
+        className={cn("size-3.5", config.spin && "animate-spin")}
+        aria-hidden="true"
+      />
       {config.label}
     </span>
   );

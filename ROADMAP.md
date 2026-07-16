@@ -125,8 +125,9 @@ History, Approval Detail, and simulated decision experience in the selected
 Atlas design direction. The remaining frontend prototype is sequenced through
 three approved delivery rounds: WO-010 adds Runs, Run Detail, Artifacts, and
 Artifact Detail; WO-011 adds Alerts and Audit; and WO-012 adds Connectors,
-Policies, and Settings. These rounds remain local-fixture UI work and do not
-authorize services, persistence, authentication, connector calls, policy
+Policies, and Settings. WO-010 is merged and WO-011 has passed implementation
+review pending governed merge. These rounds remain local-fixture UI work and do
+not authorize services, persistence, authentication, connector calls, policy
 evaluation, or operational audit storage.
 
 ---
