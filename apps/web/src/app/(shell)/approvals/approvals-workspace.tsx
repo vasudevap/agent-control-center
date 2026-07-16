@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Circle, Diamond, Search, Triangle, TriangleAlert } from "lucide-react";
+import { Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { APPROVALS_ICON } from "@/components/layout/nav-items";
 import { Button } from "@/components/ui/button";
@@ -218,15 +218,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
                 Showing <span className="font-mono font-semibold text-foreground">{listed.length}</span> of {view === "queue" ? queue.length : approvals.length - queue.length} {view} records.
                 {view === "queue" && expiringCount > 0 ? ` ${expiringCount} nearing expiry.` : ""}
               </p>
-              <div className="flex items-center gap-3">
-                <div className="hidden items-center gap-2.5 text-[10px] text-foreground-tertiary sm:flex">
-                  <span className="flex items-center gap-1"><Diamond className="size-3 fill-current text-risk-critical" aria-hidden="true" />Critical</span>
-                  <span className="flex items-center gap-1"><TriangleAlert className="size-3 text-risk-high" aria-hidden="true" />High</span>
-                  <span className="flex items-center gap-1"><Triangle className="size-3 text-risk-medium" aria-hidden="true" />Medium</span>
-                  <span className="flex items-center gap-1"><Circle className="size-3 text-risk-low" aria-hidden="true" />Low</span>
-                </div>
-                <Button variant="ghost" size="sm" onClick={reset}>Clear filters</Button>
-              </div>
+              <Button variant="ghost" size="sm" onClick={reset}>Clear filters</Button>
             </div>
             <div className="grid gap-2.5 p-3 pt-0 md:grid-cols-3">
               <SearchField value={query} onChange={(v) => { setQuery(v); setPage(1); writeLocation({ query: v, page: 1 }, "replace"); }} placeholder="ID, agent, action, target, evidence source, or policy" />
@@ -304,7 +296,7 @@ function Select({ label, value, onChange, options, labels = {} }: { label: strin
 function Row({ approval, view, from }: { approval: ApprovalRecord; view: View; from: string }) {
   return (
     <tr className="relative border-b border-border-subtle transition-colors last:border-0 hover:bg-surface-hover">
-      <td className="px-4 py-3 align-top"><RiskChip risk={approval.risk as RiskLevel} iconOnly /></td>
+      <td className="px-4 py-3 align-top text-xs"><RiskChip risk={approval.risk as RiskLevel} plain /></td>
       <td className="px-3 py-3 align-top">
         <Link className="relative z-10 w-fit break-words font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline" href={`/approvals/${approval.id}?from=${encodeURIComponent(from)}`}>{approval.action}</Link>
         <p className="mt-0.5 break-words font-mono text-[11px] text-foreground-tertiary">{approval.id} • {approval.policy}</p>
@@ -338,7 +330,7 @@ function ApprovalCard({ approval, view, from }: { approval: ApprovalRecord; view
     <li>
       <Link href={`/approvals/${approval.id}?from=${encodeURIComponent(from)}`} className="block rounded-atlas-md border border-border-default bg-surface p-4">
         <div className="flex items-center justify-between gap-2">
-          <RiskChip risk={approval.risk as RiskLevel} iconOnly />
+          <RiskChip risk={approval.risk as RiskLevel} plain />
           <StateChip state={approval.state} className="text-xs" />
         </div>
         <p className="mt-3 break-words text-sm font-semibold text-foreground">{approval.action}</p>

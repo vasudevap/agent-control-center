@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { CONNECTOR_FIXTURES } from "./connector-data";
@@ -44,5 +44,24 @@ describe("ConnectorsWorkspace", () => {
       /Simulated revocation.*Refresh restores/i,
     );
     expect(screen.getAllByText("Revoked")[0]).toBeInTheDocument();
+  });
+
+  it("sorts connector inventory columns on real values", async () => {
+    const user = userEvent.setup();
+    render(<ConnectorsWorkspace connectors={CONNECTOR_FIXTURES} />);
+    const table = screen.getByRole("table", { name: "Connector inventory" });
+    const lastCheck = within(table).getByRole("columnheader", {
+      name: "Last check",
+    });
+
+    expect(lastCheck).toHaveAttribute("aria-sort", "none");
+    await user.click(within(lastCheck).getByRole("button", { name: "Last check" }));
+    expect(lastCheck).toHaveAttribute("aria-sort", "ascending");
+    expect(within(table).getAllByRole("row")[1]).toHaveTextContent(
+      "Policy Evidence Archive",
+    );
+    expect(within(table).getAllByRole("row").at(-1)).toHaveTextContent(
+      "Recruiting Intake",
+    );
   });
 });

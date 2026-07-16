@@ -164,7 +164,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
         identifier={current.id}
         description={current.action}
         icon={ShieldAlert}
-        meta={<><RiskChip risk={current.risk as RiskLevel} /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
+        meta={<><RiskChip risk={current.risk as RiskLevel} plain /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
         actions={<Button asChild variant="ghost" size="sm"><Link href={returnTo}><ArrowLeft className="size-4" aria-hidden="true" />{returnLabel}</Link></Button>}
       />
       <Notice />
@@ -276,7 +276,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
               <div className="grid gap-2 rounded-atlas-sm border border-border-default bg-surface-secondary p-3 text-sm">
                 <p className="font-mono text-xs text-foreground-tertiary">{current.id}</p>
                 <p className="font-medium text-foreground">{current.action}</p>
-                <Details items={{ Target: current.target, "Payload summary": current.payloadSummary, Consequence: current.consequence, Risk: <RiskChip risk={current.risk as RiskLevel} />, Expiry: <ExpiryLabel approval={current} /> }} fullWidth={["Payload summary"]} />
+                <Details items={{ Target: current.target, "Payload summary": current.payloadSummary, Consequence: current.consequence, Risk: <RiskChip risk={current.risk as RiskLevel} plain />, Expiry: <ExpiryLabel approval={current} /> }} fullWidth={["Payload summary"]} />
               </div>
               <label className="grid gap-1 text-sm font-medium text-foreground">
                 {inputLabel} {reasonRequired ? "(required)" : "(optional)"}

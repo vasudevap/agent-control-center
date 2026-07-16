@@ -153,7 +153,6 @@ export function RunsWorkspace({
         title="Runs"
         description="Inspect fictional execution history across the Atlas agent fleet."
         icon={Workflow}
-        meta={<StatusBadge status="running" />}
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         <strong>Frontend prototype.</strong> Runs, logs, costs, and controls are

@@ -19,16 +19,25 @@ const RISK_CONFIG: Record<
 
 /**
  * Risk is communicated through two independent channels: a distinct
- * icon shape and the word itself, inside a fixed-width pill so every
- * chip in a column lines up regardless of label length. Earlier this
- * carried a third channel, a colored left-edge bar (RiskBar), but that
- * bar was color-only and, being a thin sliver, made adjacent hues
- * (red/orange) especially hard to discriminate. It was dropped rather
- * than fixed: the icon+label pill is already sufficient and reserving
- * strong color for that single pill (instead of duplicating it in a
- * second chrome element) also keeps rows from all shouting at once.
+ * icon shape and the word itself. The plain treatment matches Alerts:
+ * colored icon + label with no container, used by default in operational
+ * inventories and inline context. The pill is reserved for contained
+ * standalone state. The icon-only variant is reserved for the deliberately
+ * compact Overview attention queue.
  */
-export function RiskChip({ risk, label, iconOnly, className }: { risk: RiskLevel; label?: string; iconOnly?: boolean; className?: string }) {
+export function RiskChip({
+  risk,
+  label,
+  iconOnly,
+  plain,
+  className,
+}: {
+  risk: RiskLevel;
+  label?: string;
+  iconOnly?: boolean;
+  plain?: boolean;
+  className?: string;
+}) {
   const config = RISK_CONFIG[risk];
   const Icon = config.icon;
   const text = label ?? risk;
@@ -38,6 +47,24 @@ export function RiskChip({ risk, label, iconOnly, className }: { risk: RiskLevel
       <span className={cn("inline-flex shrink-0 items-center justify-center", config.text, className)}>
         <Icon className={cn(config.iconSize ?? "size-[11px]", risk === "Critical" && "fill-current")} aria-hidden="true" />
         <span className="sr-only">{text}</span>
+      </span>
+    );
+  }
+
+  if (plain) {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center gap-1.5 font-medium",
+          config.text,
+          className,
+        )}
+      >
+        <Icon
+          className={cn("size-3.5", risk === "Critical" && "fill-current")}
+          aria-hidden="true"
+        />
+        {text}
       </span>
     );
   }

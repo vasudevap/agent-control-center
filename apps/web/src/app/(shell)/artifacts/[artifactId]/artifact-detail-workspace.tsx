@@ -87,7 +87,7 @@ export function ArtifactDetailWorkspace({
         icon={Package}
         meta={
           <>
-            <StatusBadge status={artifact.status} />
+            <StatusBadge status={artifact.status} plain />
             <Badge variant="neutral">{artifact.sensitivity}</Badge>
           </>
         }

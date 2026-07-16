@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { POLICY_FIXTURES } from "./policy-data";
@@ -12,6 +12,9 @@ describe("PoliciesWorkspace", () => {
     expect(
       screen.getByRole("table", { name: "Policy inventory" }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Risk" }),
+    ).not.toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText("Status"), "paused");
     await user.selectOptions(screen.getByLabelText("Type"), "Retention");
     expect(
@@ -35,5 +38,21 @@ describe("PoliciesWorkspace", () => {
         /No rule is evaluated, enforced, authorized, or persisted/i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("sorts policy metadata through accessible headers", async () => {
+    const user = userEvent.setup();
+    render(<PoliciesWorkspace policies={POLICY_FIXTURES} />);
+    const table = screen.getByRole("table", { name: "Policy inventory" });
+    const statusHeader = within(table).getByRole("columnheader", {
+      name: "Status",
+    });
+
+    expect(statusHeader).toHaveAttribute("aria-sort", "none");
+    await user.click(within(statusHeader).getByRole("button", { name: "Status" }));
+    expect(statusHeader).toHaveAttribute("aria-sort", "ascending");
+    expect(within(table).getAllByRole("row")[1]).toHaveTextContent(
+      "External communications approval",
+    );
   });
 });

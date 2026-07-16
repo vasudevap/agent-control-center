@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, Bot, CheckCircle2, CircleOff, FilterX, Loader2, Power, PowerOff, CircleDashed, XCircle } from "lucide-react";
+import { Bot, CircleOff, FilterX } from "lucide-react";
 import {
   HEALTH_LABELS,
   MOCK_AGENTS,
@@ -34,7 +34,7 @@ interface AgentsInventoryProps {
 
 // Ascending severity, mirroring risk's Low-to-Critical convention in Approvals.
 const HEALTH_RANK: Record<AgentHealth, number> = { healthy: 0, degraded: 1, offline: 2 };
-// Matches the legend order shown in the control bar (Running, Active, Paused, Queued).
+// Stable lifecycle ordering for status sorts.
 const STATUS_RANK: Record<AgentStatus, number> = { running: 0, active: 1, paused: 2, queued: 3 };
 
 function getAttentionRank(agent: AgentRecord) {
@@ -113,9 +113,9 @@ function AgentsTable({ agents, sort, direction, onSort }: { agents: AgentRecord[
         <TableBody>
           {agents.map((agent) => (
             <TableRow key={agent.id} className="relative">
-              <TableCell className="py-2.5"><StatusBadge status={agent.health} iconOnly /></TableCell>
+              <TableCell className="py-2.5 text-xs"><StatusBadge status={agent.health} plain /></TableCell>
               <TableCell className="min-w-[18rem] py-2.5"><AgentIdentity agent={agent} /></TableCell>
-              <TableCell className="py-2.5"><StatusBadge status={agent.status} iconOnly /></TableCell>
+              <TableCell className="py-2.5 text-xs"><StatusBadge status={agent.status} plain /></TableCell>
               <TableCell className="hidden py-2.5 text-xs text-foreground-secondary lg:table-cell">{agent.owner}</TableCell>
               <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.lastRun}</TableCell>
               <TableCell className="py-2.5 text-xs text-foreground-secondary">{agent.nextRun}</TableCell>
@@ -135,7 +135,7 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
           <Card className="transition-colors hover:bg-surface-hover">
             <CardContent className="flex flex-col gap-3 p-4">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <StatusBadge status={agent.health} iconOnly />
+                <StatusBadge status={agent.health} plain />
                 {agent.name}
               </h2>
               <dl className="grid grid-cols-2 gap-3">
@@ -206,24 +206,12 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
               <h2 id="agents-inventory-heading" className="text-xs font-semibold uppercase tracking-wide text-foreground-secondary">
                 Showing {filteredAgents.length} of {agents.length}
               </h2>
-              <div className="flex items-center gap-3">
-                <div className="hidden items-center gap-3 text-[10px] text-foreground-tertiary sm:flex">
-                  <span className="flex items-center gap-1"><CheckCircle2 className="size-3 text-success" aria-hidden="true" />Healthy</span>
-                  <span className="flex items-center gap-1"><AlertTriangle className="size-3 text-warning" aria-hidden="true" />Degraded</span>
-                  <span className="flex items-center gap-1"><XCircle className="size-3 text-error" aria-hidden="true" />Offline</span>
-                  <span className="mx-1 h-3 w-px bg-border-default" aria-hidden="true" />
-                  <span className="flex items-center gap-1"><Loader2 className="size-3 text-info" aria-hidden="true" />Running</span>
-                  <span className="flex items-center gap-1"><Power className="size-3 text-success" aria-hidden="true" />Active</span>
-                  <span className="flex items-center gap-1"><PowerOff className="size-3 text-foreground-secondary" aria-hidden="true" />Paused</span>
-                  <span className="flex items-center gap-1"><CircleDashed className="size-3 text-foreground-secondary" aria-hidden="true" />Queued</span>
-                </div>
-                {hasActiveFilters && (
-                  <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
-                    <FilterX aria-hidden="true" />
-                    Clear
-                  </Button>
-                )}
-              </div>
+              {hasActiveFilters && (
+                <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+                  <FilterX aria-hidden="true" />
+                  Clear
+                </Button>
+              )}
             </div>
             <div className="grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_12rem_12rem]">
               <SearchField id="agent-search" value={searchQuery} onChange={setSearchQuery} placeholder="Search name, description, or ID" aria-label="Search agents by name, description, or ID" />

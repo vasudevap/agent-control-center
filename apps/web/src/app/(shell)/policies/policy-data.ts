@@ -1,5 +1,4 @@
 import type { AtlasStatus } from "@/components/badge/status-badge";
-import type { RiskLevel } from "@/components/risk/risk-indicator";
 
 export type PolicyStatus = Extract<AtlasStatus, "active" | "paused">;
 export type PolicyType = "Approval" | "Access" | "Retention" | "Execution";
@@ -10,7 +9,6 @@ export interface PolicyRecord {
   type: PolicyType;
   version: number;
   status: PolicyStatus;
-  risk: RiskLevel;
   scope: string;
   assignedAgents: Array<{ id: string; name: string }>;
   summary: string;
@@ -25,7 +23,6 @@ export const POLICY_FIXTURES: PolicyRecord[] = [
     type: "Approval",
     version: 8,
     status: "active",
-    risk: "Critical",
     scope: "Outbound communication drafts",
     assignedAgents: [
       { id: "agent-support-drafts", name: "Support Draft Agent" },
@@ -45,7 +42,6 @@ export const POLICY_FIXTURES: PolicyRecord[] = [
     type: "Retention",
     version: 3,
     status: "paused",
-    risk: "Medium",
     scope: "Governance evidence metadata",
     assignedAgents: [
       { id: "agent-policy-digest", name: "Policy Digest Agent" },
@@ -64,7 +60,6 @@ export const POLICY_FIXTURES: PolicyRecord[] = [
     type: "Access",
     version: 5,
     status: "active",
-    risk: "High",
     scope: "All connector operations",
     assignedAgents: [
       { id: "agent-connectors-health", name: "Connector Health Sentinel" },
@@ -85,7 +80,6 @@ export const POLICY_FIXTURES: PolicyRecord[] = [
     type: "Execution",
     version: 2,
     status: "active",
-    risk: "Low",
     scope: "Scheduled agent runs",
     assignedAgents: [],
     summary: "Describes a future safeguard against overlapping scheduled runs.",
