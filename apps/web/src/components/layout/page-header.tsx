@@ -32,20 +32,20 @@ export interface PageHeaderProps {
  */
 export function PageHeader({ eyebrow, title, identifier, description, icon: Icon, actions, meta, className }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col gap-1 border-b border-border-default pb-4", className)}>
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:justify-between">
-        <div className="flex w-full min-w-0 flex-col gap-1 sm:w-auto sm:flex-1">
-          {eyebrow && (
-            <p className={cn("font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground-tertiary", Icon && "pl-[2.375rem]")}>
-              {eyebrow}
-            </p>
+    <div className={cn("grid gap-2 border-b border-border-default pb-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-4 sm:gap-y-1", className)}>
+      <div className="flex min-w-0 flex-col gap-1">
+        {eyebrow && (
+          <p className={cn("font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground-tertiary", Icon && "pl-[2.375rem]")}>
+            {eyebrow}
+          </p>
+        )}
+        <div className="flex min-w-0 items-start gap-2.5">
+          {Icon && (
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-atlas-sm border border-border-default bg-surface-secondary text-brand">
+              <Icon className="size-4" aria-hidden="true" />
+            </span>
           )}
-          <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-            {Icon && (
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-atlas-sm border border-border-default bg-surface-secondary text-brand">
-                <Icon className="size-4" aria-hidden="true" />
-              </span>
-            )}
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2.5">
             <h1 className="min-w-0 break-words font-mono text-lg font-semibold uppercase tracking-[0.03em] text-foreground sm:text-xl">
               {title}
             </h1>
@@ -56,12 +56,16 @@ export function PageHeader({ eyebrow, title, identifier, description, icon: Icon
             )}
           </div>
         </div>
-        {actions && <div className="flex min-w-0 flex-wrap items-center gap-2">{actions}</div>}
       </div>
       {(description || meta) && (
-        <div className={cn("flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between", Icon && "pl-[2.375rem]")}>
+        <div className={cn("order-2 flex flex-col items-start gap-2 sm:col-span-2 sm:row-start-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between", Icon && "pl-[2.375rem]")}>
           {description && <p className="break-words text-sm leading-relaxed text-foreground-secondary">{description}</p>}
           {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
+        </div>
+      )}
+      {actions && (
+        <div className="order-3 flex min-w-0 w-full flex-wrap items-center gap-2 sm:order-none sm:col-start-2 sm:row-start-1 sm:w-auto sm:justify-self-end">
+          {actions}
         </div>
       )}
     </div>

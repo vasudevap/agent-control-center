@@ -179,7 +179,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
 
   return (
     <div className="flex min-w-0 flex-col gap-5">
-      <PageHeader eyebrow="Governance" title="Approvals" icon={APPROVALS_ICON} description="Review and authorize proposed actions before an agent may proceed." meta={<span className="rounded-atlas-sm border border-info-border bg-info-bg px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-info">Frontend prototype</span>} />
+      <PageHeader eyebrow="Governance" title="Approvals" icon={APPROVALS_ICON} description="Review and authorize proposed actions before an agent may proceed." />
 
       {presentationState === "loading" ? (
         <div className="grid gap-3"><Skeleton className="h-32 w-full" /><Skeleton className="h-64 w-full" /></div>

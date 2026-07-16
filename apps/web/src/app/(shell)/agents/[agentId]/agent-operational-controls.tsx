@@ -18,22 +18,22 @@ const ACTION_CONTENT: Record<
   { title: string; description: string; confirmLabel: string }
 > = {
   run: {
-    title: "Start a manual run?",
+    title: "Simulate a manual run?",
     description:
-      "Atlas will validate the current configuration, connectors, permissions, policies, and duplicate-run safeguards before queueing this agent.",
-    confirmLabel: "Queue manual run",
+      "The prototype demonstrates configuration, connector, permission, policy, and duplicate-run validation without queueing this agent.",
+    confirmLabel: "Simulate manual run",
   },
   pause: {
-    title: "Pause scheduled runs?",
+    title: "Simulate pausing scheduled runs?",
     description:
-      "New scheduled runs will not start until this agent is resumed. A run already in progress will be allowed to finish.",
-    confirmLabel: "Pause agent",
+      "The local fixture will display a paused state. No schedule changes, and a fictional run already in progress remains unchanged.",
+    confirmLabel: "Simulate pause",
   },
   resume: {
-    title: "Resume scheduled runs?",
+    title: "Simulate resuming scheduled runs?",
     description:
-      "Future runs will start according to the agent's approved schedule. This does not start an immediate run.",
-    confirmLabel: "Resume agent",
+      "The local fixture will display an active state. No schedule changes and no immediate run starts.",
+    confirmLabel: "Simulate resume",
   },
 };
 
@@ -63,13 +63,13 @@ export function AgentOperationalControls({
     if (!action) return;
 
     if (action === "run") {
-      setNotice(`Manual run prepared for ${agentName}.`);
+      setNotice(`Simulated manual run prepared for ${agentName}.`);
     } else if (action === "pause") {
       setStatus("paused");
-      setNotice("Agent paused. Scheduled runs will not start until it is resumed.");
+      setNotice("Simulated paused state applied to this local fixture.");
     } else {
       setStatus("active");
-      setNotice("Agent resumed. Future scheduled runs may start again.");
+      setNotice("Simulated active state applied to this local fixture.");
     }
 
     setAction(null);
@@ -79,23 +79,27 @@ export function AgentOperationalControls({
 
   return (
     <>
-      <Button
-        variant="secondary"
-        size="sm"
-        onClick={() => setAction(isPaused ? "resume" : "pause")}
-      >
-        {isPaused ? <RotateCcw aria-hidden="true" /> : <Pause aria-hidden="true" />}
-        {isPaused ? "Resume agent" : "Pause agent"}
-      </Button>
-      <Button
-        size="sm"
-        onClick={() => setAction("run")}
-        disabled={runBlocked}
-        title={runBlocked ? "A run is already active or queued" : undefined}
-      >
-        <Play aria-hidden="true" />
-        Run now
-      </Button>
+      <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+        <Button
+          className="w-full sm:w-auto"
+          variant="secondary"
+          size="sm"
+          onClick={() => setAction(isPaused ? "resume" : "pause")}
+        >
+          {isPaused ? <RotateCcw aria-hidden="true" /> : <Pause aria-hidden="true" />}
+          {isPaused ? "Simulate resume" : "Simulate pause"}
+        </Button>
+        <Button
+          className="w-full sm:w-auto"
+          size="sm"
+          onClick={() => setAction("run")}
+          disabled={runBlocked}
+          title={runBlocked ? "A run is already active or queued" : undefined}
+        >
+          <Play aria-hidden="true" />
+          Simulate run
+        </Button>
+      </div>
 
       {action && content && (
         <div

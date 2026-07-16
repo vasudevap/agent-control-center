@@ -66,6 +66,7 @@ describe("AgentsInventory", () => {
     render(<AgentsInventory agents={testAgents} />);
 
     expect(screen.getByText("Showing 3 of 3")).toBeInTheDocument();
+    expect(screen.queryByText("3 registered")).not.toBeInTheDocument();
     const table = screen.getByRole("table", { name: "Agents inventory" });
     expect(within(table).getAllByText("Healthy")[0]).not.toHaveClass("sr-only");
     expect(within(table).getAllByText("Healthy")[0]).not.toHaveClass("rounded-full");

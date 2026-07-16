@@ -14,11 +14,11 @@ describe("AgentOperationalControls", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "Run now" }));
+    await user.click(screen.getByRole("button", { name: "Simulate run" }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Start a manual run?")).toBeInTheDocument();
-    expect(screen.getByText(/duplicate-run safeguards/i)).toBeInTheDocument();
+    expect(screen.getByText("Simulate a manual run?")).toBeInTheDocument();
+    expect(screen.getByText(/duplicate-run validation/i)).toBeInTheDocument();
     expect(screen.getByText(/No runtime request is sent/i)).toBeInTheDocument();
   });
 
@@ -32,11 +32,11 @@ describe("AgentOperationalControls", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "Pause agent" }));
+    await user.click(screen.getByRole("button", { name: "Simulate pause" }));
 
-    expect(screen.getByText(/run already in progress will be allowed to finish/i)).toBeInTheDocument();
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Pause agent" }));
-    expect(screen.getByRole("button", { name: "Resume agent" })).toBeInTheDocument();
+    expect(screen.getByText(/fictional run already in progress remains unchanged/i)).toBeInTheDocument();
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Simulate pause" }));
+    expect(screen.getByRole("button", { name: "Simulate resume" })).toBeInTheDocument();
   });
 
   it("prevents an accidental duplicate manual run", () => {
@@ -48,6 +48,6 @@ describe("AgentOperationalControls", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "Run now" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Simulate run" })).toBeDisabled();
   });
 });

@@ -157,7 +157,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
   };
 
   return (
-    <div className={`flex min-w-0 flex-col gap-5 ${actionable ? "pb-20 xl:pb-0" : ""}`}>
+    <div className="flex min-w-0 flex-col gap-5">
       <PageHeader
         eyebrow="Approval"
         title={current.agent.name}
@@ -248,14 +248,6 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
           </div>
         )}
       </section>
-
-      {/* Sticky mobile decision bar: a reachable shortcut to the same dialog logic; the full card above remains the primary, evidence-preceded entry point. */}
-      {actionable && (
-        <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-border-default bg-surface p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-atlas-md xl:hidden">
-          <Button className="flex-1" variant="destructive" size="sm" onClick={(event) => open("reject", event.currentTarget)}>Reject</Button>
-          <Button className="flex-1" size="sm" onClick={(event) => open("approve", event.currentTarget)} disabled={!approveAvailable}>Approve</Button>
-        </div>
-      )}
 
       <Dialog open={decision !== null} onOpenChange={(isOpen) => { if (!isOpen) setDecision(null); }}>
         <DialogContent
