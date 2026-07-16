@@ -12,6 +12,15 @@ This file is considered authoritative.
 
 When the user asks what the next step is, include a task-appropriate Codex recommendation with the exact **Model**, **Effort**, and **Speed** settings. Balance output quality, latency, and usage rather than always recommending the most capable setting.
 
+Before beginning or resuming any substantive work session, provide the
+task-appropriate **Model**, **Effort**, and **Speed** recommendation in a
+standalone user-facing message, then pause without calling tools or starting
+implementation. Continue only after the user confirms that the setting is
+already correct or that they have changed it. If the user explicitly confirms
+the setting and asks to resume in the same message, that confirmation satisfies
+the pause requirement. This rule exists because the Codex task model cannot be
+changed once execution is underway.
+
 Use the model names confirmed in the user's Codex picker on 2026-07-15:
 
 - `5.6 Sol · High · Standard` for complex or ambiguous architecture, frontend design, governance, and high-value multi-step implementation.
