@@ -1,12 +1,13 @@
 # Work Order 012: Connectors, Policies, and Settings Frontend Prototype
 
-**Status:** Approved — Implementation Authorized
+**Status:** Implementation Review — Merge Pending
 **Work Order ID:** WO-012
 **Type:** Frontend prototype
 **Owner:** Product owner
 **Review owner:** Frontend implementation
 **Authorization date:** 2026-07-16
 **Review authority:** [WO-012 authorization review](../reviews/WO-012-governance-settings-frontend-prototype-review.md)
+**Implementation review:** [WO-012 implementation report](../reviews/WO-012-governance-settings-implementation-report.md)
 
 ## Purpose
 
