@@ -267,8 +267,8 @@ The 200%-equivalent browser checkpoint also verified:
   search input's actual hit area to fill its visible field.
 
 No explicit pending test remains in the dependency-free WO-009 suite. This
-does not complete a Definition of Done item: final owner acceptance, the
-governed review decision, and checklist closure remain separate review work.
+does not complete a Definition of Done item: the governed review decision and
+checklist closure remain separate review work.
 
 This checkpoint is automated evidence only. It does not complete a WO-009
 Definition of Done item.
@@ -277,10 +277,10 @@ Definition of Done item.
 
 | Required artifact | Candidate evidence | Preliminary mapping | Outstanding review |
 | --- | --- | --- | --- |
-| Desktop, tablet, mobile, light, and dark evidence | Current-design production captures cover desktop, tablet, mobile, light, and dark presentations without development tooling overlays. | Candidate match with durable visual evidence | Retain final owner acceptance and governed review; do not reuse superseded PR #8 screenshots. |
-| Queue, History, rich detail, validation, step-up, unavailable, Indeterminate, loading, error, and empty states | The production evidence set covers every listed scenario, including filtered-empty as a separate collection state. | Candidate match with durable visual evidence | Retain final owner acceptance and governed review. |
-| Keyboard-only and accessibility evidence | Automated tests cover focus containment, restoration, Escape, accessible names, and live regions. Browser evidence verifies page-level Escape dismissal and exact trigger focus restoration at the 200%-equivalent viewport. The owner confirmed the dialog workflow through VoiceOver. | Candidate match with automated, browser, and owner evidence | Retain final owner acceptance and governed review. |
-| Responsive evidence and no overflow | The 320 px audit and the 640-by-400 200%-equivalent audit found no document-level overflow across Queue, History, pending detail, terminal detail, or Indeterminate detail. Current production screenshots cover 1440, 768, and 375 px evidence. | Candidate match with browser and durable visual evidence | Retain final owner acceptance and governed review. |
+| Desktop, tablet, mobile, light, and dark evidence | Current-design production captures cover desktop, tablet, mobile, light, and dark presentations without development tooling overlays. The owner accepted the selected visual direction. | Candidate match with durable visual and owner evidence | Retain governed review; do not reuse superseded PR #8 screenshots. |
+| Queue, History, rich detail, validation, step-up, unavailable, Indeterminate, loading, error, and empty states | The production evidence set covers every listed scenario, including filtered-empty as a separate collection state. The owner accepted the current formatting, hierarchy, spacing, readability, and GUI direction. | Candidate match with durable visual and owner evidence | Retain governed review. |
+| Keyboard-only and accessibility evidence | Automated tests cover focus containment, restoration, Escape, accessible names, and live regions. Browser evidence verifies page-level Escape dismissal and exact trigger focus restoration at the 200%-equivalent viewport. The owner confirmed the dialog workflow through VoiceOver. | Candidate match with automated, browser, and owner evidence | Retain governed review. |
+| Responsive evidence and no overflow | The 320 px audit and the 640-by-400 200%-equivalent audit found no document-level overflow across Queue, History, pending detail, terminal detail, or Indeterminate detail. Current production screenshots cover 1440, 768, and 375 px evidence, and the owner accepted the responsive visual direction. | Candidate match with browser, durable visual, and owner evidence | Retain governed review. |
 | Pull request link | PR #9 integrated the selected frontend. Follow-up reconciliation work is in draft PR #10; superseded PR #8 is obsolete. | Candidate match | Keep PR #10 draft until the remaining owner evidence is recorded and the governed review is ready. |
 | Final implementation summary, final review, and completed checklist | No current-design WO-009 closure record exists. | No candidate found | Produce only after every prior step is confirmed and all gap work is merged. |
 
@@ -354,6 +354,7 @@ The review proceeds in order from Step 1 through Step 9. For each step:
 | Step 7 / Step 9 | VoiceOver dialog workflow | Confirmed working by owner | VoiceOver communicates the simulated-decision dialog title, prototype boundary, required reason, step-up control, and actions; Escape returns focus to `Simulate approval`. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 6 / Step 9 | Canonical approaching-expiry fixture | Verified through automated and production-browser evidence | The normal Queue now includes a Critical request with `Nearing` expiry rather than requiring a test-only override. A regression test guards the representative fixture. No Definition of Done item is marked complete. | 2026-07-15 |
 | Step 2 / Step 9 | Hydration-safe return context | Verified through automated and production-browser evidence | Approval Detail receives the validated collection return path from its server page. A direct History detail load renders the History return link without hydration warnings or browser console errors. No Definition of Done item is marked complete. | 2026-07-15 |
-| Step 9 | Durable current-design evidence set | Captured through production-browser evidence | Thirteen current-design images cover the required responsive tiers, themes, core workflows, validation/step-up, unavailable/Indeterminate states, and controlled collection states. Final owner acceptance and governed closure remain separate. No Definition of Done item is marked complete. | 2026-07-15 |
+| Step 9 | Durable current-design evidence set | Captured through production-browser evidence | Thirteen current-design images cover the required responsive tiers, themes, core workflows, validation/step-up, unavailable/Indeterminate states, and controlled collection states. Governed closure remains separate. No Definition of Done item is marked complete. | 2026-07-15 |
+| Step 9 | Final visual-direction acceptance | Confirmed by owner | The owner accepted the current Queue, History, and Approval Detail formatting, visual hierarchy, spacing, readability, responsive presentation, themes, and overall GUI as the frontend direction Atlas should retain. This records subjective design acceptance only; governed review and all Definition of Done decisions remain separate. | 2026-07-15 |
 
 No WO-009 Definition of Done item has been marked complete.
