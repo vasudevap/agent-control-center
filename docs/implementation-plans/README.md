@@ -12,5 +12,6 @@ Current plans:
 - [Phase 3 Platform Foundation Master Plan](./phase-3-platform-foundation-master-plan.md)
 - [Phase 3 Target Architecture](./phase-3-platform-foundation-target-architecture.md)
 - [Phase 3 Work Order Backlog](./phase-3-work-order-backlog.md)
+- [Phase 3 Implementation Decision Register](./phase-3-implementation-decision-register.md)
 - [Infrastructure Provisioning Strategy](./infrastructure-provisioning-strategy.md)
 - [Agent Execution Packet Template](./agent-execution-packet-template.md)

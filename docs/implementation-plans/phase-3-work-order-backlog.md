@@ -1,9 +1,9 @@
 # Phase 3 Work Order Backlog
 
-**Status:** Draft - Planning Review Required
+**Status:** Accepted - Implementation Sequenced
 **Owner:** Repository Maintainer
 **Date:** 2026-07-17
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted for accepted WO-019 through WO-026 in dependency order
 
 ---
 
@@ -22,14 +22,14 @@ reviewed, accepted, implemented, validated, and merged independently.
 | WO-016 | Infrastructure Provisioning and Environment Strategy | WO-015 | Complete | Completed |
 | WO-017 | Backend Runtime and Dependency Hardening | WO-016 | No | Completed |
 | WO-018 | PostgreSQL Environment and Migration Hardening | WO-017 | No | Completed |
-| WO-019 | Owner Authentication and Session Foundation | WO-018 | No | Planned |
-| WO-020 | Authorization and External-Client Identity Boundary | WO-019 | No | Planned |
-| WO-021 | API Contract Foundation | WO-020 | Limited | Planned |
-| WO-022 | Webhook Delivery Hardening | WO-020, WO-021 | Yes, after dependencies | Planned |
-| WO-023 | Queue Foundation | WO-018, WO-021 | Yes, after dependencies | Planned |
-| WO-024 | Scheduler Foundation | WO-023 | No | Planned |
-| WO-025 | Observability and Audit Baseline | WO-021, WO-023 | Yes, after dependencies | Planned |
-| WO-026 | Phase 3 Integration Verification and Closeout | WO-016-WO-025 | No | Planned |
+| WO-019 | Owner Authentication and Session Foundation | WO-018 | No | Accepted |
+| WO-020 | Authorization and External-Client Identity Boundary | WO-019 | No | Accepted |
+| WO-021 | API Contract Foundation | WO-020 | Limited | Accepted |
+| WO-022 | Webhook Delivery Hardening | WO-020, WO-021 | Yes, after dependencies | Accepted |
+| WO-023 | Queue Foundation | WO-018, WO-021 | Yes, after dependencies | Accepted |
+| WO-024 | Scheduler Foundation | WO-023 | No | Accepted |
+| WO-025 | Observability and Audit Baseline | WO-021, WO-022, WO-023 | Yes, after dependencies | Accepted |
+| WO-026 | Phase 3 Integration Verification and Closeout | WO-016-WO-025 | No | Accepted |
 
 ## 3. Planned Work Orders
 
@@ -132,6 +132,10 @@ Out of scope:
 
 ### WO-019 - Owner Authentication and Session Foundation
 
+Work Order:
+
+- [`docs/work-orders/019-owner-authentication-and-session-foundation.md`](../work-orders/019-owner-authentication-and-session-foundation.md)
+
 Objective:
 
 - Add owner-only dashboard authentication and secure session foundations.
@@ -140,7 +144,7 @@ Likely scope:
 
 - owner identity configuration;
 - login callback scaffold or identity-token validation boundary;
-- signed secure session cookie foundation;
+- opaque secure session cookie backed by a hashed server-side session;
 - logout/session invalidation;
 - auth tests;
 - no frontend integration unless explicitly authorized.
@@ -153,6 +157,10 @@ Out of scope:
 - Gmail OAuth.
 
 ### WO-020 - Authorization and External-Client Identity Boundary
+
+Work Order:
+
+- [`docs/work-orders/020-authorization-and-external-client-identity-boundary.md`](../work-orders/020-authorization-and-external-client-identity-boundary.md)
 
 Objective:
 
@@ -176,6 +184,10 @@ Out of scope:
 
 ### WO-021 - API Contract Foundation
 
+Work Order:
+
+- [`docs/work-orders/021-api-contract-foundation.md`](../work-orders/021-api-contract-foundation.md)
+
 Objective:
 
 - Standardize route, schema, error, pagination, idempotency, and OpenAPI
@@ -196,6 +208,10 @@ Out of scope:
 - frontend integration.
 
 ### WO-022 - Webhook Delivery Hardening
+
+Work Order:
+
+- [`docs/work-orders/022-webhook-delivery-hardening.md`](../work-orders/022-webhook-delivery-hardening.md)
 
 Objective:
 
@@ -218,6 +234,10 @@ Out of scope:
 - receiver implementation.
 
 ### WO-023 - Queue Foundation
+
+Work Order:
+
+- [`docs/work-orders/023-postgresql-queue-foundation.md`](../work-orders/023-postgresql-queue-foundation.md)
 
 Objective:
 
@@ -242,6 +262,10 @@ Out of scope:
 
 ### WO-024 - Scheduler Foundation
 
+Work Order:
+
+- [`docs/work-orders/024-scheduler-foundation.md`](../work-orders/024-scheduler-foundation.md)
+
 Objective:
 
 - Add schedule records and due-trigger logic that can enqueue jobs without
@@ -264,6 +288,10 @@ Out of scope:
 
 ### WO-025 - Observability and Audit Baseline
 
+Work Order:
+
+- [`docs/work-orders/025-observability-and-audit-baseline.md`](../work-orders/025-observability-and-audit-baseline.md)
+
 Objective:
 
 - Establish backend structured logging, audit helper, and health conventions
@@ -285,6 +313,10 @@ Out of scope:
 - alert routing.
 
 ### WO-026 - Phase 3 Integration Verification and Closeout
+
+Work Order:
+
+- [`docs/work-orders/026-phase-3-integration-verification-and-closeout.md`](../work-orders/026-phase-3-integration-verification-and-closeout.md)
 
 Objective:
 

@@ -43,9 +43,20 @@ Work Order 017 hardens backend runtime settings, dependency installation, local
 backend commands, and CI alignment and is completed.
 
 Work Order 018 replaces SQLite-only migration smoke validation with the
-accepted local and CI PostgreSQL 18 path and is completed pending merge.
+accepted local and CI PostgreSQL 18 path and is completed.
+
+Work Order 019 establishes a provider-neutral, owner-only backend session
+foundation and is accepted for dependency-gated implementation.
+
+Work Orders 020 through 026 are accepted as the remaining Phase 3 implementation
+sequence: authorization/external identity, API contracts, webhook hardening,
+PostgreSQL queue, interval scheduler, observability/audit, and integration
+closeout. They must still execute in dependency order under their individual
+scope and stop-and-ask controls.
 
 The remaining Phase 3 work-order sequence is drafted in
 [`docs/implementation-plans/phase-3-work-order-backlog.md`](../implementation-plans/phase-3-work-order-backlog.md).
-The backlog is planning guidance only; each future Work Order still requires
-separate acceptance before implementation.
+The backlog is planning guidance only. WO-019 through WO-026 may be reviewed
+and accepted as one planning package, but each retains separate scope,
+dependency gates, implementation authority, branch, validation evidence, and
+merge requirements.
