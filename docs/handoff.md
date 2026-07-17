@@ -1,23 +1,61 @@
-# Atlas Frontend Design: Designer Handoff
+# Atlas Repository Handoff
 
-This is the working guide for continuing the Atlas frontend design. It assumes you know the product from the main project's documentation; nothing here covers product behavior, objectives, or architecture. Read `design-principles.md` first; this document maps those rules onto the code and tells you how to build the remaining pages.
+## Current Handoff Snapshot
+
+As of 2026-07-17:
+
+- The frontend-only Atlas prototype surfaces are present as of the merged Work
+  Order 014 consistency milestone.
+- WO-007 remains `Design Review Locked` and WO-008 remains `Frontend Prototype
+  Authorized`; do not silently mark either artifact completed.
+- All frontend data is deterministic local fixture data. State-changing controls
+  are explicitly simulated and do not call backend services.
+- TypeScript, component-test, lint, and production-build commands are defined at
+  the repository root.
+- Backend services, authentication, persistence, connector execution, policy
+  evaluation, operational audit storage, and the Gmail agent are not
+  implemented.
+- ADR-003 is accepted for the governed external approval decision channel.
+- ADR-004 is accepted for the general external product client API and webhook
+  contract.
+- The next implementation-planning artifact is the Phase 3 Platform Foundation
+  Engineering Specification. No backend implementation should begin before that
+  specification and its Work Order satisfy the Definition of Ready.
+
+Recommended orientation order:
+
+1. `AGENTS.md`
+2. `PROJECT.md`
+3. `ROADMAP.md`
+4. `docs/architecture/README.md`
+5. `docs/decisions/README.md`
+6. `docs/governance/README.md`
+7. This handoff guide
+
+## Frontend Design and Maintenance Guide
+
+This is the working guide for maintaining or extending the Atlas frontend. It
+assumes the reader has reviewed the product and architecture sources listed
+above. Read `design-principles.md` first; this document maps those rules onto the
+code and the completed frontend surfaces.
 
 ## Running and verifying
 
 From this folder's root:
 
-    npm install
+    npm ci
     npm run dev        # Next.js dev server
     npm run typecheck  # tsc --noEmit
     npm run lint       # eslint
     npm run test       # Vitest: 80 passing tests across 17 files; no pending tests
+    npm run build      # production build
 
 All three checks pass on every commit on this branch. Keep it that way: every change lands only after typecheck, lint, and tests are green. When a change alters UI text or structure that a test asserts on, update the test in the same change.
 
 ## Layout of this folder
 
     apps/web/src/
-      app/(shell)/            route pages: overview (page.tsx), agents/, approvals/, runs/, plus placeholder routes
+      app/(shell)/            route pages for all completed frontend prototype surfaces
       components/ui/          primitives: card, button, badge, table, dialog, tooltip, search-field, skeleton
       components/badge/       StatusBadge (the single status vocabulary)
       components/risk/        RiskChip + riskRank (the risk vocabulary)

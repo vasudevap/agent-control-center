@@ -42,6 +42,11 @@ The platform will provide one place to:
 - Monitor health, failures, and cost
 - Add new agents through a standard registration model
 
+Atlas is consumed through its own dashboard and through one governed external
+customer-facing product client. Plaintrol is the first example of that external
+client. Atlas exposes a general authenticated API and webhook contract and does
+not depend on Plaintrol-specific product concepts.
+
 The first production use case will be a Gmail Triage Agent.
 
 ---
@@ -72,6 +77,12 @@ Develop practical expertise in:
 ### 4.3 Professional Objective
 
 Create a portfolio-quality implementation and documentation set that demonstrates Enterprise and AI Solutions Architecture capability.
+
+### 4.4 Platform Client Objective
+
+Serve as the governed backend platform for one external customer-facing control
+surface acting for the single human owner and reviewer through authenticated
+APIs and webhooks.
 
 ---
 
@@ -249,6 +260,9 @@ The MVP includes:
 - Structured logs
 - Output metadata
 - Approval queue
+- Governed external platform API for one product client
+- External-client authentication
+- Outbound platform webhooks
 - Connector management
 - Gmail OAuth
 - Google Drive integration
@@ -276,6 +290,7 @@ The MVP does not include:
 - Arbitrary local filesystem access
 - LinkedIn publishing automation
 - Advanced analytics
+- Multiple external product clients
 
 ---
 
@@ -460,6 +475,7 @@ The Gmail Triage Agent shall initially support:
 - Read subject
 - Read selected message content
 - Classify email
+- Identify clinical content and protected health information classifications
 - Apply labels
 - Archive approved low-risk categories
 - Create draft replies
@@ -467,6 +483,10 @@ The Gmail Triage Agent shall initially support:
 - Save approved attachments to Google Drive
 - Record all actions
 - Route sensitive actions to approvals
+- Suppress automatic drafting for inbound messages classified as clinical or
+  as containing protected health information
+- Route suppressed clinical or protected health information messages to a hold
+  or manual-handling outcome without creating an approvable send
 
 ---
 
@@ -486,8 +506,17 @@ Initial email categories shall include:
 - Needs Reply
 - Review Required
 - Unknown
+- Clinical
+- Protected Health Information
 
 Categories should be configurable later.
+
+Clinical and Protected Health Information are safety classifications, not
+ordinary routing categories. If either applies to an inbound message, the
+Policy Engine shall suppress automatic drafting and shall route the message to
+a hold or manual-handling outcome. The Gmail agent shall not create a draft,
+send proposal, or approval request for that message. Human approval shall not
+override this rule.
 
 ---
 
@@ -555,6 +584,57 @@ The user shall be able to configure:
 
 ---
 
+## 12.19 External Product Client Access
+
+Atlas shall expose a governed platform contract to one authenticated external
+product client acting for the single human owner and reviewer.
+
+The contract shall allow the external product client to:
+
+- Read the pending-approval queue.
+- Read the governed evidence required to decide an approval.
+- Read agent status.
+- Read run status.
+- Submit one approve or reject decision through the Approval Service boundary.
+- Receive an approval-pending webhook event.
+- Receive send-outcome webhook events, including explicit indeterminate outcomes
+  where Atlas cannot establish whether an approved send completed.
+- Receive a `message.held_for_manual_handling` webhook event when the Policy
+  Engine suppresses a clinical or protected-health-information message.
+
+Atlas shall:
+
+- Authenticate the external product client separately from the first-party
+  dashboard session.
+- Attribute an external approval decision to the single human reviewer as well
+  as the authenticated external client and decision channel.
+- Apply the same approval state, evidence, expiry, concurrency, reauthentication,
+  idempotency, continuation, and audit controls used by the Atlas dashboard.
+- Expose only the minimum evidence required for the governed operation.
+- Treat webhooks as authenticated notifications rather than authorization or an
+  authoritative substitute for API reconciliation.
+- Remain the sole system of record for platform state, approvals, execution
+  outcomes, and audit evidence.
+- Keep the contract generic and independent of Plaintrol.
+- Identify a held message through a governed source reference and include only
+  the reason category and minimum metadata required to route it to the human.
+- Exclude message content and other sensitive evidence unless a later approved
+  contract establishes that the field is necessary and permitted.
+- Record the hold reason, policy or classification provenance, authenticated
+  external client, external delivery channel, correlation identity, and event
+  timestamp in audit evidence.
+- Ensure a held-message event contains no draft, creates no approval request,
+  confers no authorization, and cannot override or bypass suppression.
+- Require the external product client to present the event as `Needs manual
+  handling`, not as an approval.
+
+This requirement does not introduce additional human reviewers, roles, tenants,
+multi-tenant isolation, billing, marketplace behavior, or multiple external
+product clients. Those capabilities require separate future product and
+architecture decisions.
+
+---
+
 ## 13. Non-Functional Requirements
 
 ## 13.1 Security
@@ -570,6 +650,9 @@ The system must:
 - Prevent secrets from entering logs
 - Require approval for high-risk actions
 - Maintain audit records
+- Authenticate and scope an external product client separately from the
+  first-party dashboard
+- Preserve external-client and human attribution for approval decisions
 
 ---
 
@@ -717,6 +800,7 @@ PostgreSQL is the runtime system of record.
 Initial integrations:
 
 - Google Identity
+- One governed external product client, initially Plaintrol
 - Gmail API
 - Google Drive API
 - LLM provider API
@@ -912,6 +996,9 @@ Mitigations include:
 - Backend
 - Database
 - Authentication
+- Governed external platform API foundation
+- External-client authentication boundary
+- Outbound webhook delivery foundation
 - Initial deployment
 - Health endpoints
 
@@ -929,6 +1016,10 @@ Mitigations include:
 - Connectors
 - Policies
 - Approvals
+- External pending-approval and evidence access
+- External approve or reject decision channel
+- Approval-pending and send-outcome webhooks
+- Held-for-manual-handling non-approval webhook contract
 - Audit events
 - Security controls
 
@@ -974,6 +1065,7 @@ Potential future capabilities include:
 - Advanced cost management
 - Local desktop bridge
 - Mobile application
+- Multi-product platform for multiple external product clients
 
 ---
 

@@ -8,11 +8,12 @@
 
 The Agent Control Center is a practical productivity platform and an applied AI architecture laboratory.
 
-It has three complementary goals:
+It has four complementary goals:
 
 1. Build a personal productivity platform powered by AI agents.
 2. Develop deep expertise in enterprise agentic architecture, governance, orchestration, and operations.
 3. Produce architecture documentation and implementation examples that demonstrate enterprise AI architecture skills.
+4. Serve as the governed backend platform for one external customer-facing product client acting for the single human owner and reviewer.
 
 Rather than building isolated AI scripts, the project focuses on building the infrastructure required to manage AI agents safely and consistently.
 
@@ -38,6 +39,7 @@ The platform will eventually provide:
 - Cost Monitoring
 - Observability
 - AI Governance
+- Governed External Product API and Webhooks
 
 The first production agent will be a Gmail Triage Agent.
 
@@ -86,7 +88,16 @@ agent-control-center/
 
 # Current Implementation
 
-`apps/web` contains the approved Atlas application-shell baseline from Work Order 005. It includes the shared shell, responsive navigation, light and dark themes, shared route boundaries, and placeholder routes. Business APIs, authentication, backend services, and new product behavior are not part of this baseline.
+`apps/web` contains the completed frontend-only Atlas prototype as of the merged
+Work Order 014 consistency milestone. It includes the shared shell, responsive
+navigation, light and dark themes, Agents, Agent Detail, Approvals, Runs,
+Artifacts, Alerts, Audit, Connectors, Policies, and Settings. Data and
+state-changing interactions remain deterministic local fixtures or clearly
+labeled simulations.
+
+Business APIs, authentication, persistence, connector execution, policy
+evaluation, operational audit storage, and agent runtime services are not
+implemented.
 
 From the repository root:
 
@@ -130,6 +141,7 @@ The architecture documentation currently includes:
 - Connector Framework
 - Observability
 - Technology Strategy
+- Human Approvals
 
 See:
 
@@ -161,16 +173,17 @@ Frameworks such as LangChain, LangGraph, MCP, and Temporal will be introduced on
 
 High-level phases:
 
-- Phase 1 — Architecture Foundation
-- Phase 2 — Notion Workspace Automation
-- Phase 3 — Platform Foundation
-- Phase 4 — Dashboard
-- Phase 5 — Agent Registry
-- Phase 6 — Scheduler
-- Phase 7 — Gmail Agent
-- Phase 8 — Deployment
-- Phase 9 — Advanced Agentic Workflows
-- Phase 10 — Additional Agents
+- Phase 1 - Architecture Foundation
+- Phase 2 - Repository Foundation
+- Phase 3 - Platform Foundation
+- Phase 4 - Dashboard
+- Phase 5 - Agent Framework
+- Phase 6 - Gmail Agent
+- Phase 7 - Operational Maturity
+- Phase 8 - Advanced Agentic Workflows
+- Phase 9 - Durable Orchestration
+- Phase 10 - Additional Agents
+- Phase 11 - Enterprise Features
 
 ---
 
@@ -217,7 +230,16 @@ Notion serves as the operational workspace for:
 
 # Current Status
 
-The architecture and product-design foundations are documented. The approved Work Order 005 frontend shell has been consolidated into `apps/web`; ES-000 is closed and ES-001 provides the governance and CI baseline. Subsequent application features require their own reviewed work orders or engineering specifications.
+The architecture, product design, engineering governance, and frontend-only
+prototype are documented and complete for the current milestone. ES-000 through
+ES-002 are complete. The work-order index preserves the exact status of each
+delivery artifact, including WO-007 at Design Review Locked and WO-008 at
+Frontend Prototype Authorized.
+
+ADR-003 is accepted for the governed external approval decision channel.
+ADR-004 is accepted for the general external product client contract. The next
+implementation phase is the Phase 3 backend foundation, which requires an
+approved Engineering Specification and Work Order before code begins.
 
 ---
 

@@ -55,7 +55,29 @@ The Project Owner can:
 - Review costs and usage
 - Add or configure future agents
 
-The initial solution is single-user, but the architecture should not prevent future support for multiple users and roles.
+The initial solution is single-user. The authorized external-client scope adds
+one product client acting for this same human owner and reviewer. It does not
+add another human actor or reviewer.
+
+### External Control Surface / Product Client (example: Plaintrol)
+
+An External Control Surface / Product Client is a customer-facing system that
+uses the governed Atlas API and receives Atlas webhook events on behalf of the
+Project Owner. Plaintrol is the first example.
+
+The external product client can:
+
+- Read permitted agent and run status.
+- Read pending approvals and governed decision evidence.
+- Submit approve or reject decisions for the single human reviewer through the
+  Approval Service boundary.
+- Receive approval-pending and send-outcome webhook events.
+- Receive a minimized `message.held_for_manual_handling` event when policy
+  suppresses a clinical or protected-health-information message.
+
+The external product client is not authoritative for Atlas state, approval
+validity, policy, execution, outcomes, or audit evidence. Atlas must expose a
+general contract and must not depend on Plaintrol-specific concepts.
 
 ---
 
@@ -312,6 +334,7 @@ Key security concerns:
 ```mermaid
 flowchart LR
     Owner[Project Owner]
+    ProductClient[External Control Surface / Product Client\nExample: Plaintrol]
 
     subgraph ACC[Agent Control Center]
         Platform[Agent Control Center Platform]
@@ -328,6 +351,9 @@ flowchart LR
     Local[Local Computer]
 
     Owner -->|Manages agents, schedules, approvals, logs and outputs| Platform
+    Owner -->|Uses customer-facing control surface| ProductClient
+    ProductClient -->|Authenticated API calls| Platform
+    Platform -->|Authenticated webhook events| ProductClient
 
     Platform -->|OAuth API calls| Gmail
     Platform -->|OAuth API calls| Drive
@@ -351,6 +377,9 @@ flowchart LR
 | Source               | Target               | Purpose                       | Data                                  |
 | -------------------- | -------------------- | ----------------------------- | ------------------------------------- |
 | Project Owner        | Agent Control Center | Manage and review agents      | Commands, approvals, configuration    |
+| Project Owner        | External Product Client | Use customer-facing control surface | Review actions and operational state |
+| External Product Client | Agent Control Center | Consume governed platform APIs | Agent status, run status, approvals, evidence, decisions |
+| Agent Control Center | External Product Client | Deliver governed event notifications | Approval-pending, send-outcome, and held-for-manual-handling webhooks |
 | Agent Control Center | Gmail                | Email processing              | Messages, labels, drafts, attachments |
 | Agent Control Center | Google Drive         | Store outputs and attachments | Files, folders, metadata              |
 | Agent Control Center | LLM Provider         | AI reasoning                  | Prompts, structured inputs, outputs   |
@@ -403,7 +432,30 @@ Controls:
 
 ---
 
-### 8.3 Platform-to-External-Service Boundary
+### 8.3 External-Product-Client-to-API Boundary
+
+Separates:
+
+- The external customer-facing product client.
+- The Atlas Backend API and authoritative control plane.
+
+Controls:
+
+- TLS.
+- Separate external-client authentication.
+- Attribution to the single human owner for approval decisions.
+- Deny-by-default API scope.
+- Request validation, rate limiting, correlation IDs, and idempotency controls.
+- Minimum-necessary evidence disclosure.
+- Authenticated webhook delivery.
+- Audit provenance for external-client activity.
+
+The exact authentication and human-attribution design remains pending in the
+Phase 3 and Phase 5 security architecture work required by accepted ADR-004.
+
+---
+
+### 8.4 Platform-to-External-Service Boundary
 
 Separates the Agent Control Center from:
 
@@ -425,7 +477,7 @@ Controls:
 
 ---
 
-### 8.4 Execution-to-Data Boundary
+### 8.5 Execution-to-Data Boundary
 
 Separates:
 
@@ -444,7 +496,7 @@ Controls:
 
 ---
 
-### 8.5 AI Decision-to-Action Boundary
+### 8.6 AI Decision-to-Action Boundary
 
 Separates:
 
@@ -483,6 +535,10 @@ The Agent Control Center is responsible for:
 - Monitoring health
 - Coordinating connectors
 - Presenting operational information through the dashboard
+- Exposing governed platform state and approval operations through an
+  authenticated API for one external product client
+- Delivering authenticated approval, send-outcome, and held-for-manual-handling
+  webhook events
 
 ---
 
@@ -499,7 +555,8 @@ The Agent Control Center is not responsible for:
 - Guaranteeing external API availability
 - Managing the operating system on the user's local computer
 - Publishing directly to LinkedIn in the initial phases
-- Supporting multiple organizations in the first MVP
+- Supporting multiple organizations, multiple external product clients, or
+  multi-tenant isolation in the first MVP
 
 ---
 
@@ -623,6 +680,14 @@ The initial architecture assumes:
 - OAuth tokens are never exposed to the browser.
 - High-risk actions are not automatically executed in the first MVP.
 - The LLM is not trusted to authorize actions by itself.
+- One external product client may authenticate to the Atlas API on behalf of the
+  same Project Owner who uses the dashboard.
+- External-client authentication does not by itself establish the human
+  attribution required for an approval decision.
+- The external product client is outside the Atlas hosting boundary and is not
+  trusted to enforce Atlas authorization, policy, approval, or audit rules.
+- The external product client does not receive connector credentials and cannot
+  execute connector actions directly.
 - External content may be malicious and must be treated as untrusted input.
 - Notion access is restricted to the designated project page hierarchy.
 
@@ -662,6 +727,7 @@ The system context identifies several decisions that should become ADRs:
 - Approval policy model
 - Local file synchronization approach
 - Control plane and execution plane separation
+- Governed external product client contract, accepted in ADR-004
 
 ---
 
@@ -672,4 +738,8 @@ The system context identifies several decisions that should become ADRs:
 - Core system boundary defined
 - Major trust boundaries identified
 - Initial data flows documented
-- Detailed container architecture remains to be defined
+- Container, component, deployment, security, data, runtime, connector,
+  observability, technology, and Human Approvals architecture are documented.
+- The governed external approval channel is accepted under ADR-003.
+- The general external product client relationship is accepted under ADR-004.
+- No backend or external-client contract is implemented.

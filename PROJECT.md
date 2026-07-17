@@ -4,11 +4,12 @@
 
 The Agent Control Center is a practical productivity platform and applied AI architecture laboratory.
 
-The project has three primary objectives:
+The project has four primary objectives:
 
 1. Build a useful platform for creating, scheduling, monitoring, governing, and operating AI agents.
 2. Develop hands-on proficiency in agentic architecture, orchestration, security, observability, governance, and modern AI development tools.
 3. Create portfolio and LinkedIn content that demonstrates enterprise architecture thinking and practical AI implementation experience.
+4. Serve as the governed backend platform for an external customer-facing control surface, initially Plaintrol, through a single-reviewer external API and webhook contract.
 
 ## 2. Product Vision
 
@@ -134,6 +135,10 @@ The first MVP will not include:
 
 These may be introduced later through documented architecture decisions.
 
+A future multi-product platform is a possible direction. Supporting multiple
+external product clients, client isolation, or broader platform operations will
+require separate architecture decisions and is not part of the first MVP.
+
 ## 9. Success Criteria
 
 The MVP will be considered successful when:
@@ -196,22 +201,19 @@ The project should demonstrate the ability to:
 
 ## 12. Delivery Approach
 
-The project will be delivered in phases:
+The project follows the canonical phases in `ROADMAP.md`:
 
-1. Vision and requirements
-2. Architecture
-3. Notion workspace provisioner
-4. Core platform foundation
-5. Dashboard
-6. Agent registry
-7. Scheduling and execution
-8. Logging and approvals
-9. Gmail integration
-10. Gmail Triage Agent
-11. Deployment
-12. Advanced agentic capabilities
-13. Additional agents
-14. Portfolio and LinkedIn publication
+1. Architecture Foundation
+2. Repository Foundation
+3. Platform Foundation
+4. Dashboard
+5. Agent Framework
+6. Gmail Agent
+7. Operational Maturity
+8. Advanced Agentic Workflows
+9. Durable Orchestration
+10. Additional Agents
+11. Enterprise Features
 
 ## 13. Source of Truth
 
@@ -238,7 +240,15 @@ Notion is the operational and learning workspace for:
 
 - Architecture, product requirements, brand, and product-design foundations are documented.
 - The canonical repository structure is established around `apps/web` and governed documentation under `docs/`.
-- The approved Work Order 005 Atlas application shell is implemented with responsive light and dark themes and placeholder routes.
+- The frontend-only Atlas prototype is present as of the merged Work Order 014
+  consistency milestone, with responsive light and dark themes, governed local
+  fixtures, and clearly labeled simulations.
+- The work-order index remains authoritative for individual artifact status,
+  including WO-007 at Design Review Locked and WO-008 at Frontend Prototype
+  Authorized.
 - ES-000 canonical repository consolidation is closed.
 - ES-001 is the approved engineering-governance baseline: short-lived branches, pull-request review, required CI, readiness/done criteria, release controls, and dependency-risk tracking govern subsequent work.
+- ES-002 established the frontend component-testing baseline.
+- ADR-003 is accepted for the governed external approval decision channel.
+- ADR-004 is accepted for the general external product client contract.
 - Backend, authentication, APIs, connectors, and business workflows remain future work subject to architecture and work-order approval.

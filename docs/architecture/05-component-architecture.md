@@ -1007,8 +1007,26 @@ Determine whether a validated action may proceed.
 - Require approval
 - Defer
 - Escalate
+- Hold for manual handling
 
 The Execution Policy Engine is distinct from the LLM and has final authority over action execution.
+
+### Gmail Clinical and PHI Suppression
+
+For the Phase 6 Gmail agent, the Execution Policy Engine must treat an inbound
+message classified as clinical or as containing protected health information
+as ineligible for automatic drafting. The authoritative outcome is hold for
+manual handling, not require approval.
+
+The Gmail agent must not create a draft, proposed send action, or approval
+request for the suppressed message. Approval cannot override this outcome. The
+classification and policy outcome must be auditable using minimum necessary
+metadata without copying protected content into logs or general audit events.
+
+The future Gmail Agent and Policy Engine Engineering Specifications must define
+classification contracts, confidence and uncertainty behavior, hold lifecycle,
+manual-handling routing, audit metadata, privacy controls, and verification
+evidence. This architecture requirement does not authorize implementation.
 
 ---
 
@@ -1290,10 +1308,16 @@ sequenceDiagram
     Runtime->>LLMGateway: Classify message
     LLMGateway-->>Runtime: Structured classification
     Runtime->>PolicyEngine: Evaluate proposed actions
-    PolicyEngine-->>Runtime: Allow labels, approve archive policy
-    Runtime->>ConnectorRuntime: Apply Gmail actions
-    Runtime->>OutputWriter: Store classification output
-    Runtime->>AuditWriter: Record decisions and actions
+    alt Clinical or PHI classification
+        PolicyEngine-->>Runtime: Hold for manual handling, suppress draft and approval
+        Runtime->>OutputWriter: Store protected hold outcome
+        Runtime->>AuditWriter: Record minimized classification and policy outcome
+    else Eligible classification
+        PolicyEngine-->>Runtime: Allow labels, approve archive policy
+        Runtime->>ConnectorRuntime: Apply Gmail actions
+        Runtime->>OutputWriter: Store classification output
+        Runtime->>AuditWriter: Record decisions and actions
+    end
 ```
 
 ---
@@ -1423,4 +1447,7 @@ These decisions should be captured as ADRs before implementation.
 - Security responsibilities assigned
 - Agent execution interaction documented
 - Initial modular-monolith strategy established
-- Detailed deployment and security architecture remain to be completed
+- Deployment and security architecture baselines are documented.
+- Clinical and protected-health-information suppression is defined as a Policy
+  Engine hold outcome with no draft or approvable action.
+- Backend components remain architecture only and are not implemented.
