@@ -1,6 +1,6 @@
 # Work Order 020: Authorization and External-Client Identity Boundary
 
-**Status:** Accepted - Implementation Authorized
+**Status:** Completed - Pending Merge
 **Work Order ID:** WO-020
 **Type:** Backend security foundation
 **Implementation Authorization:** Granted
@@ -10,6 +10,7 @@
 **Architecture Authority:** [Phase 3 Target Architecture](../implementation-plans/phase-3-platform-foundation-target-architecture.md), [Security Architecture](../architecture/07-security-architecture.md)
 **Decision Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md)
 **Prerequisite:** [WO-019](./019-owner-authentication-and-session-foundation.md)
+**Review Record:** [WO-020 Authorization Implementation Report](../reviews/WO-020-authorization-implementation-report.md)
 
 ## 1. Purpose
 

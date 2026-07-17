@@ -3,9 +3,9 @@
 FastAPI backend foundation for the Agent Control Center.
 
 This workspace is introduced by WO-015. It provides health endpoints,
-configuration loading, structured errors, correlation IDs, external-client
-authentication scaffolding, webhook delivery scaffolding, and initial
-PostgreSQL migration foundations.
+configuration loading, structured errors, correlation IDs, deny-by-default
+authorization, signed external-client authentication, webhook delivery
+scaffolding, and initial PostgreSQL migration foundations.
 
 It does not implement operational approvals, fact CRUD, ask-instead-of-guess,
 Gmail behavior, connector execution, or frontend integration.
@@ -62,3 +62,13 @@ The default `local` environment does not require a database. `staging` and
 `database_url_missing` through readiness until `ATLAS_API_DATABASE_URL` is set.
 Configuration uses the `ATLAS_API_` prefix. Do not commit `.env` files or real
 credentials.
+
+External-client authentication fails closed unless a persistent database session
+factory and all current-key settings are supplied. The approved request proof
+uses the client identifier, key identifier, timestamp, nonce, and lowercase
+hex HMAC signature headers. The current client ID/key ID/secret use
+`ATLAS_API_EXTERNAL_CLIENT_ID`, `ATLAS_API_EXTERNAL_CLIENT_KEY_ID`, and
+`ATLAS_API_EXTERNAL_CLIENT_SECRET`; an overlapping rotation key can use
+`ATLAS_API_EXTERNAL_CLIENT_NEXT_KEY_ID` and
+`ATLAS_API_EXTERNAL_CLIENT_NEXT_SECRET`. Keep all secrets outside the
+repository and never use the retired `X-Atlas-Client-Secret` header.
