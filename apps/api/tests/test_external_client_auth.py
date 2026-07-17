@@ -111,7 +111,7 @@ def test_external_client_auth_accepts_signed_request_and_records_provenance(
     )
 
     assert response.status_code == 200
-    assert response.json()["external_client_id"] == CLIENT_ID
+    assert response.json()["data"]["external_client_id"] == CLIENT_ID
     assert "human" not in response.text.lower()
     with database_factory() as session:
         assert session.scalar(select(ExternalRequestNonce)) is not None

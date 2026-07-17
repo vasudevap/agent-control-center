@@ -30,6 +30,18 @@ def test_readiness_reports_missing_required_database() -> None:
     assert response.json()["problems"] == ["database_url_missing"]
 
 
+def test_versioned_health_uses_the_success_envelope() -> None:
+    client = TestClient(create_app(Settings(environment="test")))
+
+    response = client.get("/api/v1/health", headers={"X-Correlation-Id": "corr-api"})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "data": {"status": "ok", "service": "atlas-api"},
+        "meta": {"correlation_id": "corr-api"},
+    }
+
+
 def test_placeholder_endpoint_fails_closed_with_correlation_id() -> None:
     client = TestClient(create_app(Settings(environment="test")))
 
