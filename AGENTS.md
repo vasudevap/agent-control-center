@@ -441,6 +441,33 @@ When uncertain:
 
 Ask rather than invent.
 
+## Project Status Reporting
+
+When the user asks for a status, use this compact format and update percentages from repository evidence:
+
+`**Completed:** Stage 1: Requirements and Architecture | 100%`
+
+| Stage | Sequence | % |
+|---|---|---:|
+| 2. Governance | Architecture Review | 0% |
+| | Security Review | 0% |
+| | Resolve findings | 0% |
+| | Accept ADR-005 | 0% |
+| 3. Foundation | Knowledge persistence and versioning | 0% |
+| | API and authentication foundation | 0% |
+| | Webhook delivery foundation | 0% |
+| 4. Contract | Fact CRUD, confirmation, and volatility | 0% |
+| | Question and answer lifecycle | 0% |
+| | `facts_used` evidence and revalidation | 0% |
+| | Audit and webhook contracts | 0% |
+| 5. Gmail Agent | Ask instead of guess | 0% |
+| | Learn from validated answers | 0% |
+| | Learn from confirmed sends | 0% |
+| | Enforce clinical-source exclusion | 0% |
+| 6. Verification | Contract and integration tests | 0% |
+| | Security and privacy validation | 0% |
+| | End-to-end workflow verification | 0% |
+
 ---
 
 # Long-Term Vision

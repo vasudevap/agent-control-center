@@ -9,7 +9,7 @@ The project has four primary objectives:
 1. Build a useful platform for creating, scheduling, monitoring, governing, and operating AI agents.
 2. Develop hands-on proficiency in agentic architecture, orchestration, security, observability, governance, and modern AI development tools.
 3. Create portfolio and LinkedIn content that demonstrates enterprise architecture thinking and practical AI implementation experience.
-4. Serve as the governed backend platform for an external customer-facing control surface, initially Plaintrol, through a single-reviewer external API and webhook contract.
+4. Serve as the governed backend platform for an external customer-facing control surface, initially MushingMule, through a single-reviewer external API and webhook contract.
 
 ## 2. Product Vision
 
@@ -251,4 +251,6 @@ Notion is the operational and learning workspace for:
 - ES-002 established the frontend component-testing baseline.
 - ADR-003 is accepted for the governed external approval decision channel.
 - ADR-004 is accepted for the general external product client contract.
+- ADR-005 is accepted for governed draft-support knowledge and
+  ask-instead-of-guess behavior.
 - Backend, authentication, APIs, connectors, and business workflows remain future work subject to architecture and work-order approval.

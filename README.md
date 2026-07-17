@@ -237,9 +237,11 @@ delivery artifact, including WO-007 at Design Review Locked and WO-008 at
 Frontend Prototype Authorized.
 
 ADR-003 is accepted for the governed external approval decision channel.
-ADR-004 is accepted for the general external product client contract. The next
-implementation phase is the Phase 3 backend foundation, which requires an
-approved Engineering Specification and Work Order before code begins.
+ADR-004 is accepted for the general external product client contract. ADR-005
+is accepted for governed draft-support knowledge and ask-instead-of-guess
+behavior. The next implementation phase is the Phase 3 backend foundation,
+which requires an approved Engineering Specification and Work Order before code
+begins.
 
 ---
 

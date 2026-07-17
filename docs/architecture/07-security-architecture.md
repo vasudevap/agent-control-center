@@ -72,6 +72,7 @@ The main protected assets are:
 | Email attachments     | High           | Validate, classify, and restrict         |
 | Google Drive files    | High           | Enforce approved folders and scopes      |
 | Agent configuration   | Medium to High | Protect from unauthorized change         |
+| Governed knowledge    | High           | Validate, version, minimize, and restrict |
 | Approval records      | High           | Preserve integrity and reviewer identity |
 | Audit logs            | High           | Prevent tampering and redact secrets     |
 | User profile data     | High           | Limit collection and access              |
@@ -103,6 +104,10 @@ Emails, attachments, web pages, or documents may contain:
 - Malware
 - Misleading instructions
 - Social engineering content
+
+Human-supplied knowledge answers and facts are also untrusted input. They may
+contain secrets, credentials, protected health information, incorrect business
+facts, or content derived from a policy-suppressed source.
 
 ### Misconfigured agent
 
@@ -208,6 +213,27 @@ Controls:
 - Separate environment variables
 - Explicit deployment process
 - No production secrets in local files where avoidable
+
+### 6.7 External Product Client to Knowledge Capability
+
+The Atlas dashboard and the one governed external product client are untrusted
+presentation clients. Atlas remains authoritative for knowledge state,
+validation, confirmation, provenance, policy, and audit evidence.
+
+Controls:
+
+- Separate external-client authentication from attribution to the one human
+  owner
+- Deny-by-default authorization by resource and action
+- Validated and versioned fact, question, and answer contracts
+- Idempotency for state-changing requests
+- Prohibited-content rejection before knowledge-store persistence
+- Clinical and protected-health-information suppression before retrieval,
+  question creation, history-learning input assembly, or persistence
+- Minimum-necessary API, webhook, audit, and approval-evidence payloads
+- Authenticated webhooks that notify but never authorize
+- Authoritative API reconciliation after webhook delivery
+- Correlation identities and durable audit provenance
 
 ---
 
@@ -563,6 +589,28 @@ Approval records should include:
 
 Approval must not be reusable for a different action.
 
+### 15.1 Draft-Support Knowledge Security
+
+Governed knowledge used by a draft remains untrusted until Atlas validates it
+against schema, policy, sensitivity, provenance, confirmation, and freshness
+requirements. Knowledge questions and answers are not approvals and cannot
+authorize an action or use approval Request clarification state.
+
+Controls:
+
+- Facts are versioned and approval evidence references the exact revisions used
+- The decision-context manifest binds the approved draft to those revisions
+- Changed, deleted, or stale facts fail closed when they invalidate a draft
+- An invalidated draft is regenerated and receives a new approval request
+- Answers may create or update facts only after validation
+- History-derived candidates require an approved send with a confirmed `Sent`
+  outcome and preserved source provenance
+- `Failed` and `Indeterminate` outcomes are never learning sources
+- Secrets, credentials, protected health information, and content derived from
+  a clinically suppressed message are rejected before persistence
+- Rejected prohibited values are absent from logs, webhooks, audit payloads,
+  approval evidence, and retained knowledge content
+
 ---
 
 ## 16. Input Validation
@@ -582,6 +630,8 @@ Validate all:
 - LLM output
 - Connector responses
 - Queue messages
+- Knowledge facts and fact revisions
+- Knowledge questions and answers
 
 Do not rely only on frontend validation.
 
@@ -712,6 +762,8 @@ Material audit events include:
 - External action
 - Credential rotation
 - Policy change
+- Knowledge fact creation, revision, confirmation, and deletion
+- Knowledge question creation and answer validation outcome
 
 Audit records should preserve:
 
@@ -736,6 +788,11 @@ Initial classifications:
 | Internal       | Agent configuration and technical metadata                 |
 | Confidential   | Email metadata, logs, outputs                              |
 | Restricted     | OAuth tokens, private email content, sensitive attachments |
+
+Governed business facts, questions, answers, and provenance are Confidential
+by default. A classification label never permits prohibited knowledge content:
+secrets, credentials, protected health information, and clinically suppressed
+source content must be rejected rather than stored as Restricted knowledge.
 
 Security controls should increase with classification.
 
@@ -767,6 +824,8 @@ Retention should be configurable for:
 - Saved attachments
 - Failed jobs
 - Approval records
+- Knowledge facts and immutable revisions
+- Knowledge questions and answers
 
 Deletion must:
 
@@ -839,6 +898,9 @@ Monitor for:
 - Unusual outbound actions
 - Large attachment downloads
 - Policy denials
+- Rejected knowledge inputs by reason category without the prohibited value
+- Stale volatile facts and overdue re-confirmation
+- Repeated invalid or unauthorized knowledge mutations
 
 ---
 
@@ -875,6 +937,9 @@ The dashboard should support emergency agent disablement.
 | Excessive model cost          | Budgets, quotas, monitoring              |
 | Compromised dependency        | Scanning, version control, minimization  |
 | Log exposure                  | Redaction, access control, retention     |
+| Prohibited knowledge retained | Pre-persistence validation, rejection, audit minimization |
+| Stale fact used in a draft    | Revision binding, freshness checks, fail-closed revalidation |
+| Answer treated as authority   | Separate lifecycle, validation, non-authorizing contract |
 
 ---
 
@@ -908,6 +973,11 @@ The dashboard should support emergency agent disablement.
 - Oversized attachments
 - Duplicate execution attempts
 - Secret leakage scans
+- Prohibited knowledge-content rejection
+- Clinical-suppression ordering
+- Knowledge authorization and human-attribution failures
+- Stale or changed fact revalidation
+- Webhook replay, duplication, and reconciliation behavior
 
 ---
 
@@ -962,4 +1032,7 @@ The following decisions require ADRs:
 - OAuth and secret controls outlined
 - LLM and tool security model defined
 - Human approval requirements defined
+- Draft-support knowledge trust boundary and high-level controls defined
 - Detailed threat modelling and control implementation remain to be completed
+- Knowledge authentication, validation, retention, detection, and recovery
+  details remain mandatory Phase 3 and Phase 5 Engineering Specification work

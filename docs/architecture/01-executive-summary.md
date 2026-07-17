@@ -32,7 +32,7 @@ The Agent Control Center addresses these problems by introducing a shared contro
 
 The product vision is to create an enterprise-inspired control plane consumed
 through the first-party Atlas dashboard and one governed external product
-client, initially Plaintrol. These control surfaces allow the single human owner
+client, initially MushingMule. These control surfaces allow the single human owner
 to:
 
 - View all registered agents in one dashboard
@@ -80,6 +80,20 @@ The Atlas dashboard and the external product client are first-class consumers
 of the Backend API. The external product client also receives authenticated
 webhook events. Atlas remains authoritative for platform state, policy,
 approvals, execution outcomes, and audit evidence.
+
+### Landscape positioning
+
+Builder and iPaaS platforms such as n8n, Make, and Zapier let users compose
+automations and agents, with governance available as an optional node that a
+user wires into a workflow. Agent vendors instead provide pre-built agents for
+a specific job. Atlas is architecturally positioned as a control plane beneath
+agents, where governance is the spine: it provides a pre-execution approval
+hold, exact-action binding, revalidation before execution, fail-closed
+behavior, honest `Indeterminate` outcomes, and policy suppression that the
+human reviewer cannot override. Its API contract supports both the Atlas
+dashboard and governed external product clients, clarifying for portfolio
+purposes where the design sits in the tooling landscape and why its guarantees
+differ.
 
 ## 5. Initial Technology Direction
 

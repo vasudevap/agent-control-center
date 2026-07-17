@@ -23,7 +23,7 @@ customer-facing product client acting for the single human owner and reviewer.
 - ADR-003 remains authoritative for external approval decisions.
 - A policy-suppressed clinical or protected-health-information message is
   surfaced only through a minimized non-approval manual-handling event.
-- Atlas remains independent of Plaintrol. Plaintrol is the first example client.
+- Atlas remains independent of MushingMule. MushingMule is the first example client.
 - Multi-user, role-based, multi-tenant, billing, marketplace, and multiple
   external product client concerns remain outside this decision.
 
@@ -35,7 +35,7 @@ customer-facing product client acting for the single human owner and reviewer.
 - **Authoritative state:** Pass. Atlas remains the sole system of record and
   retains authority for policy, approval validity, continuation, execution
   outcomes, and audit evidence.
-- **Contract independence:** Pass. Plaintrol is identified only as the first
+- **Contract independence:** Pass. MushingMule is identified only as the first
   example consumer. The API and webhook contract uses generic external product
   client terminology.
 - **Container responsibility:** Pass. The Backend API owns the governed inbound

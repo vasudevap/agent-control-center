@@ -5,7 +5,7 @@
 **Date:** 2026-07-17
 **Capability:** Human Approvals
 **Product:** Atlas
-**Governing Decision:** ADR-004 is accepted; implementation still requires approved Phase 3 and Phase 5 artifacts
+**Governing Decisions:** ADR-004 and ADR-005 are accepted; implementation still requires approved Phase 3, Phase 5, and Phase 6 artifacts
 
 ---
 
@@ -171,15 +171,23 @@ authorized for implementation by this document:
 - A minimized non-approval event that surfaces a clinical or
   protected-health-information hold for manual handling without creating a
   draft, proposed action, or approval.
+- A governed knowledge-fact API with create, read, update, delete, confirmation,
+  volatility, and re-confirmation operations.
+- First-class ask-instead-of-guess question and answer records delivered through
+  the authenticated external API and webhook channel.
+- A typed approval evidence `facts_used` collection that binds a draft to the
+  exact fact revisions it used.
 
 This scope follows the roadmap phase boundaries:
 
 - Phase 3 establishes the authenticated external API, client-authentication,
-  and webhook-delivery foundations.
+  webhook-delivery, and knowledge-persistence foundations.
 - Phase 5 establishes the generic external approval and non-approval
-  manual-handling contracts.
-- Phase 6 supplies Gmail-specific evidence, classification, hold creation, and
-  send execution for the first end-to-end workflow.
+  manual-handling contracts plus the governed fact, question, answer,
+  re-confirmation, and `facts_used` evidence contracts.
+- Phase 6 supplies Gmail-specific evidence, classification, hold creation,
+  ask-instead-of-guess, governed learning, and send execution for the first
+  end-to-end workflow.
 
 Each phase requires the applicable accepted ADRs, architecture review, approved
 Engineering Specification and Work Order, and confirmation of Definition of
@@ -229,7 +237,7 @@ The Atlas Web interface is an untrusted presentation client. It may present and
 submit decisions, but it is not authoritative for approval state, evidence
 completeness, expiry, reviewer authorization, or execution eligibility.
 
-A trusted external control plane, initially Plaintrol, may act as a separate
+A trusted external control plane, initially MushingMule, may act as a separate
 customer-facing presentation and decision client for the same single human
 reviewer. Trust in that client is limited to its authenticated channel and
 delegated ability to act for that human. The Approval Service remains
@@ -407,6 +415,10 @@ The trusted external control plane is responsible for:
   approval validity.
 - Presenting a held message as needing manual handling without representing it
   as an approval or authorization path.
+- Presenting knowledge facts, stale volatile facts, and ask-instead-of-guess
+  questions without representing them as approval state.
+- Submitting the one human owner's fact confirmations and knowledge answers
+  through the governed knowledge API.
 - Submitting approve or reject decisions through the Approval Service.
 - Preserving correlation and decision identities required for audit and
   concurrency control.
@@ -519,6 +531,18 @@ evidence.
 
 If clarification changes the action, target, or decision-relevant content, the
 existing request cannot authorize it. A new approval request is required.
+
+### 8.5.1 Distinction From Ask-Instead-of-Guess
+
+An ask-instead-of-guess question is created before a draft exists because the
+agent lacks a required business fact. Its answer may create or update a governed
+knowledge fact after validation. It does not create, advance, approve, reject,
+or clarify an approval request and confers no authorization.
+
+Request clarification is part of an existing pending approval and seeks missing
+decision evidence without replacing the approval lifecycle. The two record
+types, APIs, webhook events, state transitions, and audit meanings must remain
+separate.
 
 If expiry occurs first, the request becomes `Expired`. Later authorization
 requires a new approval request.
@@ -726,6 +750,19 @@ Action-specific evidence includes:
 - Audience and sensitivity for external sharing.
 - Amount, currency, recipient, and purpose for financial actions.
 - File identity, destination, and sensitivity for file transfers.
+
+### 11.2.1 Facts Used by a Draft
+
+Facts used by a draft fit within the existing approval evidence contract. The
+evidence payload carries a typed `facts_used` collection rather than a new
+top-level approval or decision field. Each item identifies the exact fact
+revision used and presents the minimum fact value, provenance, volatility, and
+confirmation context necessary for the human to review the draft.
+
+The decision-context manifest binds the approval to those exact fact revisions.
+If a referenced fact changes, is deleted, or becomes stale under its volatility
+policy before execution, revalidation fails closed. Atlas must regenerate the
+draft and create a new approval request when the bound draft is no longer valid.
 
 ### 11.3 Evidence Completeness
 
@@ -1201,6 +1238,21 @@ The architecture is acceptable when:
     minimized non-approval manual-handling event for the governed external
     product client without creating a draft, proposed action, approval, or
     authorization path.
+22. Governed knowledge remains authoritative in Atlas and is exposed through
+    deny-by-default, validated, versioned contracts for the one human owner and
+    one external product client.
+23. Knowledge questions and answers remain non-authorizing and separate from
+    approval decisions and approval Request clarification.
+24. Draft approval evidence carries a typed `facts_used` collection bound to
+    exact fact revisions in the decision-context manifest.
+25. A changed, deleted, or stale fact that invalidates the draft fails closed
+    and requires regeneration and a new approval request.
+26. Secrets, credentials, protected health information, and clinically
+    suppressed source content are rejected before knowledge retrieval,
+    question creation, history-learning input assembly, or persistence.
+27. Only validated human answers and candidates derived from approved sends
+    with confirmed `Sent` outcomes may become governed facts; `Failed` and
+    `Indeterminate` outcomes are ineligible learning sources.
 
 ---
 
@@ -1209,7 +1261,8 @@ The architecture is acceptable when:
 Before implementation reaches Definition of Ready:
 
 1. The implementation artifact links accepted ADR-003, accepted ADR-004 when
-   the external product contract is in scope, and this canonical architecture.
+   the external product contract is in scope, accepted ADR-005 when governed
+   draft-support knowledge is in scope, and this canonical architecture.
 2. Phase 3 foundations are complete before Phase 5 external approval or
    manual-handling contract implementation, and Phase 5 foundations are
    complete before the Phase 6 Gmail end-to-end workflow.

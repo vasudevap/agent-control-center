@@ -34,6 +34,7 @@ The data architecture should:
 - Allow new agents and connectors to be added consistently
 - Preserve compatibility with future multi-user and multi-agent expansion
 - Support reporting and observability
+- Support governed, versioned business facts used during drafting
 
 ---
 
@@ -52,6 +53,7 @@ PostgreSQL will be the authoritative source for:
 - Health state
 - Output metadata
 - Audit records
+- Knowledge facts, fact revisions, questions, and answers
 - Operational configuration
 
 ### 3.2 External platforms remain authoritative for their own content
@@ -118,6 +120,7 @@ The platform contains the following primary data domains:
 10. Health and observability
 11. Notifications
 12. Plugins and extensions
+13. Draft-support knowledge
 
 ---
 
@@ -139,6 +142,7 @@ The platform contains the following primary data domains:
 | Stored files               | Google Drive initially               |
 | OAuth credentials          | Encrypted credential store           |
 | LLM usage records          | PostgreSQL                           |
+| Draft-support knowledge    | PostgreSQL                           |
 | Deployment secrets         | Hosting secret store                 |
 
 ---
@@ -175,8 +179,12 @@ erDiagram
     POLICY ||--o{ AGENT_POLICY : assigned
 
     APPROVAL ||--o| AUDIT_EVENT : resolved_by
+    APPROVAL }o--o{ KNOWLEDGE_FACT_REVISION : cites_in_evidence
     OUTPUT }o--|| STORAGE_REFERENCE : stored_at
     AGENT ||--o{ AGENT_HEALTH : reports
+    AGENT ||--o{ KNOWLEDGE_QUESTION : asks
+    KNOWLEDGE_FACT ||--o{ KNOWLEDGE_FACT_REVISION : has
+    KNOWLEDGE_QUESTION ||--o| KNOWLEDGE_ANSWER : receives
 ```
 
 ---
@@ -773,6 +781,105 @@ This entity may be deferred until the platform supports external plugins.
 
 ---
 
+## 7.25 KnowledgeFact
+
+Represents one active business fact available to drafting agents. It must not
+contain secrets, credentials, protected health information, or content derived
+from a message suppressed by the clinical or protected-health-information
+policy.
+
+Key logical attributes:
+
+- `fact_id`
+- `fact_key`
+- `display_label`
+- `current_revision_id`
+- `status`
+- `volatile`
+- `last_confirmed_at`
+- `created_at`
+- `updated_at`
+- `deleted_at`
+
+Deleting a fact removes it from active retrieval. A referenced revision may be
+retained under approval-evidence and audit retention rules so historical review
+does not become misleading.
+
+---
+
+## 7.26 KnowledgeFactRevision
+
+Represents an immutable version of a business fact.
+
+Key logical attributes:
+
+- `fact_revision_id`
+- `fact_id`
+- `revision_number`
+- `value`
+- `volatile`
+- `last_confirmed_at`
+- `source_type`
+- `source_reference`
+- `created_by_channel`
+- `confirmed_by_human_owner_id`
+- `confirmed_via_external_client_id` when confirmed through the external channel
+- `created_at`
+- `integrity_identity`
+
+Approval evidence cites the exact revision used by a draft. The typed
+`facts_used` evidence collection belongs to the existing approval evidence
+payload and decision-context manifest. It is not a new top-level approval or
+decision field.
+
+---
+
+## 7.27 KnowledgeQuestion
+
+Represents an agent request for a missing business fact before drafting.
+
+Key logical attributes:
+
+- `knowledge_question_id`
+- `agent_id`
+- `run_id`
+- `source_reference`
+- `missing_fact_key`
+- `question_text`
+- `status`
+- `correlation_id`
+- `created_at`
+- `answered_at`
+
+A knowledge question is not an approval request, does not change approval
+state, and does not use the approval Request clarification lifecycle.
+
+---
+
+## 7.28 KnowledgeAnswer
+
+Represents the one human owner's answer to a knowledge question.
+
+Key logical attributes:
+
+- `knowledge_answer_id`
+- `knowledge_question_id`
+- `answer_value`
+- `human_owner_id`
+- `external_client_id` when submitted through the external channel
+- `submission_channel`
+- `validation_status`
+- `resulting_fact_id`
+- `resulting_fact_revision_id`
+- `submitted_at`
+
+Answer input is untrusted. Secrets, credentials, protected health information,
+and content from a suppressed source must be rejected before knowledge-store
+persistence. Audit evidence may record rejection metadata without retaining the
+prohibited content.
+
+---
+
 ## 8. Data Ownership
 
 | Entity              | Owning Component             |
@@ -796,8 +903,15 @@ This entity may be deferred until the platform supports external plugins.
 | ModelInvocation     | LLM Gateway                  |
 | Health entities     | Health Service               |
 | Notification        | Notification Service         |
+| KnowledgeFact       | Knowledge capability         |
+| KnowledgeFactRevision | Knowledge capability       |
+| KnowledgeQuestion   | Knowledge capability         |
+| KnowledgeAnswer     | Knowledge capability         |
 
 Each owner is responsible for validation, lifecycle, and data integrity.
+
+The knowledge capability is a logical control-plane responsibility. Accepted
+ADR-005 does not require a separate deployment container.
 
 ---
 
@@ -826,6 +940,26 @@ sequenceDiagram
     Worker->>Drive: Save approved attachment
     Worker->>DB: Persist run, output, audit and health data
 ```
+
+### 9.1 R8 Draft-Support Knowledge Flow
+
+Clinical and protected-health-information suppression is evaluated before a
+message may supply knowledge context, create a question, or enter a
+history-learning input. A suppressed message follows the existing manual-hold
+path and contributes no fact, question content, answer context, or draft.
+
+For an eligible message, the agent retrieves governed facts and their exact
+revisions. If a required fact is absent or a volatile fact requires
+re-confirmation, the agent creates a `KnowledgeQuestion` instead of a generic
+draft. The one human owner's validated `KnowledgeAnswer` may create or update a
+`KnowledgeFact` and immutable `KnowledgeFactRevision`. A later draft records the
+exact revisions in the approval evidence `facts_used` collection.
+
+History learning may consider only approved sends with a confirmed `Sent`
+outcome. `Failed` and `Indeterminate` outcomes are not learning sources. Every
+candidate fact retains source provenance and passes the same sensitivity,
+clinical-suppression, and prohibited-content validation applied to direct
+answers.
 
 ---
 
@@ -864,6 +998,10 @@ Initial direction:
 | Saved files               | Based on Google Drive policy        |
 | Failed queue jobs         | Limited retention                   |
 | Notifications             | 90 days                             |
+| Active knowledge facts    | Until deleted or superseded         |
+| Referenced fact revisions | Approval evidence retention period  |
+| Knowledge questions       | Defined by knowledge retention policy |
+| Knowledge answers         | Minimum period required for provenance |
 
 Final values require an ADR.
 
@@ -894,6 +1032,9 @@ Examples:
 - Approval cannot be executed twice
 - Run state cannot move backwards illegally
 - Output must reference a valid run
+- Approval `facts_used` entries must reference the exact fact revisions used
+- A knowledge answer may resolve only its related pending question
+- Deleted or stale facts cannot silently replace a fact revision bound to a draft
 
 ---
 
@@ -968,6 +1109,12 @@ Sensitive database fields may include:
 - Sensitive output description
 - Approval payload
 - Restricted file reference
+- Knowledge question or answer content
+
+The knowledge store must reject secrets, credentials, protected health
+information, and content derived from a clinically suppressed message. Fact
+values exposed through the external API or approval evidence are minimum
+necessary and follow their sensitivity and retention policies.
 
 ---
 
@@ -982,6 +1129,8 @@ The dashboard will need query patterns for:
 - Pending approvals
 - Recent outputs
 - Connector errors
+- Stale volatile facts requiring re-confirmation
+- Pending knowledge questions
 - Cost by agent
 - Success rate
 - Run duration
@@ -1053,6 +1202,9 @@ Monitor for:
 - Schedules with stale next-run times
 - Connectors without health records
 - Missing audit events for sensitive actions
+- Approval evidence referencing a missing fact revision
+- Knowledge facts missing provenance or confirmation state
+- Knowledge records linked to a suppressed source
 
 ---
 
@@ -1072,6 +1224,8 @@ Controls should include:
 - Auditability
 - Provider data-use review
 - Avoidance of unnecessary model exposure
+- Exclusion of suppressed clinical or protected-health-information content from
+  knowledge retrieval and learning pipelines
 
 ---
 

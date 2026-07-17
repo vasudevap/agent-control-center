@@ -33,3 +33,8 @@ and mobile-action-flow consistency work.
 The [ADR-004 review record](./ADR-004-governed-external-product-client-contract-review.md)
 records Architecture and Security Review acceptance of the governed external
 product client contract. It carries no implementation authority.
+
+The [ADR-005 review record](./ADR-005-draft-support-knowledge-and-ask-instead-of-guess-review.md)
+records Architecture and Security Review acceptance of governed draft-support
+knowledge and ask-instead-of-guess behavior. It carries no implementation
+authority.
