@@ -128,11 +128,14 @@ The Notion provisioner may synchronize selected content from this directory into
 The initial architecture baseline and Human Approvals architecture are
 documented. ADR-003 is accepted for the governed external approval decision
 channel. ADR-004 is accepted for the general external product client contract.
+ADR-005 is proposed for draft-support knowledge and ask-instead-of-guess
+behavior and is awaiting Architecture and Security Review.
 
 The next architecture activities are:
 
 - Produce the Phase 3 Platform Foundation Engineering Specification
 - Define detailed external-client API and webhook contracts
+- Review ADR-005 for acceptance before R8 implementation planning
 - Update Security, Data, and Observability architecture during the authorized
   Phase 3 and Phase 5 design work
 - Define the physical PostgreSQL schema

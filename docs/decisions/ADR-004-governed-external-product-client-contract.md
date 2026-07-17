@@ -21,10 +21,10 @@ by an external customer-facing product that needs to read governed platform
 state, present approval evidence, submit approval decisions, and receive
 lifecycle events without becoming a second system of record.
 
-Plaintrol is the first external product client. It acts on behalf of the single
-human owner and reviewer. Atlas must not depend on Plaintrol-specific concepts,
+MushingMule is the first external product client. It acts on behalf of the single
+human owner and reviewer. Atlas must not depend on MushingMule-specific concepts,
 deployment choices, or user experience. The platform-client contract must be
-generic enough for Plaintrol to consume while remaining owned and governed by
+generic enough for MushingMule to consume while remaining owned and governed by
 Atlas.
 
 ADR-003 establishes the narrower external approval decision channel. A broader
@@ -71,10 +71,10 @@ The external product client must not:
 - Assert an independent human reviewer identity.
 - Introduce additional reviewers, roles, tenants, or tenant isolation under this
   decision.
-- Require Atlas to expose Plaintrol-specific domain concepts in the general API.
+- Require Atlas to expose MushingMule-specific domain concepts in the general API.
 
-Plaintrol is the first example of this consumer class. Atlas contracts must use
-generic external-product-client terminology and remain independent of Plaintrol.
+MushingMule is the first example of this consumer class. Atlas contracts must use
+generic external-product-client terminology and remain independent of MushingMule.
 
 ## Contract Boundary
 
@@ -164,7 +164,7 @@ versioning, quotas, lifecycle, and operational governance.
 
 ### Risks
 
-- A product-specific contract could couple Atlas to Plaintrol.
+- A product-specific contract could couple Atlas to MushingMule.
 - Weak external-client authentication could expose platform state or permit an
   unauthorized decision attempt.
 - Confusing client authentication with human attribution could weaken approval
@@ -183,7 +183,7 @@ versioning, quotas, lifecycle, and operational governance.
 Rejected because it prevents governed external customer-facing products from
 using Atlas as their backend engine.
 
-### Plaintrol-specific backend endpoints
+### MushingMule-specific backend endpoints
 
 Rejected because Atlas must own a general platform contract and must not depend
 on one consuming product.

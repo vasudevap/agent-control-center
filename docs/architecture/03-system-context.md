@@ -59,11 +59,11 @@ The initial solution is single-user. The authorized external-client scope adds
 one product client acting for this same human owner and reviewer. It does not
 add another human actor or reviewer.
 
-### External Control Surface / Product Client (example: Plaintrol)
+### External Control Surface / Product Client (example: MushingMule)
 
 An External Control Surface / Product Client is a customer-facing system that
 uses the governed Atlas API and receives Atlas webhook events on behalf of the
-Project Owner. Plaintrol is the first example.
+Project Owner. MushingMule is the first example.
 
 The external product client can:
 
@@ -74,10 +74,19 @@ The external product client can:
 - Receive approval-pending and send-outcome webhook events.
 - Receive a minimized `message.held_for_manual_handling` event when policy
   suppresses a clinical or protected-health-information message.
+- Create, read, update, delete, and confirm governed business facts through the
+  generic knowledge API.
+- Review stale volatile facts and submit re-confirmations for the one human
+  owner.
+- Read ask-instead-of-guess questions and submit the one human owner's answers
+  without creating an approval or authorization.
+- Receive authenticated knowledge question, answer, and fact re-confirmation
+  notifications and reconcile authoritative state through the API.
 
 The external product client is not authoritative for Atlas state, approval
-validity, policy, execution, outcomes, or audit evidence. Atlas must expose a
-general contract and must not depend on Plaintrol-specific concepts.
+validity, governed knowledge, policy, execution, outcomes, or audit evidence.
+Atlas must expose a general contract and must not depend on
+MushingMule-specific concepts.
 
 ---
 
@@ -334,7 +343,7 @@ Key security concerns:
 ```mermaid
 flowchart LR
     Owner[Project Owner]
-    ProductClient[External Control Surface / Product Client\nExample: Plaintrol]
+    ProductClient[External Control Surface / Product Client\nExample: MushingMule]
 
     subgraph ACC[Agent Control Center]
         Platform[Agent Control Center Platform]
@@ -447,11 +456,16 @@ Controls:
 - Deny-by-default API scope.
 - Request validation, rate limiting, correlation IDs, and idempotency controls.
 - Minimum-necessary evidence disclosure.
+- Minimum-necessary knowledge and question disclosure.
 - Authenticated webhook delivery.
 - Audit provenance for external-client activity.
+- Prohibited-content validation before knowledge persistence.
+- Clinical and protected-health-information suppression before knowledge
+  retrieval, question creation, or history learning.
 
 The exact authentication and human-attribution design remains pending in the
-Phase 3 and Phase 5 security architecture work required by accepted ADR-004.
+Phase 3 and Phase 5 security architecture work required by accepted ADR-004
+and proposed ADR-005.
 
 ---
 
@@ -742,4 +756,6 @@ The system context identifies several decisions that should become ADRs:
   observability, technology, and Human Approvals architecture are documented.
 - The governed external approval channel is accepted under ADR-003.
 - The general external product client relationship is accepted under ADR-004.
+- R8 draft-support knowledge and ask-instead-of-guess behavior is proposed under
+  ADR-005 and awaits Architecture and Security Review.
 - No backend or external-client contract is implemented.

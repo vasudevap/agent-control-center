@@ -98,6 +98,8 @@ Build the platform infrastructure.
 - Governed External Platform API Foundation
 - External Product Client Authentication Boundary
 - Outbound Webhook Delivery Foundation
+- Governed Knowledge Store Persistence Foundation
+- External Knowledge API Foundation
 
 ---
 
@@ -157,6 +159,11 @@ Create the reusable agent platform.
 - Approval-Pending and Send-Outcome Webhooks
 - Held-for-Manual-Handling Non-Approval Webhook Contract
 - External Decision Channel Audit Provenance
+- Governed Knowledge Fact CRUD and Confirmation Contract
+- Fact Volatility and Re-confirmation Contract
+- Approval Evidence `facts_used` Contract
+- Ask-Instead-of-Guess Question and Answer API
+- Knowledge Question, Answer, and Re-confirmation Webhook Contracts
 - Health Monitoring
 
 ---
@@ -176,6 +183,9 @@ Deliver the first production agent.
 - Labels
 - Archive
 - Draft Replies
+- Ask-Instead-of-Guess Before Drafting
+- Learn Governed Facts From Human Answers
+- Learn Governed Facts From Confirmed Approved Sends
 - Attachment Saving
 - Google Drive Integration
 
@@ -189,6 +199,12 @@ handling outcome. Human approval is not an override for this suppression.
 This is a scope requirement for the future Gmail Agent and Policy Engine
 Engineering Specifications. It does not authorize implementation in the
 current frontend phase.
+
+R8 applies the same suppression before knowledge retrieval, question creation,
+or learning from history. A suppressed clinical or
+protected-health-information message and its content must never become a
+knowledge fact or learning source. Ask-instead-of-guess questions are not
+approvals and confer no authorization.
 
 ---
 

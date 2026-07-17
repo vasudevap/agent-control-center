@@ -14,7 +14,7 @@
 ## Context
 
 Atlas currently defines its web interface as the only human approval decision
-surface. Plaintrol is a separate product that will provide a customer-facing
+surface. MushingMule is a separate product that will provide a customer-facing
 approval surface. Its first use case is a solo operator whose email agent drafts
 replies and requires that one human to approve or reject each reply before the
 Gmail agent sends it.
@@ -33,7 +33,7 @@ Atlas will accept approval decisions through two governed channels:
 
 1. The internal Atlas decision channel.
 2. An authenticated external decision channel used by a trusted external
-   control plane, initially Plaintrol.
+   control plane, initially MushingMule.
 
 The Approval Service remains the sole system of record and decision authority.
 The external control plane is a client acting for the configured human, not a
@@ -109,7 +109,7 @@ an incremental implementation detail.
 
 ### Positive
 
-- Plaintrol can provide a customer-facing approval experience without becoming
+- MushingMule can provide a customer-facing approval experience without becoming
   a separate approval authority.
 - Internal and external decisions share one canonical lifecycle and integrity
   model.
@@ -142,10 +142,10 @@ an incremental implementation detail.
 
 ### Accept decisions only inside Atlas
 
-Rejected because it prevents Plaintrol from serving as the customer-facing
+Rejected because it prevents MushingMule from serving as the customer-facing
 approval surface and forces the operator to leave that product to decide.
 
-### Let Plaintrol own approval state
+### Let MushingMule own approval state
 
 Rejected because two systems of record could diverge and weaken Atlas policy,
 evidence, audit, expiry, and continuation controls.

@@ -43,9 +43,9 @@ The platform will provide one place to:
 - Add new agents through a standard registration model
 
 Atlas is consumed through its own dashboard and through one governed external
-customer-facing product client. Plaintrol is the first example of that external
+customer-facing product client. MushingMule is the first example of that external
 client. Atlas exposes a general authenticated API and webhook contract and does
-not depend on Plaintrol-specific product concepts.
+not depend on MushingMule-specific product concepts.
 
 The first production use case will be a Gmail Triage Agent.
 
@@ -615,7 +615,7 @@ Atlas shall:
   authoritative substitute for API reconciliation.
 - Remain the sole system of record for platform state, approvals, execution
   outcomes, and audit evidence.
-- Keep the contract generic and independent of Plaintrol.
+- Keep the contract generic and independent of MushingMule.
 - Identify a held message through a governed source reference and include only
   the reason category and minimum metadata required to route it to the human.
 - Exclude message content and other sensitive evidence unless a later approved
@@ -632,6 +632,75 @@ This requirement does not introduce additional human reviewers, roles, tenants,
 multi-tenant isolation, billing, marketplace behavior, or multiple external
 product clients. Those capabilities require separate future product and
 architecture decisions.
+
+---
+
+## 12.20 R8 Draft-Support Knowledge and Ask-Instead-of-Guess
+
+R8 is one requirement with two sequenced parts. Part A establishes the generic
+platform and external-client contract in Phases 3 and 5. Part B establishes the
+Gmail agent behavior that consumes that contract in Phase 6. Neither part
+authorizes implementation independently or together.
+
+### Part A: External API and Platform Scope
+
+Atlas shall provide a governed knowledge store for business facts used during
+drafting, such as hours, services, pricing, and policies. Atlas remains the
+authoritative system of record for this capability. The one authenticated
+external product client acting for the single human owner shall be able to:
+
+- Create, read, update, and delete a fact.
+- Confirm a fact.
+- Mark a fact as volatile and read its `last_confirmed_at` value.
+- Find stale volatile facts that require re-confirmation.
+- Read an ask-instead-of-guess question and submit an answer for the one human
+  owner.
+- Reconcile question and answer state through the authenticated API after
+  receiving an authenticated webhook notification.
+
+Questions and answers are first-class records. They are not approvals, confer
+no authorization, and are distinct from approve or reject decisions and from
+the existing approval Request clarification lifecycle.
+
+Facts used by a draft fit within the existing approval evidence contract. The
+evidence payload shall add a typed `facts_used` collection rather than add a new
+top-level approval or decision field. Each entry shall bind the displayed fact
+to the exact fact revision used by the draft and include minimum necessary
+confirmation and volatility context. The decision-context manifest shall retain
+the version or integrity reference required to show what the human reviewed. A
+changed, deleted, or stale fact that invalidates the draft shall fail
+revalidation and require a regenerated draft and new approval request.
+
+The external-client contract shall use deny-by-default authorization, validated
+inputs and outputs, correlation identities, idempotency where state changes,
+and durable audit provenance. Atlas shall never store secrets, credentials, or
+protected health information in the knowledge store. A message suppressed as
+clinical or protected-health-information content, and any content derived from
+that message, shall be excluded before knowledge retrieval, question creation,
+history learning, or fact persistence.
+
+### Part B: Gmail Agent Scope
+
+The Gmail agent shall:
+
+- Emit an ask-instead-of-guess question when a required fact is missing instead
+  of producing a generic draft.
+- Treat the answer as untrusted input, validate it against policy and
+  sensitivity rules, and persist the resulting business fact only when the
+  knowledge-store rules permit it.
+- Derive candidate facts only from past approved sends with a confirmed `Sent`
+  outcome, with source provenance and policy validation.
+- Apply the clinical and protected-health-information filter before any
+  history-learning input is assembled, so a suppressed message or its content
+  can never become a learning source.
+- Avoid creating a draft, approval, knowledge question, or learned fact for a
+  suppressed clinical or protected-health-information message.
+
+Part A is sequenced across Phase 3 platform foundations and Phase 5 governed
+knowledge, evidence, question, answer, and webhook contracts. Part B is
+sequenced to Phase 6. R8 does not introduce additional human reviewers, users,
+roles, tenants, multiple external product clients, or client-specific product
+concepts.
 
 ---
 
@@ -800,7 +869,7 @@ PostgreSQL is the runtime system of record.
 Initial integrations:
 
 - Google Identity
-- One governed external product client, initially Plaintrol
+- One governed external product client, initially MushingMule
 - Gmail API
 - Google Drive API
 - LLM provider API

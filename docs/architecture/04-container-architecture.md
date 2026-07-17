@@ -64,7 +64,7 @@ flowchart LR
     User[Project Owner]
 
     subgraph ExternalClientBoundary[External Product Client Boundary]
-        ProductClient[External Control Surface / Product Client\nExample: Plaintrol]
+        ProductClient[External Control Surface / Product Client\nExample: MushingMule]
     end
 
     subgraph FrontendBoundary[Frontend Hosting Boundary]
@@ -208,8 +208,8 @@ The Backend API serves two governed consumer classes:
 2. One authenticated external product client acting for the single human owner
    and reviewer.
 
-Plaintrol is the first external product client. The API contract remains generic
-and must not expose Plaintrol-specific domain concepts. Both consumer classes
+MushingMule is the first external product client. The API contract remains generic
+and must not expose MushingMule-specific domain concepts. Both consumer classes
 use the same authoritative Atlas services and neither client is trusted to
 enforce approval, policy, execution, or audit rules.
 
@@ -234,6 +234,8 @@ It is responsible for:
 - Administrative operations
 - External-client authentication at the API boundary
 - Governed external access to agent, run, approval, and evidence state
+- Governed business-fact storage, confirmation, volatility, and lifecycle
+- Ask-instead-of-guess question and answer records
 - Outbound webhook delivery for subscribed platform events
 
 ### 6.3 Technology
@@ -263,6 +265,7 @@ Expected API groups:
 /api/policies
 /api/health
 /api/settings
+/api/knowledge
 ```
 
 The general external-client contract exposes a governed subset of these API
@@ -275,6 +278,15 @@ GET  /api/approvals?status=pending
 GET  /api/approvals/{approval_id}
 POST /api/approvals/{approval_id}/decisions
 GET  /api/manual-handling/{hold_id}
+GET  /api/knowledge/facts
+POST /api/knowledge/facts
+GET  /api/knowledge/facts/{fact_id}
+PATCH /api/knowledge/facts/{fact_id}
+DELETE /api/knowledge/facts/{fact_id}
+POST /api/knowledge/facts/{fact_id}/confirmations
+GET  /api/knowledge/questions?status=pending
+GET  /api/knowledge/questions/{question_id}
+POST /api/knowledge/questions/{question_id}/answers
 ```
 
 The approval operations reflect ADR-003. They expose pending requests and
@@ -282,6 +294,20 @@ decision evidence, and accept one approve or reject decision for the single
 human reviewer. Exact schemas, versioning, pagination, authorization scope,
 error contracts, and idempotency requirements remain Phase 3 and Phase 5 design
 work.
+
+R8 extends this generic contract without adding a client-specific API. Facts
+are Atlas-owned records. Volatile facts carry confirmation state so stale facts
+can be surfaced for re-confirmation. Questions and answers are first-class
+knowledge records for the single human owner. They do not change approval state,
+do not confer authorization, and do not reuse the approval Request clarification
+lifecycle.
+
+Facts used by a draft remain part of the existing approval evidence contract.
+The approval evidence payload includes a typed `facts_used` collection with the
+exact fact revision and minimum necessary confirmation context. This is not a
+new top-level approval or decision field. The decision-context manifest binds
+the approval to those fact revisions so revalidation can fail closed when a
+fact change, deletion, or stale volatile value invalidates the draft.
 
 ### 6.5 Outbound Webhook Delivery
 
@@ -293,6 +319,12 @@ Initial external-client event classes are:
   for approved sends.
 - `message.held_for_manual_handling`, containing a governed message reference
   and reason category without a draft, proposed action, or approval identity.
+- `knowledge.question.pending`, notifying the client that the agent requires a
+  fact from the one human owner before drafting.
+- `knowledge.question.answered`, notifying the client that authoritative question
+  state changed after an answer was recorded.
+- `knowledge.fact.reconfirmation_required`, notifying the client that a
+  volatile fact is stale under the governing confirmation policy.
 
 Webhook delivery is an authenticated notification mechanism. It does not
 authorize an action and does not replace an authoritative API read. Retry,
@@ -318,9 +350,15 @@ reconciliation remain Phase 3 and Phase 5 design work.
 - Audit provenance that identifies the external client and decision channel
 - Audit provenance that identifies the external delivery channel and hold
   reason for non-approval manual-handling events
+- Content validation that prevents secrets, credentials, and protected health
+  information from entering the knowledge store
+- Source provenance and clinical-suppression checks before history learning
+- Fail-closed separation between knowledge answers, approval clarification, and
+  approve or reject decisions
 
 The detailed external-client trust model is deferred to the future update of
-`07-security-architecture.md` required by accepted ADR-004.
+`07-security-architecture.md` required by accepted ADR-004 and proposed
+ADR-005.
 
 ---
 

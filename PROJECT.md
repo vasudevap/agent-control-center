@@ -9,7 +9,7 @@ The project has four primary objectives:
 1. Build a useful platform for creating, scheduling, monitoring, governing, and operating AI agents.
 2. Develop hands-on proficiency in agentic architecture, orchestration, security, observability, governance, and modern AI development tools.
 3. Create portfolio and LinkedIn content that demonstrates enterprise architecture thinking and practical AI implementation experience.
-4. Serve as the governed backend platform for an external customer-facing control surface, initially Plaintrol, through a single-reviewer external API and webhook contract.
+4. Serve as the governed backend platform for an external customer-facing control surface, initially MushingMule, through a single-reviewer external API and webhook contract.
 
 ## 2. Product Vision
 

@@ -32,7 +32,7 @@ The Agent Control Center addresses these problems by introducing a shared contro
 
 The product vision is to create an enterprise-inspired control plane consumed
 through the first-party Atlas dashboard and one governed external product
-client, initially Plaintrol. These control surfaces allow the single human owner
+client, initially MushingMule. These control surfaces allow the single human owner
 to:
 
 - View all registered agents in one dashboard
