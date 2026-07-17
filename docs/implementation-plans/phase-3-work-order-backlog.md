@@ -19,20 +19,52 @@ reviewed, accepted, implemented, validated, and merged independently.
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
 | WO-015 | Platform Foundation | ES-004 | Complete | Completed |
-| WO-016 | Backend Runtime and Dependency Hardening | WO-015 | No | Planned |
-| WO-017 | PostgreSQL Environment and Migration Hardening | WO-016 | No | Planned |
-| WO-018 | Owner Authentication and Session Foundation | WO-017 | No | Planned |
-| WO-019 | Authorization and External-Client Identity Boundary | WO-018 | No | Planned |
-| WO-020 | API Contract Foundation | WO-019 | Limited | Planned |
-| WO-021 | Webhook Delivery Hardening | WO-019, WO-020 | Yes, after dependencies | Planned |
-| WO-022 | Queue Foundation | WO-017, WO-020 | Yes, after dependencies | Planned |
-| WO-023 | Scheduler Foundation | WO-022 | No | Planned |
-| WO-024 | Observability and Audit Baseline | WO-020, WO-022 | Yes, after dependencies | Planned |
-| WO-025 | Phase 3 Integration Verification and Closeout | WO-016-WO-024 | No | Planned |
+| WO-016 | Infrastructure Provisioning and Environment Strategy | WO-015 | No | Planned |
+| WO-017 | Backend Runtime and Dependency Hardening | WO-016 | No | Planned |
+| WO-018 | PostgreSQL Environment and Migration Hardening | WO-017 | No | Planned |
+| WO-019 | Owner Authentication and Session Foundation | WO-018 | No | Planned |
+| WO-020 | Authorization and External-Client Identity Boundary | WO-019 | No | Planned |
+| WO-021 | API Contract Foundation | WO-020 | Limited | Planned |
+| WO-022 | Webhook Delivery Hardening | WO-020, WO-021 | Yes, after dependencies | Planned |
+| WO-023 | Queue Foundation | WO-018, WO-021 | Yes, after dependencies | Planned |
+| WO-024 | Scheduler Foundation | WO-023 | No | Planned |
+| WO-025 | Observability and Audit Baseline | WO-021, WO-023 | Yes, after dependencies | Planned |
+| WO-026 | Phase 3 Integration Verification and Closeout | WO-016-WO-025 | No | Planned |
 
 ## 3. Planned Work Orders
 
-### WO-016 - Backend Runtime and Dependency Hardening
+### WO-016 - Infrastructure Provisioning and Environment Strategy
+
+Objective:
+
+- Document the infrastructure provisioning approach and environment strategy
+  before additional backend implementation or live resource creation.
+
+Likely scope:
+
+- confirm Netlify dashboard hosting, Render backend hosting, and Render
+  PostgreSQL as the initial hosted database target;
+- decide the provisioning mechanism, such as manual provider runbook, Render
+  Blueprint, Terraform, Pulumi, or another approved approach;
+- define local, development, test, and production environment boundaries;
+- define where PostgreSQL is installed or provisioned for local/test and hosted
+  development/production use;
+- define secret, environment variable, backup, restore, migration, rollback,
+  region, tier, and access-control expectations;
+- define whether an `infrastructure/` repository area is introduced now or
+  deferred;
+- create an ADR if the decision changes accepted hosting, deployment,
+  persistence, or repository-structure architecture.
+
+Out of scope:
+
+- creating live Netlify or Render resources;
+- provisioning production infrastructure;
+- changing backend runtime code;
+- implementing authentication, authorization, queue, scheduler, or webhook
+  behavior.
+
+### WO-017 - Backend Runtime and Dependency Hardening
 
 Objective:
 
@@ -54,7 +86,7 @@ Out of scope:
 - new operational endpoints;
 - queue or scheduler.
 
-### WO-017 - PostgreSQL Environment and Migration Hardening
+### WO-018 - PostgreSQL Environment and Migration Hardening
 
 Objective:
 
@@ -76,7 +108,7 @@ Out of scope:
 - data seeding for business workflows;
 - Phase 5 knowledge contracts.
 
-### WO-018 - Owner Authentication and Session Foundation
+### WO-019 - Owner Authentication and Session Foundation
 
 Objective:
 
@@ -98,7 +130,7 @@ Out of scope:
 - full RBAC UI;
 - Gmail OAuth.
 
-### WO-019 - Authorization and External-Client Identity Boundary
+### WO-020 - Authorization and External-Client Identity Boundary
 
 Objective:
 
@@ -120,7 +152,7 @@ Out of scope:
 - approval decisions;
 - operational knowledge writes.
 
-### WO-020 - API Contract Foundation
+### WO-021 - API Contract Foundation
 
 Objective:
 
@@ -141,7 +173,7 @@ Out of scope:
 - full agent, run, approval, or knowledge CRUD;
 - frontend integration.
 
-### WO-021 - Webhook Delivery Hardening
+### WO-022 - Webhook Delivery Hardening
 
 Objective:
 
@@ -163,7 +195,7 @@ Out of scope:
 - event creation from Gmail or approval workflows;
 - receiver implementation.
 
-### WO-022 - Queue Foundation
+### WO-023 - Queue Foundation
 
 Objective:
 
@@ -186,7 +218,7 @@ Out of scope:
 - Gmail jobs;
 - agent business logic.
 
-### WO-023 - Scheduler Foundation
+### WO-024 - Scheduler Foundation
 
 Objective:
 
@@ -208,7 +240,7 @@ Out of scope:
 - real agent execution;
 - frontend schedule management.
 
-### WO-024 - Observability and Audit Baseline
+### WO-025 - Observability and Audit Baseline
 
 Objective:
 
@@ -230,7 +262,7 @@ Out of scope:
 - external monitoring platform;
 - alert routing.
 
-### WO-025 - Phase 3 Integration Verification and Closeout
+### WO-026 - Phase 3 Integration Verification and Closeout
 
 Objective:
 

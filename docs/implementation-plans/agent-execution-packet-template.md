@@ -94,6 +94,9 @@ The PR must include:
 
 Stop and ask before proceeding if:
 
+- the packet asks the agent to choose architecture, infrastructure,
+  provisioning, database placement, or environment strategy during
+  implementation;
 - the Work Order scope conflicts with accepted architecture;
 - implementation requires a new framework, deployment service, or persistent
   external dependency;

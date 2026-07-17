@@ -20,6 +20,7 @@ the architecture documents under `docs/architecture/`.
 Phase 3 must preserve:
 
 - control plane before execution plane;
+- planned decisions before provisioning or implementation;
 - PostgreSQL as runtime system of record;
 - authentication required by default;
 - authorization denied by default;
@@ -81,13 +82,44 @@ The runtime must not own:
 - agent business logic;
 - production deployment cutover unless separately authorized.
 
-## 5. Persistence Architecture
+## 5. Infrastructure Provisioning Architecture
+
+The canonical architecture selects Netlify for the dashboard and Render for the
+backend runtime boundary, including Render Web Service, Render Background
+Workers, Render Cron Job, and Render PostgreSQL. Phase 3 planning should retain
+that target unless a future accepted ADR changes it.
+
+Before any live infrastructure is provisioned, an accepted Work Order must
+document:
+
+- provisioning mechanism: manual provider dashboard steps, Render Blueprint,
+  Terraform, Pulumi, or another approved approach;
+- repository ownership: whether an `infrastructure/` area is introduced and
+  what files it owns;
+- environment model: local, development, test, staging if any, and production;
+- database placement: local/test PostgreSQL path and hosted Render PostgreSQL
+  development and production expectations;
+- region, tier, backup, retention, and restore expectations appropriate to the
+  project stage;
+- environment variables and secret ownership;
+- migration, rollback, and destructive-operation controls;
+- required access controls for provider accounts and service credentials;
+- evidence required before production promotion.
+
+Until that Work Order is accepted, implementation agents may prepare local and
+CI-compatible configuration only. They must not create live provider resources,
+alter production deployment topology, or choose an infrastructure-as-code tool
+as part of ordinary coding work.
+
+## 6. Persistence Architecture
 
 Phase 3 persistence expands from WO-015 to include:
 
 - deterministic database URL and engine configuration;
 - local development database strategy;
 - test database strategy;
+- hosted Render PostgreSQL development and production expectations once
+  provisioning is explicitly authorized;
 - migration command standardization;
 - user/session tables required for owner authentication;
 - authorization policy scaffolding tables if needed;
@@ -106,11 +138,11 @@ Data constraints:
 - no OAuth token plaintext.
 - no prohibited knowledge values.
 
-## 6. Authentication Architecture
+## 7. Authentication Architecture
 
 Phase 3 should establish two authentication boundaries.
 
-### 6.1 Owner Dashboard Boundary
+### 7.1 Owner Dashboard Boundary
 
 Target:
 
@@ -121,7 +153,7 @@ Target:
 - no multi-user UI or role expansion;
 - no frontend integration beyond explicitly authorized work.
 
-### 6.2 External Product Client Boundary
+### 7.2 External Product Client Boundary
 
 Target:
 
@@ -132,7 +164,7 @@ Target:
 - audit provenance that records the external client;
 - no attribution of the external client as the human owner.
 
-## 7. Authorization Architecture
+## 8. Authorization Architecture
 
 Authorization should be implemented as a reusable service boundary that:
 
@@ -144,7 +176,7 @@ Authorization should be implemented as a reusable service boundary that:
   in Phase 3;
 - returns structured denial reasons without leaking sensitive policy internals.
 
-## 8. API Contract Architecture
+## 9. API Contract Architecture
 
 Phase 3 should standardize API conventions before broad endpoint work:
 
@@ -158,7 +190,7 @@ Phase 3 should standardize API conventions before broad endpoint work:
 - OpenAPI grouping.
 - placeholder routes fail closed when a later phase owns behavior.
 
-## 9. Queue and Scheduler Architecture
+## 10. Queue and Scheduler Architecture
 
 The initial queue should be PostgreSQL-backed unless a future ADR accepts a
 different queue.
@@ -182,7 +214,7 @@ Scheduler target:
 - trigger audit events;
 - no real agent execution beyond creating records or queue jobs.
 
-## 10. Webhook Architecture
+## 11. Webhook Architecture
 
 Webhook delivery target:
 
@@ -197,7 +229,7 @@ Webhook delivery target:
 
 The receiver must always reconcile authoritative state through the API.
 
-## 11. Observability and Audit Architecture
+## 12. Observability and Audit Architecture
 
 Phase 3 should establish:
 
@@ -210,7 +242,7 @@ Phase 3 should establish:
 
 Audit and logs must remain separate concerns.
 
-## 12. Phase 5 Handoff Requirements
+## 13. Phase 5 Handoff Requirements
 
 Before Phase 5 begins, Phase 3 must provide:
 

@@ -18,6 +18,11 @@ This plan coordinates the architecture, sequencing, work-order backlog,
 dependency gates, verification model, and future agent execution packets needed
 to implement the remaining Platform Foundation safely.
 
+The preferred project approach is to finish implementation decisions before
+implementation begins. Future agents should provision and code against accepted
+architecture, infrastructure, persistence, and security decisions rather than
+choosing those details while executing a Work Order.
+
 ## 2. Current Baseline
 
 Completed baseline:
@@ -35,6 +40,7 @@ Completed baseline:
 
 Not yet implemented:
 
+- Infrastructure provisioning strategy.
 - Real PostgreSQL environment strategy.
 - Backend dependency locking or constraints.
 - Runtime logging baseline.
@@ -55,6 +61,8 @@ can support later Agent Framework and Gmail Agent work without redesign.
 
 Target capabilities:
 
+- Infrastructure and environment provisioning decisions are documented before
+  any live resource is created.
 - Backend runtime configuration and dependency management are deterministic.
 - PostgreSQL is the authoritative configured persistence target, with local and
   CI migration validation.
@@ -133,23 +141,31 @@ Each increment must have:
 Future agents should not receive broad instructions such as "implement Phase
 3." They should receive one Work Order and one execution packet at a time.
 
+Implementation packets must not ask agents to decide provider topology,
+database placement, provisioning mechanism, or environment boundaries during
+coding. If those choices are not already documented and accepted, the next
+increment must be a planning or architecture Work Order.
+
 ## 7. Sequencing
 
 Recommended sequence:
 
-1. WO-016 - Backend runtime and dependency hardening.
-2. WO-017 - PostgreSQL environment and migration hardening.
-3. WO-018 - Owner authentication and session foundation.
-4. WO-019 - Authorization and external-client identity boundary.
-5. WO-020 - API contract foundation.
-6. WO-021 - Webhook delivery hardening.
-7. WO-022 - Queue foundation.
-8. WO-023 - Scheduler foundation.
-9. WO-024 - Observability and audit baseline.
-10. WO-025 - Phase 3 integration verification and closeout.
+1. WO-016 - Infrastructure provisioning and environment strategy.
+2. WO-017 - Backend runtime and dependency hardening.
+3. WO-018 - PostgreSQL environment and migration hardening.
+4. WO-019 - Owner authentication and session foundation.
+5. WO-020 - Authorization and external-client identity boundary.
+6. WO-021 - API contract foundation.
+7. WO-022 - Webhook delivery hardening.
+8. WO-023 - Queue foundation.
+9. WO-024 - Scheduler foundation.
+10. WO-025 - Observability and audit baseline.
+11. WO-026 - Phase 3 integration verification and closeout.
 
 Rationale:
 
+- Infrastructure and environment decisions should be explicit before runtime,
+  persistence, deployment, or provisioning work begins.
 - Runtime and dependency determinism must come before larger backend work.
 - PostgreSQL and migrations must stabilize before auth, queue, scheduler, and
   operational tables expand.
@@ -166,22 +182,27 @@ Only parallelize after dependencies are merged to `main`.
 
 Potential later parallel work:
 
-- WO-021 Webhook Delivery Hardening can run in parallel with WO-022 Queue
-  Foundation after WO-019 and WO-020 are merged.
-- WO-024 Observability and Audit Baseline can run alongside WO-023 Scheduler
+- WO-022 Webhook Delivery Hardening can run in parallel with WO-023 Queue
+  Foundation after WO-020 and WO-021 are merged.
+- WO-025 Observability and Audit Baseline can run alongside WO-024 Scheduler
   Foundation after queue records and correlation conventions are stable.
 
 Do not parallelize:
 
 - WO-016 and WO-017.
-- WO-018 and WO-019.
-- WO-022 and WO-023.
+- WO-017 and WO-018.
+- WO-019 and WO-020.
+- WO-023 and WO-024.
 - Any Phase 5 knowledge contract work before Phase 3 closeout.
 
 ## 9. Architecture Decision Gates
 
 Create an ADR before implementation if a Work Order needs to:
 
+- change the selected Netlify and Render hosting split;
+- change Render PostgreSQL as the planned initial hosted database location;
+- choose an infrastructure-as-code or provisioning mechanism that materially
+  changes deployment ownership or repository structure;
 - replace FastAPI, SQLAlchemy, Alembic, or PostgreSQL;
 - introduce Redis or another non-PostgreSQL queue as the first queue backend;
 - introduce a dedicated secrets manager before deployment requirements demand
@@ -216,7 +237,9 @@ Order remains the authority.
 
 Phase 3 is done only when:
 
-- WO-016 through WO-025, or accepted replacements, are complete.
+- WO-016 through WO-026, or accepted replacements, are complete.
+- Infrastructure provisioning and environment decisions are documented before
+  live resource provisioning.
 - The backend can run locally with deterministic dependency installation.
 - Database migrations are validated against the approved local strategy and a
   PostgreSQL-compatible path.
@@ -237,4 +260,6 @@ Review this plan and the related Phase 3 target architecture and work-order
 backlog.
 
 Once accepted, create and accept WO-016 only. Do not batch-authorize all future
-work orders at once; keep later increments independently reviewable.
+work orders at once; keep later increments independently reviewable. WO-016
+should resolve infrastructure provisioning and environment strategy before
+additional backend implementation begins.
