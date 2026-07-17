@@ -57,3 +57,8 @@ The [WO-017 runtime hardening implementation report](./WO-017-runtime-hardening-
 records the constraints-based backend dependency workflow, explicit settings
 validation, documentation and CI alignment, validation evidence, and the
 remaining PostgreSQL environment work for WO-018.
+
+The [WO-018 PostgreSQL hardening implementation report](./WO-018-postgresql-hardening-implementation-report.md)
+records the required database URL boundary, ephemeral PostgreSQL 18 CI service,
+local command path, validation evidence, and the remaining authentication work
+for WO-019.

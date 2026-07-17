@@ -1,16 +1,17 @@
 # Work Order 018: PostgreSQL Environment and Migration Hardening
 
-**Status:** Proposed - Review Required
+**Status:** Completed - Pending Merge
 **Work Order ID:** WO-018
 **Type:** Backend persistence foundation
-**Implementation Authorization:** Not Granted
-**Accepted:** Not Accepted
-**Accepted By:** Not Accepted
+**Implementation Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Governing Strategy:** [Infrastructure Provisioning Strategy](../implementation-plans/infrastructure-provisioning-strategy.md)
 **Architecture Authority:** [Deployment Architecture](../architecture/06-deployment-architecture.md), [Data Architecture](../architecture/08-data-architecture.md), [Security Architecture](../architecture/07-security-architecture.md)
 **Prerequisite Work Order:** [WO-017 Backend Runtime and Dependency Hardening](./017-backend-runtime-and-dependency-hardening.md)
 **Review Owner:** Repository Maintainer
+**Review Record:** [WO-018 PostgreSQL Hardening Implementation Report](../reviews/WO-018-postgresql-hardening-implementation-report.md)
 
 ---
 
@@ -42,7 +43,7 @@ PostgreSQL service container on Ubuntu runners with health checks and a mapped
 localhost port. These facts were reviewed from the official Render and GitHub
 documentation on 2026-07-17.
 
-## 3. Approved Scope if Accepted
+## 3. Approved Scope
 
 ### 3.1 Local PostgreSQL workflow
 
@@ -161,7 +162,9 @@ The implementing agent must stop and ask before proceeding if:
 - unrelated user changes overlap with required files or a destructive action is
   needed.
 
-## 10. Review Notes
+## 10. Completion Notes
 
-This Work Order is proposed for review only. It does not authorize implementation
-until accepted by the repository maintainer.
+The implementation adds only the selected PostgreSQL 18 migration validation
+path, settings boundary, focused tests, CI configuration, and documentation.
+No live resources, schema migration, provider configuration, or secrets were
+added. See the linked implementation report for validation evidence.

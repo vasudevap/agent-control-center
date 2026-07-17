@@ -5,10 +5,13 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from atlas_api.core.config import Settings
 from atlas_api.db.base import Base
+from atlas_api.db.config import require_database_url
 from atlas_api.models import audit, external_client, knowledge, webhook  # noqa: F401
 
 config = context.config
+config.set_main_option("sqlalchemy.url", require_database_url(Settings()))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
