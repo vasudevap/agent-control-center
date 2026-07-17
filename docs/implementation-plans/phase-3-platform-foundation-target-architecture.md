@@ -4,6 +4,7 @@
 **Owner:** Repository Maintainer
 **Date:** 2026-07-17
 **Implementation Authorization:** Not Granted
+**Decision Register:** [Phase 3 Implementation Decision Register](./phase-3-implementation-decision-register.md)
 
 ---
 

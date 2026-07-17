@@ -18,6 +18,9 @@ This plan coordinates the architecture, sequencing, work-order backlog,
 dependency gates, verification model, and future agent execution packets needed
 to implement the remaining Platform Foundation safely.
 
+Fixed implementation choices for WO-019 through WO-026 are consolidated in the
+[Phase 3 Implementation Decision Register](./phase-3-implementation-decision-register.md).
+
 The preferred project approach is to finish implementation decisions before
 implementation begins. Future agents should provision and code against accepted
 architecture, infrastructure, persistence, and security decisions rather than
@@ -40,10 +43,11 @@ Completed baseline:
 - The infrastructure provisioning and environment strategy is accepted.
 - Backend dependency installation is constrained and runtime settings validation
   is explicit and tested.
+- PostgreSQL 18 is the enforced CI migration validation path; Alembic has no
+  SQLite migration fallback.
 
 Not yet implemented:
 
-- Real PostgreSQL environment strategy.
 - Runtime logging baseline.
 - Dashboard authentication sessions.
 - Authorization policy checks.
@@ -186,7 +190,8 @@ Potential later parallel work:
 - WO-022 Webhook Delivery Hardening can run in parallel with WO-023 Queue
   Foundation after WO-020 and WO-021 are merged.
 - WO-025 Observability and Audit Baseline can run alongside WO-024 Scheduler
-  Foundation after queue records and correlation conventions are stable.
+  Foundation after WO-022 and WO-023 are merged and correlation conventions
+  are stable.
 
 Do not parallelize:
 
@@ -257,10 +262,10 @@ Phase 3 is done only when:
 
 ## 12. Immediate Next Governance Action
 
-Review this plan and the related Phase 3 target architecture and work-order
-backlog.
+Review the consolidated Phase 3 planning package: the target architecture,
+implementation decision register, backlog, and proposed WO-019 through WO-026.
 
-Once accepted, create and accept WO-016 only. Do not batch-authorize all future
-work orders at once; keep later increments independently reviewable. WO-016
-should resolve infrastructure provisioning and environment strategy before
-additional backend implementation begins.
+The planning package may be accepted in one review. Implementation authority
+remains incremental: execute one accepted Work Order per short-lived branch and
+PR, honor dependencies, and do not begin a later Work Order before its required
+predecessors have merged.

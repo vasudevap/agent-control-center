@@ -26,16 +26,19 @@ before authorization policy or operational APIs are implemented.
 | Human identity scope | Exactly one configured owner identity; no multi-user, role, or tenant model. |
 | Provider scope | Provider-neutral verified-identity interface only. Google OAuth/OIDC client flow, redirects, provider credentials, and callback integration are deferred. |
 | Session storage | Server-side PostgreSQL session record with opaque random identifier; only a hash of the identifier is persisted. |
-| Cookie | Opaque identifier in an `HttpOnly`, `Secure`, `SameSite=Strict`, path-scoped session cookie. No identity claims or secrets in the cookie. |
-| Revocation | Logout revokes the server-side session; expired or revoked records fail closed. |
+| Session token | 32 cryptographically random bytes encoded base64url; persist only its SHA-256 hash. |
+| Cookie | Host-only `atlas_owner_session`, `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`; no identity claims or secrets in the cookie. |
+| Lifetime | 30-minute idle timeout and 12-hour absolute timeout, both enforced server-side. |
+| CSRF | State-changing cookie-authenticated requests require a separate random CSRF value supplied through `X-Atlas-CSRF-Token`; persist only its hash. |
+| Revocation | Logout revokes the server-side session and clears the cookie; expired or revoked records fail closed. |
 | Owner binding | Verified identity subject must equal the configured owner subject; email is not a substitute for immutable subject identity. |
 | Test path | An injected fake identity verifier is allowed in unit tests only. No header, query, environment, or public-route authentication bypass. |
 | Database | PostgreSQL-only session persistence and migration validation follow WO-018. |
 
 ## 3. Approved Scope if Accepted
 
-- Add typed settings for owner subject, session signing/validation secret, cookie
-  policy, and session lifetime; redact all secret values.
+- Add typed settings for owner subject, cookie policy, idle timeout, and absolute
+  lifetime. No session signing secret is needed for an opaque random token.
 - Add a provider-neutral `VerifiedIdentity` model and verifier protocol. A real
   provider implementation is explicitly not part of this Work Order.
 - Add a backward-compatible migration and model for owner session records:
@@ -46,8 +49,9 @@ before authorization policy or operational APIs are implemented.
 - Add narrow backend endpoints or dependency boundaries for session creation,
   current-session verification, and logout only if they fail closed without a
   configured verifier.
-- Add unit/integration tests for owner mismatch, missing/expired/revoked
-  session, cookie flags, logout invalidation, and secret redaction.
+- Add unit/integration tests for owner mismatch, missing/idle-expired/absolute-
+  expired/revoked session, token rotation at login, CSRF enforcement, cookie
+  flags, logout invalidation, and redaction.
 - Update CI, local commands, README, work-order/backlog records, and an
   implementation report as needed.
 
