@@ -251,4 +251,6 @@ Notion is the operational and learning workspace for:
 - ES-002 established the frontend component-testing baseline.
 - ADR-003 is accepted for the governed external approval decision channel.
 - ADR-004 is accepted for the general external product client contract.
+- ADR-005 is accepted for governed draft-support knowledge and
+  ask-instead-of-guess behavior.
 - Backend, authentication, APIs, connectors, and business workflows remain future work subject to architecture and work-order approval.

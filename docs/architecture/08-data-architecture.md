@@ -910,7 +910,7 @@ prohibited content.
 
 Each owner is responsible for validation, lifecycle, and data integrity.
 
-The knowledge capability is a logical control-plane responsibility. Proposed
+The knowledge capability is a logical control-plane responsibility. Accepted
 ADR-005 does not require a separate deployment container.
 
 ---

@@ -1,10 +1,12 @@
 # ADR-005 - Draft-Support Knowledge and Ask-Instead-of-Guess
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-17
 **Decision Owners:** Architecture and Security Review
 **Review Owner:** Repository Maintainer
-**Review State:** Awaiting Architecture and Security Review
+**Review State:** Architecture and Security Review Complete
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Scope:** External product client contract, governed knowledge, and Gmail drafting behavior
 **Related Decisions:** `ADR-002 - Human Approvals Decision Integrity and Continuation`, `ADR-003 - Governed External Approval Decision Channel`, and `ADR-004 - Governed External Product Client Contract`
 
@@ -228,9 +230,9 @@ define:
 
 ## Governance and Acceptance
 
-This ADR is Proposed and provides no implementation authority.
+This ADR is Accepted and provides no implementation authority by itself.
 
-Acceptance requires:
+The acceptance review confirmed:
 
 1. Architecture Review confirmation that the knowledge capability remains in
    the Atlas control plane, extends ADR-004 generically, and preserves Phase 3,
@@ -242,10 +244,10 @@ Acceptance requires:
    decision-context manifest.
 4. Confirmation that knowledge questions and answers remain non-authorizing and
    separate from approval clarification.
-5. Repository Maintainer acceptance recorded in this ADR, its review record,
-   and the decision index.
+5. No unresolved architecture-level or security-level finding remains after
+   the canonical Security and Human Approvals architecture corrections.
 
-After acceptance, implementation still requires approved Phase 3, Phase 5, and
+Implementation still requires approved Phase 3, Phase 5, and
 Phase 6 Engineering Specifications or Work Orders that satisfy the Definition
 of Ready. This documentation change authorizes no code, schema migration,
 endpoint, webhook, agent behavior, or frontend change.

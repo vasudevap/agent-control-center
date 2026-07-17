@@ -356,9 +356,9 @@ reconciliation remain Phase 3 and Phase 5 design work.
 - Fail-closed separation between knowledge answers, approval clarification, and
   approve or reject decisions
 
-The detailed external-client trust model is deferred to the future update of
-`07-security-architecture.md` required by accepted ADR-004 and proposed
-ADR-005.
+The high-level external-client and knowledge trust model is defined in
+`07-security-architecture.md` under accepted ADR-004 and accepted ADR-005.
+Detailed mechanisms remain Phase 3 and Phase 5 Engineering Specification work.
 
 ---
 

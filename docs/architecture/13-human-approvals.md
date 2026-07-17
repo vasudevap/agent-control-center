@@ -5,8 +5,7 @@
 **Date:** 2026-07-17
 **Capability:** Human Approvals
 **Product:** Atlas
-**Governing Decision:** ADR-004 is accepted; implementation still requires approved Phase 3 and Phase 5 artifacts
-**Proposed Extension:** ADR-005 records R8 draft-support knowledge and ask-instead-of-guess behavior and requires acceptance before implementation planning
+**Governing Decisions:** ADR-004 and ADR-005 are accepted; implementation still requires approved Phase 3, Phase 5, and Phase 6 artifacts
 
 ---
 
@@ -1239,6 +1238,21 @@ The architecture is acceptable when:
     minimized non-approval manual-handling event for the governed external
     product client without creating a draft, proposed action, approval, or
     authorization path.
+22. Governed knowledge remains authoritative in Atlas and is exposed through
+    deny-by-default, validated, versioned contracts for the one human owner and
+    one external product client.
+23. Knowledge questions and answers remain non-authorizing and separate from
+    approval decisions and approval Request clarification.
+24. Draft approval evidence carries a typed `facts_used` collection bound to
+    exact fact revisions in the decision-context manifest.
+25. A changed, deleted, or stale fact that invalidates the draft fails closed
+    and requires regeneration and a new approval request.
+26. Secrets, credentials, protected health information, and clinically
+    suppressed source content are rejected before knowledge retrieval,
+    question creation, history-learning input assembly, or persistence.
+27. Only validated human answers and candidates derived from approved sends
+    with confirmed `Sent` outcomes may become governed facts; `Failed` and
+    `Indeterminate` outcomes are ineligible learning sources.
 
 ---
 
@@ -1247,7 +1261,8 @@ The architecture is acceptable when:
 Before implementation reaches Definition of Ready:
 
 1. The implementation artifact links accepted ADR-003, accepted ADR-004 when
-   the external product contract is in scope, and this canonical architecture.
+   the external product contract is in scope, accepted ADR-005 when governed
+   draft-support knowledge is in scope, and this canonical architecture.
 2. Phase 3 foundations are complete before Phase 5 external approval or
    manual-handling contract implementation, and Phase 5 foundations are
    complete before the Phase 6 Gmail end-to-end workflow.

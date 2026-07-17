@@ -465,7 +465,7 @@ Controls:
 
 The exact authentication and human-attribution design remains pending in the
 Phase 3 and Phase 5 security architecture work required by accepted ADR-004
-and proposed ADR-005.
+and accepted ADR-005.
 
 ---
 
@@ -756,6 +756,7 @@ The system context identifies several decisions that should become ADRs:
   observability, technology, and Human Approvals architecture are documented.
 - The governed external approval channel is accepted under ADR-003.
 - The general external product client relationship is accepted under ADR-004.
-- R8 draft-support knowledge and ask-instead-of-guess behavior is proposed under
-  ADR-005 and awaits Architecture and Security Review.
+- R8 draft-support knowledge and ask-instead-of-guess behavior is accepted under
+  ADR-005; implementation remains gated by phase-specific Engineering
+  Specifications and Work Orders.
 - No backend or external-client contract is implemented.
