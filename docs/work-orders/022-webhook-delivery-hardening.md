@@ -1,11 +1,11 @@
 # Work Order 022: Webhook Delivery Hardening
 
-**Status:** Proposed - Review Required
+**Status:** Accepted - Implementation Authorized
 **Work Order ID:** WO-022
 **Type:** Backend notification foundation
-**Implementation Authorization:** Not Granted
-**Accepted:** Not Accepted
-**Accepted By:** Not Accepted
+**Implementation Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Decision Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md), [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md)
 **Prerequisites:** [WO-020](./020-authorization-and-external-client-identity-boundary.md), [WO-021](./021-api-contract-foundation.md)
@@ -60,4 +60,5 @@ third-party delivery service.
 
 ## 7. Review Notes
 
-Planning only; implementation remains unauthorized until accepted.
+Accepted as part of the consolidated Phase 3 planning package. Implement only
+after WO-020 and WO-021 have merged.

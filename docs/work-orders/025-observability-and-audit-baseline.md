@@ -1,11 +1,11 @@
 # Work Order 025: Observability and Audit Baseline
 
-**Status:** Proposed - Review Required
+**Status:** Accepted - Implementation Authorized
 **Work Order ID:** WO-025
 **Type:** Backend operational foundation
-**Implementation Authorization:** Not Granted
-**Accepted:** Not Accepted
-**Accepted By:** Not Accepted
+**Implementation Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Architecture Authority:** [Observability Architecture](../architecture/11-observability.md), [Security Architecture](../architecture/07-security-architecture.md)
 **Prerequisites:** [WO-021](./021-api-contract-foundation.md), [WO-022](./022-webhook-delivery-hardening.md), [WO-023](./023-postgresql-queue-foundation.md)
@@ -58,4 +58,5 @@ retention/production monitoring architecture.
 
 ## 7. Review Notes
 
-Planning only; implementation remains unauthorized until accepted.
+Accepted as part of the consolidated Phase 3 planning package. Implement only
+after WO-021, WO-022, and WO-023 have merged.

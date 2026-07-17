@@ -1,11 +1,11 @@
 # Work Order 020: Authorization and External-Client Identity Boundary
 
-**Status:** Proposed - Review Required
+**Status:** Accepted - Implementation Authorized
 **Work Order ID:** WO-020
 **Type:** Backend security foundation
-**Implementation Authorization:** Not Granted
-**Accepted:** Not Accepted
-**Accepted By:** Not Accepted
+**Implementation Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Architecture Authority:** [Phase 3 Target Architecture](../implementation-plans/phase-3-platform-foundation-target-architecture.md), [Security Architecture](../architecture/07-security-architecture.md)
 **Decision Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md)
@@ -66,4 +66,5 @@ weakening nonce/timestamp/signature validation.
 
 ## 7. Review Notes
 
-Planning only; implementation remains unauthorized until accepted.
+Accepted as part of the consolidated Phase 3 planning package. Implement only
+after WO-019 has merged.
