@@ -1,6 +1,6 @@
 # Work Order 024: Scheduler Foundation
 
-**Status:** Accepted - Implementation Authorized
+**Status:** Completed - Pending Merge
 **Work Order ID:** WO-024
 **Type:** Backend scheduling foundation
 **Implementation Authorization:** Granted
@@ -59,3 +59,5 @@ agent execution, unbounded catch-up, or non-transactional enqueue behavior.
 
 Accepted as part of the consolidated Phase 3 planning package. Implement only
 after WO-023 has merged.
+
+**Review Record:** [WO-024 Scheduler Foundation Implementation Report](../reviews/WO-024-scheduler-foundation-implementation-report.md)

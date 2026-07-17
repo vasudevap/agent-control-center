@@ -12,6 +12,9 @@ dependencies = [
   "uvicorn[standard]>=0.34,<1",
 ]
 
+[project.scripts]
+atlas-schedule-sweep = "atlas_api.cli.sweep_schedules:main"
+
 [project.optional-dependencies]
 dev = [
   "httpx>=0.28,<1",
