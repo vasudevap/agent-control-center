@@ -48,6 +48,7 @@ def test_secret_settings_are_redacted() -> None:
         "environment": "local",
         "database_url": "***",
         "external_client_secret": "***",
+        "external_client_next_secret": None,
         "webhook_signing_secret": "***",
         "require_database": False,
         "owner_identity_subject_configured": False,

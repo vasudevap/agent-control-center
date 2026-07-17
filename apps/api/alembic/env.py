@@ -11,6 +11,7 @@ from atlas_api.db.config import require_database_url
 from atlas_api.models import (  # noqa: F401
     audit,
     external_client,
+    external_request_nonce,
     knowledge,
     owner_session,
     webhook,

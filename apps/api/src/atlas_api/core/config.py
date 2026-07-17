@@ -13,7 +13,11 @@ class Settings(BaseSettings):
     app_name: str = "atlas-api"
     environment: EnvironmentName = "local"
     database_url: SecretStr | None = None
+    external_client_id: str | None = None
     external_client_secret: SecretStr | None = None
+    external_client_key_id: str | None = None
+    external_client_next_key_id: str | None = None
+    external_client_next_secret: SecretStr | None = None
     webhook_signing_secret: SecretStr | None = None
     require_database: bool = False
     owner_identity_subject: str | None = None
@@ -44,6 +48,9 @@ class Settings(BaseSettings):
             "environment": self.environment,
             "database_url": self._redact(self.database_url),
             "external_client_secret": self._redact(self.external_client_secret),
+            "external_client_next_secret": self._redact(
+                self.external_client_next_secret
+            ),
             "webhook_signing_secret": self._redact(self.webhook_signing_secret),
             "require_database": self.require_database,
             "owner_identity_subject_configured": (
