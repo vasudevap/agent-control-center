@@ -4,6 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from atlas_api.core.config import Settings
+from atlas_api.db.config import require_database_url
 
 
 def test_local_and_development_do_not_require_a_database_by_default() -> None:
@@ -22,6 +23,17 @@ def test_explicit_database_requirement_is_enforced() -> None:
     assert Settings(require_database=True).readiness_problems() == [
         "database_url_missing"
     ]
+
+
+def test_database_migrations_require_a_database_url() -> None:
+    with pytest.raises(RuntimeError, match="ATLAS_API_DATABASE_URL is required"):
+        require_database_url(Settings())
+
+
+def test_database_migrations_receive_the_configured_database_url() -> None:
+    settings = Settings(database_url="postgresql+psycopg://placeholder")
+
+    assert require_database_url(settings) == "postgresql+psycopg://placeholder"
 
 
 def test_secret_settings_are_redacted() -> None:

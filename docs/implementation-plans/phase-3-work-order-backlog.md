@@ -21,7 +21,7 @@ reviewed, accepted, implemented, validated, and merged independently.
 | WO-015 | Platform Foundation | ES-004 | Complete | Completed |
 | WO-016 | Infrastructure Provisioning and Environment Strategy | WO-015 | Complete | Completed |
 | WO-017 | Backend Runtime and Dependency Hardening | WO-016 | No | Completed |
-| WO-018 | PostgreSQL Environment and Migration Hardening | WO-017 | No | Proposed |
+| WO-018 | PostgreSQL Environment and Migration Hardening | WO-017 | No | Completed |
 | WO-019 | Owner Authentication and Session Foundation | WO-018 | No | Planned |
 | WO-020 | Authorization and External-Client Identity Boundary | WO-019 | No | Planned |
 | WO-021 | API Contract Foundation | WO-020 | Limited | Planned |

@@ -131,6 +131,12 @@ cd apps/api
 .venv/bin/python -m alembic downgrade base
 ```
 
+Alembic migration validation requires a developer-managed PostgreSQL 18
+database and an uncommitted `ATLAS_API_DATABASE_URL`; see
+[`apps/api/README.md`](./apps/api/README.md) for the canonical local commands.
+GitHub Actions runs the migration smoke check against an ephemeral PostgreSQL 18
+service using disposable synthetic CI data.
+
 `apps/api/constraints.txt` is the canonical resolved backend dependency input
 for local and CI installs. Update it intentionally from a clean Python 3.12
 environment after the backend validation suite passes. The API uses the

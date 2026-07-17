@@ -42,9 +42,8 @@ provisioning begins and is completed.
 Work Order 017 hardens backend runtime settings, dependency installation, local
 backend commands, and CI alignment and is completed.
 
-Work Order 018 is proposed to replace SQLite-only migration smoke validation
-with the accepted local and CI PostgreSQL 18 path. It requires review and
-acceptance before implementation.
+Work Order 018 replaces SQLite-only migration smoke validation with the
+accepted local and CI PostgreSQL 18 path and is completed pending merge.
 
 The remaining Phase 3 work-order sequence is drafted in
 [`docs/implementation-plans/phase-3-work-order-backlog.md`](../implementation-plans/phase-3-work-order-backlog.md).

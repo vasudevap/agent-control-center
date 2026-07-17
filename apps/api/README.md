@@ -31,12 +31,25 @@ Run validation from the repository root:
 apps/api/.venv/bin/python -m pytest apps/api
 apps/api/.venv/bin/python -m ruff check apps/api
 apps/api/.venv/bin/python -m mypy apps/api/src
+```
+
+Database migrations require PostgreSQL 18 and an uncommitted database URL. The
+local standard is a developer-managed PostgreSQL 18 service available on your
+`PATH`; no container, Compose, or provider configuration is committed here.
+
+```bash
+createdb atlas_api_dev
+export ATLAS_API_DATABASE_URL='postgresql+psycopg://<local-user>:<local-password>@localhost:5432/atlas_api_dev'
 (
   cd apps/api
   .venv/bin/python -m alembic upgrade head
   .venv/bin/python -m alembic downgrade base
 )
 ```
+
+The migration command fails safely when `ATLAS_API_DATABASE_URL` is absent and
+does not print the configured value. GitHub Actions runs the same migration
+smoke check against a disposable PostgreSQL 18 service with synthetic data.
 
 Run the local development server after installing dependencies:
 
