@@ -106,7 +106,9 @@ Build the platform infrastructure.
 In progress. ES-004 and WO-015 define, authorize, implement, and merge the
 first backend Platform Foundation scope. Queue, Scheduler, broader
 authentication, and operational platform services remain future Phase 3
-increments.
+increments. The remaining Phase 3 work is drafted in the master implementation
+plan and work-order backlog under `docs/implementation-plans/`; those planning
+artifacts do not authorize code by themselves.
 
 ---
 

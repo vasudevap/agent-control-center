@@ -80,11 +80,13 @@ Before implementing new capabilities:
 # Repository Structure
 
 ```text
+apps/api/                         # Atlas backend foundation
 apps/web/                         # Atlas frontend
 docs/architecture/               # Canonical architecture
 docs/design/                     # Approved product design
 docs/specifications/             # Product specifications
 docs/engineering-specifications/ # Engineering execution specifications
+docs/implementation-plans/       # Cross-work-order implementation planning
 docs/work-orders/                # Authorized implementation scope
 docs/reviews/                    # Review and handoff records
 docs/decisions/                  # Decision indexes and non-design decisions
