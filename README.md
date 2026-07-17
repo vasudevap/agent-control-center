@@ -258,8 +258,7 @@ ADR-003 is accepted for the governed external approval decision channel.
 ADR-004 is accepted for the general external product client contract. ADR-005
 is accepted for governed draft-support knowledge and ask-instead-of-guess
 behavior. The next implementation phase is the Phase 3 backend foundation,
-whose first backend foundation is implemented by WO-015 pending governed
-pull-request merge.
+whose first backend foundation is implemented and merged through WO-015.
 
 ---
 

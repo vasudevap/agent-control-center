@@ -1,6 +1,6 @@
 # Work Order 015: Platform Foundation
 
-**Status:** Completed Pending Merge
+**Status:** Completed
 **Work Order ID:** WO-015
 **Type:** Backend platform foundation
 **Implementation Authorization:** Granted
@@ -178,6 +178,6 @@ WO-015 is complete only when:
 
 ## 10. Review Notes
 
-This Work Order has been implemented on a short-lived branch. Completion is
-final when the implementation report, required validation, GitHub CI, and
-governed pull-request merge are complete.
+This Work Order is complete. Implementation evidence, required validation,
+GitHub CI, and governed pull-request merge are recorded in the implementation
+report.
