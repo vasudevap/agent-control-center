@@ -253,4 +253,6 @@ Notion is the operational and learning workspace for:
 - ADR-004 is accepted for the general external product client contract.
 - ADR-005 is accepted for governed draft-support knowledge and
   ask-instead-of-guess behavior.
+- ES-004 and WO-015 draft the Phase 3 backend Platform Foundation scope and
+  require maintainer acceptance before implementation.
 - Backend, authentication, APIs, connectors, and business workflows remain future work subject to architecture and work-order approval.

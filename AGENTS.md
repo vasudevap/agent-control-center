@@ -21,16 +21,16 @@ the setting and asks to resume in the same message, that confirmation satisfies
 the pause requirement. This rule exists because the Codex task model cannot be
 changed once execution is underway.
 
-Use the model names confirmed in the user's Codex picker on 2026-07-15:
+Use the model names available in the user's Codex picker as updated on 2026-07-17:
 
-- `5.6 Sol · High · Standard` for complex or ambiguous architecture, frontend design, governance, and high-value multi-step implementation.
+- `5.5 · High · Standard` for complex or ambiguous architecture, frontend design, governance, and high-value multi-step implementation.
 - `5.6 Terra · Medium · Standard` for routine implementation, code review, and well-scoped feature work.
 - `5.6 Luna · Medium · Standard` for tests, cleanup, repetitive edits, and other predictable repository work.
 - `5.3 Codex Spark` with the lowest sufficient effort for very quick, simple iterations; do not recommend it for complex browser, visual, architectural, or multi-step work.
 
-Recommend `Fast` speed only when lower latency is worth the higher usage; otherwise prefer `Standard`. The user's current task selection in the Codex UI overrides global configuration for that task. Do not use vague or unconfirmed labels such as “GPT-5 Codex.” If the available model picker changes, use the updated choices the user provides and revise these preferences.
+Recommend `Fast` speed only when lower latency is worth the higher usage; otherwise prefer `Standard`. The user's current task selection in the Codex UI overrides global configuration for that task. Do not use vague or unconfirmed labels such as “GPT-5 Codex.” Do not recommend Sol unless the user explicitly restores access to it. If the available model picker changes, use the updated choices the user provides and revise these preferences.
 
-The current Atlas design task uses `5.6 Sol · High · Standard`; treat this as task context, not a permanent default for every future task.
+The current Atlas architecture and governance lane uses `5.5 · High · Standard`; treat this as task context, not a permanent default for every future task.
 
 ---
 

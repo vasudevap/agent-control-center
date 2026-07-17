@@ -240,8 +240,8 @@ ADR-003 is accepted for the governed external approval decision channel.
 ADR-004 is accepted for the general external product client contract. ADR-005
 is accepted for governed draft-support knowledge and ask-instead-of-guess
 behavior. The next implementation phase is the Phase 3 backend foundation,
-which requires an approved Engineering Specification and Work Order before code
-begins.
+which is now drafted in ES-004 and WO-015 and still requires maintainer
+acceptance before code begins.
 
 ---
 
