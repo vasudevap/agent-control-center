@@ -13,6 +13,17 @@ build/
 coverage/
 *.tsbuildinfo
 
+# Python local environments and caches
+.venv/
+apps/api/.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.pyc
+*.egg-info/
+apps/api/*.db
+
 # Local environment files (examples remain trackable)
 .env*
 !.env.example

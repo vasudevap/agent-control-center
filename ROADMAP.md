@@ -103,9 +103,10 @@ Build the platform infrastructure.
 
 ## Status
 
-Accepted. ES-004 and WO-015 define and authorize the backend Platform
-Foundation implementation scope. Implementation proceeds through a short-lived
-branch, required validation, and the governed pull-request process.
+In progress. ES-004 and WO-015 define, authorize, and implement the first
+backend Platform Foundation scope pending governed pull-request merge. Queue,
+Scheduler, broader authentication, and operational platform services remain
+future Phase 3 increments.
 
 ---
 
