@@ -95,9 +95,14 @@ Artifacts, Alerts, Audit, Connectors, Policies, and Settings. Data and
 state-changing interactions remain deterministic local fixtures or clearly
 labeled simulations.
 
-Business APIs, authentication, persistence, connector execution, policy
-evaluation, operational audit storage, and agent runtime services are not
-implemented.
+`apps/api` contains the WO-015 backend foundation: FastAPI app startup, health
+endpoints, configuration loading, structured errors, correlation IDs,
+external-client authentication scaffolding, SQLAlchemy models, Alembic
+migration foundation, and local webhook delivery scaffolding.
+
+Operational business APIs, real authentication sessions, production
+persistence, connector execution, policy evaluation, operational audit storage,
+and agent runtime services are not implemented.
 
 From the repository root:
 
@@ -108,6 +113,19 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
+```
+
+The backend foundation lives in `apps/api`. From the repository root:
+
+```bash
+python3 -m venv apps/api/.venv
+apps/api/.venv/bin/python -m pip install -e "apps/api[dev]"
+apps/api/.venv/bin/python -m pytest apps/api
+apps/api/.venv/bin/python -m ruff check apps/api
+apps/api/.venv/bin/python -m mypy apps/api/src
+cd apps/api
+.venv/bin/python -m alembic upgrade head
+.venv/bin/python -m alembic downgrade base
 ```
 
 Frontend component tests use Vitest, React Testing Library, and jsdom. Run
@@ -240,7 +258,8 @@ ADR-003 is accepted for the governed external approval decision channel.
 ADR-004 is accepted for the general external product client contract. ADR-005
 is accepted for governed draft-support knowledge and ask-instead-of-guess
 behavior. The next implementation phase is the Phase 3 backend foundation,
-which is now accepted in ES-004 and authorized for implementation by WO-015.
+whose first backend foundation is implemented by WO-015 pending governed
+pull-request merge.
 
 ---
 

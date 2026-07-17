@@ -42,3 +42,8 @@ authority.
 The [ES-004 review record](./ES-004-platform-foundation-review.md) records
 acceptance of the Phase 3 backend Platform Foundation Engineering
 Specification and WO-015 implementation authority.
+
+The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
+records the FastAPI backend foundation, persistence model, migration,
+external-client authentication scaffold, webhook delivery scaffold, validation
+evidence, and remaining limitations.
