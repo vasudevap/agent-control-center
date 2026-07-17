@@ -75,16 +75,33 @@ Before implementing new capabilities:
 - Check for existing ADRs.
 - If a significant architectural decision is required, create a proposed ADR before implementation.
 
+Implementation agents should execute planned decisions, not discover the
+architecture while coding. Before provisioning infrastructure, installing
+persistent services, introducing deployment resources, or implementing a major
+platform capability, the project should already have:
+
+- the target architecture documented;
+- the deployment and infrastructure boundaries documented;
+- the persistence location and environment strategy documented;
+- required ADRs accepted;
+- an accepted Engineering Specification or Work Order with explicit scope,
+  exclusions, validation, and rollback expectations.
+
+If those decisions are missing, the correct next step is planning, not
+implementation.
+
 ---
 
 # Repository Structure
 
 ```text
+apps/api/                         # Atlas backend foundation
 apps/web/                         # Atlas frontend
 docs/architecture/               # Canonical architecture
 docs/design/                     # Approved product design
 docs/specifications/             # Product specifications
 docs/engineering-specifications/ # Engineering execution specifications
+docs/implementation-plans/       # Cross-work-order implementation planning
 docs/work-orders/                # Authorized implementation scope
 docs/reviews/                    # Review and handoff records
 docs/decisions/                  # Decision indexes and non-design decisions

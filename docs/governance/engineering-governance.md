@@ -29,6 +29,30 @@ Git is the technical source of truth. Notion is an operational workspace and mus
 7. Required CI and review complete before the approved merge method is used.
 8. The implementation/review report and release records close the lifecycle under the [Definition of Done](./definition-of-done.md).
 
+## Plan-before-build rule
+
+Atlas prefers deliberate planning over implementation-time architecture
+discovery. Work Orders and execution packets should tell agents what to build,
+where it belongs, which decisions govern it, and how it will be validated.
+
+Before an implementation agent provisions infrastructure, creates a persistent
+service, installs a database, changes deployment topology, or implements a major
+platform capability, the governing artifacts must already define:
+
+- target architecture and container/runtime boundaries;
+- selected platform or provider;
+- environment strategy for local, development, test, and production where
+  applicable;
+- data persistence location, migration expectations, backup and rollback
+  considerations;
+- secret and configuration ownership;
+- observability, security, and access-control expectations;
+- required ADRs or documented rationale for why no ADR is required.
+
+If a Work Order exposes an unresolved architecture, infrastructure, security,
+or persistence decision, the agent must stop and request a planning update
+instead of deciding during implementation.
+
 ## Authority and agent boundaries
 
 Architecture documents and accepted ADRs govern system structure, technology, infrastructure, security boundaries, and deployment. Approved design documents and DDRs govern UX and visual behavior. Product specifications govern user and business requirements. Implementation agents may translate approved artifacts into code and documentation; they may not invent scope, approve their own architectural exceptions, bypass platform contracts, weaken controls, or start a later Work Order.

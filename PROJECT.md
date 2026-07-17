@@ -255,6 +255,9 @@ Notion is the operational and learning workspace for:
   ask-instead-of-guess behavior.
 - ES-004 and WO-015 accept, implement, and merge the first Phase 3 backend
   Platform Foundation scope.
+- The Phase 3 master implementation plan drafts the remaining backend
+  architecture, work-order sequence, and future agent execution packet format
+  before additional code implementation proceeds.
 - Operational authentication sessions, business APIs, connectors, agent
   runtime, scheduler, queue, policy execution, and business workflows remain
   future work subject to architecture and work-order approval.

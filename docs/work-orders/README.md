@@ -34,3 +34,8 @@ completed.
 
 Work Order 015 implements the Phase 3 backend Platform Foundation scope under
 accepted ES-004 and is completed.
+
+The remaining Phase 3 work-order sequence is drafted in
+[`docs/implementation-plans/phase-3-work-order-backlog.md`](../implementation-plans/phase-3-work-order-backlog.md).
+The backlog is planning guidance only; each future Work Order still requires
+separate acceptance before implementation.

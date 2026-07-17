@@ -66,12 +66,14 @@ The project follows several core principles:
 ```text
 agent-control-center/
 ├── apps/
+│   ├── api/                  # Approved Atlas FastAPI backend foundation
 │   └── web/                  # Approved Atlas Next.js frontend baseline
 ├── docs/
 │   ├── architecture/
 │   ├── design/
 │   ├── specifications/
 │   ├── engineering-specifications/
+│   ├── implementation-plans/
 │   ├── governance/
 │   ├── work-orders/
 │   ├── reviews/
@@ -133,13 +135,18 @@ Frontend component tests use Vitest, React Testing Library, and jsdom. Run
 `npm --workspace @atlas/web run test:watch` during local development. Tests are
 colocated with feature code using the `*.test.ts` or `*.test.tsx` suffix.
 
-ES-000 is closed. ES-001 establishes the engineering-governance and continuous-integration baseline for subsequent approved work.
+ES-000 is closed. ES-001 establishes the engineering-governance and
+continuous-integration baseline for subsequent approved work. The Phase 3
+master implementation plan coordinates the remaining backend platform
+foundation increments before additional code work proceeds.
 
 # Engineering Governance and CI
 
 Repository changes follow the [Atlas engineering-governance handbook](./docs/governance/README.md), including the [branching strategy](./docs/governance/branching-strategy.md), [pull-request process](./docs/governance/pull-request-and-review-process.md), [Definition of Ready](./docs/governance/definition-of-ready.md), and [Definition of Done](./docs/governance/definition-of-done.md).
 
-GitHub Actions runs `npm ci`, typecheck, lint, frontend tests, and the production build for pull requests targeting `main` and pushes to `main`.
+GitHub Actions runs frontend validation, backend typecheck, backend lint,
+backend tests, backend migration validation, and the production frontend build
+for pull requests targeting `main` and pushes to `main`.
 
 ---
 
@@ -165,6 +172,12 @@ See:
 
 ```
 docs/architecture/
+```
+
+Cross-work-order implementation planning lives under:
+
+```text
+docs/implementation-plans/
 ```
 
 ---
@@ -259,6 +272,8 @@ ADR-004 is accepted for the general external product client contract. ADR-005
 is accepted for governed draft-support knowledge and ask-instead-of-guess
 behavior. The next implementation phase is the Phase 3 backend foundation,
 whose first backend foundation is implemented and merged through WO-015.
+The remaining Phase 3 implementation sequence is drafted in the Phase 3 master
+implementation plan and work-order backlog under `docs/implementation-plans/`.
 
 ---
 
