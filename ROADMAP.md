@@ -101,6 +101,12 @@ Build the platform infrastructure.
 - Governed Knowledge Store Persistence Foundation
 - External Knowledge API Foundation
 
+## Status
+
+Accepted. ES-004 and WO-015 define and authorize the backend Platform
+Foundation implementation scope. Implementation proceeds through a short-lived
+branch, required validation, and the governed pull-request process.
+
 ---
 
 # Phase 4 — Dashboard
