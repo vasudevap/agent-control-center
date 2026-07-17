@@ -72,3 +72,9 @@ hex HMAC signature headers. The current client ID/key ID/secret use
 `ATLAS_API_EXTERNAL_CLIENT_NEXT_KEY_ID` and
 `ATLAS_API_EXTERNAL_CLIENT_NEXT_SECRET`. Keep all secrets outside the
 repository and never use the retired `X-Atlas-Client-Secret` header.
+
+Operational API routes use the versioned `/api/v1` contract. Successful
+responses are wrapped in `data` and optional `meta`; errors use a stable
+`error.code`, safe message, and correlation ID. Pagination is cursor-based with
+`limit=50` by default and `100` maximum. The canonical details are in
+[`docs/specifications/api-contract-conventions.md`](../../docs/specifications/api-contract-conventions.md).

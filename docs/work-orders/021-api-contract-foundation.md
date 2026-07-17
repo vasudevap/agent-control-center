@@ -1,6 +1,6 @@
 # Work Order 021: API Contract Foundation
 
-**Status:** Accepted - Implementation Authorized
+**Status:** Completed - Pending Merge
 **Work Order ID:** WO-021
 **Type:** Backend API foundation
 **Implementation Authorization:** Granted
@@ -9,6 +9,7 @@
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Architecture Authority:** [Phase 3 Target Architecture](../implementation-plans/phase-3-platform-foundation-target-architecture.md), [Security Architecture](../architecture/07-security-architecture.md)
 **Prerequisite:** [WO-020](./020-authorization-and-external-client-identity-boundary.md)
+**Review Record:** [WO-021 API Contract Implementation Report](../reviews/WO-021-api-contract-implementation-report.md)
 
 ## 1. Purpose
 

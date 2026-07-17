@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Request
 
 from atlas_api.core.auth import ExternalClientPrincipal, verify_external_client
 from atlas_api.core.config import Settings
+from atlas_api.core.contracts import success_payload
 from atlas_api.core.correlation import get_correlation_id
 from atlas_api.core.errors import ApiError
 
@@ -45,24 +46,29 @@ def ready(settings: SettingsDependency) -> dict[str, object]:
     }
 
 
-@router.get("/api/v1/health", tags=["health"])
-def api_health(settings: SettingsDependency) -> dict[str, str]:
-    return {
-        "status": "ok",
-        "service": settings.app_name,
-        "correlation_id": get_correlation_id(),
-    }
+@router.get("/api/v1/health", tags=["api-health"])
+def api_health(settings: SettingsDependency) -> dict[str, object]:
+    return success_payload(
+        {"status": "ok", "service": settings.app_name},
+        meta={"correlation_id": get_correlation_id()},
+    )
 
 
-@router.get("/api/v1/external-client/authentication/probe", tags=["external-client"])
+@router.get(
+    "/api/v1/external-client/authentication/probe",
+    tags=["external-client"],
+    openapi_extra={"security": [{"ExternalClientHmac": []}]},
+)
 def external_client_probe(
     principal: ExternalClientDependency,
-) -> dict[str, str]:
-    return {
-        "status": "authenticated",
-        "external_client_id": principal.external_client_id,
-        "correlation_id": get_correlation_id(),
-    }
+) -> dict[str, object]:
+    return success_payload(
+        {
+            "status": "authenticated",
+            "external_client_id": principal.external_client_id,
+        },
+        meta={"correlation_id": get_correlation_id()},
+    )
 
 
 @router.get("/api/v1/knowledge/facts", tags=["knowledge"])

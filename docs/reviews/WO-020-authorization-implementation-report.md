@@ -2,7 +2,7 @@
 
 **Work Order:** [WO-020 Authorization and External-Client Identity Boundary](../work-orders/020-authorization-and-external-client-identity-boundary.md)
 **Implementation Branch:** `codex/wo-020-authorization-identity`
-**Implementation Status:** Complete - Pending Merge
+**Implementation Status:** Complete - Merged
 **Report Date:** 2026-07-17
 
 ## Summary
@@ -39,7 +39,7 @@ or frontend work.
 - Ruff and mypy passed.
 - `git diff --check` passed.
 - PostgreSQL 18 Alembic validation, frontend regression checks, secret scan,
-  and required CI remain merge gates.
+  and required CI passed before merge.
 
 ## Next Work Order
 

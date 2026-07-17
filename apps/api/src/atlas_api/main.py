@@ -10,6 +10,16 @@ from atlas_api.core.config import Settings, get_settings
 from atlas_api.core.correlation import CorrelationIdMiddleware
 from atlas_api.core.errors import register_exception_handlers
 
+OPENAPI_TAGS = [
+    {"name": "health", "description": "Unversioned infrastructure health checks."},
+    {"name": "api-health", "description": "Versioned API health contract."},
+    {
+        "name": "external-client",
+        "description": "Signed external-client boundary probes.",
+    },
+    {"name": "knowledge", "description": "Reserved knowledge API contract."},
+]
+
 
 def create_app(
     settings: Settings | None = None,
@@ -20,13 +30,38 @@ def create_app(
         title="Atlas API",
         version="0.1.0",
         description="Backend foundation for the Agent Control Center.",
+        openapi_tags=OPENAPI_TAGS,
     )
     app.state.settings = resolved_settings
     app.state.session_factory = session_factory
     app.add_middleware(CorrelationIdMiddleware)
     register_exception_handlers(app)
     app.include_router(router)
+    _configure_openapi(app)
     return app
+
+
+def _configure_openapi(app: FastAPI) -> None:
+    original_openapi = app.openapi
+
+    def custom_openapi() -> dict[str, object]:
+        if app.openapi_schema:
+            return app.openapi_schema
+        schema = original_openapi()
+        schema.setdefault("components", {}).setdefault("securitySchemes", {})[
+            "ExternalClientHmac"
+        ] = {
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-Atlas-Signature",
+            "description": (
+                "HMAC-SHA256 signature. Requests also require X-Atlas-Client-Id, "
+                "X-Atlas-Key-Id, X-Atlas-Timestamp, and X-Atlas-Nonce."
+            ),
+        }
+        return schema
+
+    app.openapi = custom_openapi  # type: ignore[method-assign]
 
 
 app = create_app()
