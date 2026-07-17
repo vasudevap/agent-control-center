@@ -37,12 +37,13 @@ Completed baseline:
 - Health endpoints, structured errors, correlation IDs, fail-closed
   external-client authentication scaffolding, and local webhook fake transport
   exist.
+- The infrastructure provisioning and environment strategy is accepted.
+- Backend dependency installation is constrained and runtime settings validation
+  is explicit and tested.
 
 Not yet implemented:
 
-- Infrastructure provisioning strategy.
 - Real PostgreSQL environment strategy.
-- Backend dependency locking or constraints.
 - Runtime logging baseline.
 - Dashboard authentication sessions.
 - Authorization policy checks.
