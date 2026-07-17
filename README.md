@@ -121,7 +121,8 @@ The backend foundation lives in `apps/api`. From the repository root:
 
 ```bash
 python3 -m venv apps/api/.venv
-apps/api/.venv/bin/python -m pip install -e "apps/api[dev]"
+apps/api/.venv/bin/python -m pip install --upgrade pip
+apps/api/.venv/bin/python -m pip install -c apps/api/constraints.txt -e "apps/api[dev]"
 apps/api/.venv/bin/python -m pytest apps/api
 apps/api/.venv/bin/python -m ruff check apps/api
 apps/api/.venv/bin/python -m mypy apps/api/src
@@ -129,6 +130,13 @@ cd apps/api
 .venv/bin/python -m alembic upgrade head
 .venv/bin/python -m alembic downgrade base
 ```
+
+`apps/api/constraints.txt` is the canonical resolved backend dependency input
+for local and CI installs. Update it intentionally from a clean Python 3.12
+environment after the backend validation suite passes. The API uses the
+`ATLAS_API_` configuration prefix; its default `local` environment requires no
+database, while `staging`, `production`, or `ATLAS_API_REQUIRE_DATABASE=true`
+require `ATLAS_API_DATABASE_URL` for readiness.
 
 Frontend component tests use Vitest, React Testing Library, and jsdom. Run
 `npm test` for the canonical one-shot suite or

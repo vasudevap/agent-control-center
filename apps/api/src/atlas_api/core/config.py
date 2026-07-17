@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+EnvironmentName = Literal["local", "development", "test", "staging", "production"]
+
 
 class Settings(BaseSettings):
     app_name: str = "atlas-api"
-    environment: str = "local"
+    environment: EnvironmentName = "local"
     database_url: SecretStr | None = None
     external_client_secret: SecretStr | None = None
     webhook_signing_secret: SecretStr | None = None

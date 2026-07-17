@@ -1,17 +1,18 @@
 # Work Order 017: Backend Runtime and Dependency Hardening
 
-**Status:** Proposed - Review Required
+**Status:** Completed - Pending Merge
 **Work Order ID:** WO-017
 **Type:** Backend platform foundation
-**Implementation Authorization:** Not Granted
-**Accepted:** Not Accepted
-**Accepted By:** Not Accepted
+**Implementation Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Governing Strategy:** [Infrastructure Provisioning Strategy](../implementation-plans/infrastructure-provisioning-strategy.md)
 **Architecture Authority:** [Component Architecture](../architecture/05-component-architecture.md), [Deployment Architecture](../architecture/06-deployment-architecture.md), [Security Architecture](../architecture/07-security-architecture.md), [Data Architecture](../architecture/08-data-architecture.md), [Technology Strategy](../architecture/12-technology-strategy.md)
 **Decision Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md), [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md)
 **Prerequisite Work Order:** [WO-016 Infrastructure Provisioning and Environment Strategy](./016-infrastructure-provisioning-and-environment-strategy.md)
 **Review Owner:** Repository Maintainer
+**Review Record:** [WO-017 Runtime Hardening Implementation Report](../reviews/WO-017-runtime-hardening-implementation-report.md)
 
 ---
 
@@ -37,10 +38,10 @@ The repository gains a predictable backend developer and CI workflow:
   dependency strategy;
 - future agents can run backend checks without rediscovering setup details.
 
-## 3. Proposed Scope
+## 3. Approved Scope
 
-Acceptance of this Work Order would authorize implementation within the
-following scope.
+Acceptance of this Work Order authorized implementation within the following
+scope.
 
 ### 3.1 Backend dependency determinism
 
@@ -214,7 +215,9 @@ The implementing agent must stop and ask before proceeding if:
 - unrelated user changes overlap with required files;
 - a destructive action is needed.
 
-## 11. Review Notes
+## 11. Completion Notes
 
-This Work Order is proposed for review. It does not authorize implementation
-until accepted by the repository maintainer.
+The implementation uses a committed constraints file, explicit environment
+validation, aligned local and CI commands, and regression tests. No live
+provider resources, migrations, provider configuration, or secrets were added.
+See the linked implementation report for validation evidence and residual risk.

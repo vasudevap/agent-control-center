@@ -52,3 +52,8 @@ The [WO-016 infrastructure provisioning strategy review](./WO-016-infrastructure
 records the provider-native provisioning strategy, environment model,
 PostgreSQL placement, secrets/configuration ownership, backup and rollback
 expectations, ADR assessment, and residual risks.
+
+The [WO-017 runtime hardening implementation report](./WO-017-runtime-hardening-implementation-report.md)
+records the constraints-based backend dependency workflow, explicit settings
+validation, documentation and CI alignment, validation evidence, and the
+remaining PostgreSQL environment work for WO-018.

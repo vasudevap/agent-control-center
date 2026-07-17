@@ -20,7 +20,7 @@ reviewed, accepted, implemented, validated, and merged independently.
 | --- | --- | --- | --- | --- |
 | WO-015 | Platform Foundation | ES-004 | Complete | Completed |
 | WO-016 | Infrastructure Provisioning and Environment Strategy | WO-015 | Complete | Completed |
-| WO-017 | Backend Runtime and Dependency Hardening | WO-016 | No | Proposed |
+| WO-017 | Backend Runtime and Dependency Hardening | WO-016 | No | Completed |
 | WO-018 | PostgreSQL Environment and Migration Hardening | WO-017 | No | Planned |
 | WO-019 | Owner Authentication and Session Foundation | WO-018 | No | Planned |
 | WO-020 | Authorization and External-Client Identity Boundary | WO-019 | No | Planned |
@@ -93,6 +93,16 @@ Out of scope:
 - authentication behavior;
 - new operational endpoints;
 - queue or scheduler.
+
+Completion:
+
+- Committed `apps/api/constraints.txt` defines the resolved backend dependency
+  input used by both local setup and CI.
+- Runtime settings accept only the documented environment names and have
+  regression coverage for readiness requirements and secret redaction.
+- No provider, migration, authentication, API-contract, queue, or scheduler
+  scope was introduced.
+- Evidence is recorded in [WO-017 Runtime Hardening Implementation Report](../reviews/WO-017-runtime-hardening-implementation-report.md).
 
 ### WO-018 - PostgreSQL Environment and Migration Hardening
 
