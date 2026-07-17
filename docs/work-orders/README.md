@@ -39,6 +39,10 @@ Work Order 016 documents the Phase 3 infrastructure provisioning and
 environment strategy before additional backend implementation or live resource
 provisioning begins and is completed.
 
+Work Order 017 is proposed to harden backend runtime settings, dependency
+installation, local backend commands, and CI alignment before broader Phase 3
+backend implementation continues.
+
 The remaining Phase 3 work-order sequence is drafted in
 [`docs/implementation-plans/phase-3-work-order-backlog.md`](../implementation-plans/phase-3-work-order-backlog.md).
 The backlog is planning guidance only; each future Work Order still requires
