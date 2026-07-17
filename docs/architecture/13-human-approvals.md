@@ -1,10 +1,11 @@
 # Atlas Human Approvals Architecture
 
 **Status:** Approved
-**Version:** 1.0
-**Date:** 2026-07-13
+**Version:** 1.1
+**Date:** 2026-07-17
 **Capability:** Human Approvals
 **Product:** Atlas
+**Pending Decision:** External product client additions require ADR-004 acceptance before implementation
 
 ---
 
@@ -95,7 +96,9 @@ The Human Approvals architecture must:
 9. Support safe workflow continuation after approval.
 10. Fail closed when state, evidence, authorization, or action identity is uncertain.
 11. Preserve complete operational and audit visibility.
-12. Extend to future team review without redesigning the core domain.
+12. Treat internal and governed external decision channels as first-class service
+    boundaries from the initial Approval Service design.
+13. Enforce a single-reviewer model with one human decision authority.
 
 ---
 
@@ -123,11 +126,6 @@ The Human Approvals architecture must:
 
 - Bulk decisions.
 - Bulk assignment.
-- Active assignment in single-reviewer mode.
-- Escalation routing.
-- Multi-reviewer and quorum approval.
-- Delegation.
-- External-channel approval decisions.
 - Approval revocation.
 - Reopening completed approvals.
 
@@ -143,6 +141,49 @@ The Human Approvals architecture must:
 - User-interface implementation.
 - Connector-specific execution logic.
 - Deployment topology changes.
+
+The following are prohibited by the single-reviewer constraint, not deferred:
+
+- Multi-user approval.
+- Role-based access control for approval decisions.
+- Multi-tenant approval.
+- Reviewer assignment, delegation, escalation, or reviewer groups.
+- Multiple reviewers, sequential or parallel review, and quorum decisions.
+
+### 5.4 Planned Later-Phase Backend Scope
+
+The following backend capabilities are architecturally recognized but are not
+authorized for implementation by this document:
+
+- An authenticated API that exposes the pending-approval queue and governed
+  evidence to a trusted external client.
+- An authenticated API that accepts approve or reject decisions from a trusted
+  external client.
+- Webhook events for approval pending and for send outcomes of `Sent`, `Failed`,
+  or `Indeterminate`.
+- An authentication model for a trusted external control plane acting for one
+  human.
+- Decision audit provenance that identifies the channel as `Internal` or
+  `External`.
+- An R0 edit-then-approve interface operation that creates a superseding new
+  approval for the exact edited content and continues directly to send as one
+  continuous user action.
+- A minimized non-approval event that surfaces a clinical or
+  protected-health-information hold for manual handling without creating a
+  draft, proposed action, or approval.
+
+This scope follows the roadmap phase boundaries:
+
+- Phase 3 establishes the authenticated external API, client-authentication,
+  and webhook-delivery foundations.
+- Phase 5 establishes the generic external approval and non-approval
+  manual-handling contracts.
+- Phase 6 supplies Gmail-specific evidence, classification, hold creation, and
+  send execution for the first end-to-end workflow.
+
+Each phase requires the applicable accepted ADRs, architecture review, approved
+Engineering Specification and Work Order, and confirmation of Definition of
+Ready. This document authorizes no implementation.
 
 ---
 
@@ -162,10 +203,14 @@ Policy Engine
     | require approval
     v
 Approval Service <------ Atlas Web / Operator
+    ^                         |
+    |                         | inspect evidence and decide
+    |
+    +---------------- Trusted External Control Plane / Operator
     |                         |
     |                         | inspect evidence and decide
-    |                         v
-    +-------------------- Audit Writer
+    v                         v
+Audit Writer <---------- decision channel provenance
     |
     | approved continuation
     v
@@ -183,6 +228,13 @@ Approval Service + Run Service + Audit Writer
 The Atlas Web interface is an untrusted presentation client. It may present and
 submit decisions, but it is not authoritative for approval state, evidence
 completeness, expiry, reviewer authorization, or execution eligibility.
+
+A trusted external control plane, initially Plaintrol, may act as a separate
+customer-facing presentation and decision client for the same single human
+reviewer. Trust in that client is limited to its authenticated channel and
+delegated ability to act for that human. The Approval Service remains
+authoritative and applies the same evidence, state, expiry, action-binding,
+concurrency, reauthentication, and audit controls to both channels.
 
 ---
 
@@ -219,6 +271,8 @@ It is responsible for:
 - Enforcing expiry and cancellation.
 - Rejecting stale, duplicate, conflicting, or invalid decisions.
 - Recording reviewer and decision provenance.
+- Recording whether each accepted decision arrived through the internal or
+  external channel.
 - Emitting approval lifecycle events.
 - Making approved continuation available to the runtime boundary.
 - Associating execution outcomes without rewriting the approval decision.
@@ -236,6 +290,51 @@ The existing Policy Engine remains responsible for:
 - Re-evaluating applicable policy before execution when required.
 
 Approval must not override a policy denial.
+
+For the Phase 6 Gmail agent, an inbound message classified as clinical or as
+containing protected health information is suppressed from automatic drafting
+and routed to a hold or manual-handling outcome. It must not produce a draft,
+proposed send action, or approval request. This is a Policy Engine boundary,
+not an approval path, and human approval cannot override it.
+
+### 7.3.1 External Surfacing of a Suppressed Message
+
+A clinical or protected-health-information hold must be surfaced to the
+governed external product client through a non-approval event named
+`message.held_for_manual_handling`.
+
+The event exists so the single human owner can discover that a message requires
+manual handling. It must not:
+
+- Create an approval request or approval record.
+- Contain a draft or proposed send action.
+- Confer authorization.
+- Permit automatic drafting, sending, or policy override.
+- Provide a path around the clinical or protected-health-information
+  suppression rule.
+
+The event identifies the held message through a governed source reference and
+includes the reason category required for routing, such as `Clinical` or
+`ProtectedHealthInformation`. It may include the hold identifier, agent and run
+references, sensitivity classification, correlation identity, and held
+timestamp. It must not copy message content, sender details, subject text, or
+other evidence unless a later approved contract establishes that the field is
+necessary and permitted.
+
+The external product client presents the item as `Needs manual handling`. It
+must not present the item as pending approval or expose approve or reject
+controls for it.
+
+The hold outcome, external delivery attempt, reason category, policy and
+classification provenance, authenticated external client, correlation identity,
+and timestamp are auditable. Channel provenance uses the same `Internal` or
+`External` vocabulary as decision-channel audit records, but no reviewer,
+decision, or approval identity is recorded because no decision occurred.
+
+The Backend API and webhook foundations belong to Phase 3. The generic
+manual-handling event contract belongs to Phase 5. The Gmail-specific
+classification and hold source remains a Phase 6 dependency. No implementation
+is authorized by this architecture requirement.
 
 ### 7.4 Action Validator
 
@@ -281,7 +380,8 @@ The Run Service is responsible for:
 ### 7.7 Audit Writer
 
 The Audit Writer records append-oriented events for all material approval
-activity.
+activity and for the non-approval manual-handling hold notifications defined by
+this architecture.
 
 It must preserve traceability without allowing later state changes to rewrite
 earlier events.
@@ -289,13 +389,32 @@ earlier events.
 ### 7.8 Notification Capability
 
 A future notification capability may notify an operator about pending,
-near-expiry, clarification, or completed approvals.
+near-expiry, clarification, completed approvals, or a message held for manual
+handling.
 
-Notification delivery must not become an alternative authorization channel
-unless explicitly designed and approved later.
+Notification delivery does not itself authorize an action. A notification may
+deep-link to Atlas or to the governed external approval surface, but an
+authorization result is accepted only through an authenticated decision API
+owned by the Approval Service.
 
-The initial capability accepts decisions and clarification only within Atlas.
-Notifications may deep-link to Atlas but cannot carry an authorization result.
+### 7.9 Trusted External Control Plane
+
+The trusted external control plane is responsible for:
+
+- Authenticating to Atlas through the approved external-channel mechanism.
+- Acting only for the one configured human reviewer.
+- Presenting the pending queue and evidence without becoming authoritative for
+  approval validity.
+- Presenting a held message as needing manual handling without representing it
+  as an approval or authorization path.
+- Submitting approve or reject decisions through the Approval Service.
+- Preserving correlation and decision identities required for audit and
+  concurrency control.
+- Treating webhook delivery as an event signal, not as authorization or proof
+  of send outcome or manual resolution.
+
+The external control plane must not execute the approved action, impersonate a
+second reviewer, introduce roles, or become a second approval system of record.
 
 ---
 
@@ -348,6 +467,26 @@ An accepted decision changes approval state to `Approved`, records provenance,
 and emits audit and continuation events.
 
 Approval does not directly change the execution outcome to succeeded.
+
+### 8.3.1 External Edit-Then-Approve
+
+The external channel must provide edit-then-approve as an R0 interface
+requirement. The human performs one continuous action that edits the draft,
+approves the exact edited content, and continues directly to dispatch for
+sending.
+
+Because edited content changes the approval binding, the original approval
+cannot authorize it. The Approval Service must create a superseding new
+approval bound to the edited content, accept the decision against that new
+approval, and create the send continuation through one governed workflow. The
+external interface must not show a rejection followed by a fresh message, and
+the original approval must not be recorded as human-rejected.
+
+The original and superseding approvals remain linked in canonical history and
+audit evidence. The future Engineering Specification must define atomicity or
+recoverability, concurrency, idempotency, lineage, failure behavior, and the
+external interface contract. Approval remains distinct from send outcome,
+which is recorded as `Sent`, `Failed`, or `Indeterminate`.
 
 ### 8.4 Reject
 
@@ -510,6 +649,8 @@ authorization.
 
 - Approval state.
 - Review facet.
+- Superseded approval ID and superseding approval ID when edit-then-approve
+  replaces the bound content.
 - Requested timestamp.
 - Expiry timestamp.
 - Cancellation timestamp and reason when applicable.
@@ -518,6 +659,7 @@ authorization.
 
 - Reviewer identity.
 - Decision timestamp.
+- Decision channel, `Internal` or `External`.
 - Structured reason category when applicable.
 - Explanatory reason text when required.
 - Decision provenance or interaction source.
@@ -651,6 +793,7 @@ history and reporting and must not be interpreted as policy authorization.
 Trust boundaries exist between:
 
 - Operator browser and Atlas control plane.
+- Trusted external control plane and Atlas control plane.
 - Approval Service and runtime continuation.
 - Approval Service and evidence sources.
 - Policy Engine and Approval Service.
@@ -703,9 +846,18 @@ exceptions.
 ### 13.6 Reviewer Authorization
 
 Reviewer authorization is deny by default and evaluated at decision time.
-Eligibility may be scoped by workspace, environment, action class, and risk.
-Agents and non-human service identities cannot act as human reviewers. The
-evaluated identity and authorization context are recorded with the decision.
+The approval capability has exactly one configured human reviewer. The trusted
+external control plane may submit a decision only as an authenticated channel
+acting for that same human. It is not a reviewer and does not gain independent
+human authority. Agents and other non-human service identities cannot act as
+human reviewers. The evaluated human identity, external client identity when
+applicable, authentication context, and decision channel are recorded with the
+decision.
+
+Multi-user approval, role-based access control, multi-tenant approval, reviewer
+assignment, delegation, quorum, and multiple reviewers are prohibited by this
+architecture. Supporting any of them requires a new architecture decision and
+is not a compatible extension of this constraint.
 
 ### 13.7 Untrusted Evidence Isolation
 
@@ -826,11 +978,18 @@ Audit events must be append-oriented and identify, as applicable:
 - Agent ID.
 - Run and step IDs.
 - Actor type and identity.
+- Decision channel, `Internal` or `External`, for each decision attempt and
+  accepted decision.
+- Delivery channel, `Internal` or `External`, for non-approval manual-handling
+  notifications.
+- Authenticated external client identity when applicable.
 - Previous and resulting state.
 - Action type and protected target reference.
 - Risk level.
 - Policy reference.
 - Decision-reason category.
+- Manual-hold reason category and policy or classification provenance when
+  applicable.
 - Protected decision-reason reference or appropriately governed content.
 - Clarification activity.
 - Expiry or cancellation reason.
@@ -841,6 +1000,9 @@ Audit events must be append-oriented and identify, as applicable:
 Material events include:
 
 - Approval requested.
+- Message held for manual handling without an approval request.
+- Manual-handling notification emitted, delivered, or delivery failed.
+- Approval superseded by an edit-then-approve operation.
 - Clarification requested.
 - Clarification received.
 - Approval approved.
@@ -933,28 +1095,21 @@ applies after expiry. Inability to evaluate authoritative time fails closed.
 
 ---
 
-## 19. Scalability and Future Extension
+## 19. Scale Constraint and Future Extension
 
-The architecture must scale from one operator to future teams without changing
-the core approval identity or decision model.
+The approval architecture supports one human reviewer through either the Atlas
+internal channel or one or more separately authenticated clients of the
+governed external channel. Channel count does not change reviewer count.
 
-Future extensions may add:
+The hard constraint is single reviewer only. Multi-user approval, role-based
+access control, multi-tenant approval, reviewer assignment, delegation,
+separation of duties, sequential or parallel reviewers, quorum decisions, and
+reviewer groups are not supported and are not planned extensions of this
+architecture.
 
-- Owner and assignee routing.
-- Escalation destinations.
-- Delegation.
-- Separation of duties.
-- Sequential reviewers.
-- Parallel reviewers.
-- Quorum decisions.
-- Policy-specific reviewer groups.
-- Bulk rejection and assignment.
-- Constrained bulk approval through a separately approved design.
-- External notification channels that deep-link to Atlas.
-
-Future multi-reviewer workflows should compose reviewer requirements around the
-same exact action binding. They must not weaken evidence, expiry, non-reuse,
-audit, or execution controls.
+Future extensions may improve queue delivery, webhook reliability, evidence
+presentation, reconciliation, and external-client operations without weakening
+the single-reviewer constraint or the exact action binding.
 
 ### 19.1 Approval-Flood Protection
 
@@ -978,12 +1133,16 @@ This specification conforms to the existing Atlas architecture by:
 - Preserving PostgreSQL as the planned runtime system of record.
 - Preserving the Audit Writer and append-oriented audit model.
 - Preserving the control-plane and execution-plane separation.
+- Extending the approval trust boundary through the existing Approval Service
+  instead of creating a parallel approval authority.
+- Preserving one human reviewer across internal and external decision channels.
 - Avoiding a new deployment container or infrastructure framework.
 
-No ADR is required solely to adopt this capability within the existing
-boundaries. Any later decision that changes data architecture, authentication,
-authorization, runtime continuation, deployment boundaries, or audit
-immutability strategy must follow the ADR process before implementation.
+The external decision channel changes the approval trust boundary and is
+governed by accepted ADR-003. Any later decision that changes data
+architecture, authentication, authorization, runtime continuation, deployment
+boundaries, audit immutability, or the single-reviewer constraint must also
+follow the ADR process before implementation.
 
 ---
 
@@ -998,9 +1157,13 @@ immutability strategy must follow the ADR process before implementation.
 | Clarification provenance | Authenticated Atlas human or trusted internal actor only in the initial capability |
 | Step-up authentication | Critical always; specified High-risk actions require step-up |
 | Reviewer eligibility | Deny by default and evaluated at decision time |
+| Reviewer model | Exactly one human reviewer; no multi-user, role-based access control, or multi-tenant approval |
+| Decision channels | Internal Atlas channel and authenticated external channel governed by accepted ADR-003 |
+| Decision provenance | Human identity and `Internal` or `External` channel; authenticated external client when applicable |
+| Manual-hold provenance | Hold reason and policy or classification provenance; `Internal` or `External` delivery channel; no approval or reviewer decision |
 | Audit failure | Durable local audit failure blocks decision; downstream export retries asynchronously |
 | Retention | Durable provenance separated from sensitive-content retention |
-| Notifications | Deferred; notifications may deep-link to Atlas but cannot record decisions |
+| Notifications | May deep-link to a governed approval or manual-handling surface but cannot record decisions or override suppression |
 
 ---
 
@@ -1012,32 +1175,54 @@ The architecture is acceptable when:
 2. Policy Engine authority remains separate from human authorization.
 3. Approval Service owns canonical approval state.
 4. Atlas Web is not trusted to enforce approval validity.
-5. Required evidence is enforced at the service boundary.
-6. Reject and Request clarification remain possible when approval evidence is incomplete.
-7. Clarification does not change approval state or extend expiry.
-8. Only one terminal decision can be accepted.
-9. Expired and cancelled approvals cannot be decided.
-10. Approved actions are revalidated before execution.
-11. A changed action requires a new approval.
-12. Atlas records one authorized action intent, suppresses duplicate dispatch,
+5. A governed external client may submit decisions only through the
+   authenticated Approval Service boundary for the same single human reviewer.
+6. Multi-user, role-based access control, multi-tenant approval, and multiple
+   reviewers remain prohibited.
+7. Required evidence is enforced at the service boundary.
+8. Reject and Request clarification remain possible when approval evidence is incomplete.
+9. Clarification does not change approval state or extend expiry.
+10. Only one terminal decision can be accepted.
+11. Expired and cancelled approvals cannot be decided.
+12. Approved actions are revalidated before execution.
+13. A changed action requires a new approval.
+14. Atlas records one authorized action intent, suppresses duplicate dispatch,
     uses provider idempotency where available, and requires reconciliation for
     indeterminate external outcomes.
-13. Approval decision and execution outcome remain separate.
-14. Material events produce append-oriented audit evidence.
-15. Sensitive content is minimized in queue, logs, and audit records.
-16. Failures do not imply authorization or execution success.
-17. Existing control-plane, runtime, policy, connector, audit, and deployment boundaries remain intact.
-18. Deferred team and bulk capabilities can extend the model without redesigning the core approval aggregate.
+15. Approval decision and execution outcome remain separate.
+16. Material events produce append-oriented audit evidence with decision-channel provenance.
+17. Sensitive content is minimized in queue, logs, and audit records.
+18. Failures do not imply authorization or execution success.
+19. Existing control-plane, runtime, policy, connector, audit, and deployment boundaries remain intact.
+20. The external channel supports R0 edit-then-approve as one continuous user
+    action, creates a linked superseding approval for the exact edited content,
+    does not record a human rejection, and continues directly to send dispatch.
+21. A suppressed clinical or protected-health-information message produces a
+    minimized non-approval manual-handling event for the governed external
+    product client without creating a draft, proposed action, approval, or
+    authorization path.
 
 ---
 
 ## 23. Next Governance Steps
 
-Before implementation:
+Before implementation reaches Definition of Ready:
 
-1. Update affected canonical architecture and data documentation during detailed design where required.
-2. Produce the Human Approvals Engineering Specification.
-3. Complete detailed security and privacy review of the Engineering Specification.
-4. Produce an implementation Work Order that meets the Definition of Ready.
+1. The implementation artifact links accepted ADR-003, accepted ADR-004 when
+   the external product contract is in scope, and this canonical architecture.
+2. Phase 3 foundations are complete before Phase 5 external approval or
+   manual-handling contract implementation, and Phase 5 foundations are
+   complete before the Phase 6 Gmail end-to-end workflow.
+3. The Human Approvals Engineering Specification defines the authenticated
+   queue and decision APIs, external-client and human authentication, evidence
+   minimization, webhook semantics, audit fields, errors, rate limits,
+   retention, observability, threat mitigations, and the R0 edit-then-approve
+   workflow, interface contract, and non-approval manual-handling event contract.
+4. Detailed security and privacy review approves the Engineering Specification.
+5. An implementation Work Order links the accepted ADR, architecture, and
+   Engineering Specification and defines observable acceptance criteria,
+   exclusions, dependencies, verification evidence, and a review owner.
+6. The review owner confirms every applicable item in
+   `docs/governance/definition-of-ready.md`.
 
 No implementation may begin from this architecture specification alone.

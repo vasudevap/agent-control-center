@@ -4,10 +4,11 @@
 
 The Agent Control Center is a centralized platform for registering, scheduling, executing, monitoring, governing, and auditing AI agents.
 
-The platform serves two related purposes:
+The platform serves three related purposes:
 
 1. Provide a practical productivity system for managing personal and professional agents.
 2. Act as an applied learning environment for developing expertise in agentic AI architecture, security, orchestration, observability, governance, and implementation.
+3. Serve as the governed backend platform for an external customer-facing control surface through authenticated APIs and webhooks.
 
 The first production use case will be a Gmail Triage Agent. The architecture must also support future agents for calendars, documents, shopping, travel, job search, and other productivity workflows.
 
@@ -29,7 +30,10 @@ The Agent Control Center addresses these problems by introducing a shared contro
 
 ## 3. Product Vision
 
-The product vision is to create an enterprise-inspired control plane where a user can:
+The product vision is to create an enterprise-inspired control plane consumed
+through the first-party Atlas dashboard and one governed external product
+client, initially Plaintrol. These control surfaces allow the single human owner
+to:
 
 - View all registered agents in one dashboard
 - Activate, pause, disable, or run agents manually
@@ -69,7 +73,13 @@ The execution plane will manage:
 - File processing
 - Action execution
 
-This separation will allow the dashboard and governance model to evolve independently from individual agent implementations.
+This separation will allow the dashboard, governed external product client, and
+governance model to evolve independently from individual agent implementations.
+
+The Atlas dashboard and the external product client are first-class consumers
+of the Backend API. The external product client also receives authenticated
+webhook events. Atlas remains authoritative for platform state, policy,
+approvals, execution outcomes, and audit evidence.
 
 ## 5. Initial Technology Direction
 
@@ -212,9 +222,14 @@ The architecture will be considered successful when:
 
 At the time of this document:
 
-- The project repository has been created
-- The project charter has been defined
-- The Notion internal connection has been configured
-- The Notion parent page has been connected
-- High-level architecture work has started
-- The detailed architecture documentation is being created incrementally
+- The architecture, product requirements, product design, and engineering
+  governance baselines are documented.
+- The frontend-only Atlas prototype is complete through Work Order 014 and uses
+  local fixtures and clearly labeled simulations.
+- Backend services, authentication, persistence, connectors, policy execution,
+  operational audit storage, and the Gmail agent are not implemented.
+- ADR-003 is accepted for the governed external approval decision channel.
+- ADR-004 is proposed and pending Architecture and Security Review for the
+  general external product client contract.
+- Phase 3 Platform Foundation specification and authorization are the next
+  implementation-planning gate.

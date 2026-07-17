@@ -95,6 +95,9 @@ Build the platform infrastructure.
 - Health Endpoints
 - Queue
 - Scheduler
+- Governed External Platform API Foundation
+- External Product Client Authentication Boundary
+- Outbound Webhook Delivery Foundation
 
 ---
 
@@ -118,17 +121,19 @@ Build the operational dashboard.
 
 ## Status
 
-Application-shell baseline completed through Work Order 005. Work Order 006 adds
-the frontend-only Agents Inventory for monitoring mock agents and navigating to
-agent details. Work Order 009 completes the frontend-only Human Approvals Queue,
-History, Approval Detail, and simulated decision experience in the selected
-Atlas design direction. The remaining frontend prototype is sequenced through
-three approved delivery rounds: WO-010 adds Runs, Run Detail, Artifacts, and
-Artifact Detail; WO-011 adds Alerts and Audit; and WO-012 adds Connectors,
-Policies, and Settings. WO-010 and WO-011 are merged; WO-012 has passed
-implementation review pending governed merge. Together they replace the
-remaining frontend placeholders with local-fixture UI and do not authorize
-services, persistence, authentication, connector calls, policy evaluation, or
+Completed for the frontend-only milestone. Work Orders 005 through 012 deliver
+the application shell and the reviewed Agents, Agent Detail, Approvals, Runs,
+Artifacts, Alerts, Audit, Connectors, Policies, and Settings surfaces. Work
+Orders 013 and 014 complete cross-surface indicator and responsive consistency
+maintenance. All related pull requests are merged.
+
+WO-007 remains `Design Review Locked` and WO-008 remains `Frontend Prototype
+Authorized` in their governing records. This phase status does not silently
+close or broaden either artifact.
+
+The current dashboard uses deterministic local fixtures and clearly labeled
+simulations. It does not authorize or imply backend services, persistence,
+authentication, connector calls, policy evaluation, runtime execution, or
 operational audit storage.
 
 ---
@@ -147,6 +152,11 @@ Create the reusable agent platform.
 - Connector Runtime
 - Policies
 - Approval Framework
+- External Pending-Approval and Evidence API
+- External Approve or Reject Decision API
+- Approval-Pending and Send-Outcome Webhooks
+- Held-for-Manual-Handling Non-Approval Webhook Contract
+- External Decision Channel Audit Provenance
 - Health Monitoring
 
 ---
@@ -162,11 +172,23 @@ Deliver the first production agent.
 - Gmail OAuth
 - Gmail Connector
 - Classification
+- Clinical and PHI classification suppression with hold or manual handling
 - Labels
 - Archive
 - Draft Replies
 - Attachment Saving
 - Google Drive Integration
+
+## Phase 6 Safety Requirement
+
+An inbound message classified as clinical or as containing protected health
+information must not produce an automatic draft or an approvable send. The
+Policy Engine must suppress drafting and route the message to a hold or manual
+handling outcome. Human approval is not an override for this suppression.
+
+This is a scope requirement for the future Gmail Agent and Policy Engine
+Engineering Specifications. It does not authorize implementation in the
+current frontend phase.
 
 ---
 

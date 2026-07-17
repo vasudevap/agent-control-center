@@ -21,6 +21,7 @@ The Agent Control Center is divided into the following major containers:
 - Object or File Storage
 - External Connectors
 - LLM Provider
+- Governed External Product Client
 - Notion Provisioner
 - Local Development Environment
 
@@ -62,6 +63,10 @@ The execution plane performs:
 flowchart LR
     User[Project Owner]
 
+    subgraph ExternalClientBoundary[External Product Client Boundary]
+        ProductClient[External Control Surface / Product Client\nExample: Plaintrol]
+    end
+
     subgraph FrontendBoundary[Frontend Hosting Boundary]
         Dashboard[Web Dashboard\nNext.js + TypeScript\nHosted on Netlify]
     end
@@ -89,7 +94,10 @@ flowchart LR
     end
 
     User -->|Uses| Dashboard
+    User -->|Uses| ProductClient
     Dashboard -->|HTTPS API calls| API
+    ProductClient -->|Authenticated HTTPS API calls| API
+    API -->|Authenticated webhook events| ProductClient
     API -->|Authenticate| IdP
     API -->|Read and write platform state| DB
     API -->|Submit jobs| Queue
@@ -126,6 +134,7 @@ flowchart LR
 | File Storage        | Store attachments and outputs          | Google Drive initially                            | Google                    |
 | Identity Provider   | Authenticate users                     | Google Identity or equivalent                     | External                  |
 | LLM Provider        | Classification and reasoning           | Direct provider SDK                               | External                  |
+| External Product Client | Customer-facing governed control surface | Independent product technology                | External                  |
 | Notion Provisioner  | Create and maintain project workspace  | TypeScript or Python                              | Local initially           |
 | Local File Sync     | Synchronize approved files locally     | Google Drive Desktop                              | Local computer            |
 
@@ -191,7 +200,20 @@ The dashboard must not:
 
 ## 6. Backend API
 
-### 6.1 Responsibilities
+### 6.1 API Consumer Classes
+
+The Backend API serves two governed consumer classes:
+
+1. The first-party Atlas Web Dashboard.
+2. One authenticated external product client acting for the single human owner
+   and reviewer.
+
+Plaintrol is the first external product client. The API contract remains generic
+and must not expose Plaintrol-specific domain concepts. Both consumer classes
+use the same authoritative Atlas services and neither client is trusted to
+enforce approval, policy, execution, or audit rules.
+
+### 6.2 Responsibilities
 
 The Backend API acts as the control plane.
 
@@ -210,8 +232,11 @@ It is responsible for:
 - Policy enforcement
 - Health endpoints
 - Administrative operations
+- External-client authentication at the API boundary
+- Governed external access to agent, run, approval, and evidence state
+- Outbound webhook delivery for subscribed platform events
 
-### 6.2 Technology
+### 6.3 Technology
 
 Initial stack:
 
@@ -222,7 +247,7 @@ Initial stack:
 - Alembic
 - Render Web Service
 
-### 6.3 API Categories
+### 6.4 API Categories
 
 Expected API groups:
 
@@ -240,7 +265,41 @@ Expected API groups:
 /api/settings
 ```
 
-### 6.4 Security Controls
+The general external-client contract exposes a governed subset of these API
+groups. The architecture-level operations include:
+
+```text
+GET  /api/agents/{agent_id}
+GET  /api/runs/{run_id}
+GET  /api/approvals?status=pending
+GET  /api/approvals/{approval_id}
+POST /api/approvals/{approval_id}/decisions
+GET  /api/manual-handling/{hold_id}
+```
+
+The approval operations reflect ADR-003. They expose pending requests and
+decision evidence, and accept one approve or reject decision for the single
+human reviewer. Exact schemas, versioning, pagination, authorization scope,
+error contracts, and idempotency requirements remain Phase 3 and Phase 5 design
+work.
+
+### 6.5 Outbound Webhook Delivery
+
+The Backend API owns the control-plane boundary for outbound webhook delivery.
+Initial external-client event classes are:
+
+- `approval.pending`.
+- `send.outcome`, including `Sent`, `Failed`, and `Indeterminate` outcomes
+  for approved sends.
+- `message.held_for_manual_handling`, containing a governed message reference
+  and reason category without a draft, proposed action, or approval identity.
+
+Webhook delivery is an authenticated notification mechanism. It does not
+authorize an action and does not replace an authoritative API read. Retry,
+ordering, deduplication, subscription lifecycle, delivery persistence, and
+reconciliation remain Phase 3 and Phase 5 design work.
+
+### 6.6 Security Controls
 
 - Authentication required by default
 - Role and policy checks
@@ -252,6 +311,16 @@ Expected API groups:
 - No secret values returned
 - Idempotency keys for action-triggering operations
 - Reauthentication for high-risk operations
+- Separate authentication for the external product client
+- Human attribution for external approval decisions
+- Scoped external-client access with deny-by-default authorization
+- Authenticated webhook delivery
+- Audit provenance that identifies the external client and decision channel
+- Audit provenance that identifies the external delivery channel and hold
+  reason for non-approval manual-handling events
+
+The detailed external-client trust model is deferred to the future update of
+`07-security-architecture.md` identified by proposed ADR-004.
 
 ---
 
@@ -705,14 +774,22 @@ sequenceDiagram
     participant DB
     actor User
     participant Dashboard
+    participant ExternalClient
     participant API
 
     Worker->>DB: Create pending approval
-    User->>Dashboard: Review approval
-    Dashboard->>API: Approve or reject
+    alt Atlas dashboard channel
+        User->>Dashboard: Review approval
+        Dashboard->>API: Approve or reject
+    else Governed external channel
+        API-->>ExternalClient: Authenticated approval.pending webhook
+        User->>ExternalClient: Review approval
+        ExternalClient->>API: Approve or reject for the single reviewer
+    end
     API->>DB: Update approval state
     Worker->>DB: Check approval state
     Worker->>DB: Record execution result
+    API-->>ExternalClient: Authenticated send.outcome webhook
 ```
 
 ---
@@ -727,6 +804,7 @@ sequenceDiagram
 | Agent Workers      | Development, Production | Render Background Workers |
 | PostgreSQL         | Development, Production | Render PostgreSQL         |
 | Queue              | Development, Production | Render-compatible service |
+| External Product Client | External           | Independently deployed     |
 | Notion Provisioner | Local initially         | Developer machine         |
 | File Sync          | Local                   | Google Drive Desktop      |
 
@@ -803,4 +881,8 @@ The following decisions require ADRs:
 - Control plane and execution plane separated
 - Initial deployment mapping defined
 - Security responsibilities assigned by container
-- Detailed component architecture remains to be defined
+- Detailed component architecture is documented in
+  `05-component-architecture.md`.
+- External dashboard and product-client consumer classes are documented, with
+  ADR-004 still proposed and pending review.
+- No backend container or external API contract is implemented.

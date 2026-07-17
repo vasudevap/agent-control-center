@@ -19,3 +19,6 @@ coverage/
 
 # macOS metadata
 .DS_Store
+
+# Personal editor workspaces
+*.code-workspace

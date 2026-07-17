@@ -24,3 +24,12 @@ Audit.
 The WO-012 implementation report records the final placeholder replacement for
 Connectors, Policies, and Settings, including simulation safety, accessibility,
 responsive evidence, validation, and the governed merge gate.
+
+The WO-010 implementation report records the completed Runs and Artifacts
+delivery. The WO-013 and WO-014 authorization and implementation reports record
+the final indicator, responsive-header, simulation-language, title-metadata,
+and mobile-action-flow consistency work.
+
+The [ADR-004 review request](./ADR-004-governed-external-product-client-contract-review.md)
+routes the proposed governed external product client contract to Architecture
+and Security Review. It carries no implementation authority.

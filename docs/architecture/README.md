@@ -125,13 +125,18 @@ The Notion provisioner may synchronize selected content from this directory into
 
 ## Current Status
 
-The initial architecture baseline is documented.
+The initial architecture baseline and Human Approvals architecture are
+documented. ADR-003 is accepted for the governed external approval decision
+channel. ADR-004 is proposed and awaiting Architecture and Security Review for
+the general external product client contract.
 
 The next architecture activities are:
 
-- Create Architecture Decision Records
-- Define detailed API contracts
+- Review and accept, revise, or reject ADR-004
+- Produce the Phase 3 Platform Foundation Engineering Specification
+- Define detailed external-client API and webhook contracts
+- Update Security, Data, and Observability architecture during the authorized
+  Phase 3 and Phase 5 design work
 - Define the physical PostgreSQL schema
 - Define the plugin manifest
-- Create detailed dashboard interaction flows
 - Validate the architecture against the Gmail Agent MVP
