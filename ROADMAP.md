@@ -103,10 +103,10 @@ Build the platform infrastructure.
 
 ## Status
 
-In progress. ES-004 and WO-015 define, authorize, and implement the first
-backend Platform Foundation scope pending governed pull-request merge. Queue,
-Scheduler, broader authentication, and operational platform services remain
-future Phase 3 increments.
+In progress. ES-004 and WO-015 define, authorize, implement, and merge the
+first backend Platform Foundation scope. Queue, Scheduler, broader
+authentication, and operational platform services remain future Phase 3
+increments.
 
 ---
 
