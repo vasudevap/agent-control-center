@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 EnvironmentName = Literal["local", "development", "test", "staging", "production"]
@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     external_client_secret: SecretStr | None = None
     webhook_signing_secret: SecretStr | None = None
     require_database: bool = False
+    owner_identity_subject: str | None = None
+    owner_session_idle_minutes: int = Field(default=30, ge=1, le=1440)
+    owner_session_absolute_hours: int = Field(default=12, ge=1, le=168)
 
     model_config = SettingsConfigDict(
         env_prefix="ATLAS_API_",
@@ -35,7 +38,7 @@ class Settings(BaseSettings):
         return sorted(set(problems))
 
     @property
-    def redacted(self) -> dict[str, str | bool | None]:
+    def redacted(self) -> dict[str, str | bool | int | None]:
         return {
             "app_name": self.app_name,
             "environment": self.environment,
@@ -43,6 +46,11 @@ class Settings(BaseSettings):
             "external_client_secret": self._redact(self.external_client_secret),
             "webhook_signing_secret": self._redact(self.webhook_signing_secret),
             "require_database": self.require_database,
+            "owner_identity_subject_configured": (
+                self.owner_identity_subject is not None
+            ),
+            "owner_session_idle_minutes": self.owner_session_idle_minutes,
+            "owner_session_absolute_hours": self.owner_session_absolute_hours,
         }
 
     @staticmethod

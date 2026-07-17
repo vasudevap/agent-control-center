@@ -102,6 +102,11 @@ endpoints, configuration loading, structured errors, correlation IDs,
 external-client authentication scaffolding, SQLAlchemy models, Alembic
 migration foundation, and local webhook delivery scaffolding.
 
+WO-019 adds a provider-neutral, owner-only session foundation: configured owner
+subject validation, opaque hash-stored sessions, expiry/revocation, strict
+cookie helpers, and CSRF support. Real identity-provider integration and
+frontend login remain intentionally deferred.
+
 Operational business APIs, real authentication sessions, production
 persistence, connector execution, policy evaluation, operational audit storage,
 and agent runtime services are not implemented.
