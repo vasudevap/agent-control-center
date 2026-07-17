@@ -47,3 +47,8 @@ The [WO-015 implementation report](./WO-015-platform-foundation-implementation-r
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
 evidence, and remaining limitations.
+
+The [WO-016 infrastructure provisioning strategy review](./WO-016-infrastructure-provisioning-strategy-review.md)
+records the provider-native provisioning strategy, environment model,
+PostgreSQL placement, secrets/configuration ownership, backup and rollback
+expectations, ADR assessment, and residual risks.

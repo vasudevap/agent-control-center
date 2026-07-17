@@ -138,7 +138,9 @@ colocated with feature code using the `*.test.ts` or `*.test.tsx` suffix.
 ES-000 is closed. ES-001 establishes the engineering-governance and
 continuous-integration baseline for subsequent approved work. The Phase 3
 master implementation plan coordinates the remaining backend platform
-foundation increments before additional code work proceeds.
+foundation increments before additional code work proceeds, and WO-016 records
+the infrastructure provisioning and environment strategy for the next backend
+increments.
 
 # Engineering Governance and CI
 
@@ -274,6 +276,8 @@ behavior. The next implementation phase is the Phase 3 backend foundation,
 whose first backend foundation is implemented and merged through WO-015.
 The remaining Phase 3 implementation sequence is drafted in the Phase 3 master
 implementation plan and work-order backlog under `docs/implementation-plans/`.
+WO-016 has documented the infrastructure provisioning and environment strategy;
+live provisioning remains separately unauthorized.
 
 ---
 

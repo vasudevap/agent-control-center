@@ -258,6 +258,9 @@ Notion is the operational and learning workspace for:
 - The Phase 3 master implementation plan drafts the remaining backend
   architecture, work-order sequence, and future agent execution packet format
   before additional code implementation proceeds.
+- WO-016 documents the infrastructure provisioning and environment strategy,
+  including the provider-native Netlify and Render path, PostgreSQL placement,
+  secrets/configuration ownership, and live-provisioning guardrails.
 - Operational authentication sessions, business APIs, connectors, agent
   runtime, scheduler, queue, policy execution, and business workflows remain
   future work subject to architecture and work-order approval.

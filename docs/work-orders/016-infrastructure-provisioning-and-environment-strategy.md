@@ -1,16 +1,18 @@
 # Work Order 016: Infrastructure Provisioning and Environment Strategy
 
-**Status:** Proposed - Review Required
+**Status:** Completed
 **Work Order ID:** WO-016
 **Type:** Architecture and infrastructure planning
 **Implementation Authorization:** Not Granted
-**Planning Authorization:** Not Granted Until Accepted
-**Accepted:** Not Accepted
-**Accepted By:** Not Accepted
+**Planning Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Plan:** [Phase 3 Platform Foundation Master Plan](../implementation-plans/phase-3-platform-foundation-master-plan.md)
 **Architecture Authority:** [Container Architecture](../architecture/04-container-architecture.md), [Deployment Architecture](../architecture/06-deployment-architecture.md), [Security Architecture](../architecture/07-security-architecture.md), [Data Architecture](../architecture/08-data-architecture.md), [Technology Strategy](../architecture/12-technology-strategy.md)
 **Decision Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md), [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md)
 **Review Owner:** Repository Maintainer
+**Strategy Document:** [Infrastructure Provisioning Strategy](../implementation-plans/infrastructure-provisioning-strategy.md)
+**Review Record:** [WO-016 Infrastructure Provisioning Strategy Review](../reviews/WO-016-infrastructure-provisioning-strategy-review.md)
 
 ---
 
@@ -43,9 +45,9 @@ The result should be specific enough for later implementation agents to execute
 planned decisions without making architecture or infrastructure choices during
 coding.
 
-## 3. Proposed Scope
+## 3. Approved Scope
 
-Acceptance of this Work Order would authorize planning and documentation only.
+This Work Order authorizes planning and documentation only.
 
 ### 3.1 Provider and provisioning decision
 
@@ -229,5 +231,6 @@ The planning agent must stop and ask before proceeding if:
 
 ## 11. Review Notes
 
-This Work Order is proposed for review. It does not authorize implementation,
-live provisioning, deployment, or creation of provider resources.
+This Work Order is complete. The strategy document and review record preserve
+the selected planning baseline. It does not authorize implementation, live
+provisioning, deployment, or creation of provider resources.
