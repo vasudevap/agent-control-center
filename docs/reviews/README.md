@@ -38,3 +38,7 @@ The [ADR-005 review record](./ADR-005-draft-support-knowledge-and-ask-instead-of
 records Architecture and Security Review acceptance of governed draft-support
 knowledge and ask-instead-of-guess behavior. It carries no implementation
 authority.
+
+The [ES-004 review record](./ES-004-platform-foundation-review.md) records
+acceptance of the Phase 3 backend Platform Foundation Engineering
+Specification and WO-015 implementation authority.

@@ -32,5 +32,5 @@ Work Order 014 authorizes the final responsive-header, simulation-language,
 title-metadata, and mobile-action-flow consistency corrections and is
 completed.
 
-Work Order 015 drafts the Phase 3 backend Platform Foundation scope. It is
-pending ES-004 approval and does not yet authorize implementation.
+Work Order 015 authorizes the Phase 3 backend Platform Foundation scope under
+accepted ES-004. It is ready for implementation on a short-lived branch.

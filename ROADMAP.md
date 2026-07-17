@@ -103,9 +103,9 @@ Build the platform infrastructure.
 
 ## Status
 
-Drafted. ES-004 and WO-015 define the proposed backend platform foundation
-scope for review. Implementation is not authorized until the repository
-maintainer accepts the Engineering Specification and Work Order.
+Accepted. ES-004 and WO-015 define and authorize the backend Platform
+Foundation implementation scope. Implementation proceeds through a short-lived
+branch, required validation, and the governed pull-request process.
 
 ---
 

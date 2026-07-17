@@ -1,13 +1,16 @@
 # ES-004 - Platform Foundation
 
-**Status:** Proposed - Review Required
+**Status:** Accepted - Implementation Authorized Through WO-015
 **Owner:** Repository Maintainer
 **Review Owner:** Repository Maintainer
 **Date:** 2026-07-17
 **Version:** 0.1
-**Implementation Authorization:** Not Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
+**Implementation Authorization:** Granted through WO-015
 **Target Release:** Not Assigned
 **Related Work Order:** `docs/work-orders/015-platform-foundation.md`
+**Review Record:** `docs/reviews/ES-004-platform-foundation-review.md`
 **Related ADRs:** `docs/decisions/ADR-003-governed-external-approval-decision-channel.md`, `docs/decisions/ADR-004-governed-external-product-client-contract.md`, `docs/decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md`
 
 ---
@@ -268,7 +271,7 @@ The implementing Work Order must provide evidence for:
 
 ## 11. Acceptance Criteria
 
-ES-004 is ready for implementation only when:
+ES-004 was accepted for implementation on 2026-07-17 because:
 
 - This specification and `WO-015` are reviewed and approved by the repository
   maintainer.
@@ -296,4 +299,5 @@ ES-004 is complete when an approved Work Order implements the foundation,
 records review evidence, passes required local and CI validation, and merges
 through the governed pull-request process.
 
-This specification by itself authorizes no implementation.
+This specification authorizes implementation only through the bounded WO-015
+scope.

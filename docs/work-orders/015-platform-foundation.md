@@ -1,12 +1,15 @@
 # Work Order 015: Platform Foundation
 
-**Status:** Draft - Pending ES-004 Approval
+**Status:** Accepted - Implementation Authorized
 **Work Order ID:** WO-015
 **Type:** Backend platform foundation
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Governing Engineering Specification:** [ES-004 Platform Foundation](../engineering-specifications/ES-004-platform-foundation.md)
 **Architecture Authority:** [Container Architecture](../architecture/04-container-architecture.md), [Security Architecture](../architecture/07-security-architecture.md), [Data Architecture](../architecture/08-data-architecture.md), [Human Approvals Architecture](../architecture/13-human-approvals.md)
 **Decision Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md), [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md)
+**Review Authority:** [ES-004 Review](../reviews/ES-004-platform-foundation-review.md)
 **Review Owner:** Repository Maintainer
 
 ---
@@ -30,8 +33,7 @@ client-specific product model.
 
 ## 3. Approved Scope
 
-Implementation is limited to the following scope after ES-004 and this Work
-Order are approved.
+Implementation is limited to the following accepted scope.
 
 ### 3.1 Backend workspace
 
@@ -176,7 +178,6 @@ WO-015 is complete only when:
 
 ## 10. Review Notes
 
-This Work Order is intentionally not yet implementation-authorized. The next
-governance action is review and acceptance of ES-004 and WO-015. Once accepted,
-implementation should proceed on a short-lived branch linked to this Work
-Order.
+This Work Order is implementation-authorized. Implementation must proceed on a
+short-lived branch linked to WO-015 and merge through the governed
+pull-request process after required validation passes.
