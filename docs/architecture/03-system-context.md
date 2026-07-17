@@ -451,7 +451,7 @@ Controls:
 - Audit provenance for external-client activity.
 
 The exact authentication and human-attribution design remains pending in the
-Phase 3 and Phase 5 security architecture work identified by proposed ADR-004.
+Phase 3 and Phase 5 security architecture work required by accepted ADR-004.
 
 ---
 
@@ -727,7 +727,7 @@ The system context identifies several decisions that should become ADRs:
 - Approval policy model
 - Local file synchronization approach
 - Control plane and execution plane separation
-- Governed external product client contract, proposed in ADR-004
+- Governed external product client contract, accepted in ADR-004
 
 ---
 
@@ -741,6 +741,5 @@ The system context identifies several decisions that should become ADRs:
 - Container, component, deployment, security, data, runtime, connector,
   observability, technology, and Human Approvals architecture are documented.
 - The governed external approval channel is accepted under ADR-003.
-- The general external product client relationship is proposed under ADR-004
-  and remains pending Architecture and Security Review.
+- The general external product client relationship is accepted under ADR-004.
 - No backend or external-client contract is implemented.

@@ -30,6 +30,6 @@ delivery. The WO-013 and WO-014 authorization and implementation reports record
 the final indicator, responsive-header, simulation-language, title-metadata,
 and mobile-action-flow consistency work.
 
-The [ADR-004 review request](./ADR-004-governed-external-product-client-contract-review.md)
-routes the proposed governed external product client contract to Architecture
-and Security Review. It carries no implementation authority.
+The [ADR-004 review record](./ADR-004-governed-external-product-client-contract-review.md)
+records Architecture and Security Review acceptance of the governed external
+product client contract. It carries no implementation authority.

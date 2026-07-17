@@ -1,9 +1,12 @@
-# ADR-004 Governed External Product Client Contract Review Request
+# ADR-004 Governed External Product Client Contract Review Record
 
-**Status:** Pending Architecture and Security Review
+**Status:** Accepted
 **Decision Record:** `docs/decisions/ADR-004-governed-external-product-client-contract.md`
 **Review Owner:** Repository Maintainer
 **Date Routed:** 2026-07-17
+**Date Reviewed:** 2026-07-17
+**Reviewed By:** Repository Maintainer
+**Review Method:** Explicit evidence-based maintainer self-review under the repository pull-request process
 
 ## Review Objective
 
@@ -24,24 +27,58 @@ customer-facing product client acting for the single human owner and reviewer.
 - Multi-user, role-based, multi-tenant, billing, marketplace, and multiple
   external product client concerns remain outside this decision.
 
-## Required Review Findings
+## Architecture Review Findings
 
-Architecture Review must confirm:
+- **Control-plane separation:** Pass. The external product client calls the
+  Backend API and cannot call agent tools, connectors, or execution-plane
+  components directly.
+- **Authoritative state:** Pass. Atlas remains the sole system of record and
+  retains authority for policy, approval validity, continuation, execution
+  outcomes, and audit evidence.
+- **Contract independence:** Pass. Plaintrol is identified only as the first
+  example consumer. The API and webhook contract uses generic external product
+  client terminology.
+- **Container responsibility:** Pass. The Backend API owns the governed inbound
+  API boundary and outbound webhook responsibility without introducing a new
+  deployment container.
+- **Sequencing:** Pass. Phase 3 establishes API, authentication, and webhook
+  foundations; Phase 5 establishes generic approval and manual-handling
+  contracts; Phase 6 supplies Gmail-specific evidence and execution.
+- **Scope constraint:** Pass. The decision permits one external product client
+  acting for one human reviewer and excludes multi-user, role-based,
+  multi-tenant, billing, marketplace, and multiple-client capabilities.
 
-- The platform-client relationship preserves control-plane and execution-plane
-  separation.
-- Atlas remains the sole system of record and execution authority.
-- The external product contract is generic and does not couple Atlas to
-  Plaintrol.
-- Phase 3, Phase 5, and Phase 6 sequencing is coherent.
+## Security Review Findings
 
-Security Review must confirm:
+- **Authentication and attribution:** Pass for architecture acceptance. Client
+  authentication is explicitly separate from attribution to the single human
+  reviewer. The mechanism remains mandatory Phase 3 and Phase 5 detailed design.
+- **Authorization:** Pass for architecture acceptance. External API access is
+  deny by default and remains enforced by Atlas. Review corrected one legacy
+  container-document phrase from `Role and policy checks` to `Authorization and
+  policy checks` so the current decision cannot be read as introducing RBAC.
+- **Evidence minimization:** Pass. Approval evidence is minimum necessary, and
+  the manual-handling event excludes message content unless a later approved
+  contract proves necessity and permission.
+- **Webhook authority:** Pass. Webhooks are authenticated notifications and do
+  not authorize actions or replace authoritative API reconciliation.
+- **Suppression integrity:** Pass. `message.held_for_manual_handling` has no
+  draft, proposed action, approval identity, or authorization and cannot
+  override clinical or protected-health-information suppression.
+- **Audit provenance:** Pass. External-client and channel provenance are
+  required. The non-approval hold records reason and delivery provenance without
+  fabricating a reviewer, decision, or approval identity.
+- **Failure posture:** Pass for architecture acceptance. Authentication,
+  authorization, attribution, evidence, and durable audit failures remain
+  fail-closed requirements for later detailed design.
 
-- Client authentication and human attribution are distinct concerns.
-- Evidence disclosure is minimum necessary.
-- Webhooks do not authorize actions or replace authoritative reconciliation.
-- The held-message event cannot create a draft, approval, or suppression
-  override.
+## Review Limitations and Required Follow-Up
+
+Acceptance establishes the platform-client stance but deliberately does not
+select authentication mechanisms, schemas, retry policies, rate limits,
+retention periods, or metric thresholds. Those decisions remain required in the
+Phase 3 and Phase 5 Engineering Specifications and the deferred updates to
+security, data, and observability architecture.
 
 ## Deferred Detailed Design
 
@@ -54,17 +91,22 @@ Acceptance does not resolve the later design work recorded for:
 Those updates belong to the authorized Phase 3 and Phase 5 Engineering
 Specifications.
 
-## Acceptance Procedure
+## Acceptance Decision
 
-1. Record Architecture Review findings.
-2. Record Security Review findings.
-3. Revise ADR-004 if either review requires changes.
-4. If accepted, update ADR-004 status, acceptance date, and accepted-by fields.
-5. Update `docs/decisions/README.md` from Proposed to Accepted.
-6. Confirm the canonical architecture remains internally consistent.
+ADR-004 is **Accepted** on 2026-07-17 by the Repository Maintainer.
+
+The acceptance basis is:
+
+1. All required Architecture Review findings pass.
+2. All required Security Review findings pass at the architecture-decision
+   level.
+3. The wording cleanup noted above removes a possible RBAC implication.
+4. Canonical architecture and roadmap sequencing are consistent.
+5. Deferred detailed design remains explicit and implementation remains
+   prohibited until separate governed artifacts reach Definition of Ready.
 
 ## Implementation Boundary
 
-This review request and ADR-004 authorize no implementation. Phase 3 or Phase 5
-implementation requires a separate approved Engineering Specification and Work
-Order that satisfy the Definition of Ready.
+This review record and accepted ADR-004 authorize no implementation. Phase 3 or
+Phase 5 implementation requires a separate approved Engineering Specification
+and Work Order that satisfy the Definition of Ready.

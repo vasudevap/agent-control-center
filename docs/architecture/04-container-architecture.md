@@ -302,7 +302,7 @@ reconciliation remain Phase 3 and Phase 5 design work.
 ### 6.6 Security Controls
 
 - Authentication required by default
-- Role and policy checks
+- Authorization and policy checks
 - Pydantic request validation
 - Rate limiting
 - Correlation IDs
@@ -320,7 +320,7 @@ reconciliation remain Phase 3 and Phase 5 design work.
   reason for non-approval manual-handling events
 
 The detailed external-client trust model is deferred to the future update of
-`07-security-architecture.md` identified by proposed ADR-004.
+`07-security-architecture.md` required by accepted ADR-004.
 
 ---
 
@@ -884,5 +884,5 @@ The following decisions require ADRs:
 - Detailed component architecture is documented in
   `05-component-architecture.md`.
 - External dashboard and product-client consumer classes are documented, with
-  ADR-004 still proposed and pending review.
+  the general external product client contract accepted under ADR-004.
 - No backend container or external API contract is implemented.

@@ -16,8 +16,8 @@ As of 2026-07-17:
   evaluation, operational audit storage, and the Gmail agent are not
   implemented.
 - ADR-003 is accepted for the governed external approval decision channel.
-- ADR-004 is proposed and awaiting Architecture and Security Review for the
-  general external product client API and webhook contract.
+- ADR-004 is accepted for the general external product client API and webhook
+  contract.
 - The next implementation-planning artifact is the Phase 3 Platform Foundation
   Engineering Specification. No backend implementation should begin before that
   specification and its Work Order satisfy the Definition of Ready.

@@ -5,7 +5,7 @@
 **Date:** 2026-07-17
 **Capability:** Human Approvals
 **Product:** Atlas
-**Pending Decision:** External product client additions require ADR-004 acceptance before implementation
+**Governing Decision:** ADR-004 is accepted; implementation still requires approved Phase 3 and Phase 5 artifacts
 
 ---
 

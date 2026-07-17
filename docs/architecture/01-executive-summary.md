@@ -229,7 +229,6 @@ At the time of this document:
 - Backend services, authentication, persistence, connectors, policy execution,
   operational audit storage, and the Gmail agent are not implemented.
 - ADR-003 is accepted for the governed external approval decision channel.
-- ADR-004 is proposed and pending Architecture and Security Review for the
-  general external product client contract.
+- ADR-004 is accepted for the general external product client contract.
 - Phase 3 Platform Foundation specification and authorization are the next
   implementation-planning gate.

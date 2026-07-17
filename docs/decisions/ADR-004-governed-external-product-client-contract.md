@@ -1,11 +1,13 @@
 # ADR-004 - Governed External Product Client Contract
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-16
 **Updated:** 2026-07-17
 **Decision Owners:** Architecture and Security Review
 **Review Owner:** Repository Maintainer
-**Review State:** Pending Architecture and Security Review
+**Review State:** Architecture and Security Review Complete
+**Accepted:** 2026-07-17
+**Accepted By:** Repository Maintainer
 **Scope:** Atlas platform-client relationship
 **Related Decision:** `ADR-003 - Governed External Approval Decision Channel`
 
@@ -39,7 +41,7 @@ The current scope permits one external product client acting for the single
 human reviewer. Multiple external product clients, multi-tenant isolation,
 billing, and marketplace capabilities are not part of this decision.
 
-## Proposed Decision
+## Decision
 
 Atlas will support two governed classes of control-plane consumer:
 
@@ -230,19 +232,24 @@ applicable phase reaches Definition of Ready.
 
 ## Governance and Acceptance
 
-This ADR is Proposed and has no implementation authority.
+This ADR is Accepted and has no implementation authority.
 
-Acceptance requires:
+The acceptance review confirmed:
 
-1. Architecture Review confirms alignment with the Atlas control-plane and
+1. The platform-client relationship aligns with the Atlas control-plane and
    execution-plane separation.
-2. Security Review confirms that the proposed trust boundary is suitable for
-   later detailed design.
-3. The Repository Maintainer records acceptance, acceptance date, and accepted
-   by metadata in this ADR.
-4. The decision index is updated from Proposed to Accepted.
-5. Canonical architecture sequencing is confirmed consistent before an
-   implementation artifact reaches Definition of Ready.
+2. The accepted trust boundary is suitable for later detailed security design.
+3. Atlas remains authoritative for state, policy, approval validity, execution,
+   outcomes, and audit evidence.
+4. Client authentication and human attribution remain distinct concerns.
+5. The held-message event is minimized, non-approvable, non-authorizing, and
+   unable to override clinical or protected-health-information suppression.
+6. The contract remains single-reviewer and introduces no users, roles, RBAC,
+   tenants, or multi-tenant isolation.
+7. Phase 3, Phase 5, and Phase 6 sequencing is internally consistent.
+
+The durable review evidence is recorded in
+`docs/reviews/ADR-004-governed-external-product-client-contract-review.md`.
 
 After acceptance, implementation still requires approved Phase 3 and Phase 5
 Engineering Specifications or Work Orders that satisfy the Definition of Ready.
@@ -251,6 +258,6 @@ authorization, human attribution, evidence minimization, webhook delivery,
 audit fields, manual-hold reason and channel provenance, observability, failure
 behavior, versioning, rate limits, and verification evidence.
 
-No implementation may begin under this proposed decision or the documentation
+No implementation may begin under this accepted decision or the documentation
 changes that reference it. This decision does not modify frontend prototypes or
 in-flight Work Orders.
