@@ -19,7 +19,7 @@ reviewed, accepted, implemented, validated, and merged independently.
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
 | WO-015 | Platform Foundation | ES-004 | Complete | Completed |
-| WO-016 | Infrastructure Provisioning and Environment Strategy | WO-015 | No | Planned |
+| WO-016 | Infrastructure Provisioning and Environment Strategy | WO-015 | No | Proposed |
 | WO-017 | Backend Runtime and Dependency Hardening | WO-016 | No | Planned |
 | WO-018 | PostgreSQL Environment and Migration Hardening | WO-017 | No | Planned |
 | WO-019 | Owner Authentication and Session Foundation | WO-018 | No | Planned |
@@ -34,6 +34,10 @@ reviewed, accepted, implemented, validated, and merged independently.
 ## 3. Planned Work Orders
 
 ### WO-016 - Infrastructure Provisioning and Environment Strategy
+
+Work Order:
+
+- [`docs/work-orders/016-infrastructure-provisioning-and-environment-strategy.md`](../work-orders/016-infrastructure-provisioning-and-environment-strategy.md)
 
 Objective:
 
