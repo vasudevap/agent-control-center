@@ -62,3 +62,8 @@ The [WO-018 PostgreSQL hardening implementation report](./WO-018-postgresql-hard
 records the required database URL boundary, ephemeral PostgreSQL 18 CI service,
 local command path, validation evidence, and the remaining authentication work
 for WO-019.
+
+The [WO-019 owner session implementation report](./WO-019-owner-session-implementation-report.md)
+records the provider-neutral verified-identity boundary, opaque hashed session
+lifecycle, CSRF/cookie controls, validation evidence, and the remaining
+authorization work for WO-020.
