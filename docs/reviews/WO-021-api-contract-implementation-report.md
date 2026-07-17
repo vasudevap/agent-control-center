@@ -2,7 +2,7 @@
 
 **Work Order:** [WO-021 API Contract Foundation](../work-orders/021-api-contract-foundation.md)
 **Implementation Branch:** `codex/wo-021-api-contract`
-**Implementation Status:** Complete - Pending Merge
+**Implementation Status:** Complete - Merged
 **Report Date:** 2026-07-17
 
 ## Summary
@@ -33,7 +33,7 @@ behavior was introduced.
 - Ruff and mypy passed.
 - `git diff --check` passed.
 - Frontend regression checks, secret scan, PostgreSQL 18 migration validation,
-  and required CI remain merge gates.
+  and required CI passed before merge.
 
 ## Next Work Order
 

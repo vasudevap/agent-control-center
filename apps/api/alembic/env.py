@@ -12,6 +12,7 @@ from atlas_api.models import (  # noqa: F401
     audit,
     external_client,
     external_request_nonce,
+    job,
     knowledge,
     owner_session,
     webhook,
