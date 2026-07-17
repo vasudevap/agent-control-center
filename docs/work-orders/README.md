@@ -45,6 +45,9 @@ backend commands, and CI alignment and is completed.
 Work Order 018 replaces SQLite-only migration smoke validation with the
 accepted local and CI PostgreSQL 18 path and is completed pending merge.
 
+Work Order 019 is proposed to establish a provider-neutral, owner-only backend
+session foundation. It requires acceptance before implementation.
+
 The remaining Phase 3 work-order sequence is drafted in
 [`docs/implementation-plans/phase-3-work-order-backlog.md`](../implementation-plans/phase-3-work-order-backlog.md).
 The backlog is planning guidance only; each future Work Order still requires
