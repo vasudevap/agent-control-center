@@ -38,13 +38,13 @@ authority.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-045: Controlled-Account Release Verification` | Controlled Evidence Complete - Pending PR Review | Review and merge | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
+| 1 | `WO-045: Controlled-Account Release Verification` | Completed - Merged | Complete | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
 | 2 | `WO-046: Dashboard Productization and Runtime Operations` | Completed - Merged | Complete | MVP-critical dashboard workflows use real contracts and pass UI validation |
 | 3 | `WO-047: Environment Configuration and Secrets Readiness` | Completed - Merged | Complete | Required config, OAuth setup, secret handling, redaction, and fail-closed checks documented and verified |
 | 4 | `WO-048: Deployment Path and Migration Readiness` | Completed - Merged | Complete | Netlify/Render path, migration procedure, backup/restore, and rollback evidence are ready |
 | 5 | `WO-049: Monitoring, Health, and Recovery Readiness` | Completed - Merged | Complete | Health/readiness, logs, metrics, alerts, and manual recovery paths are adequate for MVP |
 | 6 | `WO-050: Release Runbooks and Rollback` | Completed - Merged | Complete | Operator runbooks and rollback procedures are reviewed and complete |
-| 7 | `WO-051: MVP Release Candidate Validation` | Accepted - Pending Implementation | Execute | Final local, CI, migration, security/privacy, dashboard, fake-provider, and authorized controlled-account evidence recorded |
+| 7 | `WO-051: MVP Release Candidate Validation` | Implemented - Pending PR Review | Review and merge | Final local, CI, migration, security/privacy, dashboard, fake-provider, and authorized controlled-account evidence recorded |
 | 8 | `WO-052: MVP Acceptance and Phase 7 Closeout` | Accepted - Pending Implementation | Execute | Maintainer release decision and residual risk disposition recorded |
 
 ## 4. Dependency Sequence

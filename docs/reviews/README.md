@@ -134,6 +134,12 @@ records the browser-safe runtime health indicator, dashboard runtime readiness
 boundary, fixture quarantine posture, validation evidence, and residual
 dashboard/API integration risks.
 
+The [WO-051 release candidate validation report](./WO-051-mvp-release-candidate-validation-report.md)
+records the Operational MVP release-candidate evidence suite, including local
+backend/frontend validation, migration head, dashboard smoke evidence,
+security/privacy scan, fake-provider Gmail coverage, controlled Gmail/Drive
+evidence, known issues, and the WO-052 release-decision boundary.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
