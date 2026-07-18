@@ -25,8 +25,8 @@ from atlas_api.core.external_request_signing import (
     SignedExternalRequest,
     verify_signature,
 )
-from atlas_api.models.audit import AuditEvent
 from atlas_api.models.external_request_nonce import ExternalRequestNonce
+from atlas_api.services.audit import AuditEventInput, record_audit_event
 
 NONCE_RETENTION = timedelta(minutes=10)
 
@@ -52,17 +52,21 @@ def _audit_authorization(
     key_id: str | None,
     outcome: str,
 ) -> None:
-    session.add(
-        AuditEvent(
+    result = "succeeded" if outcome == "authorized" else "denied"
+    record_audit_event(
+        session,
+        AuditEventInput(
             event_type="external_client_authorization",
             actor_type="external_client",
             actor_id=external_client_id,
+            channel="external_product_client",
+            action="probe",
             resource_type="external_client_authentication",
             resource_id=external_client_id,
+            result=result,
+            reason_code=None if outcome == "authorized" else outcome,
             correlation_id=get_correlation_id(),
-            redaction_state="metadata_only",
-            metadata_json={
-                "channel": "external_product_client",
+            metadata={
                 "outcome": outcome,
                 "key_id": key_id,
             },

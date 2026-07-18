@@ -8,12 +8,16 @@ from sqlalchemy.orm import Session, sessionmaker
 from atlas_api.core.config import Settings
 from atlas_api.db.base import utc_now
 from atlas_api.db.config import require_database_url
-from atlas_api.services.scheduler import sweep_due_schedules
+from atlas_api.services.audit import record_schedule_audit_event
+from atlas_api.services.scheduler import ScheduleAuditEvent, sweep_due_schedules
 
 
 def run_once(session_factory: sessionmaker[Session]) -> int:
     with session_factory.begin() as session:
-        return sweep_due_schedules(session, now=utc_now())
+        def audit_hook(event: ScheduleAuditEvent) -> None:
+            record_schedule_audit_event(session, event)
+
+        return sweep_due_schedules(session, now=utc_now(), audit_hook=audit_hook)
 
 
 def main() -> None:
