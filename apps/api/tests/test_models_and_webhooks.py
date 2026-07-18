@@ -7,7 +7,6 @@ from atlas_api.db.base import Base
 from atlas_api.models import audit, external_client, knowledge, webhook  # noqa: F401
 from atlas_api.services.webhook_delivery import (
     RecordingWebhookTransport,
-    WebhookDeliveryService,
     WebhookNotification,
 )
 
@@ -44,16 +43,15 @@ def test_foundation_schema_can_create_in_narrow_sqlite_unit_test() -> None:
 @pytest.mark.anyio
 async def test_webhook_delivery_uses_fake_transport_without_network() -> None:
     transport = RecordingWebhookTransport()
-    service = WebhookDeliveryService(transport)
     notification = WebhookNotification(
+        event_id="whe_123",
         event_type="knowledge.question.pending",
         target_url="https://client.example.test/webhooks/atlas",
-        payload_summary={"knowledge_question_id": "kq_123"},
-        correlation_id="corr-webhook",
+        body=b'{"version":1}',
+        headers={"X-Atlas-Event-Id": "whe_123"},
     )
 
-    result = await service.deliver(notification)
+    result = await transport.send(notification, timeout_seconds=5)
 
     assert result.status == "delivered"
-    assert result.attempt_count == 1
     assert transport.sent == [notification]

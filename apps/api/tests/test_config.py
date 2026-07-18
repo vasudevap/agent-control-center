@@ -50,6 +50,7 @@ def test_secret_settings_are_redacted() -> None:
         "external_client_secret": "***",
         "external_client_next_secret": None,
         "webhook_signing_secret": "***",
+        "webhook_signing_next_secret": None,
         "require_database": False,
         "owner_identity_subject_configured": False,
         "owner_session_idle_minutes": 30,
