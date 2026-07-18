@@ -1,9 +1,9 @@
 # Work Order 028: Run Lifecycle and Job Intake Contracts
 
-**Status:** Proposed - Governance Review Required
+**Status:** Accepted - Ready After WO-027
 **Work Order ID:** WO-028
 **Type:** Backend platform contract
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted under ADP-002 on 2026-07-18
 **Engineering Specification:** [ES-005](../engineering-specifications/ES-005-agent-framework-and-governance-contracts.md)
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [Agent Runtime Architecture](../architecture/09-agent-runtime.md), [Observability Architecture](../architecture/11-observability.md)

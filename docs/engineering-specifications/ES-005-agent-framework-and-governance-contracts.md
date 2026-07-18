@@ -1,12 +1,12 @@
 # ES-005 - Agent Framework and Governance Contracts
 
-**Status:** Proposed - Governance Review Required
+**Status:** Accepted - Phase 5 Execution Authorized
 **Owner:** Repository Maintainer
 **Review Owner:** Repository Maintainer
 **Date:** 2026-07-18
 **Version:** 0.1
-**Accepted:** Not Accepted
-**Implementation Authorization:** Not Granted
+**Accepted:** Accepted by Repository Maintainer on 2026-07-18
+**Implementation Authorization:** Granted for WO-027 through WO-035 under ADP-002
 **Target Release:** MVP-enabling pre-MVP foundation
 **Related Work Orders:** `docs/work-orders/027-agent-registry-and-runtime-contracts.md` through `docs/work-orders/035-phase-5-contract-integration-verification-and-closeout.md`
 **Governing Plan:** `docs/implementation-plans/phase-5-work-order-backlog.md`

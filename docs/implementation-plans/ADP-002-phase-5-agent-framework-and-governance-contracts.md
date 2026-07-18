@@ -1,11 +1,11 @@
 # ADP-002: Phase 5 Agent Framework and Governance Contracts
 
-**Status:** Proposed - Blocked Pending ES and Work Order Acceptance
+**Status:** Accepted - Active for Autonomous Phase 5 Execution
 **Program ID:** ADP-002
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
 **Created:** 2026-07-18
-**Execution Window:** Not active until ES-005 and WO-027 through WO-035 are accepted
+**Execution Window:** Active as of Repository Maintainer acceptance on 2026-07-18
 **Engineering Specification:** `docs/engineering-specifications/ES-005-agent-framework-and-governance-contracts.md`
 **Work Order Backlog:** `docs/implementation-plans/phase-5-work-order-backlog.md`
 
@@ -22,10 +22,11 @@ gates, rollback expectations, and stop-and-ask triggers.
 
 ## 2. Execution Authority
 
-Execution authority is not granted yet.
+Execution authority is granted by Repository Maintainer acceptance on
+2026-07-18.
 
-After the Repository Maintainer accepts ES-005, accepts WO-027 through WO-035,
-and explicitly authorizes ADP-002 execution, the assistant may proceed without
+The Repository Maintainer accepted ES-005, accepted WO-027 through WO-035, and
+explicitly authorized ADP-002 execution. The assistant may proceed without
 voluntary pauses through dependency-ready Phase 5 Work Orders.
 
 That future authority would include implementing, validating, documenting,
@@ -41,15 +42,15 @@ webhooks, production deployment, architecture changes, or scope outside ES-005.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-027: Agent Registry and Runtime Contracts` | Proposed | Implement after ES-005 acceptance | PR merged with registry/runtime contract tests and implementation report |
-| 2 | `WO-029: Governed Knowledge Fact Contracts` | Proposed | Can run in parallel with WO-027 and WO-031 after acceptance | PR merged with fact CRUD, revision, confirmation, volatility, authorization, audit, and prohibited-content tests |
-| 3 | `WO-031: Approval Decision and Manual-Handling Contracts` | Proposed | Can run in parallel with WO-027 and WO-029 after acceptance | PR merged with approval queue, evidence, decision, edit-then-approve, manual-handling, authorization, and audit tests |
-| 4 | `WO-028: Run Lifecycle and Job Intake Contracts` | Proposed | Start after WO-027 schema/API contracts stabilize | PR merged with run lifecycle, queue handoff, idempotency, cancellation, timeout, and audit tests |
-| 5 | `WO-030: Knowledge Question and Answer Lifecycle` | Proposed | Start after WO-029 | PR merged with question, answer, validation, fact-update, webhook enqueue, and audit tests |
-| 6 | `WO-033: Webhook and Audit Event Contract Expansion` | Proposed | Start after event producers from WO-029 through WO-031 exist | PR merged with event schemas, minimized payloads, fake webhook delivery, and audit contract tests |
-| 7 | `WO-034: Phase 5 Dashboard Contract Compatibility Pass` | Proposed | Can run after stable API schemas from WO-027, WO-028, WO-029, and WO-031 | PR merged with dashboard contract alignment evidence and no full Phase 4 release claim |
-| 8 | `WO-032: Facts-Used Evidence and Revalidation Contracts` | Proposed | Start after WO-029 and WO-031 | PR merged with exact fact revision binding, manifest compatibility, fail-closed revalidation, and audit tests |
-| 9 | `WO-035: Phase 5 Contract Integration Verification and Closeout` | Proposed | Final serial closeout | PR merged with synthetic integration smoke, security/privacy negatives, closeout report, and Phase 6 entry criteria |
+| 1 | `WO-027: Agent Registry and Runtime Contracts` | Implemented Locally - Pending PR/CI/Merge | Complete governed PR, CI, and merge evidence before closeout | PR merged with registry/runtime contract tests and implementation report |
+| 2 | `WO-029: Governed Knowledge Fact Contracts` | Accepted | Can run in parallel with WO-027 and WO-031 after acceptance | PR merged with fact CRUD, revision, confirmation, volatility, authorization, audit, and prohibited-content tests |
+| 3 | `WO-031: Approval Decision and Manual-Handling Contracts` | Accepted | Can run in parallel with WO-027 and WO-029 after acceptance | PR merged with approval queue, evidence, decision, edit-then-approve, manual-handling, authorization, and audit tests |
+| 4 | `WO-028: Run Lifecycle and Job Intake Contracts` | Accepted | Start after WO-027 schema/API contracts stabilize | PR merged with run lifecycle, queue handoff, idempotency, cancellation, timeout, and audit tests |
+| 5 | `WO-030: Knowledge Question and Answer Lifecycle` | Accepted | Start after WO-029 | PR merged with question, answer, validation, fact-update, webhook enqueue, and audit tests |
+| 6 | `WO-033: Webhook and Audit Event Contract Expansion` | Accepted | Start after event producers from WO-029 through WO-031 exist | PR merged with event schemas, minimized payloads, fake webhook delivery, and audit contract tests |
+| 7 | `WO-034: Phase 5 Dashboard Contract Compatibility Pass` | Accepted | Can run after stable API schemas from WO-027, WO-028, WO-029, and WO-031 | PR merged with dashboard contract alignment evidence and no full Phase 4 release claim |
+| 8 | `WO-032: Facts-Used Evidence and Revalidation Contracts` | Accepted | Start after WO-029 and WO-031 | PR merged with exact fact revision binding, manifest compatibility, fail-closed revalidation, and audit tests |
+| 9 | `WO-035: Phase 5 Contract Integration Verification and Closeout` | Accepted | Final serial closeout | PR merged with synthetic integration smoke, security/privacy negatives, closeout report, and Phase 6 entry criteria |
 
 ## 4. Dependency Sequence
 

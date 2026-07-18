@@ -1,9 +1,9 @@
 # Work Order 031: Approval Decision and Manual-Handling Contracts
 
-**Status:** Proposed - Governance Review Required
+**Status:** Accepted - Ready for Implementation
 **Work Order ID:** WO-031
 **Type:** Backend approval contract
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted under ADP-002 on 2026-07-18
 **Engineering Specification:** [ES-005](../engineering-specifications/ES-005-agent-framework-and-governance-contracts.md)
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [ADR-002](../decisions/ADR-002-human-approvals-decision-integrity.md), [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md)

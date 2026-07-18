@@ -1,14 +1,14 @@
 # Work Order 027: Agent Registry and Runtime Contracts
 
-**Status:** Proposed - Governance Review Required
+**Status:** Implemented Locally - Pending PR, CI, and Merge
 **Work Order ID:** WO-027
 **Type:** Backend platform contract
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted under ADP-002 on 2026-07-18
 **Engineering Specification:** [ES-005](../engineering-specifications/ES-005-agent-framework-and-governance-contracts.md)
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [Agent Runtime Architecture](../architecture/09-agent-runtime.md), [Security Architecture](../architecture/07-security-architecture.md)
 **Prerequisite:** ES-005 accepted
-**Review Record:** TBD
+**Review Record:** [WO-027 Implementation Report](../reviews/WO-027-agent-registry-and-runtime-contracts-implementation-report.md)
 
 ## 1. Purpose
 

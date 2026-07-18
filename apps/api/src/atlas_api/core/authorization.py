@@ -41,4 +41,12 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
         and context.action == "probe"
     ):
         return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+    if (
+        context.actor_kind is ActorKind.EXTERNAL_CLIENT
+        and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
+        and context.resource == "agent_registry"
+        and context.action in {"list", "read", "read_status", "read_health"}
+        and context.risk_level == "low"
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
     return AuthorizationDecision(allowed=False, reason_code="authorization_denied")

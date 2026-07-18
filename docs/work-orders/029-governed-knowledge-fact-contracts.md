@@ -1,9 +1,9 @@
 # Work Order 029: Governed Knowledge Fact Contracts
 
-**Status:** Proposed - Governance Review Required
+**Status:** Accepted - Ready for Implementation
 **Work Order ID:** WO-029
 **Type:** Backend governance contract
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted under ADP-002 on 2026-07-18
 **Engineering Specification:** [ES-005](../engineering-specifications/ES-005-agent-framework-and-governance-contracts.md)
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [Data Architecture](../architecture/08-data-architecture.md), [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md)

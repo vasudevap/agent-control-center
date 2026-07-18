@@ -4,7 +4,7 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import Depends, Header, Request
 from sqlalchemy import delete
@@ -38,11 +38,11 @@ class ExternalClientPrincipal:
 
 
 def get_settings_from_request(request: Request) -> Settings:
-    return request.app.state.settings
+    return cast("Settings", request.app.state.settings)
 
 
 def _session_factory_from_request(request: Request) -> Callable[[], Session] | None:
-    return request.app.state.session_factory
+    return cast("Callable[[], Session] | None", request.app.state.session_factory)
 
 
 def _audit_authorization(

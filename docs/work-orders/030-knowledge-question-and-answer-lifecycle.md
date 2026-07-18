@@ -1,9 +1,9 @@
 # Work Order 030: Knowledge Question and Answer Lifecycle
 
-**Status:** Proposed - Governance Review Required
+**Status:** Accepted - Ready After WO-029
 **Work Order ID:** WO-030
 **Type:** Backend governance contract
-**Implementation Authorization:** Not Granted
+**Implementation Authorization:** Granted under ADP-002 on 2026-07-18
 **Engineering Specification:** [ES-005](../engineering-specifications/ES-005-agent-framework-and-governance-contracts.md)
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md), [Human Approvals Architecture](../architecture/13-human-approvals.md)
