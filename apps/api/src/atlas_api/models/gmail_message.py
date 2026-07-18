@@ -7,6 +7,7 @@ from sqlalchemy import JSON, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from atlas_api.db.base import Base, TimestampMixin, prefixed_id
+from atlas_api.models.approval import ManualHandlingRecord
 from atlas_api.models.connector import ConnectorConnection
 from atlas_api.models.external_client import User
 
@@ -56,7 +57,21 @@ class GmailMessageRecord(TimestampMixin, Base):
     classification_confidence: Mapped[int] = mapped_column(nullable=False)
     classification_status: Mapped[str] = mapped_column(String(40), nullable=False)
     review_reason_code: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    suppression_status: Mapped[str] = mapped_column(
+        String(40),
+        nullable=False,
+        default="not_suppressed",
+    )
+    suppression_reason_code: Mapped[str | None] = mapped_column(
+        String(120),
+        nullable=True,
+    )
+    manual_handling_id: Mapped[str | None] = mapped_column(
+        ForeignKey("manual_handling_records.manual_handling_id"),
+        nullable=True,
+    )
     source_integrity_hash: Mapped[str] = mapped_column(String(64), nullable=False)
 
     owner: Mapped[User] = relationship()
     connection: Mapped[ConnectorConnection] = relationship()
+    manual_handling: Mapped[ManualHandlingRecord | None] = relationship()

@@ -58,6 +58,11 @@ records the Gmail message eligibility, fake retrieval, minimized persistence,
 classification, fail-closed review behavior, validation evidence, and residual
 risks.
 
+The [WO-038 implementation report](./WO-038-clinical-and-phi-suppression-guardrail-implementation-report.md)
+records the clinical and PHI suppression guardrail, minimized manual-handling
+records, webhook and audit evidence, downstream denial tests, and residual
+risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
