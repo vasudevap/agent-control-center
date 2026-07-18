@@ -1,13 +1,13 @@
 # Work Order 045: Controlled-Account Release Verification
 
-**Status:** Accepted - Pending Implementation
+**Status:** Authorization Gate Reached
 **Work Order ID:** WO-045
 **Type:** Release-readiness verification
 **Implementation Authorization:** Granted under ADP-004 on 2026-07-18
 **Engineering Specification:** [ES-007](../engineering-specifications/ES-007-operational-mvp-release-readiness.md)
 **Governing Plan:** [Phase 7 Work Order Backlog](../implementation-plans/phase-7-work-order-backlog.md)
 **Prerequisites:** WO-044 completed and ES-007 accepted
-**Review Record:** TBD
+**Review Record:** [WO-045 Release Verification Report](../reviews/WO-045-controlled-account-release-verification-report.md)
 
 ## 1. Purpose
 
