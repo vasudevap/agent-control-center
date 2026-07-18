@@ -27,8 +27,8 @@ triggers.
 | WO-039 | Low-Risk Mailbox Actions and Attachment Saving | WO-036, WO-037, WO-038 | Yes, after suppression gate | Completed - Merged |
 | WO-040 | Ask-Instead-of-Guess and Governed Fact Use | WO-037, WO-038, Phase 5 knowledge contracts | Yes, after suppression gate | Completed - Merged |
 | WO-041 | Draft Generation and Facts-Used Evidence | WO-038, WO-040 | No | Completed - Merged |
-| WO-042 | Approval Gates, Edit-Then-Approve, and Send Continuation | WO-041, Phase 5 approval contracts | No | Implemented - Pending PR Review |
-| WO-043 | Gmail Agent Operational Reconciliation | WO-039, WO-040, WO-042 | Limited | Accepted |
+| WO-042 | Approval Gates, Edit-Then-Approve, and Send Continuation | WO-041, Phase 5 approval contracts | No | Completed - Merged |
+| WO-043 | Gmail Agent Operational Reconciliation | WO-039, WO-040, WO-042 | Limited | Implemented - Pending PR Review |
 | WO-044 | Controlled-Account Verification and MVP Candidate Closeout | WO-036 through WO-043 | No | Accepted |
 
 ## 3. Dependency Waves

@@ -84,6 +84,12 @@ records Gmail send approval creation, edit supersession compatibility, approved
 send continuation, fact and draft revalidation, send outcome records,
 idempotency, validation evidence, and residual risks.
 
+The [WO-043 implementation report](./WO-043-gmail-agent-operational-reconciliation-implementation-report.md)
+records Gmail Agent descriptor registration, manual and scheduled run packet
+wiring, run-step summaries, minimized webhook producers, audit evidence,
+dashboard/external-client compatibility, validation evidence, and residual
+risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
