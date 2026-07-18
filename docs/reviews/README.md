@@ -48,6 +48,11 @@ records acceptance of the Phase 6 Gmail Agent MVP Candidate package, including
 OAuth scope posture, WO-036 through WO-044 readiness, ADP-003 guardrails, and
 bounded implementation authority.
 
+The [WO-036 implementation report](./WO-036-gmail-oauth-scopes-and-connector-boundary-implementation-report.md)
+records the Gmail and Drive connector OAuth boundary, exact scope enforcement,
+fake provider lifecycle, credential-reference handling, local validation
+evidence, and residual risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

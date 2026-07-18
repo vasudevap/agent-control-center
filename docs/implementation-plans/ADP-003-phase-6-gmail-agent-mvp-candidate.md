@@ -42,7 +42,7 @@ architecture changes, or scope outside ES-006.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-036: Gmail OAuth, Scopes, and Connector Boundary` | Accepted | Begin first | PR merged with exact scopes, fake providers, credential-boundary tests, health/revoke behavior, and audit evidence |
+| 1 | `WO-036: Gmail OAuth, Scopes, and Connector Boundary` | Implemented - Pending PR Review | Complete PR review and CI gate | PR merged with exact scopes, fake providers, credential-boundary tests, health/revoke behavior, and audit evidence |
 | 2 | `WO-037: Gmail Message Eligibility, Retrieval, and Classification` | Accepted | Begin after WO-036 completion gate | PR merged with eligibility retrieval, minimized metadata/content handling, schema validation, uncertainty behavior, and no downstream drafting |
 | 3 | `WO-038: Clinical and PHI Suppression Guardrail` | Accepted | Begin after WO-037 contract shape is stable | PR merged with fail-closed suppression tests proving no draft, approval, question, action, or learned fact from suppressed sources |
 | 4 | `WO-039: Low-Risk Mailbox Actions and Attachment Saving` | Accepted | Begin after WO-038 completion gate | PR merged with idempotent label/archive/Drive-save fake-provider operations and audit/retry evidence |

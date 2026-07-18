@@ -108,6 +108,29 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
     if (
         context.actor_kind is ActorKind.EXTERNAL_CLIENT
         and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
+        and context.resource == "connector"
+        and context.action
+        in {
+            "list",
+            "read",
+            "list_connections",
+            "read_connection",
+            "read_health",
+        }
+        and context.risk_level == "low"
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+    if (
+        context.actor_kind is ActorKind.EXTERNAL_CLIENT
+        and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
+        and context.resource == "connector"
+        and context.action in {"start_oauth", "complete_oauth", "revoke", "reconnect"}
+        and context.risk_level == "medium"
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+    if (
+        context.actor_kind is ActorKind.EXTERNAL_CLIENT
+        and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
         and context.resource == "knowledge_question"
         and context.action in {"list", "read"}
         and context.risk_level == "low"

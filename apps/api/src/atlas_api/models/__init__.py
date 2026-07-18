@@ -6,6 +6,12 @@ from atlas_api.models.approval import (
     ApprovalRequest,
     ManualHandlingRecord,
 )
+from atlas_api.models.connector import (
+    ConnectorConnection,
+    ConnectorCredentialReference,
+    ConnectorOAuthState,
+    ConnectorType,
+)
 from atlas_api.models.external_request_nonce import ExternalRequestNonce
 from atlas_api.models.idempotency import ApiIdempotencyRecord
 from atlas_api.models.job import QueueJob
@@ -20,6 +26,10 @@ __all__ = [
     "ApiIdempotencyRecord",
     "AgentRun",
     "AgentRunStep",
+    "ConnectorConnection",
+    "ConnectorCredentialReference",
+    "ConnectorOAuthState",
+    "ConnectorType",
     "ExternalRequestNonce",
     "JobSchedule",
     "ManualHandlingRecord",
