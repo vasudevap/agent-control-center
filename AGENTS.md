@@ -458,6 +458,30 @@ When uncertain:
 
 Ask rather than invent.
 
+## Autonomous Delivery Continuation
+
+When the Repository Maintainer explicitly authorizes autonomous delivery for a
+set of accepted Work Orders, the assistant must carry that delivery through
+without voluntary pauses. This includes implementing each dependency-ready Work
+Order, validating it, creating its governed pull request, monitoring required
+CI, merging after required CI passes, updating the local branch, and beginning
+the next dependency-ready Work Order.
+
+Do not stop merely because a pull request is open, CI is running, a merge has
+completed, a status update has been sent, or a Work Order boundary has been
+crossed. Status updates are commentary, not a handoff. Continue until every
+authorized Work Order is complete or a genuine stop condition occurs.
+
+The existing model-selection pause applies only before a new substantive Codex
+task/session. Once the Repository Maintainer confirms the selected model and
+authorizes autonomous delivery in that session, do not ask for another model
+confirmation between Work Orders.
+
+The assistant must still stop and request direction when a documented
+stop-and-ask trigger applies, when new authority is required, when live
+infrastructure or real credentials would be used, when a significant
+architectural decision lacks an accepted authority, or when required CI fails.
+
 ## Project Status Reporting
 
 When the user asks for a status, use this compact format and update percentages from repository evidence:
