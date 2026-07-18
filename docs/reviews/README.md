@@ -108,6 +108,11 @@ records the Phase 7 release-critical configuration inventory, production-like
 readiness checks, Google OAuth readiness settings, redaction behavior,
 validation evidence, and residual credential/provisioning risks.
 
+The [WO-048 implementation report](./WO-048-deployment-path-and-migration-readiness-implementation-report.md)
+records the Phase 7 Netlify/Render deployment path, migration procedure,
+backup/restore expectations, rollback controls, source-level dry-run evidence,
+and provider evidence still gated by deployment authority.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
