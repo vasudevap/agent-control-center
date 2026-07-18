@@ -1,6 +1,6 @@
 # Work Order 036: Gmail OAuth, Scopes, and Connector Boundary
 
-**Status:** Implemented - Pending PR Review
+**Status:** Completed - Merged
 **Work Order ID:** WO-036
 **Type:** Backend connector and credential boundary
 **Implementation Authorization:** Granted under ADP-003 on 2026-07-18

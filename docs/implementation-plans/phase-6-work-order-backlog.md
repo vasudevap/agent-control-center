@@ -21,8 +21,8 @@ triggers.
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-036 | Gmail OAuth, Scopes, and Connector Boundary | ES-006 accepted, Phase 5 closeout | Limited | Implemented - Pending PR Review |
-| WO-037 | Gmail Message Eligibility, Retrieval, and Classification | WO-036 | Limited | Accepted |
+| WO-036 | Gmail OAuth, Scopes, and Connector Boundary | ES-006 accepted, Phase 5 closeout | Limited | Completed - Merged |
+| WO-037 | Gmail Message Eligibility, Retrieval, and Classification | WO-036 | Limited | Implemented - Pending PR Review |
 | WO-038 | Clinical and PHI Suppression Guardrail | WO-037 contract shape | No | Accepted |
 | WO-039 | Low-Risk Mailbox Actions and Attachment Saving | WO-036, WO-037, WO-038 | Yes, after suppression gate | Accepted |
 | WO-040 | Ask-Instead-of-Guess and Governed Fact Use | WO-037, WO-038, Phase 5 knowledge contracts | Yes, after suppression gate | Accepted |

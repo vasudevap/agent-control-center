@@ -53,6 +53,11 @@ records the Gmail and Drive connector OAuth boundary, exact scope enforcement,
 fake provider lifecycle, credential-reference handling, local validation
 evidence, and residual risks.
 
+The [WO-037 implementation report](./WO-037-gmail-message-eligibility-retrieval-and-classification-implementation-report.md)
+records the Gmail message eligibility, fake retrieval, minimized persistence,
+classification, fail-closed review behavior, validation evidence, and residual
+risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
