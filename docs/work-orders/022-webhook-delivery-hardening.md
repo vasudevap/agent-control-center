@@ -1,6 +1,6 @@
 # Work Order 022: Webhook Delivery Hardening
 
-**Status:** Accepted - Implementation Authorized
+**Status:** Completed - Pending Merge
 **Work Order ID:** WO-022
 **Type:** Backend notification foundation
 **Implementation Authorization:** Granted
@@ -62,3 +62,5 @@ third-party delivery service.
 
 Accepted as part of the consolidated Phase 3 planning package. Implement only
 after WO-020 and WO-021 have merged.
+
+**Review Record:** [WO-022 Webhook Delivery Hardening Implementation Report](../reviews/WO-022-webhook-delivery-hardening-implementation-report.md)

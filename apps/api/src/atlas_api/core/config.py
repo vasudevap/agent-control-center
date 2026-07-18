@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     external_client_next_key_id: str | None = None
     external_client_next_secret: SecretStr | None = None
     webhook_signing_secret: SecretStr | None = None
+    webhook_signing_key_id: str | None = None
+    webhook_signing_next_secret: SecretStr | None = None
+    webhook_signing_next_key_id: str | None = None
     require_database: bool = False
     owner_identity_subject: str | None = None
     owner_session_idle_minutes: int = Field(default=30, ge=1, le=1440)
@@ -52,6 +55,9 @@ class Settings(BaseSettings):
                 self.external_client_next_secret
             ),
             "webhook_signing_secret": self._redact(self.webhook_signing_secret),
+            "webhook_signing_next_secret": self._redact(
+                self.webhook_signing_next_secret
+            ),
             "require_database": self.require_database,
             "owner_identity_subject_configured": (
                 self.owner_identity_subject is not None
