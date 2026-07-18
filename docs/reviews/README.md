@@ -113,6 +113,11 @@ records the Phase 7 Netlify/Render deployment path, migration procedure,
 backup/restore expectations, rollback controls, source-level dry-run evidence,
 and provider evidence still gated by deployment authority.
 
+The [WO-049 implementation report](./WO-049-monitoring-health-and-recovery-readiness-implementation-report.md)
+records the Phase 7 MVP health, readiness, metrics, alert thresholds,
+log/audit requirements, manual recovery procedures, validation evidence, and
+post-MVP observability deferrals.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

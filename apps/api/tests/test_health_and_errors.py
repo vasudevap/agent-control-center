@@ -30,6 +30,32 @@ def test_readiness_reports_missing_required_database() -> None:
     assert response.json()["problems"] == ["database_url_missing"]
 
 
+def test_readiness_reports_production_like_configuration_without_values() -> None:
+    client = TestClient(create_app(Settings(environment="production")))
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "not_ready"
+    assert body["checks"] == {"configuration": "failed"}
+    assert body["problems"] == [
+        "database_url_missing",
+        "external_client_id_missing",
+        "external_client_key_id_missing",
+        "external_client_secret_missing",
+        "google_oauth_client_id_missing",
+        "google_oauth_client_secret_missing",
+        "google_oauth_redirect_uri_missing",
+        "owner_identity_subject_missing",
+        "webhook_signing_key_id_missing",
+        "webhook_signing_secret_missing",
+    ]
+    assert "secret" not in response.text.lower().replace("_secret_missing", "")
+    assert "postgresql://" not in response.text
+    assert "gmail" not in response.text.lower().replace("google_oauth", "")
+
+
 def test_versioned_health_uses_the_success_envelope() -> None:
     client = TestClient(create_app(Settings(environment="test")))
 
