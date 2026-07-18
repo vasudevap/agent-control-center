@@ -48,8 +48,8 @@ webhooks, production deployment, architecture changes, or scope outside ES-005.
 | 4 | `WO-028: Run Lifecycle and Job Intake Contracts` | Completed - Merged | Complete | PR merged with run lifecycle, queue handoff, idempotency, cancellation, timeout, and audit tests |
 | 5 | `WO-030: Knowledge Question and Answer Lifecycle` | Completed - Merged | Complete | PR merged with question, answer, validation, fact-update, and audit tests |
 | 6 | `WO-033: Webhook and Audit Event Contract Expansion` | Completed - Merged | Complete | PR merged with event schemas, minimized payloads, fake webhook delivery, and audit contract tests |
-| 7 | `WO-034: Phase 5 Dashboard Contract Compatibility Pass` | Implemented Locally - Pending PR/CI/Merge | Complete governed PR, CI, and merge evidence before closeout | PR merged with dashboard contract alignment evidence and no full Phase 4 release claim |
-| 8 | `WO-032: Facts-Used Evidence and Revalidation Contracts` | Accepted | Start after WO-029 and WO-031 | PR merged with exact fact revision binding, manifest compatibility, fail-closed revalidation, and audit tests |
+| 7 | `WO-034: Phase 5 Dashboard Contract Compatibility Pass` | Completed - Merged | Complete | PR merged with dashboard contract alignment evidence and no full Phase 4 release claim |
+| 8 | `WO-032: Facts-Used Evidence and Revalidation Contracts` | Implemented Locally - Pending PR/CI/Merge | Complete governed PR, CI, and merge evidence before closeout | PR merged with exact fact revision binding, manifest compatibility, fail-closed revalidation, and audit tests |
 | 9 | `WO-035: Phase 5 Contract Integration Verification and Closeout` | Accepted | Final serial closeout | PR merged with synthetic integration smoke, security/privacy negatives, closeout report, and Phase 6 entry criteria |
 
 ## 4. Dependency Sequence

@@ -30,6 +30,7 @@ from atlas_api.services.approval_contracts import (
     list_manual_handling_records,
     submit_decision,
 )
+from atlas_api.services.approval_facts import revalidate_approval_facts
 from atlas_api.services.audit import AuditEventInput, record_audit_event
 from atlas_api.services.knowledge_facts import (
     begin_idempotent_operation,
@@ -84,6 +85,15 @@ class ApprovalDecisionResultPayload(BaseModel):
     superseded_by_approval_id: str | None
 
 
+class ApprovalFactsRevalidationPayload(BaseModel):
+    approval_id: str
+    status: str
+    continuation_status: str
+    facts_checked: int
+    failure_reason_code: str | None
+    failures: list[dict[str, str]]
+
+
 class ManualHandlingPayload(BaseModel):
     manual_handling_id: str
     status: str
@@ -115,6 +125,11 @@ class ApprovalEvidenceResponse(BaseModel):
 
 class ApprovalDecisionResponse(BaseModel):
     data: ApprovalDecisionResultPayload
+    meta: PageMeta
+
+
+class ApprovalFactsRevalidationResponse(BaseModel):
+    data: ApprovalFactsRevalidationPayload
     meta: PageMeta
 
 
@@ -279,6 +294,64 @@ def submit_approval_decision(
         )
 
 
+@approval_router.post(
+    "/{approval_id}/facts-used/revalidate",
+    response_model=ApprovalFactsRevalidationResponse,
+    openapi_extra={"security": [{"ExternalClientHmac": []}]},
+)
+def revalidate_approval_facts_used(
+    approval_id: str,
+    request: Request,
+    principal: ExternalClientDependency,
+) -> dict[str, object]:
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        owner_user_id = _authorized_owner(
+            session,
+            principal,
+            resource="approval",
+            action="revalidate_facts",
+        )
+        approval = get_approval(
+            session,
+            owner_user_id=owner_user_id,
+            approval_id=approval_id,
+        )
+        result = revalidate_approval_facts(session, approval)
+        _audit(
+            session,
+            principal,
+            resource_type="approval",
+            action="revalidate_facts",
+            result="succeeded" if result.status == "passed" else "failed",
+            resource_id=approval.approval_id,
+            reason_code=result.failure_reason_code,
+            metadata={
+                "continuation_status": result.continuation_status,
+                "facts_checked": result.facts_checked,
+                "failure_count": len(result.failures),
+            },
+        )
+        session.commit()
+        return success_payload(
+            {
+                "approval_id": result.approval_id,
+                "status": result.status,
+                "continuation_status": result.continuation_status,
+                "facts_checked": result.facts_checked,
+                "failure_reason_code": result.failure_reason_code,
+                "failures": [
+                    {
+                        "knowledge_fact_id": failure.knowledge_fact_id,
+                        "reason_code": failure.reason_code,
+                    }
+                    for failure in result.failures
+                ],
+            },
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
 @manual_router.get(
     "",
     response_model=ManualHandlingListResponse,
@@ -383,7 +456,7 @@ def _authorized_owner(
     resource: str,
     action: str,
 ) -> str:
-    risk_level = "medium" if action == "decide" else "low"
+    risk_level = "medium" if action in {"decide", "revalidate_facts"} else "low"
     decision = authorize(
         AuthorizationContext(
             actor_kind=ActorKind.EXTERNAL_CLIENT,
