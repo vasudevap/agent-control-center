@@ -57,9 +57,13 @@ Run the local development server after installing dependencies:
 apps/api/.venv/bin/python -m uvicorn atlas_api.main:app --app-dir apps/api/src --reload
 ```
 
-The default `local` environment does not require a database. `staging` and
-`production`, or any environment with `ATLAS_API_REQUIRE_DATABASE=true`, report
-`database_url_missing` through readiness until `ATLAS_API_DATABASE_URL` is set.
+The default `local` environment does not require a database. Any environment
+with `ATLAS_API_REQUIRE_DATABASE=true` reports `database_url_missing` through
+readiness until `ATLAS_API_DATABASE_URL` is set. `staging` and `production` are
+production-like and also require the release-critical owner identity,
+external-client signing, webhook signing, and Google OAuth configuration
+documented in
+[`docs/implementation-plans/phase-7-environment-configuration-and-secrets-readiness.md`](../../docs/implementation-plans/phase-7-environment-configuration-and-secrets-readiness.md).
 Configuration uses the `ATLAS_API_` prefix. Do not commit `.env` files or real
 credentials.
 
@@ -72,6 +76,15 @@ hex HMAC signature headers. The current client ID/key ID/secret use
 `ATLAS_API_EXTERNAL_CLIENT_NEXT_KEY_ID` and
 `ATLAS_API_EXTERNAL_CLIENT_NEXT_SECRET`. Keep all secrets outside the
 repository and never use the retired `X-Atlas-Client-Secret` header.
+
+Webhook signing uses `ATLAS_API_WEBHOOK_SIGNING_KEY_ID` and
+`ATLAS_API_WEBHOOK_SIGNING_SECRET`; an overlapping rotation key can use
+`ATLAS_API_WEBHOOK_SIGNING_NEXT_KEY_ID` and
+`ATLAS_API_WEBHOOK_SIGNING_NEXT_SECRET`. Google OAuth release readiness uses
+`ATLAS_API_GOOGLE_OAUTH_CLIENT_ID`,
+`ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET`, and
+`ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI`, while preserving the accepted
+`gmail.modify` and `drive.file` scope posture.
 
 Operational API routes use the versioned `/api/v1` contract. Successful
 responses are wrapped in `data` and optional `meta`; errors use a stable

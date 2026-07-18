@@ -103,6 +103,11 @@ runbooks, release candidate validation, and MVP closeout decisions. It grants
 bounded release-readiness implementation authority under ADP-004 but does not
 grant production release authority.
 
+The [WO-047 implementation report](./WO-047-environment-configuration-and-secrets-readiness-implementation-report.md)
+records the Phase 7 release-critical configuration inventory, production-like
+readiness checks, Google OAuth readiness settings, redaction behavior,
+validation evidence, and residual credential/provisioning risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

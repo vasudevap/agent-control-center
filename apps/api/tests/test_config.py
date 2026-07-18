@@ -13,10 +13,42 @@ def test_local_and_development_do_not_require_a_database_by_default() -> None:
 
 
 @pytest.mark.parametrize("environment", ["staging", "production"])
-def test_production_like_environments_require_a_database(environment: str) -> None:
+def test_production_like_environments_require_release_configuration(
+    environment: str,
+) -> None:
     assert Settings(environment=environment).readiness_problems() == [
-        "database_url_missing"
+        "database_url_missing",
+        "external_client_id_missing",
+        "external_client_key_id_missing",
+        "external_client_secret_missing",
+        "google_oauth_client_id_missing",
+        "google_oauth_client_secret_missing",
+        "google_oauth_redirect_uri_missing",
+        "owner_identity_subject_missing",
+        "webhook_signing_key_id_missing",
+        "webhook_signing_secret_missing",
     ]
+
+
+@pytest.mark.parametrize("environment", ["staging", "production"])
+def test_production_like_readiness_passes_with_required_release_configuration(
+    environment: str,
+) -> None:
+    settings = Settings(
+        environment=environment,
+        database_url="postgresql+psycopg://placeholder",
+        external_client_id="atlas-external-client",
+        external_client_key_id="atlas-key-current",
+        external_client_secret="example-external-client-secret",
+        google_oauth_client_id="google-oauth-client-id.example.test",
+        google_oauth_client_secret="example-google-oauth-client-secret",
+        google_oauth_redirect_uri="https://atlas.example.test/oauth/google/callback",
+        owner_identity_subject="owner@example.test",
+        webhook_signing_key_id="atlas-webhook-current",
+        webhook_signing_secret="example-webhook-signing-secret",
+    )
+
+    assert settings.readiness_problems() == []
 
 
 def test_explicit_database_requirement_is_enforced() -> None:
@@ -39,8 +71,18 @@ def test_database_migrations_receive_the_configured_database_url() -> None:
 def test_secret_settings_are_redacted() -> None:
     settings = Settings(
         database_url="postgresql://example-user:example-password@example-host/example-db",
+        external_client_id="atlas-external-client",
+        external_client_key_id="atlas-key-current",
         external_client_secret="example-external-client-secret",
+        external_client_next_key_id="atlas-key-next",
+        external_client_next_secret="example-external-client-next-secret",
+        webhook_signing_key_id="atlas-webhook-current",
         webhook_signing_secret="example-webhook-signing-secret",
+        webhook_signing_next_key_id="atlas-webhook-next",
+        webhook_signing_next_secret="example-webhook-signing-next-secret",
+        google_oauth_client_id="google-oauth-client-id.example.test",
+        google_oauth_client_secret="example-google-oauth-client-secret",
+        google_oauth_redirect_uri="https://atlas.example.test/oauth/google/callback",
     )
 
     assert settings.redacted == {
@@ -48,9 +90,17 @@ def test_secret_settings_are_redacted() -> None:
         "environment": "local",
         "database_url": "***",
         "external_client_secret": "***",
-        "external_client_next_secret": None,
+        "external_client_id_configured": True,
+        "external_client_key_id_configured": True,
+        "external_client_next_key_id_configured": True,
+        "external_client_next_secret": "***",
         "webhook_signing_secret": "***",
-        "webhook_signing_next_secret": None,
+        "webhook_signing_key_id_configured": True,
+        "webhook_signing_next_key_id_configured": True,
+        "webhook_signing_next_secret": "***",
+        "google_oauth_client_id_configured": True,
+        "google_oauth_client_secret": "***",
+        "google_oauth_redirect_uri_configured": True,
         "require_database": False,
         "owner_identity_subject_configured": False,
         "owner_session_idle_minutes": 30,
