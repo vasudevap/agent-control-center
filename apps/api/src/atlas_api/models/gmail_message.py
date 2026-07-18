@@ -137,3 +137,58 @@ class GmailActionOperation(TimestampMixin, Base):
     drive_connection: Mapped[ConnectorConnection | None] = relationship(
         foreign_keys=[drive_connection_id],
     )
+
+
+class GmailDraftRecord(TimestampMixin, Base):
+    __tablename__ = "gmail_draft_records"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_user_id",
+            "idempotency_key",
+            name="uq_gmail_draft_owner_idempotency",
+        ),
+    )
+
+    gmail_draft_record_id: Mapped[str] = mapped_column(
+        String(64),
+        primary_key=True,
+        default=lambda: prefixed_id("gdr"),
+    )
+    owner_user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    gmail_message_record_id: Mapped[str] = mapped_column(
+        ForeignKey("gmail_message_records.gmail_message_record_id"),
+        nullable=False,
+    )
+    connection_id: Mapped[str] = mapped_column(
+        ForeignKey("connector_connections.connection_id"),
+        nullable=False,
+    )
+    provider_message_reference: Mapped[str] = mapped_column(
+        String(160),
+        nullable=False,
+    )
+    provider_draft_reference: Mapped[str] = mapped_column(String(160), nullable=False)
+    scenario: Mapped[str] = mapped_column(String(80), nullable=False)
+    status: Mapped[str] = mapped_column(String(40), nullable=False)
+    idempotency_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    subject_preview: Mapped[str] = mapped_column(String(240), nullable=False)
+    body_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    facts_used: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    evidence_summary: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    decision_context_manifest: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+    owner: Mapped[User] = relationship()
+    gmail_message: Mapped[GmailMessageRecord] = relationship()
+    connection: Mapped[ConnectorConnection] = relationship()
