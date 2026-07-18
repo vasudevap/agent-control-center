@@ -1,6 +1,6 @@
 # Work Order 040: Ask-Instead-of-Guess and Governed Fact Use
 
-**Status:** Implemented - Pending PR Review
+**Status:** Completed - Merged
 **Work Order ID:** WO-040
 **Type:** Backend Gmail knowledge behavior
 **Implementation Authorization:** Granted under ADP-003 on 2026-07-18

@@ -1,10 +1,13 @@
 # WO-040 Ask-Instead-of-Guess and Governed Fact Use Implementation Report
 
 **Work Order:** [WO-040](../work-orders/040-ask-instead-of-guess-and-governed-fact-use.md)
-**Status:** Implemented - Pending PR Review
+**Status:** Completed - Merged
 **Date:** 2026-07-18
 **Engineering Specification:** [ES-006](../engineering-specifications/ES-006-gmail-agent-mvp-candidate.md)
 **Governing ADP:** [ADP-003](../implementation-plans/ADP-003-phase-6-gmail-agent-mvp-candidate.md)
+**Pull Request:** [#58](https://github.com/vasudevap/agent-control-center/pull/58)
+**Merge Commit:** `291fabd7ea6ba6dc083f8c4ad1b810a1bc1f27b2`
+**Merged At:** 2026-07-18T19:31:31Z
 
 ## Summary
 
@@ -116,6 +119,6 @@ Passed
 
 ## Completion State
 
-WO-040 is implemented with local validation complete and is ready for governed
-pull-request review. It does not complete the ADP-003 merge gate until PR review
-and required CI pass.
+WO-040 completed its governed pull-request review, required CI passed, and PR
+[#58](https://github.com/vasudevap/agent-control-center/pull/58) was merged on
+2026-07-18.

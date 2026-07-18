@@ -74,6 +74,11 @@ records Gmail draft-scenario required facts, ask-instead-of-guess question
 creation, stale volatile fact handling, answer validation, suppressed-source
 exclusion, webhook/audit evidence, and residual risks.
 
+The [WO-041 implementation report](./WO-041-draft-generation-and-facts-used-evidence-implementation-report.md)
+records fake-provider Gmail draft creation, generated-output validation,
+draft persistence, exact `facts_used` evidence, decision-context bindings,
+idempotency, no-send guarantees, validation evidence, and residual risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
