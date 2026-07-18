@@ -78,3 +78,20 @@ responses are wrapped in `data` and optional `meta`; errors use a stable
 `error.code`, safe message, and correlation ID. Pagination is cursor-based with
 `limit=50` by default and `100` maximum. The canonical details are in
 [`docs/specifications/api-contract-conventions.md`](../../docs/specifications/api-contract-conventions.md).
+
+## Scheduler sweep
+
+The scheduler is an internal interval-only foundation: it has no public API,
+daemon, worker, or hosted cron resource. A separately invoked one-shot command
+locks due schedules, creates at most one queue occurrence per schedule, and
+advances the schedule in the same database transaction.
+
+With `ATLAS_API_DATABASE_URL` configured, run one sweep with:
+
+```bash
+apps/api/.venv/bin/atlas-schedule-sweep
+```
+
+The command prints only the number of triggered schedules. Invocation and
+hosting policy are intentionally deferred; do not run this against production
+without a later approved deployment work order.

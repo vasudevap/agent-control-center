@@ -15,6 +15,7 @@ from atlas_api.models import (  # noqa: F401
     job,
     knowledge,
     owner_session,
+    schedule,
     webhook,
 )
 
