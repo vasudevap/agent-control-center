@@ -83,8 +83,8 @@ specific scope is drafted.
 | 2 | Repository Foundation | ES-000 through ES-003; governance README; Definition of Ready; Definition of Done; PR/review process; branching and release management; WO-001 through WO-014; design decision records; implementation reports | ADR-001 for frontend testing; ADR-002 for approval decision integrity | Individual frontend/governance WOs | Complete; no active parallel implementation |
 | 3 | Platform Foundation | ES-004; Phase 3 master plan; target architecture; decision register; phase backlog; ADP-001; WO-015 through WO-026; implementation reports; Phase 3 closeout | ADR-003, ADR-004, ADR-005 accepted before backend platform work | ADP-001 completed Phase 3 dependency sequence | Complete; Phase 3 was mostly serial with limited dependency-ready parallelism |
 | 4 | Dashboard Productization | Dashboard productization ES or ES addendum; dashboard API-integration WOs; fixture-removal plan; UI acceptance records; accessibility/responsive evidence; implementation reports; closeout | ADR only if operator experience, auth, data, or decision semantics change | Future dashboard ADP or ADP lane after API contracts freeze | Can run partly in parallel with Phase 5 after API contracts and auth/session interface are stable |
-| 5 | Agent Framework and Governance Contracts | Proposed ES-005; Phase 5 ADR assessment; proposed Phase 5 WO backlog; proposed WO-027 through WO-035; proposed ADP-002; future contract tests, implementation reports, and closeout report | Existing ADR-002 through ADR-005 appear sufficient unless Phase 5 crosses a documented ADR trigger | ADP-002 groups proposed WOs into dependency waves and becomes executable only after acceptance | High parallel potential after ES-005 and required WOs are accepted; agent runtime, knowledge, approval, events, dashboard compatibility, and tests can occupy separate lanes |
-| 6 | Gmail Agent MVP Candidate | Proposed ES-006; future Gmail connector/security scope; OAuth/scope decision record or ADR if needed; future Gmail WO backlog; Gmail safety/privacy review; controlled-data demo plan; acceptance report | Gmail OAuth scopes, provider data handling, production-effect limits, and clinical/PHI suppression policy accepted | Gmail MVP ADP after Phase 5 contracts are merged and Gmail WOs accepted | Moderate parallel potential: connector/auth, classifier/drafting, UI integration, and safety tests can split after Gmail contract boundaries are fixed |
+| 5 | Agent Framework and Governance Contracts | Accepted ES-005; Phase 5 ADR assessment; Phase 5 WO backlog; WO-027 through WO-035; ADP-002; contract tests; implementation reports; closeout report | ADR-002 through ADR-005 were sufficient; no unresolved Phase 5 ADR trigger remains | ADP-002 completed and merged WO-027 through WO-035 | Complete; Phase 5 used dependency-ready parallel lanes and serial closeout |
+| 6 | Gmail Agent MVP Candidate | Accepted ES-006; Phase 6 ADR assessment; Phase 6 WO backlog; WO-036 through WO-044; ADP-003; ES-006 review record; future implementation reports and closeout report | Gmail OAuth scopes `gmail.modify` and `drive.file`, provider data handling, production-effect limits, and clinical/PHI suppression policy accepted for bounded implementation | ADP-003 accepted and executable for WO-036 through WO-044 | Moderate parallel potential after connector and suppression boundaries are fixed; draft/approval/send continuation remain serial gates |
 | 7 | Operational MVP Release | Release-management plan; deployment WOs; environment configuration record; secrets/credential handling checklist; operational readiness review; monitoring plan; runbooks; rollback plan; MVP acceptance and residual-risk record | Production deployment authority, environment count, rollback owner, monitoring threshold, and residual risk accepted | MVP release ADP only after Phase 6 candidate passes review | Mostly serial near release; documentation, monitoring, and dashboard polish can run in parallel before final cutover |
 | 8 | Advanced Agentic Workflows | PRD addendum; advanced-workflow ES; framework evaluation; ADR if LangChain, LangGraph, Temporal, or equivalent becomes justified; workflow WOs; safety review; acceptance records | Framework adoption and workflow-risk decisions accepted | Post-MVP ADP per workflow family | Parallel by workflow family if shared contracts are stable |
 | 9 | Durable Orchestration | Orchestration ADR; durable-workflow ES; migration plan; rollback plan; queue/scheduler compatibility review; durability tests; orchestration WOs; recovery evidence | Durable orchestration need and chosen runtime accepted | Orchestration ADP with migration gates | Mostly serial for architecture and migration; tests and documentation can parallelize after interface freeze |
@@ -100,10 +100,10 @@ stop-and-ask triggers.
 
 | Wave | Phase focus | Dependency gate | Parallel lanes | Serial follow-up | Autonomy boundary |
 | --- | --- | --- | --- | --- | --- |
-| Wave 0 | Phase 5 planning | ES-005 accepted; ADR assessment complete; no unresolved architecture decision | Artifact drafting can split into ES review fixes, WO backlog drafting, and test strategy drafting | Accept ES-005, WO-027 through WO-035, and ADP-002 before code | Agent may draft and revise docs; must stop before implementing unaccepted WOs |
-| Wave 1 | Generic contracts | Accepted Phase 5 WOs and ADP-002 | WO-027 agent runtime/registry; WO-029 governed knowledge facts; WO-031 approval/manual-handling | WO-028 run lifecycle, WO-030 knowledge Q&A, WO-033 events, WO-034 dashboard compatibility, WO-032 facts-used, and WO-035 closeout follow by dependency | No Gmail-specific behavior; no live provider calls |
+| Wave 0 | Phase 5 planning | ES-005 accepted; ADR assessment complete; no unresolved architecture decision | Completed Phase 5 artifact drafting and acceptance | ES-005, WO-027 through WO-035, and ADP-002 were accepted before code | Complete |
+| Wave 1 | Generic contracts | Accepted Phase 5 WOs and ADP-002 | Completed WO-027 agent runtime/registry, WO-029 governed knowledge facts, and WO-031 approval/manual-handling | Completed WO-028 run lifecycle, WO-030 knowledge Q&A, WO-033 events, WO-034 dashboard compatibility, WO-032 facts-used, and WO-035 closeout | Complete; no Gmail-specific behavior or live provider calls were introduced |
 | Wave 2 | Dashboard integration | Stable backend API/auth/session contracts from Phase 5 | Real API integration; loading/error/empty states; dashboard audit/approval views; fixture-removal evidence | Operator acceptance and dashboard productization closeout | No production deployment authority unless Phase 7 release plan grants it |
-| Wave 3 | Gmail MVP candidate | Phase 5 contracts merged; ES-006 and Gmail WOs accepted; Gmail credentials boundary approved | Gmail connector/OAuth scaffold; message eligibility/classification; draft/evidence generation; safety/privacy tests; UI workflow integration | Controlled-data end-to-end demo and safety acceptance | Must stop before live credentials or real account effects unless explicitly authorized |
+| Wave 3 | Gmail MVP candidate | Phase 5 contracts merged; ES-006, exact Google scopes, ADP-003, and Gmail WOs accepted; Gmail credentials boundary approved | Gmail connector/OAuth scaffold; message eligibility/classification; suppression guardrail; low-risk actions; ask-instead-of-guess; safety/privacy tests | Draft/evidence generation, approval/send continuation, operational reconciliation, controlled-account verification, and safety acceptance follow by dependency | Must stop before live credentials or real account effects unless explicitly authorized |
 | Wave 4 | Operational MVP release | Phase 6 candidate accepted; release plan and runbooks accepted | Monitoring, rollback docs, deployment verification, final dashboard polish, residual-risk review | Production cutover and MVP acceptance | Live production deployment requires explicit release authority |
 | Wave 5 | Post-MVP expansion | MVP accepted and stable | Independent agents, workflow families, documentation, and tests | Shared platform migrations, durable orchestration, or enterprise identity gates | Do not add frameworks, multi-user behavior, or enterprise controls without ADR/ES authority |
 
@@ -112,14 +112,12 @@ stop-and-ask triggers.
 The artifact set above is a best-effort planning view. The following items may
 change the phase sequence, scope, or governing artifacts when they are decided:
 
-- whether Phase 4 must finish before Phase 5, or can complete in parallel with
-  Phase 5 under a separately accepted integration scope;
-- whether the proposed WO-027 through WO-035 breakdown is accepted as-is or
+- whether Phase 4 dashboard productization must finish before Phase 6 closeout,
+  or can complete in parallel under a separately accepted integration scope;
+- whether the proposed WO-036 through WO-044 breakdown is accepted as-is or
   split further before implementation;
-- whether ES-005 and ES-006 should remain separate specifications, with an ADP
-  coordinating them only after their WOs are accepted;
-- whether Phase 5 introduces a significant new security, data, or contract
-  decision that requires a new ADR rather than an update to an existing ADR;
+- whether the Phase 6 ADR assessment remains sufficient after exact Gmail and
+  Drive scopes are reviewed;
 - the MVP definition of acceptable Gmail risk, test coverage, data handling,
   and production-effect limits;
 - Gmail OAuth scopes, test-account versus personal-account use, and the
@@ -135,7 +133,7 @@ change the phase sequence, scope, or governing artifacts when they are decided:
 - the maximum number of parallel implementation agents that should be active on
   the same branch family without increasing review and merge risk;
 - the exact WO dependency fields and naming convention to preserve during
-  ADP-002 execution;
+  ADP-003 execution;
 - measurable acceptance criteria for normal single-owner use; and
 - the intentionally speculative Phase 8-11 artifacts, which must be revised
   when those phases are entered.

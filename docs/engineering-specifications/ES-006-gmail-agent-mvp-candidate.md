@@ -1,16 +1,20 @@
 # ES-006 - Gmail Agent MVP Candidate
 
-**Status:** Proposed - Blocked Pending Phase 5 Completion
+**Status:** Accepted - Phase 6 Execution Authorized
 **Owner:** Repository Maintainer
 **Review Owner:** Repository Maintainer
 **Date:** 2026-07-18
 **Version:** 0.1
-**Accepted:** Not Accepted
-**Implementation Authorization:** Not Granted
+**Accepted:** Accepted by Repository Maintainer on 2026-07-18
+**Implementation Authorization:** Granted for WO-036 through WO-044 under ADP-003
 **Target Release:** MVP candidate
 **Related Phase:** Phase 6 - Gmail Agent
 **Prerequisite Engineering Specification:** `docs/engineering-specifications/ES-005-agent-framework-and-governance-contracts.md`
-**Related Work Orders:** TBD after ES-006 acceptance
+**Related Work Orders:** `docs/work-orders/036-gmail-oauth-scopes-and-connector-boundary.md` through `docs/work-orders/044-controlled-account-verification-and-mvp-candidate-closeout.md`
+**Governing Plan:** `docs/implementation-plans/phase-6-work-order-backlog.md`
+**ADR Assessment:** `docs/implementation-plans/phase-6-adr-assessment.md`
+**Autonomous Delivery Program:** `docs/implementation-plans/ADP-003-phase-6-gmail-agent-mvp-candidate.md`
+**Review Record:** `docs/reviews/ES-006-gmail-agent-mvp-candidate-review.md`
 **Related ADRs:** `docs/decisions/ADR-002-human-approvals-decision-integrity.md`, `docs/decisions/ADR-003-governed-external-approval-decision-channel.md`, `docs/decisions/ADR-004-governed-external-product-client-contract.md`, `docs/decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md`
 
 ---
@@ -23,9 +27,10 @@ actions, create governed draft replies, route high-risk sends through approval,
 ask instead of guessing when required business facts are missing, and suppress
 clinical or protected-health-information messages before drafting or learning.
 
-ES-006 is the Gmail-specific consumer of the generic Phase 5 contracts. It does
-not authorize implementation until Phase 5 agent, run, approval, knowledge,
-webhook, audit, and `facts_used` contracts are complete and accepted.
+ES-006 is the Gmail-specific consumer of the generic Phase 5 contracts. Phase 5
+agent, run, approval, knowledge, webhook, audit, and `facts_used` contracts are
+complete and merged. ES-006 authorizes implementation for WO-036 through
+WO-044 under ADP-003.
 
 ## 2. Agent Definition
 
@@ -320,7 +325,8 @@ The Gmail Agent reaches MVP candidate status when:
 
 Stop and request Repository Maintainer direction before proceeding if:
 
-- Phase 5 contracts are incomplete or unaccepted;
+- Phase 5 contracts are discovered to be incomplete or unconformant during
+  Phase 6 implementation;
 - exact Gmail OAuth scopes are not accepted;
 - live Gmail credentials or a real account are needed beyond the accepted test
   boundary;
@@ -337,6 +343,7 @@ Stop and request Repository Maintainer direction before proceeding if:
 
 ## 13. Review Notes
 
-This specification is proposed planning authority only. It captures the Gmail
-Agent MVP candidate scope and should be reviewed before any Phase 6 Work Orders
-are drafted or accepted.
+This specification is accepted Phase 6 execution authority. It captures the
+Gmail Agent MVP candidate scope and is governed by the accepted Phase 6 ADR
+assessment, Work Order backlog, ADP-003, and WO-036 through WO-044 execution
+package.

@@ -43,6 +43,11 @@ The [ES-004 review record](./ES-004-platform-foundation-review.md) records
 acceptance of the Phase 3 backend Platform Foundation Engineering
 Specification and WO-015 implementation authority.
 
+The [ES-006 review record](./ES-006-gmail-agent-mvp-candidate-review.md)
+records acceptance of the Phase 6 Gmail Agent MVP Candidate package, including
+OAuth scope posture, WO-036 through WO-044 readiness, ADP-003 guardrails, and
+bounded implementation authority.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
