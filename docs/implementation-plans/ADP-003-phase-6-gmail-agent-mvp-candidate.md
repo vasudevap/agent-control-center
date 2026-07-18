@@ -1,11 +1,11 @@
 # ADP-003: Phase 6 Gmail Agent MVP Candidate
 
-**Status:** Accepted - Phase 6 Execution Authorized
+**Status:** Completed - Merged
 **Program ID:** ADP-003
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
 **Created:** 2026-07-18
-**Execution Window:** Active as of Repository Maintainer acceptance on 2026-07-18
+**Execution Window:** Completed on 2026-07-18
 **Engineering Specification:** `docs/engineering-specifications/ES-006-gmail-agent-mvp-candidate.md`
 **Work Order Backlog:** `docs/implementation-plans/phase-6-work-order-backlog.md`
 
@@ -50,7 +50,7 @@ architecture changes, or scope outside ES-006.
 | 6 | `WO-041: Draft Generation and Facts-Used Evidence` | Completed - Merged | Complete | PR merged with draft generation gates, Gmail draft fake-provider creation, exact `facts_used`, and no automatic send |
 | 7 | `WO-042: Approval Gates, Edit-Then-Approve, and Send Continuation` | Completed - Merged | Complete | PR merged with approval creation, revalidation, edit supersession, send continuation, and explicit send outcomes |
 | 8 | `WO-043: Gmail Agent Operational Reconciliation` | Completed - Merged | Complete | PR merged with Gmail agent registration, run status, webhook/audit events, and dashboard/external-client contract compatibility |
-| 9 | `WO-044: Controlled-Account Verification and MVP Candidate Closeout` | Implemented - Pending PR Review | Complete PR review and CI gate | PR merged with fake-provider E2E evidence, authorized controlled-account evidence if allowed, residual risks, and MVP candidate checklist |
+| 9 | `WO-044: Controlled-Account Verification and MVP Candidate Closeout` | Completed - Merged | Complete | PR merged with fake-provider E2E evidence, authorized controlled-account evidence if allowed, residual risks, and MVP candidate checklist |
 
 ## 4. Dependency Sequence
 

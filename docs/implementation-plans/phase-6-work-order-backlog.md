@@ -1,6 +1,6 @@
 # Phase 6 Work Order Backlog
 
-**Status:** Accepted - Phase 6 Execution Authorized
+**Status:** Completed - Merged
 **Owner:** Repository Maintainer
 **Date:** 2026-07-18
 **Engineering Specification:** `docs/engineering-specifications/ES-006-gmail-agent-mvp-candidate.md`
@@ -29,7 +29,7 @@ triggers.
 | WO-041 | Draft Generation and Facts-Used Evidence | WO-038, WO-040 | No | Completed - Merged |
 | WO-042 | Approval Gates, Edit-Then-Approve, and Send Continuation | WO-041, Phase 5 approval contracts | No | Completed - Merged |
 | WO-043 | Gmail Agent Operational Reconciliation | WO-039, WO-040, WO-042 | Limited | Completed - Merged |
-| WO-044 | Controlled-Account Verification and MVP Candidate Closeout | WO-036 through WO-043 | No | Implemented - Pending PR Review |
+| WO-044 | Controlled-Account Verification and MVP Candidate Closeout | WO-036 through WO-043 | No | Completed - Merged |
 
 ## 3. Dependency Waves
 

@@ -1,11 +1,14 @@
 # WO-044 Gmail Agent MVP Candidate Closeout Report
 
 **Work Order:** [WO-044](../work-orders/044-controlled-account-verification-and-mvp-candidate-closeout.md)
-**Status:** Implemented - Pending PR Review
+**Status:** Completed - Merged
 **Date:** 2026-07-18
 **Engineering Specification:** [ES-006](../engineering-specifications/ES-006-gmail-agent-mvp-candidate.md)
 **Governing ADP:** [ADP-003](../implementation-plans/ADP-003-phase-6-gmail-agent-mvp-candidate.md)
 **Controlled Account Plan:** [WO-044 Controlled Account Test Plan](./WO-044-controlled-account-test-plan.md)
+**Pull Request:** [#62](https://github.com/vasudevap/agent-control-center/pull/62)
+**Merge Commit:** `bbd7fe34e24aca4c6626ee427152980793d10f36`
+**Merged At:** 2026-07-18T20:11:56Z
 
 ## Summary
 
@@ -147,6 +150,6 @@ separate authorization and evidence pass.
 
 ## Completion State
 
-WO-044 is implemented with local validation complete and is ready for governed
-pull-request review. It does not complete the ADP-003 merge gate until PR review
-and required CI pass.
+WO-044 completed its governed pull-request review, required CI passed, and PR
+[#62](https://github.com/vasudevap/agent-control-center/pull/62) was merged on
+2026-07-18. ADP-003 is complete.
