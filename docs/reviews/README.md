@@ -95,12 +95,13 @@ records the Gmail Agent MVP Candidate fake-provider end-to-end evidence,
 security/privacy negative evidence, controlled-account test plan state,
 residual risks, validation evidence, and release-decision readiness boundary.
 
-The proposed [ES-007 review record](./ES-007-operational-mvp-release-readiness-review.md)
-collects the pending Phase 7 Operational MVP Release Readiness review package,
+The [ES-007 review record](./ES-007-operational-mvp-release-readiness-review.md)
+records acceptance of the Phase 7 Operational MVP Release Readiness package,
 including controlled-account release verification, dashboard productization,
 environment/secrets readiness, deployment/migration readiness, monitoring,
-runbooks, release candidate validation, and MVP closeout decisions. It does not
-grant implementation or production release authority until accepted.
+runbooks, release candidate validation, and MVP closeout decisions. It grants
+bounded release-readiness implementation authority under ADP-004 but does not
+grant production release authority.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,

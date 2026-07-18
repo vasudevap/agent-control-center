@@ -1,11 +1,11 @@
 # Phase 7 Work Order Backlog
 
-**Status:** Proposed - Review Required
+**Status:** Accepted - Phase 7 Execution Authorized
 **Owner:** Repository Maintainer
 **Date:** 2026-07-18
 **Engineering Specification:** `docs/engineering-specifications/ES-007-operational-mvp-release-readiness.md`
 **ADR Assessment:** `docs/implementation-plans/phase-7-adr-assessment.md`
-**Implementation Authorization:** Not granted
+**Implementation Authorization:** Granted for WO-045 through WO-052 under ADP-004
 
 ---
 
@@ -14,21 +14,23 @@
 Define the proposed Work Order sequence for Phase 7 Operational MVP Release
 Readiness.
 
-This backlog is not implementation authority until ES-007, the Work Orders,
-and ADP-004 are accepted by the Repository Maintainer.
+This backlog records the accepted Work Order sequence for Phase 7 Operational
+MVP Release Readiness. Each Work Order remains the bounded implementation
+authority for its own scope, exclusions, validation, rollback expectations, and
+stop-and-ask triggers.
 
 ## 2. Work Order Map
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-045 | Controlled-Account Release Verification | ES-007 accepted, WO-044 closeout | Limited | Proposed |
-| WO-046 | Dashboard Productization and Runtime Operations | ES-007 accepted, WO-043 contracts | Yes | Proposed |
-| WO-047 | Environment Configuration and Secrets Readiness | ES-007 accepted, WO-036, WO-044 | Limited | Proposed |
-| WO-048 | Deployment Path and Migration Readiness | WO-047 readiness draft | Limited | Proposed |
-| WO-049 | Monitoring, Health, and Recovery Readiness | WO-043, WO-047 | Yes | Proposed |
-| WO-050 | Release Runbooks and Rollback | WO-047, WO-048, WO-049 | Limited | Proposed |
-| WO-051 | MVP Release Candidate Validation | WO-045 through WO-050 | No | Proposed |
-| WO-052 | MVP Acceptance and Phase 7 Closeout | WO-051 | No | Proposed |
+| WO-045 | Controlled-Account Release Verification | ES-007 accepted, WO-044 closeout | Limited | Accepted - Pending Implementation |
+| WO-046 | Dashboard Productization and Runtime Operations | ES-007 accepted, WO-043 contracts | Yes | Accepted - Pending Implementation |
+| WO-047 | Environment Configuration and Secrets Readiness | ES-007 accepted, WO-036, WO-044 | Limited | Accepted - Pending Implementation |
+| WO-048 | Deployment Path and Migration Readiness | WO-047 readiness draft | Limited | Accepted - Pending Implementation |
+| WO-049 | Monitoring, Health, and Recovery Readiness | WO-043, WO-047 | Yes | Accepted - Pending Implementation |
+| WO-050 | Release Runbooks and Rollback | WO-047, WO-048, WO-049 | Limited | Accepted - Pending Implementation |
+| WO-051 | MVP Release Candidate Validation | WO-045 through WO-050 | No | Accepted - Pending Implementation |
+| WO-052 | MVP Acceptance and Phase 7 Closeout | WO-051 | No | Accepted - Pending Implementation |
 
 ## 3. Dependency Waves
 
@@ -156,7 +158,6 @@ Stop before implementation if:
 
 ## 6. Acceptance Boundary
 
-Accepting this backlog authorizes planning structure only. Implementation
-authority requires acceptance of ES-007, each proposed Work Order, and ADP-004.
-Production release still requires an explicit maintainer release decision in
-WO-052.
+This accepted backlog authorizes release-readiness implementation under
+ADP-004. Production release still requires an explicit maintainer release
+decision in WO-052.

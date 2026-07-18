@@ -1,11 +1,11 @@
 # ADP-004: Phase 7 Operational MVP Release
 
-**Status:** Proposed - Blocked Pending Acceptance
+**Status:** Accepted - Execution Authorized
 **Program ID:** ADP-004
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
 **Created:** 2026-07-18
-**Execution Window:** Not authorized
+**Execution Window:** Authorized on 2026-07-18
 **Engineering Specification:** `docs/engineering-specifications/ES-007-operational-mvp-release-readiness.md`
 **Work Order Backlog:** `docs/implementation-plans/phase-7-work-order-backlog.md`
 
@@ -22,11 +22,11 @@ rollback expectations, and stop-and-ask triggers after acceptance.
 
 ## 2. Execution Authority
 
-Execution authority is not granted.
+Execution authority is granted by Repository Maintainer acceptance on
+2026-07-18.
 
-ADP-004 becomes executable only if the Repository Maintainer accepts ES-007,
-WO-045 through WO-052, this ADP, and the release-governance boundaries called
-out in the ES-007 review record.
+The Repository Maintainer accepted ES-007, accepted WO-045 through WO-052,
+accepted this ADP, and authorized Phase 7 release-readiness implementation.
 
 Even after acceptance, this ADP does not authorize personal mailbox use,
 unbounded live Gmail data, public launch, multi-user operation, production
@@ -38,14 +38,14 @@ authority.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-045: Controlled-Account Release Verification` | Proposed | Pending acceptance | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
-| 2 | `WO-046: Dashboard Productization and Runtime Operations` | Proposed | Pending acceptance | MVP-critical dashboard workflows use real contracts and pass UI validation |
-| 3 | `WO-047: Environment Configuration and Secrets Readiness` | Proposed | Pending acceptance | Required config, OAuth setup, secret handling, redaction, and fail-closed checks documented and verified |
-| 4 | `WO-048: Deployment Path and Migration Readiness` | Proposed | Pending acceptance | Netlify/Render path, migration procedure, backup/restore, and rollback evidence are ready |
-| 5 | `WO-049: Monitoring, Health, and Recovery Readiness` | Proposed | Pending acceptance | Health/readiness, logs, metrics, alerts, and manual recovery paths are adequate for MVP |
-| 6 | `WO-050: Release Runbooks and Rollback` | Proposed | Pending acceptance | Operator runbooks and rollback procedures are reviewed and complete |
-| 7 | `WO-051: MVP Release Candidate Validation` | Proposed | Pending acceptance | Final local, CI, migration, security/privacy, dashboard, fake-provider, and authorized controlled-account evidence recorded |
-| 8 | `WO-052: MVP Acceptance and Phase 7 Closeout` | Proposed | Pending acceptance | Maintainer release decision and residual risk disposition recorded |
+| 1 | `WO-045: Controlled-Account Release Verification` | Accepted - Pending Implementation | Execute | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
+| 2 | `WO-046: Dashboard Productization and Runtime Operations` | Accepted - Pending Implementation | Execute | MVP-critical dashboard workflows use real contracts and pass UI validation |
+| 3 | `WO-047: Environment Configuration and Secrets Readiness` | Accepted - Pending Implementation | Execute | Required config, OAuth setup, secret handling, redaction, and fail-closed checks documented and verified |
+| 4 | `WO-048: Deployment Path and Migration Readiness` | Accepted - Pending Implementation | Execute | Netlify/Render path, migration procedure, backup/restore, and rollback evidence are ready |
+| 5 | `WO-049: Monitoring, Health, and Recovery Readiness` | Accepted - Pending Implementation | Execute | Health/readiness, logs, metrics, alerts, and manual recovery paths are adequate for MVP |
+| 6 | `WO-050: Release Runbooks and Rollback` | Accepted - Pending Implementation | Execute | Operator runbooks and rollback procedures are reviewed and complete |
+| 7 | `WO-051: MVP Release Candidate Validation` | Accepted - Pending Implementation | Execute | Final local, CI, migration, security/privacy, dashboard, fake-provider, and authorized controlled-account evidence recorded |
+| 8 | `WO-052: MVP Acceptance and Phase 7 Closeout` | Accepted - Pending Implementation | Execute | Maintainer release decision and residual risk disposition recorded |
 
 ## 4. Dependency Sequence
 
