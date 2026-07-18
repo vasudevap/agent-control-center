@@ -25,7 +25,7 @@ stop-and-ask triggers.
 | --- | --- | --- | --- | --- |
 | WO-045 | Controlled-Account Release Verification | ES-007 accepted, WO-044 closeout | Limited | Accepted - Pending Implementation |
 | WO-046 | Dashboard Productization and Runtime Operations | ES-007 accepted, WO-043 contracts | Yes | Accepted - Pending Implementation |
-| WO-047 | Environment Configuration and Secrets Readiness | ES-007 accepted, WO-036, WO-044 | Limited | Accepted - Pending Implementation |
+| WO-047 | Environment Configuration and Secrets Readiness | ES-007 accepted, WO-036, WO-044 | Limited | Implemented - Pending PR Review |
 | WO-048 | Deployment Path and Migration Readiness | WO-047 readiness draft | Limited | Accepted - Pending Implementation |
 | WO-049 | Monitoring, Health, and Recovery Readiness | WO-043, WO-047 | Yes | Accepted - Pending Implementation |
 | WO-050 | Release Runbooks and Rollback | WO-047, WO-048, WO-049 | Limited | Accepted - Pending Implementation |

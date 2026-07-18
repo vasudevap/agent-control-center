@@ -40,7 +40,7 @@ authority.
 | ---: | --- | --- | --- | --- |
 | 1 | `WO-045: Controlled-Account Release Verification` | Accepted - Pending Implementation | Execute | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
 | 2 | `WO-046: Dashboard Productization and Runtime Operations` | Accepted - Pending Implementation | Execute | MVP-critical dashboard workflows use real contracts and pass UI validation |
-| 3 | `WO-047: Environment Configuration and Secrets Readiness` | Accepted - Pending Implementation | Execute | Required config, OAuth setup, secret handling, redaction, and fail-closed checks documented and verified |
+| 3 | `WO-047: Environment Configuration and Secrets Readiness` | Implemented - Pending PR Review | Review and merge | Required config, OAuth setup, secret handling, redaction, and fail-closed checks documented and verified |
 | 4 | `WO-048: Deployment Path and Migration Readiness` | Accepted - Pending Implementation | Execute | Netlify/Render path, migration procedure, backup/restore, and rollback evidence are ready |
 | 5 | `WO-049: Monitoring, Health, and Recovery Readiness` | Accepted - Pending Implementation | Execute | Health/readiness, logs, metrics, alerts, and manual recovery paths are adequate for MVP |
 | 6 | `WO-050: Release Runbooks and Rollback` | Accepted - Pending Implementation | Execute | Operator runbooks and rollback procedures are reviewed and complete |
