@@ -19,28 +19,32 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "webhook_delivery_attempts", sa.Column("event_id", sa.String(64), nullable=True)
-    )
-    op.add_column(
-        "webhook_delivery_attempts", sa.Column("key_id", sa.String(160), nullable=True)
-    )
+    with op.batch_alter_table("webhook_delivery_attempts") as batch_op:
+        batch_op.add_column(sa.Column("event_id", sa.String(64), nullable=True))
+        batch_op.add_column(sa.Column("key_id", sa.String(160), nullable=True))
     op.execute(
         "UPDATE webhook_delivery_attempts SET event_id = webhook_delivery_attempt_id"
     )
     op.execute("UPDATE webhook_delivery_attempts SET key_id = 'legacy-unconfigured'")
-    op.alter_column("webhook_delivery_attempts", "event_id", nullable=False)
-    op.alter_column("webhook_delivery_attempts", "key_id", nullable=False)
-    op.create_unique_constraint(
-        "uq_webhook_delivery_event",
-        "webhook_delivery_attempts",
-        ["webhook_subscription_id", "event_id"],
-    )
+    with op.batch_alter_table("webhook_delivery_attempts") as batch_op:
+        batch_op.alter_column(
+            "event_id",
+            existing_type=sa.String(64),
+            nullable=False,
+        )
+        batch_op.alter_column(
+            "key_id",
+            existing_type=sa.String(160),
+            nullable=False,
+        )
+        batch_op.create_unique_constraint(
+            "uq_webhook_delivery_event",
+            ["webhook_subscription_id", "event_id"],
+        )
 
 
 def downgrade() -> None:
-    op.drop_constraint(
-        "uq_webhook_delivery_event", "webhook_delivery_attempts", type_="unique"
-    )
-    op.drop_column("webhook_delivery_attempts", "key_id")
-    op.drop_column("webhook_delivery_attempts", "event_id")
+    with op.batch_alter_table("webhook_delivery_attempts") as batch_op:
+        batch_op.drop_constraint("uq_webhook_delivery_event", type_="unique")
+        batch_op.drop_column("key_id")
+        batch_op.drop_column("event_id")
