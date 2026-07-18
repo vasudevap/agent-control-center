@@ -124,6 +124,11 @@ controlled-account, OAuth revocation, Drive cleanup, migration rollback,
 deployment rollback, incident triage, indeterminate send, provider outage, and
 release withdrawal runbooks.
 
+The [WO-046 implementation report](./WO-046-dashboard-productization-and-runtime-operations-implementation-report.md)
+records the browser-safe runtime health indicator, dashboard runtime readiness
+boundary, fixture quarantine posture, validation evidence, and residual
+dashboard/API integration risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

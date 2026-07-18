@@ -1,7 +1,7 @@
 # WO-050 Release Runbooks and Rollback Implementation Report
 
 **Work Order:** [WO-050](../work-orders/050-release-runbooks-and-rollback.md)
-**Status:** Implemented - Pending PR Review
+**Status:** Completed - Merged
 **Date:** 2026-07-18
 **Engineering Specification:** [ES-007](../engineering-specifications/ES-007-operational-mvp-release-readiness.md)
 **Governing ADP:** [ADP-004](../implementation-plans/ADP-004-phase-7-operational-mvp-release.md)
@@ -67,5 +67,5 @@ and never move release tags.
 
 ## Completion State
 
-WO-050 is implemented with local validation complete and is pending
-pull-request review, required CI, merge, and final status update.
+WO-050 is complete. Local validation passed, PR #68 passed required CI, and the
+work was merged into `main`.

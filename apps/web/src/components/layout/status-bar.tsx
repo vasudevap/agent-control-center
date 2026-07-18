@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 import { FLEET_PULSE } from "./nav-items";
+import { RuntimeHealthIndicator } from "./runtime-health-indicator";
 import { cn } from "@/lib/utils";
 
 /**
@@ -68,10 +68,7 @@ export function StatusBar() {
         <ClusterDivider />
         <PulseItem href="/alerts" tone={FLEET_PULSE.activeAlerts > 0 ? "error" : "neutral"} label="active alerts" value={FLEET_PULSE.activeAlerts} />
       </div>
-      <div className="hidden shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground-tertiary md:flex">
-        <ShieldCheck className="size-3" aria-hidden="true" />
-        Frontend prototype
-      </div>
+      <RuntimeHealthIndicator />
     </div>
   );
 }
