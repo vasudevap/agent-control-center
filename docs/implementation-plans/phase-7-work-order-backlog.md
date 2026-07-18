@@ -28,7 +28,7 @@ stop-and-ask triggers.
 | WO-047 | Environment Configuration and Secrets Readiness | ES-007 accepted, WO-036, WO-044 | Limited | Implemented - Pending PR Review |
 | WO-048 | Deployment Path and Migration Readiness | WO-047 readiness draft | Limited | Implemented - Pending PR Review |
 | WO-049 | Monitoring, Health, and Recovery Readiness | WO-043, WO-047 | Yes | Implemented - Pending PR Review |
-| WO-050 | Release Runbooks and Rollback | WO-047, WO-048, WO-049 | Limited | Accepted - Pending Implementation |
+| WO-050 | Release Runbooks and Rollback | WO-047, WO-048, WO-049 | Limited | Implemented - Pending PR Review |
 | WO-051 | MVP Release Candidate Validation | WO-045 through WO-050 | No | Accepted - Pending Implementation |
 | WO-052 | MVP Acceptance and Phase 7 Closeout | WO-051 | No | Accepted - Pending Implementation |
 

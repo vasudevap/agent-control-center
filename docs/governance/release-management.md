@@ -18,6 +18,12 @@ Before tagging, confirm the included Work Orders and specifications meet the Def
 
 Release notes identify the version, commit, release date, included governing artifacts, changed components, validation, migrations, known issues, and rollback expectations. Create an annotated tag at the verified `main` commit and push it without changing earlier tags. Verify the remote tag dereferences to the intended commit.
 
+For the Phase 7 MVP release candidate, use the operational runbooks and
+rollback procedures in
+[`phase-7-release-runbooks-and-rollback.md`](../implementation-plans/phase-7-release-runbooks-and-rollback.md)
+before any production cutover, production migration, controlled-account
+execution, or release withdrawal.
+
 ## Rollback
 
 Prefer a reviewed revert or corrective forward release. Never rewrite published history or move a release tag. Deployment rollback instructions become mandatory when deployment automation is introduced; ES-001 creates no automatic production deployment.

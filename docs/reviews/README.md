@@ -118,6 +118,12 @@ records the Phase 7 MVP health, readiness, metrics, alert thresholds,
 log/audit requirements, manual recovery procedures, validation evidence, and
 post-MVP observability deferrals.
 
+The [WO-050 implementation report](./WO-050-release-runbooks-and-rollback-implementation-report.md)
+records the Phase 7 release preparation, deployment verification,
+controlled-account, OAuth revocation, Drive cleanup, migration rollback,
+deployment rollback, incident triage, indeterminate send, provider outage, and
+release withdrawal runbooks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
