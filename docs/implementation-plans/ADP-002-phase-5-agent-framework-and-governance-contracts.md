@@ -43,7 +43,7 @@ webhooks, production deployment, architecture changes, or scope outside ES-005.
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
 | 1 | `WO-027: Agent Registry and Runtime Contracts` | Implemented Locally - Pending PR/CI/Merge | Complete governed PR, CI, and merge evidence before closeout | PR merged with registry/runtime contract tests and implementation report |
-| 2 | `WO-029: Governed Knowledge Fact Contracts` | Accepted | Can run in parallel with WO-027 and WO-031 after acceptance | PR merged with fact CRUD, revision, confirmation, volatility, authorization, audit, and prohibited-content tests |
+| 2 | `WO-029: Governed Knowledge Fact Contracts` | Implemented Locally - Pending PR/CI/Merge | Complete governed PR, CI, and merge evidence before closeout | PR merged with fact CRUD, revision, confirmation, volatility, authorization, audit, and prohibited-content tests |
 | 3 | `WO-031: Approval Decision and Manual-Handling Contracts` | Accepted | Can run in parallel with WO-027 and WO-029 after acceptance | PR merged with approval queue, evidence, decision, edit-then-approve, manual-handling, authorization, and audit tests |
 | 4 | `WO-028: Run Lifecycle and Job Intake Contracts` | Accepted | Start after WO-027 schema/API contracts stabilize | PR merged with run lifecycle, queue handoff, idempotency, cancellation, timeout, and audit tests |
 | 5 | `WO-030: Knowledge Question and Answer Lifecycle` | Accepted | Start after WO-029 | PR merged with question, answer, validation, fact-update, webhook enqueue, and audit tests |

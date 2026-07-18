@@ -49,4 +49,20 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
         and context.risk_level == "low"
     ):
         return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+    if (
+        context.actor_kind is ActorKind.EXTERNAL_CLIENT
+        and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
+        and context.resource == "knowledge_fact"
+        and context.action in {"list", "read"}
+        and context.risk_level == "low"
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+    if (
+        context.actor_kind is ActorKind.EXTERNAL_CLIENT
+        and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
+        and context.resource == "knowledge_fact"
+        and context.action in {"create", "update", "confirm", "delete"}
+        and context.risk_level == "medium"
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
     return AuthorizationDecision(allowed=False, reason_code="authorization_denied")

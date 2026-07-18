@@ -26,6 +26,7 @@ def test_foundation_metadata_keeps_knowledge_records_distinct() -> None:
     answers = Base.metadata.tables["knowledge_answers"]
 
     assert "current_revision_id" in facts.c
+    assert "last_confirmed_at" in facts.c
     assert "knowledge_fact_id" in revisions.c
     assert "knowledge_question_id" in answers.c
     assert "approval_id" not in answers.c
