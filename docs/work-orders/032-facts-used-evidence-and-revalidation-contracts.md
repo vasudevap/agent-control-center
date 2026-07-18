@@ -1,6 +1,6 @@
 # Work Order 032: Facts-Used Evidence and Revalidation Contracts
 
-**Status:** Accepted - Ready After WO-029 and WO-031
+**Status:** Implemented Locally - Pending PR, CI, and Merge
 **Work Order ID:** WO-032
 **Type:** Backend cross-domain governance contract
 **Implementation Authorization:** Granted under ADP-002 on 2026-07-18
@@ -8,7 +8,7 @@
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [ADR-002](../decisions/ADR-002-human-approvals-decision-integrity.md), [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md)
 **Prerequisites:** [WO-029](./029-governed-knowledge-fact-contracts.md), [WO-031](./031-approval-decision-and-manual-handling-contracts.md)
-**Review Record:** TBD
+**Review Record:** [WO-032 Implementation Report](../reviews/WO-032-facts-used-evidence-and-revalidation-contracts-implementation-report.md)
 
 ## 1. Purpose
 

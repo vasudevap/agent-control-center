@@ -79,6 +79,21 @@ def test_authorization_allows_only_explicit_external_probe() -> None:
     assert allowed.allowed
 
 
+def test_authorization_allows_external_approval_fact_revalidation() -> None:
+    allowed = authorize(
+        AuthorizationContext(
+            actor_kind=ActorKind.EXTERNAL_CLIENT,
+            actor_id="external-client-1",
+            channel=Channel.EXTERNAL_PRODUCT_CLIENT,
+            resource="approval",
+            action="revalidate_facts",
+            risk_level="medium",
+        )
+    )
+
+    assert allowed.allowed
+
+
 def test_signatures_bind_body_and_enforce_timestamp_window() -> None:
     request = signed_request(body=b'{"state":"original"}')
     now = datetime(2026, 7, 17, tzinfo=UTC)

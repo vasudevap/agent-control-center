@@ -77,7 +77,7 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
         context.actor_kind is ActorKind.EXTERNAL_CLIENT
         and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
         and context.resource == "approval"
-        and context.action == "decide"
+        and context.action in {"decide", "revalidate_facts"}
         and context.risk_level == "medium"
     ):
         return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
