@@ -73,7 +73,7 @@ and Governance Contracts package:
 The Phase 5 sequence is recorded in
 [`docs/implementation-plans/phase-5-work-order-backlog.md`](../implementation-plans/phase-5-work-order-backlog.md).
 
-Work Orders 036 through 044 are accepted as the Phase 6 Gmail Agent MVP
+Work Orders 036 through 044 completed and merged as the Phase 6 Gmail Agent MVP
 Candidate package under ES-006 and ADP-003:
 
 - WO-036: Gmail OAuth, Scopes, and Connector Boundary
