@@ -10,6 +10,7 @@ from atlas_api.db.base import Base
 from atlas_api.db.config import require_database_url
 from atlas_api.models import (  # noqa: F401
     agent,
+    approval,
     audit,
     external_client,
     external_request_nonce,

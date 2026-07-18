@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from sqlalchemy.orm import Session
 
 from atlas_api.api.agent_registry import router as agent_registry_router
+from atlas_api.api.approvals import approval_router, manual_router
 from atlas_api.api.knowledge_facts import router as knowledge_facts_router
 from atlas_api.api.routes import router
 from atlas_api.core.config import Settings, get_settings
@@ -20,7 +21,12 @@ OPENAPI_TAGS = [
         "description": "Signed external-client boundary probes.",
     },
     {"name": "agents", "description": "Generic agent registry contracts."},
+    {"name": "approvals", "description": "Generic approval decision contracts."},
     {"name": "knowledge", "description": "Reserved knowledge API contract."},
+    {
+        "name": "manual-handling",
+        "description": "Non-approval manual-handling contracts.",
+    },
 ]
 
 
@@ -41,6 +47,8 @@ def create_app(
     register_exception_handlers(app)
     app.include_router(router)
     app.include_router(agent_registry_router)
+    app.include_router(approval_router)
+    app.include_router(manual_router)
     app.include_router(knowledge_facts_router)
     _configure_openapi(app)
     return app

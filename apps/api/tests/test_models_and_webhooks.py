@@ -4,7 +4,13 @@ import pytest
 from sqlalchemy import create_engine
 
 from atlas_api.db.base import Base
-from atlas_api.models import audit, external_client, knowledge, webhook  # noqa: F401
+from atlas_api.models import (  # noqa: F401
+    approval,
+    audit,
+    external_client,
+    knowledge,
+    webhook,
+)
 from atlas_api.services.webhook_delivery import (
     RecordingWebhookTransport,
     WebhookNotification,
@@ -30,6 +36,8 @@ def test_foundation_metadata_keeps_knowledge_records_distinct() -> None:
     assert "knowledge_fact_id" in revisions.c
     assert "knowledge_question_id" in answers.c
     assert "approval_id" not in answers.c
+    assert "approval_requests" in table_names
+    assert "manual_handling_records" in table_names
 
 
 def test_foundation_schema_can_create_in_narrow_sqlite_unit_test() -> None:
