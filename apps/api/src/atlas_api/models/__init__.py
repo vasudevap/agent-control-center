@@ -13,6 +13,7 @@ from atlas_api.models.connector import (
     ConnectorType,
 )
 from atlas_api.models.external_request_nonce import ExternalRequestNonce
+from atlas_api.models.gmail_message import GmailMessageRecord
 from atlas_api.models.idempotency import ApiIdempotencyRecord
 from atlas_api.models.job import QueueJob
 from atlas_api.models.owner_session import OwnerSession
@@ -31,6 +32,7 @@ __all__ = [
     "ConnectorOAuthState",
     "ConnectorType",
     "ExternalRequestNonce",
+    "GmailMessageRecord",
     "JobSchedule",
     "ManualHandlingRecord",
     "OwnerSession",

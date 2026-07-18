@@ -1,7 +1,7 @@
 # WO-036 Gmail OAuth, Scopes, and Connector Boundary Implementation Report
 
 **Work Order:** [WO-036](../work-orders/036-gmail-oauth-scopes-and-connector-boundary.md)
-**Status:** Implemented - Pending PR Review
+**Status:** Completed - Merged
 **Date:** 2026-07-18
 **Engineering Specification:** [ES-006](../engineering-specifications/ES-006-gmail-agent-mvp-candidate.md)
 **Governing ADP:** [ADP-003](../implementation-plans/ADP-003-phase-6-gmail-agent-mvp-candidate.md)
@@ -157,3 +157,12 @@ material was introduced.
 WO-036 is implemented with local validation complete and is ready for governed
 pull-request review. It does not complete the ADP-003 merge gate until PR review
 and required CI pass.
+
+## Pull Request and Merge
+
+- Pull request: [#54 - Accept Phase 6 plan and implement Gmail connector boundary](https://github.com/vasudevap/agent-control-center/pull/54)
+- Final CI result: Passed
+- Merge commit: `2d553cfbd19cf02c2cf7d798b1673fea840ba12e`
+- Merge date: `2026-07-18T18:50:56Z`
+
+WO-036 is complete and merged. WO-037 may begin under ADP-003.
