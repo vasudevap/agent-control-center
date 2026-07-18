@@ -90,6 +90,11 @@ wiring, run-step summaries, minimized webhook producers, audit evidence,
 dashboard/external-client compatibility, validation evidence, and residual
 risks.
 
+The [WO-044 closeout report](./WO-044-gmail-agent-mvp-candidate-closeout-report.md)
+records the Gmail Agent MVP Candidate fake-provider end-to-end evidence,
+security/privacy negative evidence, controlled-account test plan state,
+residual risks, validation evidence, and release-decision readiness boundary.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

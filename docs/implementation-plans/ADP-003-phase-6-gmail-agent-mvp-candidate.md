@@ -49,8 +49,8 @@ architecture changes, or scope outside ES-006.
 | 5 | `WO-040: Ask-Instead-of-Guess and Governed Fact Use` | Completed - Merged | Complete | PR merged with missing/stale fact question behavior, answer validation, fact revisions, and prohibited-source exclusion |
 | 6 | `WO-041: Draft Generation and Facts-Used Evidence` | Completed - Merged | Complete | PR merged with draft generation gates, Gmail draft fake-provider creation, exact `facts_used`, and no automatic send |
 | 7 | `WO-042: Approval Gates, Edit-Then-Approve, and Send Continuation` | Completed - Merged | Complete | PR merged with approval creation, revalidation, edit supersession, send continuation, and explicit send outcomes |
-| 8 | `WO-043: Gmail Agent Operational Reconciliation` | Implemented - Pending PR Review | Complete PR review and CI gate | PR merged with Gmail agent registration, run status, webhook/audit events, and dashboard/external-client contract compatibility |
-| 9 | `WO-044: Controlled-Account Verification and MVP Candidate Closeout` | Accepted | Begin after WO-036 through WO-043 completion gates | PR merged with fake-provider E2E evidence, authorized controlled-account evidence if allowed, residual risks, and MVP candidate checklist |
+| 8 | `WO-043: Gmail Agent Operational Reconciliation` | Completed - Merged | Complete | PR merged with Gmail agent registration, run status, webhook/audit events, and dashboard/external-client contract compatibility |
+| 9 | `WO-044: Controlled-Account Verification and MVP Candidate Closeout` | Implemented - Pending PR Review | Complete PR review and CI gate | PR merged with fake-provider E2E evidence, authorized controlled-account evidence if allowed, residual risks, and MVP candidate checklist |
 
 ## 4. Dependency Sequence
 
