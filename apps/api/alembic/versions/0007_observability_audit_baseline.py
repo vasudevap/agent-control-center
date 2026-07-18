@@ -50,9 +50,22 @@ def upgrade() -> None:
         "audit_events",
         sa.Column("reason_code", sa.String(length=120), nullable=True),
     )
-    op.alter_column("audit_events", "channel", server_default=None)
-    op.alter_column("audit_events", "action", server_default=None)
-    op.alter_column("audit_events", "result", server_default=None)
+    with op.batch_alter_table("audit_events") as batch_op:
+        batch_op.alter_column(
+            "channel",
+            existing_type=sa.String(length=80),
+            server_default=None,
+        )
+        batch_op.alter_column(
+            "action",
+            existing_type=sa.String(length=120),
+            server_default=None,
+        )
+        batch_op.alter_column(
+            "result",
+            existing_type=sa.String(length=40),
+            server_default=None,
+        )
 
 
 def downgrade() -> None:

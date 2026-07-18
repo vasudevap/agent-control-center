@@ -1,6 +1,6 @@
 # Work Order 032: Facts-Used Evidence and Revalidation Contracts
 
-**Status:** Implemented Locally - Pending PR, CI, and Merge
+**Status:** Completed - Merged
 **Work Order ID:** WO-032
 **Type:** Backend cross-domain governance contract
 **Implementation Authorization:** Granted under ADP-002 on 2026-07-18
