@@ -1,12 +1,13 @@
 # Work Order 038: Clinical and PHI Suppression Guardrail
 
-**Status:** Accepted - Implementation Authorized
+**Status:** Implemented - Pending PR Review
 **Work Order ID:** WO-038
 **Type:** Backend safety and privacy guardrail
 **Implementation Authorization:** Granted under ADP-003 on 2026-07-18
 **Engineering Specification:** [ES-006](../engineering-specifications/ES-006-gmail-agent-mvp-candidate.md)
 **Governing Plan:** [Phase 6 Work Order Backlog](../implementation-plans/phase-6-work-order-backlog.md)
 **Prerequisites:** WO-037 contract shape accepted; WO-036 completed and merged
+**Review Record:** [WO-038 Implementation Report](../reviews/WO-038-clinical-and-phi-suppression-guardrail-implementation-report.md)
 
 ## 1. Purpose
 
