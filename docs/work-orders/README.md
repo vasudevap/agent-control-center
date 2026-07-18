@@ -57,9 +57,8 @@ The Phase 3 work-order sequence is recorded in
 [`docs/implementation-plans/phase-3-work-order-backlog.md`](../implementation-plans/phase-3-work-order-backlog.md).
 The backlog is retained as closeout evidence.
 
-Work Orders 027 through 035 are proposed as the Phase 5 Agent Framework and
-Governance Contracts package. They are not implementation-authorized until
-ES-005 and the individual Work Orders are accepted:
+Work Orders 027 through 035 completed and merged the Phase 5 Agent Framework
+and Governance Contracts package:
 
 - WO-027: Agent Registry and Runtime Contracts
 - WO-028: Run Lifecycle and Job Intake Contracts
@@ -71,5 +70,21 @@ ES-005 and the individual Work Orders are accepted:
 - WO-034: Phase 5 Dashboard Contract Compatibility Pass
 - WO-035: Phase 5 Contract Integration Verification and Closeout
 
-The proposed Phase 5 sequence is drafted in
+The Phase 5 sequence is recorded in
 [`docs/implementation-plans/phase-5-work-order-backlog.md`](../implementation-plans/phase-5-work-order-backlog.md).
+
+Work Orders 036 through 044 are accepted as the Phase 6 Gmail Agent MVP
+Candidate package under ES-006 and ADP-003:
+
+- WO-036: Gmail OAuth, Scopes, and Connector Boundary
+- WO-037: Gmail Message Eligibility, Retrieval, and Classification
+- WO-038: Clinical and PHI Suppression Guardrail
+- WO-039: Low-Risk Mailbox Actions and Attachment Saving
+- WO-040: Ask-Instead-of-Guess and Governed Fact Use
+- WO-041: Draft Generation and Facts-Used Evidence
+- WO-042: Approval Gates, Edit-Then-Approve, and Send Continuation
+- WO-043: Gmail Agent Operational Reconciliation
+- WO-044: Controlled-Account Verification and MVP Candidate Closeout
+
+The Phase 6 sequence is recorded in
+[`docs/implementation-plans/phase-6-work-order-backlog.md`](../implementation-plans/phase-6-work-order-backlog.md).
