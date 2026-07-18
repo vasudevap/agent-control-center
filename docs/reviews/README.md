@@ -103,6 +103,11 @@ runbooks, release candidate validation, and MVP closeout decisions. It grants
 bounded release-readiness implementation authority under ADP-004 but does not
 grant production release authority.
 
+The [WO-045 release verification report](./WO-045-controlled-account-release-verification-report.md)
+records the Phase 7 controlled-account release-verification gate, deterministic
+fake-provider baseline evidence, live-provider non-use, and the maintainer
+decision still required before WO-051 can claim release-candidate validation.
+
 The [WO-047 implementation report](./WO-047-environment-configuration-and-secrets-readiness-implementation-report.md)
 records the Phase 7 release-critical configuration inventory, production-like
 readiness checks, Google OAuth readiness settings, redaction behavior,

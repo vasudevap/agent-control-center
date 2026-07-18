@@ -23,8 +23,8 @@ stop-and-ask triggers.
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-045 | Controlled-Account Release Verification | ES-007 accepted, WO-044 closeout | Limited | Accepted - Pending Implementation |
-| WO-046 | Dashboard Productization and Runtime Operations | ES-007 accepted, WO-043 contracts | Yes | Implemented - Pending PR Review |
+| WO-045 | Controlled-Account Release Verification | ES-007 accepted, WO-044 closeout | Limited | Authorization Gate Reached |
+| WO-046 | Dashboard Productization and Runtime Operations | ES-007 accepted, WO-043 contracts | Yes | Completed - Merged |
 | WO-047 | Environment Configuration and Secrets Readiness | ES-007 accepted, WO-036, WO-044 | Limited | Completed - Merged |
 | WO-048 | Deployment Path and Migration Readiness | WO-047 readiness draft | Limited | Completed - Merged |
 | WO-049 | Monitoring, Health, and Recovery Readiness | WO-043, WO-047 | Yes | Completed - Merged |
