@@ -1,6 +1,6 @@
 # Work Order 028: Run Lifecycle and Job Intake Contracts
 
-**Status:** Accepted - Ready After WO-027
+**Status:** Implemented Locally - Pending PR, CI, and Merge
 **Work Order ID:** WO-028
 **Type:** Backend platform contract
 **Implementation Authorization:** Granted under ADP-002 on 2026-07-18
@@ -8,7 +8,7 @@
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [Agent Runtime Architecture](../architecture/09-agent-runtime.md), [Observability Architecture](../architecture/11-observability.md)
 **Prerequisite:** [WO-027](./027-agent-registry-and-runtime-contracts.md)
-**Review Record:** TBD
+**Review Record:** [WO-028 Implementation Report](../reviews/WO-028-run-lifecycle-and-job-intake-contracts-implementation-report.md)
 
 ## 1. Purpose
 
