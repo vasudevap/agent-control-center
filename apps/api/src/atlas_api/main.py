@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from atlas_api.api.agent_registry import router as agent_registry_router
 from atlas_api.api.approvals import approval_router, manual_router
 from atlas_api.api.knowledge_facts import router as knowledge_facts_router
+from atlas_api.api.knowledge_questions import router as knowledge_questions_router
 from atlas_api.api.routes import router
 from atlas_api.api.runs import router as runs_router
 from atlas_api.core.config import Settings, get_settings
@@ -52,6 +53,7 @@ def create_app(
     app.include_router(approval_router)
     app.include_router(manual_router)
     app.include_router(knowledge_facts_router)
+    app.include_router(knowledge_questions_router)
     app.include_router(runs_router)
     _configure_openapi(app)
     return app
