@@ -207,9 +207,9 @@ information must not produce an automatic draft or an approvable send. The
 Policy Engine must suppress drafting and route the message to a hold or manual
 handling outcome. Human approval is not an override for this suppression.
 
-This is a scope requirement for the future Gmail Agent and Policy Engine
-Engineering Specifications. It does not authorize implementation in the
-current frontend phase.
+This is a scope requirement for the Gmail Agent and Policy Engine engineering
+scope. It does not authorize any future release behavior that bypasses the
+accepted suppression gate.
 
 R8 applies the same suppression before knowledge retrieval, question creation,
 or learning from history. A suppressed clinical or
@@ -223,17 +223,20 @@ approvals and confer no authorization.
 
 ## Objectives
 
-Improve reliability.
+Make the Gmail Agent MVP Candidate operable for normal single-owner personal
+use on the approved deployment path, with release evidence, runbooks, recovery
+paths, monitoring, and accepted residual risk.
 
 ## Deliverables
 
-- Retry Logic
-- Error Recovery
-- Better Logging
-- Metrics
-- Cost Monitoring
-- Alerts
-- Health Dashboard
+- Controlled-account release verification or accepted deferral
+- Dashboard productization for MVP-critical operator workflows
+- Environment, OAuth, and secrets readiness
+- Netlify and Render deployment and migration readiness
+- Health, readiness, logs, metrics, alerts, and recovery paths
+- Release runbooks and rollback
+- MVP release candidate validation
+- MVP acceptance and Phase 7 closeout
 
 ---
 

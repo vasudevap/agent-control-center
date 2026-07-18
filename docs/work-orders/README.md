@@ -88,3 +88,20 @@ Candidate package under ES-006 and ADP-003:
 
 The Phase 6 sequence is recorded in
 [`docs/implementation-plans/phase-6-work-order-backlog.md`](../implementation-plans/phase-6-work-order-backlog.md).
+
+Work Orders 045 through 052 are proposed for the Phase 7 Operational MVP
+Release Readiness package under ES-007 and ADP-004:
+
+- WO-045: Controlled-Account Release Verification
+- WO-046: Dashboard Productization and Runtime Operations
+- WO-047: Environment Configuration and Secrets Readiness
+- WO-048: Deployment Path and Migration Readiness
+- WO-049: Monitoring, Health, and Recovery Readiness
+- WO-050: Release Runbooks and Rollback
+- WO-051: MVP Release Candidate Validation
+- WO-052: MVP Acceptance and Phase 7 Closeout
+
+The proposed Phase 7 sequence is recorded in
+[`docs/implementation-plans/phase-7-work-order-backlog.md`](../implementation-plans/phase-7-work-order-backlog.md).
+It does not grant implementation, live credential, production deployment, or
+MVP release authority until accepted by the Repository Maintainer.
