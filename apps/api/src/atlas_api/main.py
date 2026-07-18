@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from sqlalchemy.orm import Session
 
 from atlas_api.api.agent_registry import router as agent_registry_router
+from atlas_api.api.knowledge_facts import router as knowledge_facts_router
 from atlas_api.api.routes import router
 from atlas_api.core.config import Settings, get_settings
 from atlas_api.core.correlation import CorrelationIdMiddleware
@@ -40,6 +41,7 @@ def create_app(
     register_exception_handlers(app)
     app.include_router(router)
     app.include_router(agent_registry_router)
+    app.include_router(knowledge_facts_router)
     _configure_openapi(app)
     return app
 

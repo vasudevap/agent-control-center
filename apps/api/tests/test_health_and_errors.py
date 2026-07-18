@@ -42,7 +42,7 @@ def test_versioned_health_uses_the_success_envelope() -> None:
     }
 
 
-def test_placeholder_endpoint_fails_closed_with_correlation_id() -> None:
+def test_knowledge_endpoint_requires_external_client_configuration() -> None:
     client = TestClient(create_app(Settings(environment="test")))
 
     response = client.get(
@@ -50,13 +50,11 @@ def test_placeholder_endpoint_fails_closed_with_correlation_id() -> None:
         headers={"X-Correlation-Id": "corr-placeholder"},
     )
 
-    assert response.status_code == 501
-    expected_message = (
-        "Knowledge fact APIs require a later approved Phase 5 work order."
-    )
+    assert response.status_code == 503
+    expected_message = "External client authentication is not configured."
     assert response.json() == {
         "error": {
-            "code": "knowledge_contract_not_implemented",
+            "code": "external_client_authentication_not_configured",
             "message": expected_message,
             "correlation_id": "corr-placeholder",
         },

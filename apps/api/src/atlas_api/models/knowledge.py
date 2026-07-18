@@ -42,6 +42,10 @@ class KnowledgeFact(TimestampMixin, Base):
         String(64),
         nullable=True,
     )
+    last_confirmed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     deleted_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,

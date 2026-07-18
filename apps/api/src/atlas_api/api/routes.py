@@ -8,7 +8,6 @@ from atlas_api.core.auth import ExternalClientPrincipal, verify_external_client
 from atlas_api.core.config import Settings
 from atlas_api.core.contracts import success_payload
 from atlas_api.core.correlation import get_correlation_id
-from atlas_api.core.errors import ApiError
 
 router = APIRouter()
 
@@ -68,13 +67,4 @@ def external_client_probe(
             "external_client_id": principal.external_client_id,
         },
         meta={"correlation_id": get_correlation_id()},
-    )
-
-
-@router.get("/api/v1/knowledge/facts", tags=["knowledge"])
-def knowledge_facts_placeholder() -> None:
-    raise ApiError(
-        status_code=501,
-        code="knowledge_contract_not_implemented",
-        message="Knowledge fact APIs require a later approved Phase 5 work order.",
     )
