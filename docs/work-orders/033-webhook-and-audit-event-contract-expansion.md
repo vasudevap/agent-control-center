@@ -1,6 +1,6 @@
 # Work Order 033: Webhook and Audit Event Contract Expansion
 
-**Status:** Accepted - Ready After Event Producers Exist
+**Status:** Implemented Locally - Pending PR, CI, and Merge
 **Work Order ID:** WO-033
 **Type:** Backend event contract
 **Implementation Authorization:** Granted under ADP-002 on 2026-07-18
@@ -8,7 +8,7 @@
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [ADR-003](../decisions/ADR-003-governed-external-approval-decision-channel.md), [ADR-004](../decisions/ADR-004-governed-external-product-client-contract.md), [Observability Architecture](../architecture/11-observability.md)
 **Prerequisites:** [WO-029](./029-governed-knowledge-fact-contracts.md), [WO-030](./030-knowledge-question-and-answer-lifecycle.md), [WO-031](./031-approval-decision-and-manual-handling-contracts.md)
-**Review Record:** TBD
+**Review Record:** [WO-033 Implementation Report](../reviews/WO-033-webhook-and-audit-event-contract-expansion-implementation-report.md)
 
 ## 1. Purpose
 

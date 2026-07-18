@@ -23,13 +23,13 @@ and stop-and-ask triggers.
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-027 | Agent Registry and Runtime Contracts | ES-005 accepted | Limited | Implemented Locally - Pending PR/CI/Merge |
-| WO-028 | Run Lifecycle and Job Intake Contracts | WO-027 | Limited | Implemented Locally - Pending PR/CI/Merge |
-| WO-029 | Governed Knowledge Fact Contracts | ES-005 accepted, WO-021, WO-025 | Yes, after dependencies | Implemented Locally - Pending PR/CI/Merge |
-| WO-030 | Knowledge Question and Answer Lifecycle | WO-029 | Limited | Implemented Locally - Pending PR/CI/Merge |
-| WO-031 | Approval Decision and Manual-Handling Contracts | ES-005 accepted, WO-021, WO-025 | Yes, after dependencies | Implemented Locally - Pending PR/CI/Merge |
+| WO-027 | Agent Registry and Runtime Contracts | ES-005 accepted | Limited | Completed - Merged |
+| WO-028 | Run Lifecycle and Job Intake Contracts | WO-027 | Limited | Completed - Merged |
+| WO-029 | Governed Knowledge Fact Contracts | ES-005 accepted, WO-021, WO-025 | Yes, after dependencies | Completed - Merged |
+| WO-030 | Knowledge Question and Answer Lifecycle | WO-029 | Limited | Completed - Merged |
+| WO-031 | Approval Decision and Manual-Handling Contracts | ES-005 accepted, WO-021, WO-025 | Yes, after dependencies | Completed - Merged |
 | WO-032 | Facts-Used Evidence and Revalidation Contracts | WO-029, WO-031 | No | Accepted |
-| WO-033 | Webhook and Audit Event Contract Expansion | WO-029, WO-030, WO-031 | Yes, after event producers exist | Accepted |
+| WO-033 | Webhook and Audit Event Contract Expansion | WO-029, WO-030, WO-031 | Yes, after event producers exist | Implemented Locally - Pending PR/CI/Merge |
 | WO-034 | Phase 5 Dashboard Contract Compatibility Pass | WO-027, WO-028, WO-029, WO-031 | Yes, after stable API schemas | Accepted |
 | WO-035 | Phase 5 Contract Integration Verification and Closeout | WO-027 through WO-034 | No | Accepted |
 
