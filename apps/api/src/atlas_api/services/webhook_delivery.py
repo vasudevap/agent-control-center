@@ -12,15 +12,18 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from atlas_api.core.config import Settings
+from atlas_api.core.events import (
+    ALLOWED_WEBHOOK_EVENT_TYPES,
+    ALLOWED_WEBHOOK_PAYLOAD_KEYS,
+    DENIED_WEBHOOK_PAYLOAD_KEY_PARTS,
+)
 from atlas_api.db.base import prefixed_id
 from atlas_api.models.webhook import WebhookDeliveryAttempt, WebhookSubscription
 
 RETRY_DELAYS = (30, 120, 480, 1800)
 MAX_ATTEMPTS = 5
-ALLOWED_EVENT_TYPES = frozenset({"approval.pending", "send.outcome", "message.held"})
-ALLOWED_PAYLOAD_KEYS = frozenset(
-    {"resource_id", "status", "reconciliation_url", "reason_category"}
-)
+ALLOWED_EVENT_TYPES = ALLOWED_WEBHOOK_EVENT_TYPES
+ALLOWED_PAYLOAD_KEYS = ALLOWED_WEBHOOK_PAYLOAD_KEYS
 
 
 class WebhookError(ValueError):
@@ -216,6 +219,13 @@ def _validate_payload(event_type: str, payload: dict[str, str]) -> None:
         event_type not in ALLOWED_EVENT_TYPES
         or not payload
         or set(payload) - ALLOWED_PAYLOAD_KEYS
+        or any(
+            any(
+                fragment in key.lower()
+                for fragment in DENIED_WEBHOOK_PAYLOAD_KEY_PARTS
+            )
+            for key in payload
+        )
     ):
         raise WebhookError("webhook_payload_invalid")
     if not all(

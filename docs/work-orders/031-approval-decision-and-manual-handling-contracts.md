@@ -1,6 +1,6 @@
 # Work Order 031: Approval Decision and Manual-Handling Contracts
 
-**Status:** Implemented Locally - Pending PR, CI, and Merge
+**Status:** Completed - Merged
 **Work Order ID:** WO-031
 **Type:** Backend approval contract
 **Implementation Authorization:** Granted under ADP-002 on 2026-07-18
