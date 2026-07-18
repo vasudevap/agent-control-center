@@ -4,8 +4,8 @@
 **Owner:** Repository Maintainer
 **Created:** 2026-07-18
 **Purpose:** Define the crisp MVP boundary, phase gates, success criteria, exit
-criteria, deployment path, associated Work Orders, and current completion
-percentages.
+criteria, deployment path, associated Work Orders, required governing
+artifacts, autonomous execution structure, and current completion percentages.
 
 ---
 
@@ -47,7 +47,67 @@ not lines of code or effort spent.
 | 10 | Additional Agents | Beyond MVP | 0% | TBD | Likely per-agent PRD addenda or functional specifications; connector-scope ADRs where needed; WOs per agent; policy/safety reviews; rollout, acceptance, and closeout reports | Agent-by-agent rollout | Gmail MVP proves reusable platform contracts | Calendar, documents, shopping, travel, job search, or other agents reuse platform contracts | Each new agent ships behind accepted WOs, safety controls, and operational evidence |
 | 11 | Enterprise Features | Beyond MVP | 0% | TBD | Likely enterprise PRD and ES; ADRs for SSO, RBAC, multi-user operation, tenancy, secrets, and networking; governance/security reviews; phased enterprise WOs; support-readiness evidence | Enterprise-ready environments only after separate authority | Multi-user/enterprise requirements are accepted | RBAC, SSO, multi-user governance, stronger secrets, private networking, tenant boundaries, and enterprise audit requirements are designed | Enterprise capabilities meet accepted security, governance, deployment, and support criteria |
 
-## 3. Issues, Unknowns, and TBD Decisions
+## 3. Autonomous Execution Artifact Model
+
+The phase gate table should remain the release-control view. It should not try
+to carry every work-order dependency directly, because that makes the table
+wide, brittle, and hard for multiple agents to execute from.
+
+Use the following artifact model for autonomous delivery:
+
+| Artifact type | Role in execution | Automation rule |
+| --- | --- | --- |
+| PRD or PRD addendum | Defines the product outcome, user value, and MVP or post-MVP boundary | Required before a new product capability phase begins |
+| Architecture baseline | Defines the accepted system, container, component, data, security, runtime, connector, observability, and deployment boundaries | Required before ES drafting when architecture already exists; update only through accepted governance |
+| ADR | Records a significant architecture, security, data, framework, runtime, deployment, or integration decision | ADRs decide; they do not collect or own WOs. A WO may depend on one or more accepted ADRs |
+| ES | Converts accepted product and architecture authority into an engineering scope, exclusions, interfaces, validation, and rollback expectations | Required before implementation WOs for a major capability |
+| ADP | Sequences accepted WOs into an autonomous execution program, including dependency gates, parallel lanes, validation, PR/CI rules, and stop-and-ask triggers | Required before uninterrupted multi-WO execution |
+| WO | Authorizes one bounded implementation change with file scope, prerequisites, acceptance criteria, validation, rollback, and stop-and-ask triggers | The smallest unit an implementation agent should execute |
+| Review or acceptance record | Records readiness, implementation evidence, validation, risks, and closure | Required to close ES, WO, ADP, MVP candidate, and release phases |
+| Runbook or release plan | Defines deployment, health checks, rollback, operations, monitoring, credential handling, and incident/recovery steps | Required before MVP production release and any live integration |
+| Risk, privacy, or security review | Records accepted residual risk and safety/privacy findings | Required when live credentials, external provider data, user data, or production effects enter scope |
+
+The ADP is the correct place to group WOs for autonomous execution. Dependent
+WOs belong in serialized ADP waves. Independent WOs belong in parallel ADP
+lanes. ADRs remain decision gates that WOs cite as prerequisites.
+
+## 4. Required Artifact Register by Phase
+
+This table is a best-effort artifact register based on the current state of the
+repository. Future phases may add, split, or retire artifacts when their
+specific scope is drafted.
+
+| Phase | Stage | Required governing artifacts | Decision gates | Execution package | Parallelization posture |
+| ---: | --- | --- | --- | --- | --- |
+| 1 | Architecture Foundation | PRD; architecture baseline; ADR-001 through ADR-005; architecture README; roadmap; technology strategy; design principles | Accepted architecture and ADR baseline | No ADP required; documentation foundation is complete | Complete; no active parallel implementation |
+| 2 | Repository Foundation | ES-000 through ES-003; governance README; Definition of Ready; Definition of Done; PR/review process; branching and release management; WO-001 through WO-014; design decision records; implementation reports | ADR-001 for frontend testing; ADR-002 for approval decision integrity | Individual frontend/governance WOs | Complete; no active parallel implementation |
+| 3 | Platform Foundation | ES-004; Phase 3 master plan; target architecture; decision register; phase backlog; ADP-001; WO-015 through WO-026; implementation reports; Phase 3 closeout | ADR-003, ADR-004, ADR-005 accepted before backend platform work | ADP-001 completed Phase 3 dependency sequence | Complete; Phase 3 was mostly serial with limited dependency-ready parallelism |
+| 4 | Dashboard Productization | Dashboard productization ES or ES addendum; dashboard API-integration WOs; fixture-removal plan; UI acceptance records; accessibility/responsive evidence; implementation reports; closeout | ADR only if operator experience, auth, data, or decision semantics change | Future dashboard ADP or ADP lane after API contracts freeze | Can run partly in parallel with Phase 5 after API contracts and auth/session interface are stable |
+| 5 | Agent Framework and Governance Contracts | ES-005; Phase 5 target architecture or contract plan; ADR assessment; ADR candidates only for new security/data/runtime decisions; Phase 5 WO backlog starting at next available WO number; ADP-002 after WOs are accepted; contract tests; closeout report | Accepted ADR coverage for agent runtime, approval decision API, knowledge lifecycle, webhook/audit, and external client behavior | ADP-002 should group accepted WOs into dependency waves | High parallel potential after ES-005 and required ADRs are accepted; contracts, tests, UI integration, and docs can occupy separate lanes |
+| 6 | Gmail Agent MVP Candidate | ES-006; Gmail functional specification; Gmail connector/security scope; OAuth/scope decision record or ADR if needed; Gmail WO backlog; Gmail safety/privacy review; controlled-data demo plan; acceptance report | Gmail OAuth scopes, provider data handling, production-effect limits, and clinical/PHI suppression policy accepted | Gmail MVP ADP after Phase 5 contracts are merged and Gmail WOs accepted | Moderate parallel potential: connector/auth, classifier/drafting, UI integration, and safety tests can split after Gmail contract boundaries are fixed |
+| 7 | Operational MVP Release | Release-management plan; deployment WOs; environment configuration record; secrets/credential handling checklist; operational readiness review; monitoring plan; runbooks; rollback plan; MVP acceptance and residual-risk record | Production deployment authority, environment count, rollback owner, monitoring threshold, and residual risk accepted | MVP release ADP only after Phase 6 candidate passes review | Mostly serial near release; documentation, monitoring, and dashboard polish can run in parallel before final cutover |
+| 8 | Advanced Agentic Workflows | PRD addendum; advanced-workflow ES; framework evaluation; ADR if LangChain, LangGraph, Temporal, or equivalent becomes justified; workflow WOs; safety review; acceptance records | Framework adoption and workflow-risk decisions accepted | Post-MVP ADP per workflow family | Parallel by workflow family if shared contracts are stable |
+| 9 | Durable Orchestration | Orchestration ADR; durable-workflow ES; migration plan; rollback plan; queue/scheduler compatibility review; durability tests; orchestration WOs; recovery evidence | Durable orchestration need and chosen runtime accepted | Orchestration ADP with migration gates | Mostly serial for architecture and migration; tests and documentation can parallelize after interface freeze |
+| 10 | Additional Agents | Per-agent PRD addendum or functional spec; connector-scope ADR assessment; per-agent ES; per-agent WOs; safety/privacy reviews; rollout and closeout reports | Connector permissions, data handling, and action-risk boundaries accepted per agent | Agent-family ADPs after reusable platform contracts prove stable | High parallel potential across independent agents once shared framework and policy contracts are stable |
+| 11 | Enterprise Features | Enterprise PRD; enterprise ES; ADRs for SSO, RBAC, multi-user operation, tenancy, secrets, networking, and support model; security/governance reviews; enterprise WOs; support readiness evidence | Enterprise identity, tenancy, authorization, support, and deployment boundaries accepted | Enterprise readiness ADP split by capability domain | Parallel only after enterprise architecture boundaries are accepted; identity/tenancy/security remain serial gates |
+
+## 5. Autonomous Delivery Wave Plan
+
+ADPs should schedule WOs by dependency wave, not by document type. Each WO in a
+future ADP should declare `depends_on`, `blocked_by`, `parallel_safe_with`,
+file/domain boundaries, validation commands, evidence requirements, and
+stop-and-ask triggers.
+
+| Wave | Phase focus | Dependency gate | Parallel lanes | Serial follow-up | Autonomy boundary |
+| --- | --- | --- | --- | --- | --- |
+| Wave 0 | Phase 5 planning | ES-005 accepted; ADR assessment complete; no unresolved architecture decision | Artifact drafting can split into ES review fixes, WO backlog drafting, and test strategy drafting | Accept ES-005, required ADRs, and Phase 5 WOs before code | Agent may draft and revise docs; must stop before implementing unaccepted WOs |
+| Wave 1 | Generic contracts | Accepted Phase 5 WOs and ADP-002 | Agent runtime/registry contracts; governed knowledge API; approval/manual-handling API; webhook/audit contract tests | Integration smoke and closeout WOs after contract lanes merge | No Gmail-specific behavior; no live provider calls |
+| Wave 2 | Dashboard integration | Stable backend API/auth/session contracts from Phase 5 | Real API integration; loading/error/empty states; dashboard audit/approval views; fixture-removal evidence | Operator acceptance and dashboard productization closeout | No production deployment authority unless Phase 7 release plan grants it |
+| Wave 3 | Gmail MVP candidate | Phase 5 contracts merged; ES-006 and Gmail WOs accepted; Gmail credentials boundary approved | Gmail connector/OAuth scaffold; message eligibility/classification; draft/evidence generation; safety/privacy tests; UI workflow integration | Controlled-data end-to-end demo and safety acceptance | Must stop before live credentials or real account effects unless explicitly authorized |
+| Wave 4 | Operational MVP release | Phase 6 candidate accepted; release plan and runbooks accepted | Monitoring, rollback docs, deployment verification, final dashboard polish, residual-risk review | Production cutover and MVP acceptance | Live production deployment requires explicit release authority |
+| Wave 5 | Post-MVP expansion | MVP accepted and stable | Independent agents, workflow families, documentation, and tests | Shared platform migrations, durable orchestration, or enterprise identity gates | Do not add frameworks, multi-user behavior, or enterprise controls without ADR/ES authority |
+
+## 6. Issues, Unknowns, and TBD Decisions
 
 The artifact set above is a best-effort planning view. The following items may
 change the phase sequence, scope, or governing artifacts when they are decided:
@@ -55,8 +115,8 @@ change the phase sequence, scope, or governing artifacts when they are decided:
 - whether Phase 4 must finish before Phase 5, or can complete in parallel with
   Phase 5 under a separately accepted integration scope;
 - the exact work-order numbering and breakdown from WO-027 onward;
-- whether the anticipated ES-005 and ES-006 should be created as separate
-  specifications or combined with a master implementation plan;
+- whether ES-005 and ES-006 should remain separate specifications, with an ADP
+  coordinating them only after their WOs are accepted;
 - whether Phase 5 introduces a significant new security, data, or contract
   decision that requires a new ADR rather than an update to an existing ADR;
 - the MVP definition of acceptable Gmail risk, test coverage, data handling,
@@ -69,12 +129,17 @@ change the phase sequence, scope, or governing artifacts when they are decided:
 - the minimum MVP observability stack beyond Render logs and health checks;
 - whether plain Python/direct SDK contracts remain sufficient or a workflow
   framework becomes justified under the framework-adoption policy;
-- production environment count, deployment approvals, and rollback ownership;
+- production environment count, deployment approvals, rollback ownership, and
+  the exact point at which a human release decision is required;
+- the maximum number of parallel implementation agents that should be active on
+  the same branch family without increasing review and merge risk;
+- the exact WO dependency fields and naming convention to add before ADP-002 is
+  created;
 - measurable acceptance criteria for normal single-owner use; and
 - the intentionally speculative Phase 8-11 artifacts, which must be revised
   when those phases are entered.
 
-## 4. MVP Success Criteria
+## 7. MVP Success Criteria
 
 MVP succeeds when:
 
@@ -94,7 +159,7 @@ MVP succeeds when:
 - architecture, ADRs, WOs, implementation reports, and status records remain
   synchronized.
 
-## 5. MVP Exit Criteria
+## 8. MVP Exit Criteria
 
 The project exits MVP and enters post-MVP expansion only after:
 
@@ -107,15 +172,17 @@ The project exits MVP and enters post-MVP expansion only after:
 - Phase 8+ scope is approved through new Engineering Specifications, ADRs, or
   Work Orders as required.
 
-## 6. Immediate Next Governance Step
+## 9. Immediate Next Governance Step
 
-Create the Phase 5 execution package before implementation:
+Create the Phase 5 execution package before implementation. The recommended
+sequence is ES first, WOs second, ADP third:
 
-| Next artifact | Purpose |
-| --- | --- |
-| Phase 5 Engineering Specification | Define generic agent/governance contracts, API surfaces, validation rules, audit, security, errors, idempotency, retention, and test requirements. |
-| Phase 5 Work Order Backlog | Break Phase 5 into accepted WOs, starting at the next available work-order number. |
-| Phase 5 ADP, if desired | Authorize uninterrupted execution only after the Phase 5 WOs are drafted, reviewed, accepted, and dependency-ordered. |
+| Order | Next artifact | Purpose | Autonomy effect |
+| ---: | --- | --- | --- |
+| 1 | Phase 5 Engineering Specification | Define generic agent/governance contracts, API surfaces, validation rules, audit, security, errors, idempotency, retention, and test requirements | Allows agents to draft WOs against stable scope |
+| 2 | Phase 5 ADR assessment | Decide whether existing ADR-003, ADR-004, and ADR-005 are sufficient, or whether a new ADR is required | Prevents implementation from making architecture decisions silently |
+| 3 | Phase 5 Work Order Backlog | Break Phase 5 into accepted WOs, starting at the next available work-order number, with explicit dependency and parallel-safety fields | Creates independently executable units |
+| 4 | ADP-002: Phase 5 Autonomous Delivery Program | Group accepted WOs into dependency waves and parallel lanes, with validation, PR/CI, merge, evidence, and stop-and-ask rules | Authorizes uninterrupted execution only for accepted, dependency-ready WOs |
 
 Phase 5 must not silently become Gmail-specific implementation. Gmail-specific
 execution belongs to Phase 6 after the generic contracts are ready.
