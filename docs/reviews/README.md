@@ -79,6 +79,11 @@ records fake-provider Gmail draft creation, generated-output validation,
 draft persistence, exact `facts_used` evidence, decision-context bindings,
 idempotency, no-send guarantees, validation evidence, and residual risks.
 
+The [WO-042 implementation report](./WO-042-approval-gates-edit-then-approve-and-send-continuation-implementation-report.md)
+records Gmail send approval creation, edit supersession compatibility, approved
+send continuation, fact and draft revalidation, send outcome records,
+idempotency, validation evidence, and residual risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

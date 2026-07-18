@@ -192,3 +192,45 @@ class GmailDraftRecord(TimestampMixin, Base):
     owner: Mapped[User] = relationship()
     gmail_message: Mapped[GmailMessageRecord] = relationship()
     connection: Mapped[ConnectorConnection] = relationship()
+
+
+class GmailSendOutcomeRecord(TimestampMixin, Base):
+    __tablename__ = "gmail_send_outcome_records"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_user_id",
+            "idempotency_key",
+            name="uq_gmail_send_owner_idempotency",
+        ),
+    )
+
+    gmail_send_outcome_id: Mapped[str] = mapped_column(
+        String(64),
+        primary_key=True,
+        default=lambda: prefixed_id("gso"),
+    )
+    owner_user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    approval_id: Mapped[str] = mapped_column(
+        ForeignKey("approval_requests.approval_id"),
+        nullable=False,
+    )
+    gmail_draft_record_id: Mapped[str] = mapped_column(
+        ForeignKey("gmail_draft_records.gmail_draft_record_id"),
+        nullable=False,
+    )
+    provider_draft_reference: Mapped[str] = mapped_column(String(160), nullable=False)
+    provider_send_reference: Mapped[str | None] = mapped_column(
+        String(160),
+        nullable=True,
+    )
+    outcome: Mapped[str] = mapped_column(String(40), nullable=False)
+    idempotency_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    reason_code: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+    owner: Mapped[User] = relationship()
+    draft: Mapped[GmailDraftRecord] = relationship()

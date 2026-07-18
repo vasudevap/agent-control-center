@@ -1,12 +1,13 @@
 # Work Order 042: Approval Gates, Edit-Then-Approve, and Send Continuation
 
-**Status:** Accepted - Implementation Authorized
+**Status:** Implemented - Pending PR Review
 **Work Order ID:** WO-042
 **Type:** Backend Gmail approval and continuation behavior
 **Implementation Authorization:** Granted under ADP-003 on 2026-07-18
 **Engineering Specification:** [ES-006](../engineering-specifications/ES-006-gmail-agent-mvp-candidate.md)
 **Governing Plan:** [Phase 6 Work Order Backlog](../implementation-plans/phase-6-work-order-backlog.md)
 **Prerequisites:** WO-041 completed and merged; Phase 5 approval and facts-used contracts completed
+**Review Record:** [WO-042 Implementation Report](../reviews/WO-042-approval-gates-edit-then-approve-and-send-continuation-implementation-report.md)
 
 ## 1. Purpose
 

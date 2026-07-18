@@ -17,6 +17,7 @@ from atlas_api.models.gmail_message import (
     GmailActionOperation,
     GmailDraftRecord,
     GmailMessageRecord,
+    GmailSendOutcomeRecord,
 )
 from atlas_api.models.idempotency import ApiIdempotencyRecord
 from atlas_api.models.job import QueueJob
@@ -39,6 +40,7 @@ __all__ = [
     "GmailMessageRecord",
     "GmailActionOperation",
     "GmailDraftRecord",
+    "GmailSendOutcomeRecord",
     "JobSchedule",
     "ManualHandlingRecord",
     "OwnerSession",
