@@ -63,6 +63,12 @@ records the clinical and PHI suppression guardrail, minimized manual-handling
 records, webhook and audit evidence, downstream denial tests, and residual
 risks.
 
+The [WO-039 implementation report](./WO-039-low-risk-mailbox-actions-and-attachment-saving-implementation-report.md)
+records low-risk Gmail label/archive and attachment-save behavior, fake
+Gmail/Drive providers, idempotent action-operation evidence, suppression
+denials, provider failure normalization, validation evidence, and residual
+risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
