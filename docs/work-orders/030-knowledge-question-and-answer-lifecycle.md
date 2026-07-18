@@ -1,6 +1,6 @@
 # Work Order 030: Knowledge Question and Answer Lifecycle
 
-**Status:** Accepted - Ready After WO-029
+**Status:** Implemented Locally - Pending PR, CI, and Merge
 **Work Order ID:** WO-030
 **Type:** Backend governance contract
 **Implementation Authorization:** Granted under ADP-002 on 2026-07-18
@@ -8,7 +8,7 @@
 **Governing Plan:** [Phase 5 Work Order Backlog](../implementation-plans/phase-5-work-order-backlog.md)
 **Architecture Authority:** [ADR-005](../decisions/ADR-005-draft-support-knowledge-and-ask-instead-of-guess.md), [Human Approvals Architecture](../architecture/13-human-approvals.md)
 **Prerequisite:** [WO-029](./029-governed-knowledge-fact-contracts.md)
-**Review Record:** TBD
+**Review Record:** [WO-030 Implementation Report](../reviews/WO-030-knowledge-question-and-answer-lifecycle-implementation-report.md)
 
 ## 1. Purpose
 
