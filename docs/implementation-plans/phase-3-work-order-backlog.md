@@ -28,8 +28,8 @@ reviewed, accepted, implemented, validated, and merged independently.
 | WO-022 | Webhook Delivery Hardening | WO-020, WO-021 | Yes, after dependencies | Completed |
 | WO-023 | Queue Foundation | WO-018, WO-021 | Yes, after dependencies | Completed |
 | WO-024 | Scheduler Foundation | WO-023 | No | Completed |
-| WO-025 | Observability and Audit Baseline | WO-021, WO-022, WO-023 | Yes, after dependencies | Completed - Pending Merge |
-| WO-026 | Phase 3 Integration Verification and Closeout | WO-016-WO-025 | No | Accepted |
+| WO-025 | Observability and Audit Baseline | WO-021, WO-022, WO-023 | Yes, after dependencies | Completed |
+| WO-026 | Phase 3 Integration Verification and Closeout | WO-016-WO-025 | No | Completed |
 
 ## 3. Planned Work Orders
 

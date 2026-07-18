@@ -1,6 +1,6 @@
 # ADP-001: Phase 3 Foundation Completion Program
 
-**Status:** Accepted - Autonomous Execution Authorized
+**Status:** Completed
 **Program ID:** ADP-001
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
@@ -41,9 +41,9 @@ calls, or architecture changes outside accepted authority.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | --- | --- | --- | --- | --- |
-| 1 | [WO-022: Webhook Delivery Hardening](../work-orders/022-webhook-delivery-hardening.md) | Implemented on PR [#41](https://github.com/vasudevap/agent-control-center/pull/41); draft; merge state clean; CI `Validate` passed on 2026-07-18 | Mark PR ready if still clean, merge after required CI remains passing, update local `main`, and align status evidence | PR #41 merged into `main`; local `main` updated; WO-022 status evidence remains accurate |
-| 2 | [WO-025: Observability and Audit Baseline](../work-orders/025-observability-and-audit-baseline.md) | Accepted and implementation-authorized; waits on WO-022 merge | Implement structured logging, redaction, correlation propagation, audit writer, required integration points, tests, documentation, PR, CI, and merge | WO-025 PR merged with required tests, implementation report, CI, and no stop-and-ask violation |
-| 3 | [WO-026: Phase 3 Integration Verification and Closeout](../work-orders/026-phase-3-integration-verification-and-closeout.md) | Accepted and implementation-authorized; waits on WO-016 through WO-025 completed and merged | Build deterministic integration closeout harness, execute security/privacy verification, correct only closeout defects, produce closeout report, PR, CI, and merge | WO-026 PR merged; Phase 3 closeout report complete; Phase 5 entry criteria explicit |
+| 1 | [WO-022: Webhook Delivery Hardening](../work-orders/022-webhook-delivery-hardening.md) | Completed and merged through PR [#41](https://github.com/vasudevap/agent-control-center/pull/41) on 2026-07-18 | Complete | PR #41 merged into `main`; WO-022 status evidence aligned |
+| 2 | [WO-025: Observability and Audit Baseline](../work-orders/025-observability-and-audit-baseline.md) | Completed and merged through PR [#43](https://github.com/vasudevap/agent-control-center/pull/43) on 2026-07-18 | Complete | WO-025 PR merged with required tests, implementation report, CI, and no stop-and-ask violation |
+| 3 | [WO-026: Phase 3 Integration Verification and Closeout](../work-orders/026-phase-3-integration-verification-and-closeout.md) | Completed through governed closeout delivery | Complete | WO-026 PR merged; Phase 3 closeout report complete; Phase 5 entry criteria explicit |
 
 ## 4. Dependency Sequence
 
