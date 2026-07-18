@@ -75,3 +75,65 @@ class GmailMessageRecord(TimestampMixin, Base):
     owner: Mapped[User] = relationship()
     connection: Mapped[ConnectorConnection] = relationship()
     manual_handling: Mapped[ManualHandlingRecord | None] = relationship()
+
+
+class GmailActionOperation(TimestampMixin, Base):
+    __tablename__ = "gmail_action_operations"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_user_id",
+            "operation_type",
+            "idempotency_key",
+            name="uq_gmail_action_owner_operation_idempotency",
+        ),
+    )
+
+    gmail_action_operation_id: Mapped[str] = mapped_column(
+        String(64),
+        primary_key=True,
+        default=lambda: prefixed_id("gmao"),
+    )
+    owner_user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    gmail_message_record_id: Mapped[str] = mapped_column(
+        ForeignKey("gmail_message_records.gmail_message_record_id"),
+        nullable=False,
+    )
+    connection_id: Mapped[str] = mapped_column(
+        ForeignKey("connector_connections.connection_id"),
+        nullable=False,
+    )
+    drive_connection_id: Mapped[str | None] = mapped_column(
+        ForeignKey("connector_connections.connection_id"),
+        nullable=True,
+    )
+    operation_type: Mapped[str] = mapped_column(String(80), nullable=False)
+    status: Mapped[str] = mapped_column(String(40), nullable=False)
+    idempotency_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    provider_operation_reference: Mapped[str | None] = mapped_column(
+        String(160),
+        nullable=True,
+    )
+    provider_message_reference: Mapped[str] = mapped_column(
+        String(160),
+        nullable=False,
+    )
+    provider_attachment_reference: Mapped[str | None] = mapped_column(
+        String(160),
+        nullable=True,
+    )
+    target_reference: Mapped[str | None] = mapped_column(String(240), nullable=True)
+    reason_code: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+    owner: Mapped[User] = relationship()
+    gmail_message: Mapped[GmailMessageRecord] = relationship()
+    connection: Mapped[ConnectorConnection] = relationship(
+        foreign_keys=[connection_id],
+    )
+    drive_connection: Mapped[ConnectorConnection | None] = relationship(
+        foreign_keys=[drive_connection_id],
+    )
