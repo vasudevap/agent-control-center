@@ -33,21 +33,48 @@ approved hosting path.
 Completion percentages represent progress against each phase's exit criteria,
 not lines of code or effort spent.
 
-| Phase | Stage | MVP boundary | Current % | Associated Work Orders | Work orders that capture stage work | Deployment posture | Entry gate | Success criteria | Exit criteria |
+| Phase | Stage | MVP boundary | Current % | Associated Work Orders | Governing Artifacts | Deployment posture | Entry gate | Success criteria | Exit criteria |
 | ---: | --- | --- | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | Architecture Foundation | Pre-MVP | 100% | Architecture docs, ADR baseline, PRD; no numbered WOs required | Architecture documentation, ADR-001 through ADR-005, PRD, and roadmap; no implementation WO required | Documentation only | Project purpose and architecture scope agreed | System context, container, component, security, data, runtime, connector, observability, and technology architecture exist | Architecture baseline accepted and usable for governed execution |
-| 2 | Repository Foundation | Pre-MVP | 100% | ES-000 through ES-003; frontend WOs 001-014 partially cover repository/dashboard groundwork | ES-000, ES-001, ES-002, ES-003, WO-001 through WO-014 | Local repo and CI | Canonical repo, governance, and frontend foundation path defined | Repository standards, CI, review process, frontend test infrastructure, and initial dashboard design assets exist | Governed branch/PR/CI workflow is usable and source of truth is in Git |
-| 3 | Platform Foundation | Pre-MVP | 100% | WO-015 through WO-026 | WO-015, WO-016, WO-017, WO-018, WO-019, WO-020, WO-021, WO-022, WO-023, WO-024, WO-025, WO-026 | Local and CI backend foundation; no live production operation | Phase 3 engineering spec and accepted WOs | FastAPI foundation, PostgreSQL migrations, auth/session scaffolding, authorization boundary, API contracts, queue, scheduler, webhook fake delivery, logging, audit, and closeout smoke test pass | WO-026 merged, CI green, Phase 3 closeout report complete |
-| 4 | Dashboard Productization | Pre-MVP, MVP-enabling | 60% | Existing: WO-001, WO-005, WO-006, WO-009 through WO-014 completed; remaining dashboard/backend-integration WOs TBD | Completed UI/prototype coverage: WO-001, WO-005, WO-006, WO-009, WO-010, WO-011, WO-012, WO-013, WO-014. Remaining productization WOs TBD for real API integration and fixture removal | Netlify preview before production | Phase 3 backend foundation complete | Dashboard routes are integrated with real API contracts, auth/session state, errors, loading states, empty states, and operator flows | Operator can manage agents, runs, approvals, audit/log views, connector settings, and health from the dashboard without fixture-only behavior |
-| 5 | Agent Framework and Governance Contracts | Pre-MVP, MVP-enabling | 0% | TBD, likely WO-027+ | Future WOs starting at WO-027 should capture Phase 5 engineering spec, work-order backlog, generic agent/runtime contracts, approval/manual-handling APIs, governed knowledge APIs, webhooks, audit, and `facts_used` evidence | Render development/staging API with synthetic data only | Phase 3 complete and Phase 5 WOs accepted | Generic agent registry/runtime contracts, external approval decision API, manual-handling contract, governed knowledge CRUD, confirmations, volatility, questions/answers, webhooks, `facts_used`, audit, and revalidation contracts exist | Generic contracts are implemented, tested, documented, and merged without Gmail-specific behavior |
-| 6 | Gmail Agent MVP Candidate | MVP candidate | 0% | TBD, after Phase 5 | Future Phase 6 WOs should capture Gmail OAuth, message eligibility, classification, ask-instead-of-guess consumption, draft/evidence generation, approvals, low-risk actions, high-risk approval gates, and Gmail audit evidence | Controlled Gmail test account or limited private beta | Phase 5 contracts complete; Gmail/OAuth scope accepted | Gmail OAuth, eligible-message selection, classification, ask-instead-of-guess, draft/evidence generation, approvals, safe low-risk actions, high-risk approval gates, logs, and audit work end to end | First Gmail Agent workflow can run safely with controlled data and no unresolved safety blocker |
-| 7 | Operational MVP Release | MVP release | 0% | TBD | Future release WOs should capture production deployment, environment configuration, health/readiness verification, monitoring, rollback, runbook, recovery, and MVP acceptance evidence | Netlify + Render MVP production deployment | Phase 6 candidate passes safety and usability review | Normal single-owner use is reliable enough: deployment, health/readiness, scheduling, retries, recovery path, monitoring, documented operations, and rollback are in place | MVP is operable for personal use, with CI green, deployment verified, no credential exposure, and accepted residual risk |
-| 8 | Advanced Agentic Workflows | Beyond MVP | 0% | TBD | Future post-MVP WOs should capture each advanced workflow, framework evaluation, safety gate, and reusable platform extension independently | Incremental post-MVP environments | MVP released and stable | Additional workflow patterns, richer planning/tooling, and optional framework experiments are evaluated against architecture criteria | Advanced workflows add value without weakening MVP safety, audit, or maintainability |
-| 9 | Durable Orchestration | Beyond MVP | 0% | TBD | Future orchestration WOs should capture ADR-backed Temporal or equivalent evaluation, migration path, durable workflow tests, and rollback plan | Post-MVP staging before production | Durable workflow needs exceed simple queue/scheduler | Temporal or equivalent orchestration is justified, ADR-approved, implemented, and tested | Long-running/recoverable workflows are durable without unnecessary complexity |
-| 10 | Additional Agents | Beyond MVP | 0% | TBD | Future agent WOs should capture each agent separately, including connector scope, permissions, policies, tests, audit, rollout, and closeout | Agent-by-agent rollout | Gmail MVP proves reusable platform contracts | Calendar, documents, shopping, travel, job search, or other agents reuse platform contracts | Each new agent ships behind accepted WOs, safety controls, and operational evidence |
-| 11 | Enterprise Features | Beyond MVP | 0% | TBD | Future enterprise WOs should capture SSO, RBAC, multi-user governance, tenant boundaries, private networking, stronger secrets, audit retention, and support readiness separately | Enterprise-ready environments only after separate authority | Multi-user/enterprise requirements are accepted | RBAC, SSO, multi-user governance, stronger secrets, private networking, tenant boundaries, and enterprise audit requirements are designed | Enterprise capabilities meet accepted security, governance, deployment, and support criteria |
+| 1 | Architecture Foundation | Pre-MVP | 100% | Architecture docs, ADR baseline, PRD; no numbered WOs required | PRD; architecture baseline; ADR-001 through ADR-005; roadmap; technology strategy; design principles | Documentation only | Project purpose and architecture scope agreed | System context, container, component, security, data, runtime, connector, observability, and technology architecture exist | Architecture baseline accepted and usable for governed execution |
+| 2 | Repository Foundation | Pre-MVP | 100% | ES-000 through ES-003; frontend WOs 001-014 partially cover repository/dashboard groundwork | ES-000 through ES-003; governance controls; definition of ready/done; pull-request and review standards; WO-001 through WO-014; relevant design decision records | Local repo and CI | Canonical repo, governance, and frontend foundation path defined | Repository standards, CI, review process, frontend test infrastructure, and initial dashboard design assets exist | Governed branch/PR/CI workflow is usable and source of truth is in Git |
+| 3 | Platform Foundation | Pre-MVP | 100% | WO-015 through WO-026 | ES-004; Phase 3 master plan, target architecture, backlog, and decision register; ADP-001; WO-015 through WO-026; WO-026 closeout report | Local and CI backend foundation; no live production operation | Phase 3 engineering spec and accepted WOs | FastAPI foundation, PostgreSQL migrations, auth/session scaffolding, authorization boundary, API contracts, queue, scheduler, webhook fake delivery, logging, audit, and closeout smoke test pass | WO-026 merged, CI green, Phase 3 closeout report complete |
+| 4 | Dashboard Productization | Pre-MVP, MVP-enabling | 60% | Existing: WO-001, WO-005, WO-006, WO-009 through WO-014 completed; remaining dashboard/backend-integration WOs TBD | Existing dashboard WOs and implementation reports; likely dashboard productization ES; API-integration and fixture-removal WOs; UI acceptance/review reports; design decision records if the approved experience changes | Netlify preview before production | Phase 3 backend foundation complete | Dashboard routes are integrated with real API contracts, auth/session state, errors, loading states, empty states, and operator flows | Operator can manage agents, runs, approvals, audit/log views, connector settings, and health from the dashboard without fixture-only behavior |
+| 5 | Agent Framework and Governance Contracts | Pre-MVP, MVP-enabling | 0% | TBD, likely WO-027+ | Likely ES-005; Phase 5 target architecture/implementation plan and backlog; ADR updates when security, data, or contract choices change; WO-027+; review and closeout reports; ADP-002 if autonomous delivery is authorized | Render development/staging API with synthetic data only | Phase 3 complete and Phase 5 WOs accepted | Generic agent registry/runtime contracts, external approval decision API, manual-handling contract, governed knowledge CRUD, confirmations, volatility, questions/answers, webhooks, `facts_used`, audit, and revalidation contracts exist | Generic contracts are implemented, tested, documented, and merged without Gmail-specific behavior |
+| 6 | Gmail Agent MVP Candidate | MVP candidate | 0% | TBD, after Phase 5 | Likely ES-006; Gmail Agent functional specification and WO backlog; Gmail OAuth/security or connector-scope ADR if required; Gmail WOs; privacy/safety review; controlled-data demo and acceptance report | Controlled Gmail test account or limited private beta | Phase 5 contracts complete; Gmail/OAuth scope accepted | Gmail OAuth, eligible-message selection, classification, ask-instead-of-guess, draft/evidence generation, approvals, safe low-risk actions, high-risk approval gates, logs, and audit work end to end | First Gmail Agent workflow can run safely with controlled data and no unresolved safety blocker |
+| 7 | Operational MVP Release | MVP release | 0% | TBD | Likely release-management plan; deployment/provisioning WOs; environment configuration; operational-readiness and security/privacy reviews; monitoring and rollback runbooks; MVP acceptance and residual-risk record | Netlify + Render MVP production deployment | Phase 6 candidate passes safety and usability review | Normal single-owner use is reliable enough: deployment, health/readiness, scheduling, retries, recovery path, monitoring, documented operations, and rollback are in place | MVP is operable for personal use, with CI green, deployment verified, no credential exposure, and accepted residual risk |
+| 8 | Advanced Agentic Workflows | Beyond MVP | 0% | TBD | Likely advanced-workflow ES and ADRs; framework evaluation; one or more WOs per workflow; safety and post-MVP risk reviews; implementation and acceptance reports | Incremental post-MVP environments | MVP released and stable | Additional workflow patterns, richer planning/tooling, and optional framework experiments are evaluated against architecture criteria | Advanced workflows add value without weakening MVP safety, audit, or maintainability |
+| 9 | Durable Orchestration | Beyond MVP | 0% | TBD | Likely orchestration ADR; durable-workflow ES; Temporal-or-equivalent evaluation; migration and rollback plan; orchestration WOs; durability and recovery evidence | Post-MVP staging before production | Durable workflow needs exceed simple queue/scheduler | Temporal or equivalent orchestration is justified, ADR-approved, implemented, and tested | Long-running/recoverable workflows are durable without unnecessary complexity |
+| 10 | Additional Agents | Beyond MVP | 0% | TBD | Likely per-agent PRD addenda or functional specifications; connector-scope ADRs where needed; WOs per agent; policy/safety reviews; rollout, acceptance, and closeout reports | Agent-by-agent rollout | Gmail MVP proves reusable platform contracts | Calendar, documents, shopping, travel, job search, or other agents reuse platform contracts | Each new agent ships behind accepted WOs, safety controls, and operational evidence |
+| 11 | Enterprise Features | Beyond MVP | 0% | TBD | Likely enterprise PRD and ES; ADRs for SSO, RBAC, multi-user operation, tenancy, secrets, and networking; governance/security reviews; phased enterprise WOs; support-readiness evidence | Enterprise-ready environments only after separate authority | Multi-user/enterprise requirements are accepted | RBAC, SSO, multi-user governance, stronger secrets, private networking, tenant boundaries, and enterprise audit requirements are designed | Enterprise capabilities meet accepted security, governance, deployment, and support criteria |
 
-## 3. MVP Success Criteria
+## 3. Issues, Unknowns, and TBD Decisions
+
+The artifact set above is a best-effort planning view. The following items may
+change the phase sequence, scope, or governing artifacts when they are decided:
+
+- whether Phase 4 must finish before Phase 5, or can complete in parallel with
+  Phase 5 under a separately accepted integration scope;
+- the exact work-order numbering and breakdown from WO-027 onward;
+- whether the anticipated ES-005 and ES-006 should be created as separate
+  specifications or combined with a master implementation plan;
+- whether Phase 5 introduces a significant new security, data, or contract
+  decision that requires a new ADR rather than an update to an existing ADR;
+- the MVP definition of acceptable Gmail risk, test coverage, data handling,
+  and production-effect limits;
+- Gmail OAuth scopes, test-account versus personal-account use, and the
+  authorization needed to use live credentials;
+- whether Google Drive is an MVP dependency or should be deferred;
+- the exact clinical/protected-health-information suppression policy and its
+  validation thresholds;
+- the minimum MVP observability stack beyond Render logs and health checks;
+- whether plain Python/direct SDK contracts remain sufficient or a workflow
+  framework becomes justified under the framework-adoption policy;
+- production environment count, deployment approvals, and rollback ownership;
+- measurable acceptance criteria for normal single-owner use; and
+- the intentionally speculative Phase 8-11 artifacts, which must be revised
+  when those phases are entered.
+
+## 4. MVP Success Criteria
 
 MVP succeeds when:
 
@@ -67,7 +94,7 @@ MVP succeeds when:
 - architecture, ADRs, WOs, implementation reports, and status records remain
   synchronized.
 
-## 4. MVP Exit Criteria
+## 5. MVP Exit Criteria
 
 The project exits MVP and enters post-MVP expansion only after:
 
@@ -80,7 +107,7 @@ The project exits MVP and enters post-MVP expansion only after:
 - Phase 8+ scope is approved through new Engineering Specifications, ADRs, or
   Work Orders as required.
 
-## 5. Immediate Next Governance Step
+## 6. Immediate Next Governance Step
 
 Create the Phase 5 execution package before implementation:
 
