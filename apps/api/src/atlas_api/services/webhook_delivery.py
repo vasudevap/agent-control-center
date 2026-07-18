@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Protocol
@@ -41,6 +42,16 @@ class WebhookDeliveryResult:
     error_code: str | None = None
 
 
+@dataclass(frozen=True)
+class WebhookAuditEvent:
+    event_type: str
+    delivery_attempt_id: str
+    metadata: dict[str, int | str | None]
+
+
+WebhookAuditHook = Callable[[WebhookAuditEvent], None]
+
+
 class WebhookTransport(Protocol):
     async def send(
         self, notification: WebhookNotification, *, timeout_seconds: int
@@ -66,7 +77,13 @@ class WebhookDeliveryService:
         self._transport = transport
         self._settings = settings
 
-    async def deliver_due(self, session: Session, *, now: datetime) -> int:
+    async def deliver_due(
+        self,
+        session: Session,
+        *,
+        now: datetime,
+        audit_hook: WebhookAuditHook | None = None,
+    ) -> int:
         delivered = 0
         attempts = session.scalars(
             select(WebhookDeliveryAttempt).where(
@@ -88,6 +105,12 @@ class WebhookDeliveryService:
             attempt.attempt_count += 1
             result = await self._transport.send(notification, timeout_seconds=5)
             _apply_result(attempt, result, now)
+            _audit(
+                audit_hook,
+                f"webhook.delivery_{attempt.status}",
+                attempt,
+                error_code=result.error_code,
+            )
             delivered += 1
         session.flush()
         return delivered
@@ -102,6 +125,7 @@ def enqueue_notification(
     correlation_id: str,
     now: datetime,
     settings: Settings,
+    audit_hook: WebhookAuditHook | None = None,
 ) -> WebhookDeliveryAttempt:
     _validate_payload(event_type, payload)
     subscription = session.get(WebhookSubscription, subscription_id)
@@ -122,6 +146,7 @@ def enqueue_notification(
     )
     session.add(attempt)
     session.flush()
+    _audit(audit_hook, "webhook.delivery_queued", attempt)
     return attempt
 
 
@@ -216,3 +241,29 @@ def _signing_key(settings: Settings, requested_key_id: str | None) -> tuple[str,
         assert requested_key_id is not None
         return requested_key_id, settings.webhook_signing_next_secret.get_secret_value()
     raise WebhookError("webhook_signing_not_configured")
+
+
+def _audit(
+    audit_hook: WebhookAuditHook | None,
+    event_type: str,
+    attempt: WebhookDeliveryAttempt,
+    **metadata: int | str | None,
+) -> None:
+    if audit_hook is not None:
+        audit_hook(
+            WebhookAuditEvent(
+                event_type=event_type,
+                delivery_attempt_id=attempt.webhook_delivery_attempt_id,
+                metadata={
+                    "event_id": attempt.event_id,
+                    "event_type": attempt.event_type,
+                    "status": attempt.status,
+                    "attempt_count": attempt.attempt_count,
+                    "webhook_delivery_attempt_id": (
+                        attempt.webhook_delivery_attempt_id
+                    ),
+                    "webhook_subscription_id": attempt.webhook_subscription_id,
+                    **metadata,
+                },
+            )
+        )
