@@ -38,7 +38,7 @@ authority.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-045: Controlled-Account Release Verification` | Authorization Gate Reached | Await maintainer decision | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
+| 1 | `WO-045: Controlled-Account Release Verification` | Controlled Evidence Complete - Pending PR Review | Review and merge | Controlled-account evidence executed and cleaned up, or deferral explicitly accepted |
 | 2 | `WO-046: Dashboard Productization and Runtime Operations` | Completed - Merged | Complete | MVP-critical dashboard workflows use real contracts and pass UI validation |
 | 3 | `WO-047: Environment Configuration and Secrets Readiness` | Completed - Merged | Complete | Required config, OAuth setup, secret handling, redaction, and fail-closed checks documented and verified |
 | 4 | `WO-048: Deployment Path and Migration Readiness` | Completed - Merged | Complete | Netlify/Render path, migration procedure, backup/restore, and rollback evidence are ready |

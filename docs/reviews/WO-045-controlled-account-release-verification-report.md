@@ -1,7 +1,7 @@
 # WO-045 Controlled-Account Release Verification Report
 
 **Work Order:** [WO-045](../work-orders/045-controlled-account-release-verification.md)
-**Status:** Authorization Gate Reached
+**Status:** Controlled Evidence Complete - Pending PR Review
 **Date:** 2026-07-18
 **Engineering Specification:** [ES-007](../engineering-specifications/ES-007-operational-mvp-release-readiness.md)
 **Governing ADP:** [ADP-004](../implementation-plans/ADP-004-phase-7-operational-mvp-release.md)
@@ -9,13 +9,13 @@
 
 ## Summary
 
-WO-045 revalidated the deterministic fake-provider Gmail Agent baseline and
-confirmed that no live controlled-account execution can proceed without a
-separate explicit Repository Maintainer decision.
+WO-045 revalidated the deterministic fake-provider Gmail Agent baseline,
+executed the authorized controlled Gmail and Google Drive connector evidence,
+and cleaned up the synthetic provider artifacts.
 
-No personal mailbox, production mailbox, production OAuth client, live Gmail
-provider, live Google Drive provider, live webhook receiver, production
-deployment, or controlled-account execution was used.
+No personal mailbox, production mailbox, production OAuth client, live webhook
+receiver, production deployment, unrestricted mailbox scan, real message body,
+or non-synthetic provider content was used.
 
 ## Scope Completed
 
@@ -25,7 +25,15 @@ deployment, or controlled-account execution was used.
 - Reran the broader Gmail backend fake-provider contract suite.
 - Confirmed the accepted Gmail and Drive scopes remain bounded to
   `gmail.modify` and `drive.file` evidence.
-- Preserved the stop gate before any live provider call.
+- Verified Gmail and Google Drive connector profiles both resolved to
+  `grafleyinc@gmail.com`.
+- Sent one synthetic Gmail self-test message with a small synthetic attachment.
+- Retrieved the synthetic attachment through the Gmail connector.
+- Created a temporary Google Drive folder and uploaded the synthetic attachment
+  artifact.
+- Deleted the synthetic Drive file and temporary Drive folder.
+- Moved the synthetic Gmail seed message to Trash and verified the marker no
+  longer appeared outside Trash.
 
 ## Validation Commands
 
@@ -53,27 +61,43 @@ Result:
 46 passed, 1 warning
 ```
 
-## Authorization Gate
+## Controlled Account Authorization
 
-WO-045 cannot complete its live controlled-account path until the Repository
-Maintainer explicitly provides:
+The Repository Maintainer authorized the controlled test on 2026-07-18:
 
-- the controlled Gmail account identifier;
-- the controlled Google Drive account or folder boundary;
-- the OAuth client/configuration source;
-- the exact test window;
-- the cleanup verifier;
-- whether a controlled test send is permitted.
+```text
+Authorized: use grafleyinc@gmail.com and its Drive now; synthetic messages/files only; self-send permitted; cleanup verifier is me.
+```
 
-Alternatively, the Repository Maintainer may explicitly accept deferral of live
-controlled-account evidence. That deferral must be recorded before WO-051 can
-claim release-candidate validation readiness.
+## Controlled Provider Evidence
+
+| Evidence item | Result |
+| --- | --- |
+| Gmail profile | `grafleyinc@gmail.com` |
+| Google Drive profile | `grafleyinc@gmail.com` |
+| Synthetic marker | `ATLAS-WO045-20260718T233456Z` |
+| Gmail self-send | Created message/thread `19f7795bfae4665c` with `INBOX`, `SENT`, and `UNREAD` labels |
+| Gmail marker search | Returned only message `19f7795bfae4665c` |
+| Gmail attachment metadata | `atlas-wo045-20260718T233456Z.txt`, `text/plain`, 162 bytes |
+| Gmail attachment retrieval | Succeeded through the Gmail connector |
+| Drive temporary folder | Created `11fAEAYBaY4lKA8ctvdyFp-JJBn6hzJBR` under root |
+| Drive synthetic upload | Created file `1fZ36D2MxmhczORbq-tb15ZoiIw77bZgH` in the temporary folder |
+| Drive file cleanup | Deleted file `1fZ36D2MxmhczORbq-tb15ZoiIw77bZgH` |
+| Drive folder cleanup | Deleted folder `11fAEAYBaY4lKA8ctvdyFp-JJBn6hzJBR` |
+| Gmail seed cleanup | Moved message `19f7795bfae4665c` to Trash |
+| Gmail active-mail cleanup check | Marker search with `-in:trash` returned no messages |
+| Gmail quarantine check | Marker search with `in:trash` returned message `19f7795bfae4665c` |
 
 ## Security and Privacy Evidence
 
-- No Gmail or Drive connector was connected to a live provider.
-- No OAuth authorization code, access token, refresh token, provider secret, or
-  mailbox identifier was added to source or fixtures.
+- Gmail and Google Drive connectors were used only with the authorized
+  `grafleyinc@gmail.com` account.
+- No OAuth authorization code, access token, refresh token, provider secret,
+  raw attachment bytes, or message body was added to source or fixtures.
+- The only live Gmail content accessed was the synthetic marker message created
+  during this controlled test window.
+- The only live Drive content created was the temporary synthetic folder and
+  uploaded synthetic attachment artifact; both were deleted.
 - Fake-provider tests continue to cover suppression, ask-instead-of-guess,
   draft generation, approval gates, send outcomes, audit, and minimized
   webhook payloads.
@@ -84,12 +108,12 @@ claim release-candidate validation readiness.
 
 | Risk / deferred item | Status | Next authority |
 | --- | --- | --- |
-| No live controlled-account execution | Gate reached | Explicit maintainer controlled-account authorization or explicit deferral |
-| Provider API quirks remain unproven | Known residual risk | Controlled-account execution if authorized |
-| WO-051 release candidate validation is blocked on WO-045 disposition | Required | Maintainer decision |
+| Atlas runtime did not execute a full production Gmail Agent run against live provider credentials | Known residual risk | WO-051 release candidate validation or a narrower runtime/live-connector Work Order |
+| Gmail seed message remains recoverable in Trash rather than permanently deleted | Accepted cleanup posture | Maintainer may manually empty Trash after review if desired |
+| Browser/dashboard evidence for this live connector pass was not captured | Deferred | WO-051 final release-candidate evidence |
 
 ## Completion State
 
-WO-045 has completed safe fake-provider baseline validation and is blocked at
-the explicit controlled-account authorization or deferral gate. No live
-provider side effects were created.
+WO-045 controlled Gmail and Google Drive evidence is complete with provider
+cleanup performed. The work is pending pull-request review, required CI, merge,
+and final status update before WO-051 release-candidate validation proceeds.
