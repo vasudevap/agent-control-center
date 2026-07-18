@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, Request
 
@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 def get_request_settings(request: Request) -> Settings:
-    return request.app.state.settings
+    return cast("Settings", request.app.state.settings)
 
 
 SettingsDependency = Annotated[Settings, Depends(get_request_settings)]

@@ -5,6 +5,7 @@ from collections.abc import Callable
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 
+from atlas_api.api.agent_registry import router as agent_registry_router
 from atlas_api.api.routes import router
 from atlas_api.core.config import Settings, get_settings
 from atlas_api.core.correlation import CorrelationIdMiddleware
@@ -17,6 +18,7 @@ OPENAPI_TAGS = [
         "name": "external-client",
         "description": "Signed external-client boundary probes.",
     },
+    {"name": "agents", "description": "Generic agent registry contracts."},
     {"name": "knowledge", "description": "Reserved knowledge API contract."},
 ]
 
@@ -37,6 +39,7 @@ def create_app(
     app.add_middleware(CorrelationIdMiddleware)
     register_exception_handlers(app)
     app.include_router(router)
+    app.include_router(agent_registry_router)
     _configure_openapi(app)
     return app
 
