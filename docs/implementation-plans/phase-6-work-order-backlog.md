@@ -24,8 +24,8 @@ triggers.
 | WO-036 | Gmail OAuth, Scopes, and Connector Boundary | ES-006 accepted, Phase 5 closeout | Limited | Completed - Merged |
 | WO-037 | Gmail Message Eligibility, Retrieval, and Classification | WO-036 | Limited | Completed - Merged |
 | WO-038 | Clinical and PHI Suppression Guardrail | WO-037 contract shape | No | Completed - Merged |
-| WO-039 | Low-Risk Mailbox Actions and Attachment Saving | WO-036, WO-037, WO-038 | Yes, after suppression gate | Implemented - Pending PR Review |
-| WO-040 | Ask-Instead-of-Guess and Governed Fact Use | WO-037, WO-038, Phase 5 knowledge contracts | Yes, after suppression gate | Accepted |
+| WO-039 | Low-Risk Mailbox Actions and Attachment Saving | WO-036, WO-037, WO-038 | Yes, after suppression gate | Completed - Merged |
+| WO-040 | Ask-Instead-of-Guess and Governed Fact Use | WO-037, WO-038, Phase 5 knowledge contracts | Yes, after suppression gate | Implemented - Pending PR Review |
 | WO-041 | Draft Generation and Facts-Used Evidence | WO-038, WO-040 | No | Accepted |
 | WO-042 | Approval Gates, Edit-Then-Approve, and Send Continuation | WO-041, Phase 5 approval contracts | No | Accepted |
 | WO-043 | Gmail Agent Operational Reconciliation | WO-039, WO-040, WO-042 | Limited | Accepted |

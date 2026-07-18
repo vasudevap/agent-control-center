@@ -69,6 +69,11 @@ Gmail/Drive providers, idempotent action-operation evidence, suppression
 denials, provider failure normalization, validation evidence, and residual
 risks.
 
+The [WO-040 implementation report](./WO-040-ask-instead-of-guess-and-governed-fact-use-implementation-report.md)
+records Gmail draft-scenario required facts, ask-instead-of-guess question
+creation, stale volatile fact handling, answer validation, suppressed-source
+exclusion, webhook/audit evidence, and residual risks.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
