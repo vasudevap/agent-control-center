@@ -9,6 +9,7 @@ from atlas_api.models import (  # noqa: F401
     audit,
     external_client,
     knowledge,
+    run,
     webhook,
 )
 from atlas_api.services.webhook_delivery import (
@@ -38,6 +39,8 @@ def test_foundation_metadata_keeps_knowledge_records_distinct() -> None:
     assert "approval_id" not in answers.c
     assert "approval_requests" in table_names
     assert "manual_handling_records" in table_names
+    assert "agent_runs" in table_names
+    assert "agent_run_steps" in table_names
 
 
 def test_foundation_schema_can_create_in_narrow_sqlite_unit_test() -> None:

@@ -24,7 +24,7 @@ and stop-and-ask triggers.
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
 | WO-027 | Agent Registry and Runtime Contracts | ES-005 accepted | Limited | Implemented Locally - Pending PR/CI/Merge |
-| WO-028 | Run Lifecycle and Job Intake Contracts | WO-027 | Limited | Accepted |
+| WO-028 | Run Lifecycle and Job Intake Contracts | WO-027 | Limited | Implemented Locally - Pending PR/CI/Merge |
 | WO-029 | Governed Knowledge Fact Contracts | ES-005 accepted, WO-021, WO-025 | Yes, after dependencies | Implemented Locally - Pending PR/CI/Merge |
 | WO-030 | Knowledge Question and Answer Lifecycle | WO-029 | Limited | Accepted |
 | WO-031 | Approval Decision and Manual-Handling Contracts | ES-005 accepted, WO-021, WO-025 | Yes, after dependencies | Implemented Locally - Pending PR/CI/Merge |
