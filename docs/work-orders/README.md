@@ -108,8 +108,8 @@ Gmail/Drive evidence and MVP release-candidate acceptance are recorded under
 WO-045 and WO-052. Production deployment, release tagging, public launch, and
 post-MVP implementation remain gated by separate explicit authority.
 
-Work Orders 053 through 060 are proposed for the hosted MVP production cutover
-package under proposed ES-008 and ADP-005:
+Work Orders 053 through 060 are accepted for the hosted MVP production cutover
+package under ES-008 and ADP-005:
 
 - WO-053: Production Environment and Secrets Provisioning
 - WO-054: Netlify Frontend Deployment
@@ -120,7 +120,10 @@ package under proposed ES-008 and ADP-005:
 - WO-059: Production Rollback and Release Withdrawal Rehearsal
 - WO-060: Release Tag and Production Closeout
 
-The hosted cutover sequence is proposed in
+The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
-It does not authorize production deployment, provider writes, migrations,
-release tags, or public launch until accepted by the Repository Maintainer.
+WO-053 implementation is blocked until the target Netlify and Render resources
+exist or are identified; the blocker and redacted variable map are recorded in
+the WO-053 implementation report. Deployment, provider writes, migrations,
+release tags, and public launch remain bounded by the active Work Order scope
+and stop-and-ask triggers.

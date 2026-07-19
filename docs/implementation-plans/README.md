@@ -26,6 +26,7 @@ Current plans:
 - [Hosted Production Cutover ADR Assessment](./hosted-production-cutover-adr-assessment.md)
 - [Hosted Production Cutover Work Order Backlog](./hosted-production-cutover-work-order-backlog.md)
 - [ADP-005: Hosted MVP Production Cutover](./ADP-005-hosted-mvp-production-cutover.md)
+- [Hosted Production Environment Variable Provisioning](./hosted-production-environment-variable-provisioning.md)
 - [Phase 3 Implementation Decision Register](./phase-3-implementation-decision-register.md)
 - [Infrastructure Provisioning Strategy](./infrastructure-provisioning-strategy.md)
 - [Agent Execution Packet Template](./agent-execution-packet-template.md)

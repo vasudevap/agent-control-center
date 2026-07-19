@@ -1,12 +1,12 @@
 # ES-008 - Hosted MVP Production Cutover
 
-**Status:** Proposed - Pending Acceptance
+**Status:** Accepted
 **Owner:** Repository Maintainer
 **Review Owner:** Repository Maintainer
 **Date:** 2026-07-19
-**Version:** 0.1
-**Accepted:** Not yet accepted
-**Implementation Authorization:** Not granted
+**Version:** 1.0
+**Accepted:** 2026-07-19 by Repository Maintainer
+**Implementation Authorization:** Granted for WO-053 through WO-060 under ADP-005
 **Target Release:** Hosted MVP production cutover
 **Related Phase:** Post-Phase 7 hosted production cutover
 **Prerequisite Engineering Specification:** `docs/engineering-specifications/ES-007-operational-mvp-release-readiness.md`
@@ -24,9 +24,9 @@ Define the governed cutover scope that takes the accepted MVP release candidate
 from repository evidence to an online, single-owner hosted deployment on the
 accepted Netlify frontend and Render API/PostgreSQL path.
 
-ES-008 is intentionally a production-cutover specification. It does not
-authorize implementation until the Repository Maintainer accepts ES-008,
-WO-053 through WO-060, and ADP-005. It does not authorize broader product
+ES-008 is intentionally a production-cutover specification. Repository
+Maintainer acceptance on 2026-07-19 authorizes bounded implementation under
+WO-053 through WO-060 and ADP-005. It does not authorize broader product
 scope, public launch, enterprise readiness, multi-user operation, broader
 Google scopes, or Phase 8 implementation.
 
@@ -151,8 +151,8 @@ an updated Work Order, ADR, or maintainer decision.
 
 ES-008 does not authorize:
 
-- any deployment action before ES-008, WO-053 through WO-060, and ADP-005 are
-  accepted;
+- deployment action outside accepted WO-053 through WO-060 and ADP-005
+  authority;
 - production deployment without explicit provider/action authority;
 - release tagging without explicit tag authority;
 - production mailbox use;
@@ -182,8 +182,8 @@ ES-008 does not authorize:
 
 ES-008 is complete only when:
 
-- ES-008, WO-053 through WO-060, and ADP-005 are accepted before deployment
-  action begins;
+- ES-008, WO-053 through WO-060, and ADP-005 acceptance is recorded before
+  deployment action begins;
 - all accepted Work Orders are implemented, validated, reviewed, and merged;
 - provider-side configuration evidence is recorded without leaking secrets;
 - hosted frontend and API health checks pass;
@@ -226,7 +226,8 @@ Rollback must cover:
 
 Stop and request Repository Maintainer direction before proceeding if:
 
-- ES-008, a required Work Order, or ADP-005 is not accepted;
+- a required Work Order, provider action, or ADP-005 execution step is not
+  authorized;
 - a command would provision, deploy, migrate, tag, publish, revoke, rotate,
   delete, or expose production resources without explicit Work Order authority;
 - provider dashboards require secret values to be shared in chat or source;

@@ -146,10 +146,15 @@ residual risks, accepted MVP boundary, post-MVP entry gate, and Phase 7 closeout
 state.
 
 The [ES-008 review record](./ES-008-hosted-mvp-production-cutover-review.md)
-is the proposed acceptance gate for hosted MVP production cutover planning,
-including Netlify, Render/PostgreSQL, Google OAuth, hosted migrations, smoke
-testing, rollback rehearsal, go/no-go, and release closeout. It does not grant
-deployment authority until accepted.
+records acceptance of hosted MVP production cutover planning, including
+Netlify, Render/PostgreSQL, Google OAuth, hosted migrations, smoke testing,
+rollback rehearsal, go/no-go, and release closeout.
+
+The [WO-053 implementation report](./WO-053-production-environment-and-secrets-provisioning-implementation-report.md)
+records the accepted provider environment and secrets provisioning start,
+redacted variable map, read-only provider checks, and current blocker: the
+target Netlify and Render resources must exist or be identified before
+provider-native variables can be configured.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,

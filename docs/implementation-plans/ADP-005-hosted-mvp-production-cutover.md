@@ -1,11 +1,11 @@
 # ADP-005: Hosted MVP Production Cutover
 
-**Status:** Proposed - Pending Acceptance
+**Status:** Accepted - In Progress
 **Program ID:** ADP-005
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
 **Created:** 2026-07-19
-**Execution Window:** Not authorized
+**Execution Window:** Authorized by Repository Maintainer on 2026-07-19
 **Engineering Specification:** `docs/engineering-specifications/ES-008-hosted-mvp-production-cutover.md`
 **Work Order Backlog:** `docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`
 
@@ -22,25 +22,27 @@ rollback, and stop-and-ask triggers after acceptance.
 
 ## 2. Execution Authority
 
-Execution authority is not granted yet.
+Execution authority was granted by the Repository Maintainer on 2026-07-19 for
+the accepted ES-008, hosted production cutover ADR assessment, WO-053 through
+WO-060, and ADP-005 package.
 
-The Repository Maintainer must explicitly accept ES-008, the hosted production
-cutover ADR assessment, WO-053 through WO-060, and ADP-005 before any provider
-write, deployment, migration, OAuth configuration, rollback action, release
-tag, or hosted production use begins.
+Authority remains bounded by each Work Order. Provider writes, deployment,
+migration, OAuth configuration, rollback action, release tag, and hosted
+production use must still match the active Work Order scope and stop-and-ask
+triggers.
 
 ## 3. Proposed Work Order Set
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-053: Production Environment and Secrets Provisioning` | Proposed - Pending Acceptance | Await acceptance | Provider-native env/secrets configured without value exposure |
-| 2 | `WO-054: Netlify Frontend Deployment` | Proposed - Pending Acceptance | Await acceptance | Frontend hosted and rollback path verified |
-| 3 | `WO-055: Render API and PostgreSQL Deployment` | Proposed - Pending Acceptance | Await acceptance | API/database hosted with health/readiness evidence |
-| 4 | `WO-056: Google OAuth Production Client and Redirects` | Proposed - Pending Acceptance | Await acceptance | Hosted OAuth redirects work with accepted scopes |
-| 5 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Proposed - Pending Acceptance | Await acceptance | Hosted DB migration and recovery evidence recorded |
-| 6 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Proposed - Pending Acceptance | Await acceptance | Hosted smoke, audit/log, connector, and monitoring checks pass |
-| 7 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Proposed - Pending Acceptance | Await acceptance | Rollback and withdrawal paths reviewed or rehearsed |
-| 8 | `WO-060: Release Tag and Production Closeout` | Proposed - Pending Acceptance | Await acceptance | Go/no-go decision, optional tag, URLs, and closeout recorded |
+| 1 | `WO-053: Production Environment and Secrets Provisioning` | Accepted - In Progress | Implement provider env/secrets provisioning evidence | Provider-native env/secrets configured without value exposure or documented blocker |
+| 2 | `WO-054: Netlify Frontend Deployment` | Accepted - Pending Implementation | Await WO-053 gate | Frontend hosted and rollback path verified |
+| 3 | `WO-055: Render API and PostgreSQL Deployment` | Accepted - Pending Implementation | Await WO-053 gate | API/database hosted with health/readiness evidence |
+| 4 | `WO-056: Google OAuth Production Client and Redirects` | Accepted - Pending Implementation | Await hosted URL decisions | Hosted OAuth redirects work with accepted scopes |
+| 5 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
+| 6 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Accepted - Pending Implementation | Await WO-054 through WO-057 evidence | Hosted smoke, audit/log, connector, and monitoring checks pass |
+| 7 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await hosted deployment evidence | Rollback and withdrawal paths reviewed or rehearsed |
+| 8 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
 
 ## 4. Dependency Sequence
 
