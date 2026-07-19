@@ -175,7 +175,7 @@ a new Engineering Specification, Work Order, or ADR as needed:
 
 | Option | Purpose | Required authority |
 | --- | --- | --- |
-| Hosted production cutover | Execute Netlify/Render deployment, production configuration, migration, and rollback evidence | Explicit deployment/release authority |
+| Hosted production cutover | Execute Netlify/Render deployment, production configuration, migration, and rollback evidence | Proposed ES-008 / ADP-005 plus explicit deployment/release authority |
 | Live-runtime Gmail/Drive execution | Run the Atlas runtime against authorized live provider credentials beyond connector-level evidence | Narrow live-runtime Work Order and privacy/security evidence |
 | Dashboard owner-session integration | Replace remaining fixture-heavy operational surfaces with browser-safe owner-session API wiring | Dashboard/API Work Order and auth/session boundary review |
 | Phase 8 advanced workflows | Begin post-MVP workflow exploration | New ES and ADR assessment |
