@@ -124,8 +124,9 @@ The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
 WO-053 implementation remains blocked for Render/API-dependent secret values.
 WO-054 has created and linked the Netlify target, but hosted dashboard
-completion is blocked on a reviewed Netlify base/publish packaging fix and
-redeploy. WO-055 has created the Render API service and PostgreSQL target, but
-readiness is blocked until provider-native secret/database binding is safely
-completed. Deployment, provider writes, migrations, release tags, and public
-launch remain bounded by the active Work Order scope and stop-and-ask triggers.
+completion is blocked on Netlify deploy packaging/CI linkage after the
+base/publish source fix merged. WO-055 has created the Render API service and
+PostgreSQL target, but readiness is blocked until provider-native
+secret/database binding is safely completed. Deployment, provider writes,
+migrations, release tags, and public launch remain bounded by the active Work
+Order scope and stop-and-ask triggers.
