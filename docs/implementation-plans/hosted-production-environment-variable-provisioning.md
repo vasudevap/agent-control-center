@@ -20,7 +20,7 @@ state, redaction posture, and owner expectations only.
 
 | Provider target | Expected location | WO-053 state | Blocking dependency |
 | --- | --- | --- | --- |
-| Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Not configured | No Atlas Netlify site is linked to this repository yet |
+| Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Partially configured | `NEXT_PUBLIC_API_BASE_URL` waits for hosted API URL |
 | Render API service | Render service environment variables or environment group | Not configured | Render API service is created under WO-055 |
 | Render PostgreSQL database | Render PostgreSQL internal connection reference | Not configured | Render database is created under WO-055 |
 | Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Hosted API callback URL is available after WO-055 |
@@ -36,7 +36,7 @@ provider targets exist and redacted evidence is captured.
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Pending hosted API URL |
-| `NEXT_PUBLIC_APP_ENV` | Netlify production environment, `@atlas/web` | No | Ready for value after site exists |
+| `NEXT_PUBLIC_APP_ENV` | Netlify production environment, `@atlas/web` | No | Configured as production |
 | `NEXT_PUBLIC_RELEASE_VERSION` | Netlify production environment, `@atlas/web` | No | Ready for value after release commit is selected |
 
 `NEXT_PUBLIC_` variables are browser-visible and must never contain secret

@@ -27,6 +27,7 @@ apps/api/*.db
 # Local environment files (examples remain trackable)
 .env*
 !.env.example
+.netlify/
 
 # macOS metadata
 .DS_Store

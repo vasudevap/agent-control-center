@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import tomllib
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -33,6 +34,16 @@ def test_release_readiness_source_contracts_are_present() -> None:
     assert "npm run build" in ci_workflow
 
 
-def test_release_readiness_does_not_commit_provider_deployment_files() -> None:
+def test_release_readiness_provider_files_match_cutover_authority() -> None:
     assert not (REPO_ROOT / "render.yaml").exists()
-    assert not (REPO_ROOT / "netlify.toml").exists()
+
+    netlify_toml = REPO_ROOT / "netlify.toml"
+    assert netlify_toml.is_file()
+
+    netlify_config = tomllib.loads(netlify_toml.read_text())
+    assert netlify_config["build"] == {
+        "command": "npm run build",
+        "publish": "apps/web/.next",
+        "environment": {"NEXT_TELEMETRY_DISABLED": "1"},
+    }
+    assert "NEXT_PUBLIC_API_BASE_URL" not in netlify_toml.read_text()

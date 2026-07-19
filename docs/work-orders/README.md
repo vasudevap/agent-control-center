@@ -122,8 +122,8 @@ package under ES-008 and ADP-005:
 
 The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
-WO-053 implementation is blocked until the target Netlify and Render resources
-exist or are identified; the blocker and redacted variable map are recorded in
-the WO-053 implementation report. Deployment, provider writes, migrations,
-release tags, and public launch remain bounded by the active Work Order scope
-and stop-and-ask triggers.
+WO-053 implementation remains blocked for Render/API-dependent variables.
+WO-054 has created and linked the Netlify target, but frontend deployment
+completion is blocked until the hosted API URL exists. Deployment, provider
+writes, migrations, release tags, and public launch remain bounded by the
+active Work Order scope and stop-and-ask triggers.

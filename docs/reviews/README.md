@@ -156,6 +156,12 @@ redacted variable map, read-only provider checks, and current blocker: the
 target Netlify and Render resources must exist or be identified before
 provider-native variables can be configured.
 
+The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
+records the Netlify site creation, source-level Netlify build configuration,
+non-secret production environment label, local frontend validation, and current
+blocker: the hosted API URL must exist before `NEXT_PUBLIC_API_BASE_URL`,
+production deployment, and runtime-health verification can be completed.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
