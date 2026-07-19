@@ -1,11 +1,11 @@
 # Hosted Production Cutover Work Order Backlog
 
-**Status:** Proposed - Pending Acceptance
+**Status:** Accepted - In Progress
 **Owner:** Repository Maintainer
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **ADR Assessment:** [Hosted Production Cutover ADR Assessment](./hosted-production-cutover-adr-assessment.md)
-**Implementation Authorization:** Not granted
+**Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19
 
 ---
 
@@ -22,14 +22,14 @@ acceptance.
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | Proposed - Pending Acceptance |
-| WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Proposed - Pending Acceptance |
-| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Proposed - Pending Acceptance |
-| WO-056 | Google OAuth Production Client and Redirects | WO-054, WO-055 URL decisions | No | Proposed - Pending Acceptance |
-| WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Proposed - Pending Acceptance |
-| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057 | No | Proposed - Pending Acceptance |
-| WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Proposed - Pending Acceptance |
-| WO-060 | Release Tag and Production Closeout | WO-058, WO-059 | No | Proposed - Pending Acceptance |
+| WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | Accepted - In Progress |
+| WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Accepted - Pending Implementation |
+| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Accepted - Pending Implementation |
+| WO-056 | Google OAuth Production Client and Redirects | WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation |
+| WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
+| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057 | No | Accepted - Pending Implementation |
+| WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
+| WO-060 | Release Tag and Production Closeout | WO-058, WO-059 | No | Accepted - Pending Implementation |
 
 ## 3. Dependency Waves
 
@@ -42,7 +42,7 @@ acceptance.
 | Wave 4 | WO-058, WO-059 | Hosted smoke and rollback evidence | Serial release-safety lane |
 | Wave 5 | WO-060 | Go/no-go, optional tag, closeout | Maintainer decision lane |
 
-## 4. Proposed Work Orders
+## 4. Accepted Work Orders
 
 ### WO-053 - Production Environment and Secrets Provisioning
 
@@ -150,6 +150,7 @@ Stop before implementation if:
 
 ## 6. Acceptance Boundary
 
-This backlog is proposed only. It does not authorize deployment, provider
-configuration, migrations, release tags, or production use until accepted by
-the Repository Maintainer with ES-008 and ADP-005.
+This backlog was accepted by the Repository Maintainer on 2026-07-19 with
+ES-008 and ADP-005. It authorizes only the bounded Work Order sequence above.
+Deployment, provider configuration, migrations, release tags, and production
+use must remain inside the active Work Order scope and stop-and-ask triggers.
