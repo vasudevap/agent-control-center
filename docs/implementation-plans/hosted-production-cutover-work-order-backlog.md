@@ -23,8 +23,8 @@ acceptance.
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
 | WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | Accepted - In Progress |
-| WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Blocked - Hosted API URL Pending |
-| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Accepted - Pending Implementation |
+| WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Blocked - Deploy Fix Pending Review |
+| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Secret/Database Binding Pending |
 | WO-056 | Google OAuth Production Client and Redirects | WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057 | No | Accepted - Pending Implementation |
