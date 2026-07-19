@@ -1,13 +1,13 @@
 # Work Order 054: Netlify Frontend Deployment
 
-**Status:** Accepted - Pending Implementation
+**Status:** Blocked - Hosted API URL Pending
 **Work Order ID:** WO-054
 **Type:** Frontend hosting cutover
-**Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending WO-053 gate
+**Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-053 environment map accepted
-**Review Record:** TBD
+**Review Record:** [WO-054 Implementation Report](../reviews/WO-054-netlify-frontend-deployment-implementation-report.md)
 
 ## 1. Purpose
 

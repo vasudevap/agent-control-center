@@ -36,7 +36,7 @@ triggers.
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
 | 1 | `WO-053: Production Environment and Secrets Provisioning` | Accepted - In Progress | Implement provider env/secrets provisioning evidence | Provider-native env/secrets configured without value exposure or documented blocker |
-| 2 | `WO-054: Netlify Frontend Deployment` | Accepted - Pending Implementation | Await WO-053 gate | Frontend hosted and rollback path verified |
+| 2 | `WO-054: Netlify Frontend Deployment` | Blocked - Hosted API URL Pending | Netlify target created; await WO-055 API URL before deploy completion | Frontend hosted and rollback path verified |
 | 3 | `WO-055: Render API and PostgreSQL Deployment` | Accepted - Pending Implementation | Await WO-053 gate | API/database hosted with health/readiness evidence |
 | 4 | `WO-056: Google OAuth Production Client and Redirects` | Accepted - Pending Implementation | Await hosted URL decisions | Hosted OAuth redirects work with accepted scopes |
 | 5 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
