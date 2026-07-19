@@ -37,13 +37,14 @@ def test_release_readiness_source_contracts_are_present() -> None:
 def test_release_readiness_provider_files_match_cutover_authority() -> None:
     assert not (REPO_ROOT / "render.yaml").exists()
 
-    netlify_toml = REPO_ROOT / "netlify.toml"
+    netlify_toml = REPO_ROOT / "apps/web/netlify.toml"
     assert netlify_toml.is_file()
 
     netlify_config = tomllib.loads(netlify_toml.read_text())
     assert netlify_config["build"] == {
         "command": "npm run build",
-        "publish": "apps/web/.next",
+        "publish": ".next",
         "environment": {"NEXT_TELEMETRY_DISABLED": "1"},
     }
+    assert netlify_config["plugins"] == [{"package": "@netlify/plugin-nextjs"}]
     assert "NEXT_PUBLIC_API_BASE_URL" not in netlify_toml.read_text()

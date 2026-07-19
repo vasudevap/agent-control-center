@@ -7,6 +7,12 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+import { MOCK_AGENTS } from "../agent-data";
+
+export function generateStaticParams() {
+  return MOCK_AGENTS.map((agent) => ({ agentId: agent.id }));
+}
+
 export default async function AgentDetailPage({
   params,
 }: {

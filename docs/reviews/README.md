@@ -158,9 +158,16 @@ provider-native variables can be configured.
 
 The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
 records the Netlify site creation, source-level Netlify build configuration,
-non-secret production environment label, local frontend validation, and current
-blocker: the hosted API URL must exist before `NEXT_PUBLIC_API_BASE_URL`,
-production deployment, and runtime-health verification can be completed.
+non-secret production environment labels, local frontend validation, Netlify
+502 evidence, and current blocker: the server-handler packaging fix must be
+merged and redeployed before hosted dashboard/runtime-health verification can
+be completed.
+
+The [WO-055 implementation report](./WO-055-render-api-and-postgresql-deployment-implementation-report.md)
+records the Render API service and PostgreSQL target creation, API liveness
+evidence, fail-closed readiness evidence, and current blocker: secret and
+database binding values still need provider-native entry without value
+exposure.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,

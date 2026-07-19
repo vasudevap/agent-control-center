@@ -20,9 +20,9 @@ state, redaction posture, and owner expectations only.
 
 | Provider target | Expected location | WO-053 state | Blocking dependency |
 | --- | --- | --- | --- |
-| Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Partially configured | `NEXT_PUBLIC_API_BASE_URL` waits for hosted API URL |
-| Render API service | Render service environment variables or environment group | Not configured | Render API service is created under WO-055 |
-| Render PostgreSQL database | Render PostgreSQL internal connection reference | Not configured | Render database is created under WO-055 |
+| Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Configured, deploy unhealthy | Server-handler packaging fix pending PR/merge/redeploy |
+| Render API service | Render service environment variables or environment group | Partially configured | Secret and database URL variables still require provider-native value entry |
+| Render PostgreSQL database | Render PostgreSQL internal connection reference | Created | Connection reference still requires safe provider-native binding to API service |
 | Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Hosted API callback URL is available after WO-055 |
 | External product client | Render API environment variables or environment group | Not configured | API service target must exist before provider-native storage |
 | Webhook signing | Render API environment variables or environment group | Not configured | API service target must exist before provider-native storage |
@@ -35,9 +35,9 @@ provider targets exist and redacted evidence is captured.
 
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Pending hosted API URL |
+| `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Configured to hosted Render API URL |
 | `NEXT_PUBLIC_APP_ENV` | Netlify production environment, `@atlas/web` | No | Configured as production |
-| `NEXT_PUBLIC_RELEASE_VERSION` | Netlify production environment, `@atlas/web` | No | Ready for value after release commit is selected |
+| `NEXT_PUBLIC_RELEASE_VERSION` | Netlify production environment, `@atlas/web` | No | Configured to reviewed source commit |
 
 `NEXT_PUBLIC_` variables are browser-visible and must never contain secret
 values.
@@ -46,9 +46,9 @@ values.
 
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
-| `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Ready for value after service exists |
-| `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Pending Render PostgreSQL |
-| `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Ready for value after service exists |
+| `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Configured as production |
+| `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Pending provider-native database binding without value exposure |
+| `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
 | `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Ready for owner identity value after service exists |
 | `ATLAS_API_EXTERNAL_CLIENT_ID` | Render API service or environment group | No | Ready for value after service exists |
 | `ATLAS_API_EXTERNAL_CLIENT_KEY_ID` | Render API service or environment group | No | Ready for value after service exists |

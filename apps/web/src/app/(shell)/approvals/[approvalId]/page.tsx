@@ -1,5 +1,9 @@
-import { getApprovalById } from "../approval-data";
+import { APPROVAL_FIXTURES, getApprovalById } from "../approval-data";
 import { ApprovalDetailWorkspace } from "./approval-detail-workspace";
+
+export function generateStaticParams() {
+  return APPROVAL_FIXTURES.map((approval) => ({ approvalId: approval.id }));
+}
 
 export default async function ApprovalDetailPage({
   params,
