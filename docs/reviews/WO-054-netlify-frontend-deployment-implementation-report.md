@@ -166,3 +166,22 @@ WO-054 is not complete. The next dependency-safe implementation action is to
 connect the Netlify site to the GitHub repository/CI build settings or approve
 an equivalent reviewed deploy mechanism, redeploy the frontend from reviewed
 `main`, and then verify hosted dashboard render plus runtime-health evidence.
+
+## Verification - 2026-07-19 (repository-side readiness re-check)
+
+An independent repository-side re-check confirmed the merged deploy
+configuration is ready for a provider (CI) build; no source change is required:
+
+- `apps/web/next.config.ts` uses the default Next.js server build and pins the
+  Turbopack workspace root to the repository root. `@netlify/plugin-nextjs`
+  (`^5.15.12`) is declared and referenced by the root `netlify.toml`.
+- The root `netlify.toml` (`base = apps/web`, `command = npm run build`,
+  `publish = apps/web/.next`, official Next runtime plugin) is correct for a
+  provider-side build given this site's root-relative publish resolution.
+- Live check: the production URL still returns HTTP 404 (site exists; no healthy
+  deploy yet), matching the recorded blocker.
+
+Re-link note for the CI step: this working copy is not linked to the Netlify
+site (link metadata is gitignored), so the GitHub/CI linkage step must be
+performed against the Netlify account/team that owns the
+`atlas-agent-control-center` site (created under account slug `vasudevap`).

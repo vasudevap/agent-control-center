@@ -152,9 +152,10 @@ rollback rehearsal, go/no-go, and release closeout.
 
 The [WO-053 implementation report](./WO-053-production-environment-and-secrets-provisioning-implementation-report.md)
 records the accepted provider environment and secrets provisioning start,
-redacted variable map, read-only provider checks, and current blocker: the
-target Netlify and Render resources must exist or be identified before
-provider-native variables can be configured.
+redacted variable map, and read-only provider checks. Following WO-054 and
+WO-055, the Netlify and Render targets now exist and non-secret variables are
+configured; the remaining gate is provider-native entry of the secret values,
+tracked jointly with WO-055.
 
 The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
 records the Netlify site creation, source-level Netlify build configuration,
