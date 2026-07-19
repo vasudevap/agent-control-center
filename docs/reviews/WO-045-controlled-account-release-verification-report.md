@@ -1,7 +1,7 @@
 # WO-045 Controlled-Account Release Verification Report
 
 **Work Order:** [WO-045](../work-orders/045-controlled-account-release-verification.md)
-**Status:** Controlled Evidence Complete - Pending PR Review
+**Status:** Completed - Merged
 **Date:** 2026-07-18
 **Engineering Specification:** [ES-007](../engineering-specifications/ES-007-operational-mvp-release-readiness.md)
 **Governing ADP:** [ADP-004](../implementation-plans/ADP-004-phase-7-operational-mvp-release.md)
@@ -108,12 +108,11 @@ Authorized: use grafleyinc@gmail.com and its Drive now; synthetic messages/files
 
 | Risk / deferred item | Status | Next authority |
 | --- | --- | --- |
-| Atlas runtime did not execute a full production Gmail Agent run against live provider credentials | Known residual risk | WO-051 release candidate validation or a narrower runtime/live-connector Work Order |
+| Atlas runtime did not execute a full production Gmail Agent run against live provider credentials | Accepted by WO-052 | Narrow live-runtime Work Order before claiming unattended production operation |
 | Gmail seed message remains recoverable in Trash rather than permanently deleted | Accepted cleanup posture | Maintainer may manually empty Trash after review if desired |
-| Browser/dashboard evidence for this live connector pass was not captured | Deferred | WO-051 final release-candidate evidence |
+| Browser/dashboard evidence for this live connector pass was not captured | Covered by WO-051 local dashboard smoke | Future hosted dashboard evidence requires deployment authority |
 
 ## Completion State
 
 WO-045 controlled Gmail and Google Drive evidence is complete with provider
-cleanup performed. The work is pending pull-request review, required CI, merge,
-and final status update before WO-051 release-candidate validation proceeds.
+cleanup performed. PR #71 passed required CI and was merged.

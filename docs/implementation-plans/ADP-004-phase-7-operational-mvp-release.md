@@ -1,6 +1,6 @@
 # ADP-004: Phase 7 Operational MVP Release
 
-**Status:** Accepted - Execution Authorized
+**Status:** Phase 7 Complete - MVP Release Candidate Accepted
 **Program ID:** ADP-004
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
@@ -44,8 +44,8 @@ authority.
 | 4 | `WO-048: Deployment Path and Migration Readiness` | Completed - Merged | Complete | Netlify/Render path, migration procedure, backup/restore, and rollback evidence are ready |
 | 5 | `WO-049: Monitoring, Health, and Recovery Readiness` | Completed - Merged | Complete | Health/readiness, logs, metrics, alerts, and manual recovery paths are adequate for MVP |
 | 6 | `WO-050: Release Runbooks and Rollback` | Completed - Merged | Complete | Operator runbooks and rollback procedures are reviewed and complete |
-| 7 | `WO-051: MVP Release Candidate Validation` | Implemented - Pending PR Review | Review and merge | Final local, CI, migration, security/privacy, dashboard, fake-provider, and authorized controlled-account evidence recorded |
-| 8 | `WO-052: MVP Acceptance and Phase 7 Closeout` | Accepted - Pending Implementation | Execute | Maintainer release decision and residual risk disposition recorded |
+| 7 | `WO-051: MVP Release Candidate Validation` | Completed - Merged | Complete | Final local, CI, migration, security/privacy, dashboard, fake-provider, and authorized controlled-account evidence recorded |
+| 8 | `WO-052: MVP Acceptance and Phase 7 Closeout` | MVP Release Candidate Accepted | Complete | Maintainer release decision and residual risk disposition recorded |
 
 ## 4. Dependency Sequence
 
@@ -123,3 +123,8 @@ ADP-004 is complete only when:
   or CI blocker remains;
 - residual risks are accepted by the Repository Maintainer;
 - the MVP release decision is recorded.
+
+ADP-004 completion was recorded by WO-052 on 2026-07-18. The MVP release
+candidate is accepted for the documented single-owner boundary. Production
+deployment, release tagging, public launch, and Phase 8 implementation still
+require separate explicit authority.
