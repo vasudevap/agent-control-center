@@ -1,7 +1,7 @@
 # WO-054 Netlify Frontend Deployment Implementation Report
 
 **Work Order:** [WO-054](../work-orders/054-netlify-frontend-deployment.md)
-**Status:** Blocked - Deploy Fix Pending Review
+**Status:** Blocked - Netlify Deploy Packaging and CI Linkage
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -17,13 +17,14 @@ the function package. A later manual deploy of adapter artifacts went live but
 returned Netlify's default 404 because the OpenNext output uses generated route
 metadata and blob-backed content, not only flat static files.
 
-The current source fix uses a root `netlify.toml` with `base = "apps/web"` and
+The merged source fix uses a root `netlify.toml` with `base = "apps/web"` and
 `publish = "apps/web/.next"` because this Netlify site resolves publish paths
 relative to the repository root (`baseRelDir: false`). It also keeps the
 official Next.js runtime explicit, removes the build-time Google Fonts
 dependency, and adds deterministic `generateStaticParams` for fixture-backed
-detail routes. No further production deploy should be attempted until this
-source fix is reviewed and merged.
+detail routes. PR #78 merged that fix, and `netlify build --filter @atlas/web`
+now completes. The remaining blocker is Netlify deploy packaging/CI linkage,
+not source review.
 
 No secret values were created, displayed, written to Git, or configured in
 Netlify during this Work Order.
@@ -70,6 +71,10 @@ Netlify during this Work Order.
 | `netlify env:set AWS_LAMBDA_JS_RUNTIME nodejs22.x --context production --scope functions --filter @atlas/web` | Public runtime selector configured | Netlify environment variable write |
 | `netlify env:set NODE_VERSION 22 --context production --scope builds --filter @atlas/web` | Public build runtime selector configured | Netlify environment variable write |
 | `netlify build --dry --filter @atlas/web --debug` | Resolved current directory `apps/web`, config `netlify.toml`, publish `apps/web/.next`, and Next runtime bundling stages | Read-only |
+| `netlify build --filter @atlas/web --debug` | Completed successfully and bundled the Next.js server handler plus edge functions | Local build output generated |
+| `netlify deploy --prod --build --filter @atlas/web ...` | Failed during function bundling because the local CLI doubled the generated internal function path to `apps/web/apps/web/.netlify/...` | No production deploy |
+| `netlify deploy --prod --build --context production ...` from `apps/web` | Failed during post-build publish because the local CLI doubled the publish path to `apps/web/apps/web/.next` | No production deploy |
+| `netlify deploy --trigger ...` and `netlify api createSiteBuild ...` | Remote provider build could not be triggered because the manually created Netlify site is not connected to CI build settings | No production deploy |
 | `curl -s -i https://atlas-agent-control-center.netlify.app` | Current hosted site returns HTTP 404 after the manual artifact deploy | Read-only |
 
 The `netlify env:list --json` verifier was intentionally not used after the
@@ -149,11 +154,15 @@ output pointed to a server-handler packaging path issue:
 Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/var/task/apps/web/.netlify/dist/run/handlers/request-context.cjs'
 ```
 
-The current source fix is ready for review in this branch, but it must be
-merged before the next production deploy attempt.
+PR #78 merged the base/publish source fix and local `netlify build` now
+completes. The remaining blocker is provider deployment packaging: local CLI
+deploy paths are rewritten incorrectly for this monorepo, while provider-side
+build trigger is unavailable until the Netlify site is connected to CI or an
+equivalent reviewed deploy mechanism is accepted.
 
 ## Completion State
 
 WO-054 is not complete. The next dependency-safe implementation action is to
-merge the Netlify packaging fix, redeploy the frontend from reviewed `main`,
-and then verify hosted dashboard render plus runtime-health evidence.
+connect the Netlify site to the GitHub repository/CI build settings or approve
+an equivalent reviewed deploy mechanism, redeploy the frontend from reviewed
+`main`, and then verify hosted dashboard render plus runtime-health evidence.
