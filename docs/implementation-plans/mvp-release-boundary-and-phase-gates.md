@@ -1,6 +1,6 @@
 # MVP Release Boundary and Phase Gates
 
-**Status:** Accepted - Phase 7 Execution Authorized
+**Status:** Phase 7 Complete - MVP Release Candidate Accepted
 **Owner:** Repository Maintainer
 **Created:** 2026-07-18
 **Purpose:** Define the crisp MVP boundary, phase gates, success criteria, exit
@@ -41,7 +41,7 @@ not lines of code or effort spent.
 | 4 | Dashboard Productization | Pre-MVP, MVP-enabling | 60% | Existing: WO-001, WO-005, WO-006, WO-009 through WO-014 completed; remaining dashboard/backend-integration WOs TBD | Existing dashboard WOs and implementation reports; likely dashboard productization ES; API-integration and fixture-removal WOs; UI acceptance/review reports; design decision records if the approved experience changes | Netlify preview before production | Phase 3 backend foundation complete | Dashboard routes are integrated with real API contracts, auth/session state, errors, loading states, empty states, and operator flows | Operator can manage agents, runs, approvals, audit/log views, connector settings, and health from the dashboard without fixture-only behavior |
 | 5 | Agent Framework and Governance Contracts | Pre-MVP, MVP-enabling | 100% | Accepted WO-027 through WO-035; WO-027 through WO-035 merged | Accepted ES-005; Phase 5 ADR assessment; Phase 5 WO backlog; accepted ADP-002; accepted WO-027 through WO-035; WO-027 through WO-035 implementation reports and closeout report | Render development/staging API with synthetic data only | Phase 3 complete, ES-005 accepted, ADR assessment accepted, and Phase 5 WOs accepted | Generic agent registry/runtime contracts, external approval decision API, manual-handling contract, governed knowledge CRUD, confirmations, volatility, questions/answers, webhooks, `facts_used`, audit, and revalidation contracts exist | Generic contracts are implemented, tested, documented, and merged without Gmail-specific behavior |
 | 6 | Gmail Agent MVP Candidate | MVP candidate | 100% | WO-036 through WO-044 completed and merged | Accepted ES-006; Phase 6 ADR assessment; Phase 6 Work Order backlog; ADP-003; ES-006 review record; WO-036 through WO-044 implementation and closeout reports | Fake-provider evidence complete; controlled-account plan prepared; no production authority | Phase 5 contracts complete; ES-006 accepted; Gmail/OAuth scope accepted | Gmail OAuth, eligible-message selection, classification, ask-instead-of-guess, draft/evidence generation, approvals, safe low-risk actions, high-risk approval gates, logs, and audit work end to end | Gmail Agent MVP Candidate closed with fake-provider evidence, controlled-account plan, and explicit release-decision boundary |
-| 7 | Operational MVP Release | MVP release | 5% | Accepted WO-045 through WO-052 | Accepted ES-007; Phase 7 ADR assessment; Phase 7 Work Order backlog; ADP-004; ES-007 review; future implementation reports, release candidate report, runbooks, and closeout | Netlify + Render MVP production deployment only after explicit release authority | Phase 6 candidate complete; ES-007 package accepted; release readiness WOs accepted | Normal single-owner use is reliable enough: controlled-account evidence or accepted deferral, dashboard productization, deployment readiness, health/readiness, scheduling, retries, recovery path, monitoring, documented operations, and rollback are in place | MVP is operable for personal use, with CI green, deployment verified, no credential exposure, and accepted residual risk |
+| 7 | Operational MVP Release | MVP release | 100% | WO-045 through WO-052 completed under ADP-004 | Accepted ES-007; Phase 7 ADR assessment; Phase 7 Work Order backlog; ADP-004; ES-007 review; WO-045 through WO-052 implementation and closeout reports | MVP release candidate accepted; production deployment and release tagging require separate explicit authority | Phase 6 candidate complete; ES-007 package accepted; release readiness WOs accepted | Normal single-owner use is reliable enough: controlled-account evidence, dashboard productization, deployment readiness, health/readiness, scheduling, retries, recovery path, monitoring, documented operations, and rollback are in place | MVP release candidate accepted with CI green, no credential exposure, and documented residual risks accepted |
 | 8 | Advanced Agentic Workflows | Beyond MVP | 0% | TBD | Likely advanced-workflow ES and ADRs; framework evaluation; one or more WOs per workflow; safety and post-MVP risk reviews; implementation and acceptance reports | Incremental post-MVP environments | MVP released and stable | Additional workflow patterns, richer planning/tooling, and optional framework experiments are evaluated against architecture criteria | Advanced workflows add value without weakening MVP safety, audit, or maintainability |
 | 9 | Durable Orchestration | Beyond MVP | 0% | TBD | Likely orchestration ADR; durable-workflow ES; Temporal-or-equivalent evaluation; migration and rollback plan; orchestration WOs; durability and recovery evidence | Post-MVP staging before production | Durable workflow needs exceed simple queue/scheduler | Temporal or equivalent orchestration is justified, ADR-approved, implemented, and tested | Long-running/recoverable workflows are durable without unnecessary complexity |
 | 10 | Additional Agents | Beyond MVP | 0% | TBD | Likely per-agent PRD addenda or functional specifications; connector-scope ADRs where needed; WOs per agent; policy/safety reviews; rollout, acceptance, and closeout reports | Agent-by-agent rollout | Gmail MVP proves reusable platform contracts | Calendar, documents, shopping, travel, job search, or other agents reuse platform contracts | Each new agent ships behind accepted WOs, safety controls, and operational evidence |
@@ -112,13 +112,10 @@ stop-and-ask triggers.
 The artifact set above is a best-effort planning view. The following items may
 change the phase sequence, scope, or governing artifacts when they are decided:
 
-- whether remaining Phase 4 dashboard productization is absorbed into Phase 7
-  MVP-critical dashboard readiness or remains a separately governed lane;
-- the MVP definition of acceptable Gmail risk, test coverage, data handling,
-  and production-effect limits;
-- controlled-account execution authorization and whether any deferral is
-  acceptable before MVP release;
-- whether Google Drive is an MVP dependency or should be deferred;
+- whether remaining Phase 4 dashboard productization beyond the MVP-critical
+  Phase 7 runtime signal becomes the next priority;
+- whether the next live Gmail milestone should be hosted production cutover,
+  live-runtime connector execution, or dashboard owner-session integration;
 - the exact clinical/protected-health-information suppression policy and its
   validation thresholds;
 - the minimum MVP observability stack beyond Render logs, health checks, and
@@ -170,16 +167,18 @@ The project exits MVP and enters post-MVP expansion only after:
 
 ## 9. Immediate Next Governance Step
 
-Execute the accepted Phase 7 release-readiness package under ADP-004. The
-accepted sequence is:
+Phase 7 is complete after WO-052. The MVP release candidate is accepted for the
+documented single-owner boundary with residual risks recorded.
 
-| Order | Next artifact | Purpose | Autonomy effect |
-| ---: | --- | --- | --- |
-| 1 | Phase 7 Engineering Specification | Accepted as ES-007; defines operational MVP release readiness, acceptance criteria, exclusions, validation, rollback, and stop-and-ask triggers | Allows Work Orders to execute against stable release-readiness scope |
-| 2 | Phase 7 ADR assessment | Accepted; records that existing ADRs are sufficient while Phase 7 stays on the accepted Netlify/Render, single-owner, no-new-framework path | Prevents implementation from making deployment, secrets, monitoring, OAuth, or release decisions silently |
-| 3 | Phase 7 Work Order Backlog | Accepted; breaks Phase 7 into WO-045 through WO-052 with explicit dependencies and parallel-safety guidance | Creates independently executable units under ADP-004 |
-| 4 | ADP-004: Phase 7 Operational MVP Release | Accepted; groups WOs into dependency waves and parallel lanes with validation, PR/CI, merge, evidence, and stop-and-ask rules | Authorizes uninterrupted release-readiness execution for WO-045 through WO-052 |
-| 5 | ES-007 Review Record | Accepted; records maintainer acceptance and execution boundaries | Confirms implementation authority while preserving production release gates |
+The next governance step is to choose one post-MVP lane and authorize it through
+a new Engineering Specification, Work Order, or ADR as needed:
 
-Phase 7 must not silently become production cutover. Production deployment,
-personal mailbox use, and MVP acceptance require explicit release authority.
+| Option | Purpose | Required authority |
+| --- | --- | --- |
+| Hosted production cutover | Execute Netlify/Render deployment, production configuration, migration, and rollback evidence | Explicit deployment/release authority |
+| Live-runtime Gmail/Drive execution | Run the Atlas runtime against authorized live provider credentials beyond connector-level evidence | Narrow live-runtime Work Order and privacy/security evidence |
+| Dashboard owner-session integration | Replace remaining fixture-heavy operational surfaces with browser-safe owner-session API wiring | Dashboard/API Work Order and auth/session boundary review |
+| Phase 8 advanced workflows | Begin post-MVP workflow exploration | New ES and ADR assessment |
+
+Production deployment, release tagging, public launch, and Phase 8
+implementation remain gated by separate explicit authority.

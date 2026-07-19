@@ -103,6 +103,7 @@ Release Readiness package under ES-007 and ADP-004:
 
 The Phase 7 sequence is recorded in
 [`docs/implementation-plans/phase-7-work-order-backlog.md`](../implementation-plans/phase-7-work-order-backlog.md).
-It grants bounded release-readiness implementation authority. Live credential
-use, controlled-account execution, production deployment, and MVP release
-remain gated by explicit Work Order or release decisions.
+It granted bounded release-readiness implementation authority. Controlled
+Gmail/Drive evidence and MVP release-candidate acceptance are recorded under
+WO-045 and WO-052. Production deployment, release tagging, public launch, and
+post-MVP implementation remain gated by separate explicit authority.

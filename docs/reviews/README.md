@@ -104,9 +104,9 @@ bounded release-readiness implementation authority under ADP-004 but does not
 grant production release authority.
 
 The [WO-045 release verification report](./WO-045-controlled-account-release-verification-report.md)
-records the Phase 7 controlled-account release-verification gate, deterministic
-fake-provider baseline evidence, live-provider non-use, and the maintainer
-decision still required before WO-051 can claim release-candidate validation.
+records the Phase 7 controlled-account release verification, deterministic
+fake-provider baseline evidence, authorized controlled Gmail/Drive evidence,
+provider cleanup, and residual risks accepted during WO-052 closeout.
 
 The [WO-047 implementation report](./WO-047-environment-configuration-and-secrets-readiness-implementation-report.md)
 records the Phase 7 release-critical configuration inventory, production-like
@@ -139,6 +139,11 @@ records the Operational MVP release-candidate evidence suite, including local
 backend/frontend validation, migration head, dashboard smoke evidence,
 security/privacy scan, fake-provider Gmail coverage, controlled Gmail/Drive
 evidence, known issues, and the WO-052 release-decision boundary.
+
+The [WO-052 closeout report](./WO-052-mvp-acceptance-and-phase-7-closeout-report.md)
+records the maintainer MVP release-candidate acceptance decision, accepted
+residual risks, accepted MVP boundary, post-MVP entry gate, and Phase 7 closeout
+state.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
