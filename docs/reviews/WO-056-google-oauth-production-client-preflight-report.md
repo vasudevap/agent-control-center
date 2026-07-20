@@ -1,7 +1,7 @@
 # WO-056 Google OAuth Production Client Preflight Report
 
 **Work Order:** [WO-056](../work-orders/056-google-oauth-production-client-and-redirects.md)
-**Status:** Preflight Complete - Callback Route Decision Required
+**Status:** Preflight Complete - ADR-006 Accepted
 **Date:** 2026-07-20
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -83,9 +83,21 @@ Keep this sequence gated behind valid TLS for both custom domains:
 
 ## Recommendation
 
-Treat WO-056 as a small implementation-and-provider work order, not a
-provider-configuration-only work order. The next engineering decision should
-choose whether the production OAuth callback is:
+Treat WO-056 as a small architecture-then-implementation-and-provider work
+order, not a provider-configuration-only work order.
+
+ADR-006 has been accepted to select:
+
+- canonical redirect URI:
+  `https://atlas.grafley.com/oauth/google/callback`;
+- server-side dashboard callback handling on the final Grafley dashboard
+  domain;
+- API-owned Google provider token exchange, credential storage, connector
+  state update, and audit evidence;
+- no OAuth token material, Google client secret, or Atlas HMAC secret exposure
+  to browser JavaScript.
+
+The callback alternatives considered during preflight were:
 
 1. a frontend callback route on `https://atlas.grafley.com` that exchanges the
    Google result through the existing signed connector completion API; or
@@ -98,5 +110,5 @@ the browser flow. Option 2 keeps callback ownership in the API but requires a
 new unauthenticated browser redirect boundary with careful state validation,
 redaction, and audit behavior.
 
-No provider values should be entered until this choice is implemented or
-explicitly accepted as already existing.
+No provider values should be entered until the ADR-006 callback route exists in
+source.

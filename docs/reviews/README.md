@@ -178,12 +178,17 @@ the emergency Render deploy-hook regeneration after a browser DOM exposure,
 provider TLS recovery, final-domain runtime environment cutover, and
 final-origin CORS evidence.
 
+The [ADR-006 review record](./ADR-006-browser-mediated-google-oauth-callback-surface-review.md)
+accepts `https://atlas.grafley.com/oauth/google/callback` as the hosted Google
+OAuth browser redirect URI, with server-side dashboard callback handling and
+API-owned provider token exchange.
+
 The [WO-056 Google OAuth preflight report](./WO-056-google-oauth-production-client-preflight-report.md)
 records source inspection for the production Google OAuth cutover. It confirms
 that the earlier placeholder API callback URL is not implemented, that current
 connector OAuth completion is a signed `POST` API contract, and that WO-056
-requires a callback route implementation decision before Google provider values
-are entered.
+requires callback route implementation before Google provider values are
+entered.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,

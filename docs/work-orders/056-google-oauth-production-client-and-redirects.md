@@ -1,6 +1,6 @@
 # Work Order 056: Google OAuth Production Client and Redirects
 
-**Status:** Accepted - Pending Implementation - Callback Route Decision Required
+**Status:** Accepted - Pending Implementation - Callback Decision Accepted
 **Work Order ID:** WO-056
 **Type:** Google OAuth cutover
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending hosted URL decisions
@@ -8,6 +8,7 @@
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-056A final domain decision complete or explicitly deferred; WO-054 and WO-055 hosted URLs accepted
 **Preflight Record:** [WO-056 Google OAuth Production Client Preflight Report](../reviews/WO-056-google-oauth-production-client-preflight-report.md)
+**Architecture Decision:** [ADR-006 - Browser-Mediated Google OAuth Callback Surface](../decisions/ADR-006-browser-mediated-google-oauth-callback-surface.md)
 **Review Record:** TBD
 
 ## 1. Purpose
@@ -24,13 +25,14 @@ API while preserving the accepted Gmail and Drive scope posture.
 | Broad Gmail scope | `https://mail.google.com/` remains prohibited |
 | Account boundary | Authorized single-owner account only |
 | Owner account | Dedicated Grafley owner account `atlas-owner@grafley.com` |
-| Preferred redirect host | Final Grafley domain after WO-056A custom-domain cutover |
+| Preferred redirect host | Final Grafley dashboard domain after WO-056A custom-domain cutover |
+| Accepted browser redirect URI | `https://atlas.grafley.com/oauth/google/callback` under accepted ADR-006 |
 | Source-confirmed callback state | No direct Google redirect handler exists yet; the implemented connector completion route is a signed API `POST` endpoint |
 
 ## 3. Approved Scope if Accepted
 
-- Configure OAuth redirect URIs for the hosted callback route selected during
-  WO-056 implementation.
+- Configure OAuth redirect URIs for the accepted hosted callback route after the
+  source route is implemented and verified.
 - Do not configure Google OAuth against the earlier placeholder
   `https://api.atlas.grafley.com/api/auth/google/callback`; source inspection
   found no matching route.
@@ -38,10 +40,14 @@ API while preserving the accepted Gmail and Drive scope posture.
   `POST /api/v1/connectors/{connector_type}/oauth/callback`, which is protected
   by the external-client HMAC boundary and is not a direct Google browser
   redirect handler.
-- Before provider setup, choose and implement or confirm the browser-facing
-  OAuth callback surface. The preferred final host remains one of the accepted
-  Grafley domains after WO-056A TLS verification, not a provider-generated URL
-  unless WO-056A records an explicit deferment or rollback decision.
+- Before provider setup, implement and verify the ADR-006 browser-facing OAuth
+  callback surface. ADR-006 selects
+  `https://atlas.grafley.com/oauth/google/callback` as the browser redirect
+  URI, with server-side dashboard callback handling and API-owned provider
+  token exchange.
+- The preferred final host remains one of the accepted Grafley domains after
+  WO-056A TLS verification, not a provider-generated URL unless WO-056A records
+  an explicit deferment or rollback decision.
 - Use provider-generated Render URLs for OAuth only if WO-056A records an
   explicit deferment or rollback decision.
 - Verify OAuth start/callback behavior with accepted scopes.
@@ -74,9 +80,9 @@ Source-level preflight for WO-056:
   `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` for a production provider exchange.
 - No frontend OAuth callback route was found in `apps/web/src`.
 
-Therefore, WO-056 must not be treated as provider configuration only; it also
-needs the minimal production OAuth redirect/callback implementation decision
-before Google provider values are entered.
+Therefore, WO-056 must not be treated as provider configuration only. The
+accepted ADR-006 callback route must be implemented and verified before Google
+provider values are entered.
 
 ## 6. Rollback Expectations
 
@@ -89,5 +95,6 @@ Stop before broadening scopes, exposing client secrets, using unauthorized
 accounts, scanning production mailbox data, finalizing OAuth against temporary
 provider URLs while WO-056A remains pending, configuring a redirect URI that
 does not exist in source, bypassing the external-client boundary without an
-accepted design decision, or proceeding if Google requires a new
+accepted design decision, entering Google provider values before the ADR-006
+callback route exists in source, or proceeding if Google requires a new
 verification/security decision.
