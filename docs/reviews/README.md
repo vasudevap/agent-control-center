@@ -175,8 +175,8 @@ The [WO-056A implementation report](./WO-056A-grafley-custom-domain-cutover-impl
 records Netlify and Render custom-domain binding evidence, the exact Grafley
 DNS CNAME handoff records, the maintainer-approved Render custom-domain charge,
 and the emergency Render deploy-hook regeneration after a browser DOM exposure.
-WO-056A remains pending until Grafley DNS, provider TLS verification, runtime
-environment cutover, and final-domain smoke evidence are complete.
+WO-056A remains pending until DNS propagation, provider TLS verification,
+runtime environment cutover, and final-domain smoke evidence are complete.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
