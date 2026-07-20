@@ -223,10 +223,9 @@ setup. Source inspection found no matching route; WO-056 must choose and
 implement or confirm the browser-facing OAuth callback surface before provider
 values are entered.
 
-Follow-on governance proposed ADR-006 for that callback decision. ADR-006
+Follow-on governance accepted ADR-006 for that callback decision. ADR-006
 selects `https://atlas.grafley.com/oauth/google/callback` as the browser
-redirect URI, pending Repository Maintainer acceptance and source
-implementation.
+redirect URI, pending source implementation.
 
 ## Validation State
 
@@ -256,9 +255,8 @@ Completed:
 
 Pending:
 
-- WO-056 must accept ADR-006 or an equivalent callback decision and implement
-  the production Google OAuth browser callback surface before Google provider
-  values are entered.
+- WO-056 must implement the ADR-006 production Google OAuth browser callback
+  surface before Google provider values are entered.
 - WO-053/WO-055 readiness remains fail-closed until owner identity and Google
   OAuth values are configured under the appropriate Work Orders.
 

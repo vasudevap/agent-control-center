@@ -144,9 +144,8 @@ launch remain bounded by the active Work Order scope and stop-and-ask triggers.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. The current connector
-completion route is a signed API `POST` endpoint. ADR-006 is proposed to use
+completion route is a signed API `POST` endpoint. ADR-006 is accepted and uses
 `https://atlas.grafley.com/oauth/google/callback` as the browser-facing Google
 OAuth redirect URI, with server-side dashboard callback handling and API-owned
-provider token exchange. Google provider values must not be entered until
-ADR-006 or an equivalent callback decision is accepted and the chosen route
-exists in source.
+provider token exchange. Google provider values must not be entered until the
+accepted callback route exists in source.

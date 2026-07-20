@@ -1,10 +1,12 @@
 # ADR-006 - Browser-Mediated Google OAuth Callback Surface
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-20
 **Decision Owners:** Architecture and Security Review
 **Review Owner:** Repository Maintainer
-**Review State:** Pending
+**Review State:** Architecture and Security Review Complete
+**Accepted:** 2026-07-20
+**Accepted By:** Repository Maintainer
 **Scope:** Google OAuth redirect handling for the hosted Atlas dashboard and API
 **Related Decisions:** `ADR-004 - Governed External Product Client Contract`
 **Related Work Orders:** `WO-036 - Gmail OAuth, Scopes, and Connector Boundary`, `WO-056 - Google OAuth Production Client and Redirects`, and `WO-056A - Grafley Custom Domain Cutover`
@@ -176,11 +178,12 @@ credential-boundary, and audit expectations.
 
 ## Governance and Acceptance
 
-This ADR is Proposed and has no implementation authority until accepted by the
-Repository Maintainer.
+This ADR is Accepted and has no implementation authority by itself.
 
-After acceptance, implementation still requires WO-056 execution evidence,
-including source-level callback route verification, Google provider setup
-evidence with values redacted where required, exact scope verification,
-connector health evidence, revoke/reconnect notes, and secret/token redaction
-scans.
+Implementation still requires WO-056 execution evidence, including source-level
+callback route verification, Google provider setup evidence with values
+redacted where required, exact scope verification, connector health evidence,
+revoke/reconnect notes, and secret/token redaction scans.
+
+The durable review evidence is recorded in
+`docs/reviews/ADR-006-browser-mediated-google-oauth-callback-surface-review.md`.

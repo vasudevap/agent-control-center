@@ -1,6 +1,6 @@
 # Hosted Production Cutover ADR Assessment
 
-**Status:** Accepted - ADR-006 Trigger Reached
+**Status:** Accepted - ADR-006 Accepted
 **Owner:** Repository Maintainer
 **Date:** 2026-07-19
 **Related Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
@@ -22,7 +22,7 @@ Decision Record before implementation.
 | Single-owner operation | PRD, ES-006, ES-007, and WO-052 closeout | Covered while deployment remains single-owner only. |
 | Release tags | Release management governance | Covered while tags are annotated, immutable, and created only with explicit authority. |
 | Monitoring posture | Observability architecture and WO-049 | Covered for lightweight MVP monitoring and manual recovery. |
-| Google OAuth callback surface | WO-056 preflight and proposed ADR-006 | New ADR required because source inspection found no implemented direct browser callback route and the callback choice changes the dashboard/API trust boundary. |
+| Google OAuth callback surface | WO-056 preflight and accepted ADR-006 | New ADR required because source inspection found no implemented direct browser callback route and the callback choice changes the dashboard/API trust boundary. ADR-006 is accepted. |
 
 ## Decision
 
@@ -33,8 +33,8 @@ require a new ADR while they remain CNAME front doors for the already accepted
 Netlify and Render services.
 
 After WO-056 preflight, the Google OAuth callback surface is no longer covered
-as provider configuration only. ADR-006 is proposed to decide the browser-facing
-redirect route and the dashboard/API trust boundary before provider setup or
+as provider configuration only. ADR-006 accepts the browser-facing redirect
+route and the dashboard/API trust boundary required before provider setup or
 production OAuth code changes proceed.
 
 ## ADR Triggers

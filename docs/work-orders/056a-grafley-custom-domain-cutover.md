@@ -45,9 +45,9 @@ URLs.
   `https://atlas.grafley.com`.
 - Record the final Grafley domains for WO-056. Later source inspection found no
   implemented callback route at the earlier API placeholder
-  `https://api.atlas.grafley.com/api/auth/google/callback`; proposed ADR-006
+  `https://api.atlas.grafley.com/api/auth/google/callback`; accepted ADR-006
   selects `https://atlas.grafley.com/oauth/google/callback` as the browser
-  redirect URI pending acceptance.
+  redirect URI.
 - Preserve provider-generated Netlify and Render URLs as rollback references.
 
 ## 4. Explicitly Out of Scope
