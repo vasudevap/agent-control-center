@@ -1,21 +1,26 @@
 # WO-054 Netlify Frontend Deployment Implementation Report
 
 **Work Order:** [WO-054](../work-orders/054-netlify-frontend-deployment.md)
-**Status:** Blocked - API CORS Source Fix Pending Deploy
+**Status:** Completed - Hosted Runtime Evidence Captured
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
 
 ## Summary
 
-WO-054 implementation has started. The Netlify project target exists, public
-frontend environment variables are configured, and production deploy attempts
-were performed. The hosted site is not healthy yet. The first failing
-production deploy returned 502 because the Netlify Next.js server handler
-imported `/var/task/apps/web/.netlify/dist/...` files that were not bundled into
-the function package. A later manual deploy of adapter artifacts went live but
-returned Netlify's default 404 because the OpenNext output uses generated route
-metadata and blob-backed content, not only flat static files.
+WO-054 implementation is complete for the frontend hosting cutover. The Netlify
+project target exists, public frontend environment variables are configured,
+production deploy `6a5e19149f086c89d9ca1b68` is live, and browser smoke
+evidence confirms the hosted dashboard renders with the runtime-health
+indicator.
+
+Earlier production deploy attempts are retained below as historical evidence.
+The first failing production deploy returned 502 because the Netlify Next.js
+server handler imported `/var/task/apps/web/.netlify/dist/...` files that were
+not bundled into the function package. A later manual deploy of adapter
+artifacts went live but returned Netlify's default 404 because the OpenNext
+output uses generated route metadata and blob-backed content, not only flat
+static files.
 
 The merged source fix uses a root `netlify.toml` with `base = "apps/web"` and
 `publish = ".next"` because the linked Netlify CI build resolves `publish`
@@ -43,15 +48,19 @@ environment-variable API without granular scopes:
 - `NEXT_PUBLIC_RELEASE_VERSION=587fa2c`
 
 After redeploy, server-rendered HTML shows `Checking runtime`, proving the
-frontend build receives `NEXT_PUBLIC_API_BASE_URL`. A browser smoke test then
-settled to `Runtime unavailable` because the Render API does not yet emit
-CORS headers for the accepted Netlify origin, and an OPTIONS preflight to
-`/health/ready` returns `405`.
+frontend build receives `NEXT_PUBLIC_API_BASE_URL`. The first browser smoke
+test then settled to `Runtime unavailable` because the Render API did not yet
+emit CORS headers for the accepted Netlify origin, and an OPTIONS preflight to
+`/health/ready` returned `405`.
 
-The current WO-054 blocker is therefore no longer Netlify packaging or CI
-linkage. The remaining dashboard runtime-health gate depends on deploying the
-narrow API CORS source fix that allows the accepted Netlify origin to call the
-browser-safe readiness endpoint.
+PR #81 deployed a narrow API CORS fix and Render deploy
+`dep-d9f3m1ernols73fc43k0` made it live for the accepted Netlify origin. A
+follow-up browser smoke test against
+`https://atlas-agent-control-center.netlify.app` settled to
+`Runtime not ready (10)`, proving the hosted dashboard can reach the API and
+correctly surfaces backend readiness problem codes. The remaining `not_ready`
+state belongs to WO-053/WO-055 secret and database binding, not WO-054
+frontend hosting.
 
 ## Scope Implemented
 
@@ -71,7 +80,7 @@ browser-safe readiness endpoint.
 - Configured the non-secret Netlify production build variable
   `NEXT_PUBLIC_API_BASE_URL=https://atlas-agent-control-center-api.onrender.com`.
 - Configured the non-secret Netlify production build variable
-  `NEXT_PUBLIC_RELEASE_VERSION=17b5415`.
+  `NEXT_PUBLIC_RELEASE_VERSION=587fa2c`.
 - Configured the non-secret Netlify function runtime variable
   `AWS_LAMBDA_JS_RUNTIME=nodejs22.x`.
 - Configured the non-secret Netlify build variable `NODE_VERSION=22`.
@@ -91,7 +100,7 @@ browser-safe readiness endpoint.
 | `netlify sites:create --name atlas-agent-control-center --account-slug vasudevap --filter @atlas/web` | Site created and linked | Netlify site creation |
 | `netlify env:set NEXT_PUBLIC_APP_ENV production --context production --scope builds --filter @atlas/web` | Non-secret production build label configured | Netlify environment variable write |
 | `netlify env:set NEXT_PUBLIC_API_BASE_URL ... --context production --scope builds --filter @atlas/web` | Public API base URL configured | Netlify environment variable write |
-| `netlify env:set NEXT_PUBLIC_RELEASE_VERSION 17b5415 --context production --scope builds --filter @atlas/web` | Public release label configured | Netlify environment variable write |
+| `netlify env:set NEXT_PUBLIC_RELEASE_VERSION 17b5415 --context production --scope builds --filter @atlas/web` | Initial public release label configured | Netlify environment variable write |
 | `netlify env:set AWS_LAMBDA_JS_RUNTIME nodejs22.x --context production --scope functions --filter @atlas/web` | Public runtime selector configured | Netlify environment variable write |
 | `netlify env:set NODE_VERSION 22 --context production --scope builds --filter @atlas/web` | Public build runtime selector configured | Netlify environment variable write |
 | `netlify build --dry --filter @atlas/web --debug` | Resolved current directory `apps/web`, config `netlify.toml`, publish `apps/web/.next`, and Next runtime bundling stages | Read-only |
@@ -100,7 +109,11 @@ browser-safe readiness endpoint.
 | `netlify deploy --prod --build --context production ...` from `apps/web` | Failed during post-build publish because the local CLI doubled the publish path to `apps/web/apps/web/.next` | No production deploy |
 | `netlify deploy --trigger ...` and `netlify api createSiteBuild ...` | Remote provider build could not be triggered because the manually created Netlify site is not connected to CI build settings | No production deploy |
 | Netlify CI deploy from linked Git repository at `main@9dcae7e` | Failed because the checked-in publish path resolved to `/opt/build/repo/apps/web/apps/web/.next`; provider CI treats `publish` as relative to `base = apps/web` | No production deploy |
-| `curl -s -i https://atlas-agent-control-center.netlify.app` | Current hosted site returns HTTP 404 after the manual artifact deploy | Read-only |
+| `curl -s -i https://atlas-agent-control-center.netlify.app` after manual artifact deploy | Hosted site returned HTTP 404 at that point | Read-only |
+| Netlify production deploy `6a5e19149f086c89d9ca1b68` from `main@587fa2c` | Current production deploy is `ready` and serves `https://atlas-agent-control-center.netlify.app` | Provider deploy |
+| `curl -s -i https://atlas-agent-control-center.netlify.app` after deploy `6a5e19149f086c89d9ca1b68` | Hosted site returns HTTP 200 | Read-only |
+| Browser smoke against `https://atlas-agent-control-center.netlify.app` after Render deploy `dep-d9f3m1ernols73fc43k0` | Runtime indicator settles to `Runtime not ready (10)` | Read-only |
+| `netlify api listSites --data '{"name":"atlas-agent-control-center"}'` | Current production deploy id and permalink captured for rollback targeting | Read-only |
 
 The `netlify env:list --json` verifier was intentionally not used after the
 safety reviewer rejected it as too risky for provider-side environment values.
@@ -168,9 +181,9 @@ Result:
 2 passed
 ```
 
-## Blocker
+## Historical Blocker
 
-WO-054 requires hosted dashboard render and runtime-health evidence. The
+WO-054 required hosted dashboard render and runtime-health evidence. The
 Netlify production URL previously returned 404 after a manual artifact deploy.
 The first failing deploy returned 502, and function logs plus forced rebuild
 output pointed to a server-handler packaging path issue:
@@ -184,12 +197,23 @@ completed, but the first linked Netlify CI deploy showed that provider CI
 resolves `publish` relative to `base = apps/web`. The source configuration now
 sets `publish = ".next"` to match that provider behavior.
 
+## Rollback Evidence
+
+Rollback remains provider-native through Netlify deploy history and must not
+rewrite Git history. The known-good production deploy recorded for WO-054 is
+`6a5e19149f086c89d9ca1b68`, published from `main@587fa2c`, with permalink
+`https://6a5e19149f086c89d9ca1b68--atlas-agent-control-center.netlify.app`.
+If a later frontend deploy fails, the recovery path is to restore this deploy
+through the Netlify provider rollback control and then re-run hosted dashboard
+and runtime-health smoke checks. No rollback was executed during WO-054.
+
 ## Completion State
 
-WO-054 is not complete. The corrected Netlify publish path is merged and the
-frontend deploy from reviewed `main` is healthy, but runtime-health browser
-evidence is blocked until the accepted API origin is allowed through a narrow
-CORS source fix and Render redeploy.
+WO-054 is complete for the frontend hosting cutover. The corrected Netlify
+publish path is merged, the frontend deploy from reviewed `main` is healthy,
+the dashboard renders from the hosted URL, and runtime-health browser evidence
+is captured. Backend readiness remains intentionally blocked by WO-053/WO-055
+secret and database binding.
 
 ## Verification - 2026-07-19 (repository-side readiness re-check)
 
@@ -203,8 +227,8 @@ required:
 - The root `netlify.toml` keeps `base = apps/web`, `command = npm run build`,
   and the official Next runtime plugin, but `publish` must be `.next` because
   the provider CI build resolves it relative to `apps/web`.
-- Live check: the production URL still returns HTTP 404 (site exists; no healthy
-  deploy yet), matching the recorded blocker.
+- Historical live check: the production URL returned HTTP 404 at that point
+  (site existed; no healthy deploy yet), matching the then-current blocker.
 
 Re-link note for the CI step: this working copy is not linked to the Netlify
 site (link metadata is gitignored), so the GitHub/CI linkage step must be
