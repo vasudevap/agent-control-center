@@ -171,6 +171,13 @@ evidence, fail-closed readiness evidence, Render database/signing binding
 evidence, and current blocker: owner identity and Google OAuth values still
 need provider-native entry without value exposure.
 
+The [WO-056A implementation report](./WO-056A-grafley-custom-domain-cutover-implementation-report.md)
+records Netlify and Render custom-domain binding evidence, the exact Grafley
+DNS CNAME handoff records, the maintainer-approved Render custom-domain charge,
+and the emergency Render deploy-hook regeneration after a browser DOM exposure.
+WO-056A remains pending until Grafley DNS, provider TLS verification, runtime
+environment cutover, and final-domain smoke evidence are complete.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

@@ -1,13 +1,13 @@
 # Work Order 056A: Grafley Custom Domain Cutover
 
-**Status:** Accepted - Pending Provider DNS Targets
+**Status:** In Progress - DNS Provisioning Pending
 **Work Order ID:** WO-056A
 **Type:** Custom domain and DNS cutover
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-20 after accepting the Grafley-hosted URL recommendation
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-054 hosted Netlify target exists; WO-055 hosted Render API target exists; provider custom-domain target values are available
-**Review Record:** TBD
+**Review Record:** [WO-056A Implementation Report](../reviews/WO-056A-grafley-custom-domain-cutover-implementation-report.md)
 
 ## 1. Purpose
 

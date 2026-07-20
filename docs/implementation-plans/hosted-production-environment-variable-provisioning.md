@@ -48,8 +48,11 @@ Planned custom-domain cutover under WO-056A:
 - Final API origin: `https://api.atlas.grafley.com`
 - Current provider-generated URLs remain rollback references until WO-056A
   verifies DNS, TLS, and runtime behavior.
-- The Repository Maintainer will provision Grafley CNAME records after Netlify
-  and Render provide exact provider target values.
+- Netlify and Render custom-domain bindings are configured. The Repository
+  Maintainer must provision Grafley CNAME records before runtime variables are
+  cut over:
+  - `atlas` CNAME to `atlas-agent-control-center.netlify.app`
+  - `api.atlas` CNAME to `atlas-agent-control-center-api.onrender.com`
 
 ## 4. Render API Variables
 
