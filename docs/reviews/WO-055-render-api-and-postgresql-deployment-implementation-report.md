@@ -43,6 +43,23 @@ was displayed, copied to Git, captured in screenshots, or shared in chat.
   - `ATLAS_API_ENVIRONMENT=production`
   - `ATLAS_API_REQUIRE_DATABASE=true`
 
+## Reconciliation - 2026-07-20
+
+Hosted dashboard smoke testing under WO-054 proved the Netlify deployment can
+render with `NEXT_PUBLIC_API_BASE_URL`, but browser runtime health settles to
+`Runtime unavailable`. Direct API checks show `/health/ready` returns stable
+readiness problem codes over curl, while responses from the Netlify origin lack
+`Access-Control-Allow-Origin` and browser preflight receives `405`.
+
+A narrow source fix now adds optional CORS support controlled by
+`ATLAS_API_FRONTEND_ORIGIN`. It is intended to allow only the accepted Netlify
+origin to perform browser-safe `GET` calls such as `/health/ready`; it does not
+weaken readiness checks, expose secrets, or broaden provider topology.
+
+Pending non-secret API value after source deployment:
+
+- `ATLAS_API_FRONTEND_ORIGIN=https://atlas-agent-control-center.netlify.app`
+
 ## Hosted API Evidence
 
 Liveness:

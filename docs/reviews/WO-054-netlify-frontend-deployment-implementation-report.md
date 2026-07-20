@@ -1,7 +1,7 @@
 # WO-054 Netlify Frontend Deployment Implementation Report
 
 **Work Order:** [WO-054](../work-orders/054-netlify-frontend-deployment.md)
-**Status:** Blocked - Netlify Deploy Packaging and CI Linkage
+**Status:** Blocked - API CORS Source Fix Pending Deploy
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -25,6 +25,33 @@ deterministic `generateStaticParams` for fixture-backed detail routes.
 
 No secret values were created, displayed, written to Git, or configured in
 Netlify during this Work Order.
+
+## Reconciliation - 2026-07-20
+
+PR #80 merged the corrected `publish = ".next"` source configuration to
+`main` and Netlify deployed `main@587fa2c` successfully. The production
+dashboard now returns HTTP 200 from
+`https://atlas-agent-control-center.netlify.app`.
+
+The Netlify CLI `env:set --scope builds` commands did not persist values in
+the production context for this free-plan site/package combination. The
+missing browser-visible variables were therefore created through the Netlify
+environment-variable API without granular scopes:
+
+- `NEXT_PUBLIC_APP_ENV=production`
+- `NEXT_PUBLIC_API_BASE_URL=https://atlas-agent-control-center-api.onrender.com`
+- `NEXT_PUBLIC_RELEASE_VERSION=587fa2c`
+
+After redeploy, server-rendered HTML shows `Checking runtime`, proving the
+frontend build receives `NEXT_PUBLIC_API_BASE_URL`. A browser smoke test then
+settled to `Runtime unavailable` because the Render API does not yet emit
+CORS headers for the accepted Netlify origin, and an OPTIONS preflight to
+`/health/ready` returns `405`.
+
+The current WO-054 blocker is therefore no longer Netlify packaging or CI
+linkage. The remaining dashboard runtime-health gate depends on deploying the
+narrow API CORS source fix that allows the accepted Netlify origin to call the
+browser-safe readiness endpoint.
 
 ## Scope Implemented
 
@@ -144,7 +171,7 @@ Result:
 ## Blocker
 
 WO-054 requires hosted dashboard render and runtime-health evidence. The
-Netlify production URL currently returns 404 after a manual artifact deploy.
+Netlify production URL previously returned 404 after a manual artifact deploy.
 The first failing deploy returned 502, and function logs plus forced rebuild
 output pointed to a server-handler packaging path issue:
 
@@ -159,9 +186,10 @@ sets `publish = ".next"` to match that provider behavior.
 
 ## Completion State
 
-WO-054 is not complete. The next dependency-safe implementation action is to
-merge the corrected Netlify publish path, redeploy the frontend from reviewed
-`main`, and then verify hosted dashboard render plus runtime-health evidence.
+WO-054 is not complete. The corrected Netlify publish path is merged and the
+frontend deploy from reviewed `main` is healthy, but runtime-health browser
+evidence is blocked until the accepted API origin is allowed through a narrow
+CORS source fix and Render redeploy.
 
 ## Verification - 2026-07-19 (repository-side readiness re-check)
 

@@ -30,6 +30,50 @@ def test_readiness_reports_missing_required_database() -> None:
     assert response.json()["problems"] == ["database_url_missing"]
 
 
+def test_readiness_omits_cors_headers_by_default() -> None:
+    client = TestClient(create_app(Settings(environment="test")))
+
+    response = client.get(
+        "/health/ready",
+        headers={"Origin": "https://atlas-agent-control-center.netlify.app"},
+    )
+
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_readiness_allows_configured_frontend_origin() -> None:
+    frontend_origin = "https://atlas-agent-control-center.netlify.app"
+    client = TestClient(
+        create_app(Settings(environment="test", frontend_origin=frontend_origin))
+    )
+
+    response = client.get("/health/ready", headers={"Origin": frontend_origin})
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == frontend_origin
+
+
+def test_readiness_preflight_allows_configured_frontend_origin() -> None:
+    frontend_origin = "https://atlas-agent-control-center.netlify.app"
+    client = TestClient(
+        create_app(Settings(environment="test", frontend_origin=frontend_origin))
+    )
+
+    response = client.options(
+        "/health/ready",
+        headers={
+            "Origin": frontend_origin,
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "accept",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == frontend_origin
+    assert "GET" in response.headers["access-control-allow-methods"]
+
+
 def test_readiness_reports_production_like_configuration_without_values() -> None:
     client = TestClient(create_app(Settings(environment="production")))
 

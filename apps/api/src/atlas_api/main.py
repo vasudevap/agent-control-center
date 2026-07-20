@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
+from starlette.middleware.cors import CORSMiddleware
 
 from atlas_api.api.agent_registry import router as agent_registry_router
 from atlas_api.api.approvals import approval_router, manual_router
@@ -48,6 +49,14 @@ def create_app(
     )
     app.state.settings = resolved_settings
     app.state.session_factory = session_factory
+    if resolved_settings.frontend_origin:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=[resolved_settings.frontend_origin],
+            allow_methods=["GET"],
+            allow_headers=["Accept", "X-Correlation-Id"],
+            allow_credentials=False,
+        )
     app.add_middleware(CorrelationIdMiddleware)
     register_exception_handlers(app)
     app.include_router(router)

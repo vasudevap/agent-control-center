@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     owner_identity_subject: str | None = None
     owner_session_idle_minutes: int = Field(default=30, ge=1, le=1440)
     owner_session_absolute_hours: int = Field(default=12, ge=1, le=168)
+    frontend_origin: str | None = None
 
     model_config = SettingsConfigDict(
         env_prefix="ATLAS_API_",
@@ -90,6 +91,7 @@ class Settings(BaseSettings):
             ),
             "owner_session_idle_minutes": self.owner_session_idle_minutes,
             "owner_session_absolute_hours": self.owner_session_absolute_hours,
+            "frontend_origin_configured": self.frontend_origin is not None,
         }
 
     @staticmethod
