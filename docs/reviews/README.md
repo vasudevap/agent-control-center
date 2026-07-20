@@ -190,6 +190,13 @@ connector OAuth completion is a signed `POST` API contract, and that WO-056
 requires callback route implementation before Google provider values are
 entered.
 
+The [WO-056 callback route implementation report](./WO-056-google-oauth-callback-route-implementation-report.md)
+records source implementation for the accepted ADR-006 callback route. It adds
+the dashboard browser callback, the signed API completion endpoint, production
+Google authorization URL generation when provider values exist, and callback
+tests. Google provider configuration and hosted end-to-end OAuth evidence remain
+pending.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

@@ -22,10 +22,12 @@ from atlas_api.models.connector import (
     ConnectorOAuthState,
 )
 from atlas_api.models.external_client import ExternalProductClient, User
+from atlas_api.services import connectors as connector_service
 from atlas_api.services.connectors import (
     DRIVE_SCOPE_FILE,
     GMAIL_SCOPE_MODIFY,
     REJECTED_GMAIL_SCOPE_FULL_MAILBOX,
+    GoogleOAuthExchangeResult,
     authorize_connector_operation,
 )
 
@@ -52,6 +54,18 @@ def configured_settings() -> Settings:
         external_client_id=CLIENT_ID,
         external_client_key_id=KEY_ID,
         external_client_secret=SecretStr(SECRET),
+    )
+
+
+def google_configured_settings() -> Settings:
+    return Settings(
+        environment="test",
+        external_client_id=CLIENT_ID,
+        external_client_key_id=KEY_ID,
+        external_client_secret=SecretStr(SECRET),
+        google_oauth_client_id="google-client-id",
+        google_oauth_client_secret=SecretStr("google-client-secret"),
+        google_oauth_redirect_uri="https://atlas.grafley.com/oauth/google/callback",
     )
 
 
@@ -247,6 +261,152 @@ def test_fake_oauth_callback_creates_connection_without_exposing_credential_refe
         assert credential.status == "active"
         assert state_record.status == "consumed"
         assert "fake-provider-code" not in json.dumps(credential.reference_label)
+
+
+def test_google_oauth_callback_fails_closed_when_google_is_not_configured(
+    database_factory: sessionmaker[Session],
+) -> None:
+    with database_factory() as session:
+        seed_owner(session)
+    client = TestClient(create_app(configured_settings(), database_factory))
+
+    start = post_signed(
+        client,
+        "/api/v1/connectors/gmail/oauth/start",
+        nonce="google-unconfigured-start",
+        payload={
+            "requested_scopes": [GMAIL_SCOPE_MODIFY],
+            "redirect_uri": "https://atlas.grafley.com/oauth/google/callback",
+        },
+    )
+    state = oauth_state_from_url(start.json()["data"]["authorization_url"])
+    callback = post_signed(
+        client,
+        "/api/v1/connectors/oauth/google/callback",
+        nonce="google-unconfigured-callback",
+        payload={
+            "state": state,
+            "authorization_code": "provider-code",
+        },
+    )
+
+    assert callback.status_code == 503
+    assert callback.json()["error"]["code"] == "google_oauth_not_configured"
+    assert "provider-code" not in callback.text
+
+
+def test_google_oauth_callback_uses_provider_scopes_and_account_identity(
+    database_factory: sessionmaker[Session],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with database_factory() as session:
+        seed_owner(session)
+    client = TestClient(create_app(google_configured_settings(), database_factory))
+
+    start = post_signed(
+        client,
+        "/api/v1/connectors/gmail/oauth/start",
+        nonce="google-oauth-start",
+        payload={
+            "requested_scopes": [GMAIL_SCOPE_MODIFY],
+            "redirect_uri": "https://atlas.grafley.com/oauth/google/callback",
+        },
+    )
+    assert start.status_code == 200
+    authorization_url = start.json()["data"]["authorization_url"]
+    assert "client_id=google-client-id" in authorization_url
+    assert "code_challenge_method=S256" in authorization_url
+    state = oauth_state_from_url(authorization_url)
+
+    def fake_exchange(**_: object) -> GoogleOAuthExchangeResult:
+        return GoogleOAuthExchangeResult(
+            account_identifier="owner@example.test",
+            granted_scopes=[GMAIL_SCOPE_MODIFY],
+            display_name="Owner Gmail",
+            credential_key_version="google-test-v1",
+        )
+
+    monkeypatch.setattr(
+        connector_service,
+        "exchange_google_oauth_code",
+        fake_exchange,
+    )
+    callback = post_signed(
+        client,
+        "/api/v1/connectors/oauth/google/callback",
+        nonce="google-oauth-callback",
+        payload={
+            "state": state,
+            "authorization_code": "provider-code",
+        },
+    )
+
+    assert callback.status_code == 200
+    data = callback.json()["data"]
+    assert data["connector_type"] == "gmail"
+    assert data["status"] == "connected"
+    assert data["account_identifier"] == "owner@example.test"
+    assert data["granted_scopes"] == [GMAIL_SCOPE_MODIFY]
+    assert "provider-code" not in callback.text
+    with database_factory() as session:
+        credential = session.scalar(select(ConnectorCredentialReference))
+        assert credential is not None
+        assert credential.key_version == "google-test-v1"
+        assert "provider-code" not in json.dumps(credential.reference_label)
+
+
+def test_google_oauth_callback_rejects_consumed_state_before_provider_exchange(
+    database_factory: sessionmaker[Session],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with database_factory() as session:
+        seed_owner(session)
+    client = TestClient(create_app(google_configured_settings(), database_factory))
+    start = post_signed(
+        client,
+        "/api/v1/connectors/gmail/oauth/start",
+        nonce="google-consumed-start",
+        payload={
+            "requested_scopes": [GMAIL_SCOPE_MODIFY],
+            "redirect_uri": "https://atlas.grafley.com/oauth/google/callback",
+        },
+    )
+    state = oauth_state_from_url(start.json()["data"]["authorization_url"])
+    with database_factory() as session:
+        state_record = session.scalar(select(ConnectorOAuthState))
+        assert state_record is not None
+        state_record.status = "consumed"
+        state_record.consumed_at = datetime.now(UTC)
+        session.commit()
+
+    called = False
+
+    def fake_exchange(**_: object) -> GoogleOAuthExchangeResult:
+        nonlocal called
+        called = True
+        return GoogleOAuthExchangeResult(
+            account_identifier="owner@example.test",
+            granted_scopes=[GMAIL_SCOPE_MODIFY],
+        )
+
+    monkeypatch.setattr(
+        connector_service,
+        "exchange_google_oauth_code",
+        fake_exchange,
+    )
+    callback = post_signed(
+        client,
+        "/api/v1/connectors/oauth/google/callback",
+        nonce="google-consumed-callback",
+        payload={
+            "state": state,
+            "authorization_code": "provider-code",
+        },
+    )
+
+    assert callback.status_code == 422
+    assert callback.json()["error"]["code"] == "oauth_state_expired"
+    assert called is False
 
 
 def test_connection_health_revoke_reconnect_and_operation_denial(

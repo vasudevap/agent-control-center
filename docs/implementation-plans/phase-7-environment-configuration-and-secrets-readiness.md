@@ -59,9 +59,17 @@ All backend variables use the `ATLAS_API_` prefix.
 | `NEXT_PUBLIC_API_BASE_URL` | Yes | No | Maintainer | Browser-visible Atlas API base URL |
 | `NEXT_PUBLIC_APP_ENV` | Yes | No | Maintainer | Browser-visible environment label |
 | `NEXT_PUBLIC_RELEASE_VERSION` | Recommended | No | Maintainer | Browser-visible release/version identifier |
+| `ATLAS_DASHBOARD_EXTERNAL_CLIENT_ID` | Required for server-side OAuth callback | No | Maintainer | Server-side dashboard identity for signed Atlas API callback completion |
+| `ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID` | Required for server-side OAuth callback | No | Maintainer | Server-side dashboard signing key identifier |
+| `ATLAS_DASHBOARD_EXTERNAL_CLIENT_SECRET` | Required for server-side OAuth callback | Yes | Maintainer | Server-side dashboard HMAC signing secret for Atlas API callback completion |
 
 Frontend variables prefixed with `NEXT_PUBLIC_` are visible to the browser and
 must never contain secret values.
+
+Dashboard variables without the `NEXT_PUBLIC_` prefix must remain server-side
+only in Netlify. They must not be read from client components, returned in API
+responses, embedded in built client bundles, screenshots, logs, or committed
+configuration files.
 
 ## 5. Provider Storage Rules
 
@@ -69,7 +77,7 @@ must never contain secret values.
 | --- | --- | --- |
 | Local shell or ignored local env file | Local non-production values | Committed `.env` files or real production secrets |
 | GitHub Actions | CI-only synthetic credentials when needed | Provider production secrets unless a later Work Order authorizes them |
-| Netlify environment variables | Dashboard build/runtime values | Secret values in repository config files |
+| Netlify environment variables | Dashboard build/runtime values, including server-side callback signing values | Secret values in repository config files or `NEXT_PUBLIC_` variables |
 | Render environment variables/groups | API, worker, cron, database, webhook, and OAuth values | Secret values in `render.yaml` or logs |
 | Repository docs and fixtures | Variable names, placeholders, and redacted examples | Real tokens, client secrets, passwords, private keys, or full Gmail bodies |
 

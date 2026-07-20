@@ -29,6 +29,11 @@ for hosted MVP cutover without exposing secret values.
 - Inventory and configure required Netlify frontend, Render API, Render
   PostgreSQL, Google OAuth, webhook, owner identity, and external-client
   settings.
+- Configure Netlify server-side dashboard callback signing variables only as
+  provider-native environment variables without the `NEXT_PUBLIC_` prefix:
+  `ATLAS_DASHBOARD_EXTERNAL_CLIENT_ID`,
+  `ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID`, and
+  `ATLAS_DASHBOARD_EXTERNAL_CLIENT_SECRET`.
 - Record only variable names, provider locations, redacted status, and
   validation evidence.
 - Verify redacted settings and readiness behavior.
