@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import secrets
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Any, Protocol
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from sqlalchemy import Select, and_, or_, select
 from sqlalchemy.orm import Session
 
+from atlas_api.core.config import Settings
 from atlas_api.core.contracts import (
     PaginationParameters,
     decode_cursor,
@@ -29,6 +34,14 @@ GMAIL_SCOPE_MODIFY = "https://www.googleapis.com/auth/gmail.modify"
 DRIVE_SCOPE_FILE = "https://www.googleapis.com/auth/drive.file"
 REJECTED_GMAIL_SCOPE_FULL_MAILBOX = "https://mail.google.com/"
 OAUTH_STATE_TTL_MINUTES = 15
+GOOGLE_AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
+GOOGLE_GMAIL_PROFILE_ENDPOINT = (
+    "https://gmail.googleapis.com/gmail/v1/users/me/profile"
+)
+GOOGLE_DRIVE_ABOUT_ENDPOINT = (
+    "https://www.googleapis.com/drive/v3/about?fields=user(emailAddress,displayName)"
+)
 
 
 @dataclass(frozen=True)
@@ -50,6 +63,24 @@ class OAuthStartResult:
     authorization_url: str
     requested_scopes: list[str]
     expires_at: datetime
+
+
+@dataclass(frozen=True)
+class GoogleOAuthExchangeResult:
+    account_identifier: str
+    granted_scopes: list[str]
+    display_name: str | None = None
+    credential_key_version: str = "google-oauth-v1"
+
+
+class GoogleOAuthExchange(Protocol):
+    def __call__(
+        self,
+        *,
+        settings: Settings,
+        oauth_state: ConnectorOAuthState,
+        authorization_code: str,
+    ) -> GoogleOAuthExchangeResult: ...
 
 
 @dataclass(frozen=True)
@@ -224,6 +255,7 @@ def start_oauth_connection(
     connector_type: str,
     requested_scopes: list[str],
     redirect_uri: str,
+    settings: Settings | None = None,
 ) -> OAuthStartResult:
     connector = get_connector_type(session, connector_type)
     _validate_redirect_uri(redirect_uri)
@@ -234,12 +266,12 @@ def start_oauth_connection(
         accepted_scopes=accepted_scopes,
     )
     raw_state = secrets.token_urlsafe(32)
-    pkce_challenge = secrets.token_urlsafe(48)
+    pkce_verifier = secrets.token_urlsafe(64)
     state = ConnectorOAuthState(
         owner_user_id=owner_user_id,
         connector_type=connector.connector_type,
         state_hash=_hash(raw_state),
-        pkce_challenge=pkce_challenge,
+        pkce_challenge=pkce_verifier,
         redirect_uri=redirect_uri,
         requested_scopes=accepted_scopes,
         status="pending",
@@ -247,13 +279,23 @@ def start_oauth_connection(
     )
     session.add(state)
     session.flush()
-    authorization_url = _fake_authorization_url(
-        connector_type=connector.connector_type,
-        redirect_uri=redirect_uri,
-        state=raw_state,
-        scopes=accepted_scopes,
-        pkce_challenge=pkce_challenge,
-    )
+    if _google_oauth_configured(settings):
+        assert settings is not None
+        authorization_url = _google_authorization_url(
+            settings=settings,
+            redirect_uri=redirect_uri,
+            state=raw_state,
+            scopes=accepted_scopes,
+            pkce_verifier=pkce_verifier,
+        )
+    else:
+        authorization_url = _fake_authorization_url(
+            connector_type=connector.connector_type,
+            redirect_uri=redirect_uri,
+            state=raw_state,
+            scopes=accepted_scopes,
+            pkce_challenge=pkce_verifier,
+        )
     return OAuthStartResult(
         oauth_state_id=state.oauth_state_id,
         connector_type=connector.connector_type,
@@ -297,8 +339,87 @@ def complete_oauth_connection(
     )
     if oauth_state is None:
         raise ApiError(422, "oauth_state_invalid", "OAuth state is invalid.")
-    if oauth_state.status != "pending" or _is_expired(oauth_state.expires_at):
-        raise ApiError(422, "oauth_state_expired", "OAuth state is expired.")
+    return _complete_oauth_connection_for_state(
+        session,
+        owner_user_id=owner_user_id,
+        connector=connector,
+        oauth_state=oauth_state,
+        account_identifier=account_identifier,
+        granted_scopes=granted_scopes,
+        display_name=display_name,
+        credential_key_version="local-fake-v1",
+    )
+
+
+def complete_google_oauth_connection(
+    session: Session,
+    *,
+    owner_user_id: str,
+    state: str,
+    authorization_code: str,
+    settings: Settings,
+    exchange: GoogleOAuthExchange | None = None,
+) -> ConnectorConnection:
+    if not authorization_code.strip() or len(authorization_code) > 512:
+        raise ApiError(
+            422,
+            "oauth_authorization_code_invalid",
+            "OAuth code is invalid.",
+        )
+    if not _google_oauth_configured(settings):
+        raise ApiError(
+            503,
+            "google_oauth_not_configured",
+            "Google OAuth is not configured.",
+        )
+    oauth_state = session.scalar(
+        select(ConnectorOAuthState).where(
+            ConnectorOAuthState.owner_user_id == owner_user_id,
+            ConnectorOAuthState.state_hash == _hash(state),
+        )
+    )
+    if oauth_state is None:
+        raise ApiError(422, "oauth_state_invalid", "OAuth state is invalid.")
+    if oauth_state.redirect_uri != settings.google_oauth_redirect_uri:
+        raise ApiError(422, "oauth_redirect_uri_invalid", "Redirect URI is invalid.")
+    _validate_pending_oauth_state(oauth_state)
+    connector = get_connector_type(session, oauth_state.connector_type)
+    provider_result = (exchange or exchange_google_oauth_code)(
+        settings=settings,
+        oauth_state=oauth_state,
+        authorization_code=authorization_code,
+    )
+    _validate_account_identifier(provider_result.account_identifier)
+    return _complete_oauth_connection_for_state(
+        session,
+        owner_user_id=owner_user_id,
+        connector=connector,
+        oauth_state=oauth_state,
+        account_identifier=provider_result.account_identifier,
+        granted_scopes=provider_result.granted_scopes,
+        display_name=provider_result.display_name,
+        credential_key_version=provider_result.credential_key_version,
+    )
+
+
+def _complete_oauth_connection_for_state(
+    session: Session,
+    *,
+    owner_user_id: str,
+    connector: ConnectorType,
+    oauth_state: ConnectorOAuthState,
+    account_identifier: str,
+    granted_scopes: list[str],
+    display_name: str | None,
+    credential_key_version: str,
+) -> ConnectorConnection:
+    _validate_pending_oauth_state(oauth_state)
+    accepted_scopes = _accepted_scopes(connector.connector_type)
+    _validate_exact_scopes(
+        connector_type=connector.connector_type,
+        requested_scopes=granted_scopes,
+        accepted_scopes=accepted_scopes,
+    )
     if sorted(oauth_state.requested_scopes) != sorted(granted_scopes):
         raise ApiError(
             422,
@@ -309,7 +430,7 @@ def complete_oauth_connection(
         owner_user_id=owner_user_id,
         connector_type=connector.connector_type,
         reference_label=f"{connector.connector_type}:oauth:{prefixed_id('ref')}",
-        key_version="local-fake-v1",
+        key_version=credential_key_version,
         status="active",
         last_rotated_at=utc_now(),
     )
@@ -352,6 +473,11 @@ def complete_oauth_connection(
     oauth_state.consumed_at = utc_now()
     session.flush()
     return connection
+
+
+def _validate_pending_oauth_state(oauth_state: ConnectorOAuthState) -> None:
+    if oauth_state.status != "pending" or _is_expired(oauth_state.expires_at):
+        raise ApiError(422, "oauth_state_expired", "OAuth state is expired.")
 
 
 def list_connections(
@@ -624,6 +750,184 @@ def _fake_authorization_url(
         }
     )
     return f"https://accounts.google.com/o/oauth2/v2/auth?{query}"
+
+
+def _google_oauth_configured(settings: Settings | None) -> bool:
+    return bool(
+        settings
+        and settings.google_oauth_client_id
+        and settings.google_oauth_client_secret
+        and settings.google_oauth_redirect_uri
+    )
+
+
+def _google_authorization_url(
+    *,
+    settings: Settings,
+    redirect_uri: str,
+    state: str,
+    scopes: list[str],
+    pkce_verifier: str,
+) -> str:
+    if redirect_uri != settings.google_oauth_redirect_uri:
+        raise ApiError(422, "oauth_redirect_uri_invalid", "Redirect URI is invalid.")
+    query = urlencode(
+        {
+            "response_type": "code",
+            "client_id": settings.google_oauth_client_id,
+            "redirect_uri": redirect_uri,
+            "scope": " ".join(scopes),
+            "state": state,
+            "code_challenge": _pkce_code_challenge(pkce_verifier),
+            "code_challenge_method": "S256",
+            "access_type": "offline",
+            "prompt": "consent",
+        }
+    )
+    return f"{GOOGLE_AUTHORIZATION_ENDPOINT}?{query}"
+
+
+def exchange_google_oauth_code(
+    *,
+    settings: Settings,
+    oauth_state: ConnectorOAuthState,
+    authorization_code: str,
+) -> GoogleOAuthExchangeResult:
+    client_secret = settings.google_oauth_client_secret
+    if (
+        settings.google_oauth_client_id is None
+        or client_secret is None
+        or settings.google_oauth_redirect_uri is None
+    ):
+        raise ApiError(
+            503,
+            "google_oauth_not_configured",
+            "Google OAuth is not configured.",
+        )
+    token_response = _post_google_form(
+        GOOGLE_TOKEN_ENDPOINT,
+        {
+            "code": authorization_code,
+            "client_id": settings.google_oauth_client_id,
+            "client_secret": client_secret.get_secret_value(),
+            "redirect_uri": settings.google_oauth_redirect_uri,
+            "grant_type": "authorization_code",
+            "code_verifier": oauth_state.pkce_challenge,
+        },
+    )
+    access_token = _required_json_string(
+        token_response,
+        "access_token",
+        error_code="google_oauth_exchange_failed",
+    )
+    granted_scope_text = _required_json_string(
+        token_response,
+        "scope",
+        error_code="google_oauth_scope_unavailable",
+    )
+    granted_scopes = [scope for scope in granted_scope_text.split(" ") if scope]
+    profile = _google_account_profile(
+        connector_type=oauth_state.connector_type,
+        access_token=access_token,
+    )
+    return GoogleOAuthExchangeResult(
+        account_identifier=profile["account_identifier"],
+        granted_scopes=granted_scopes,
+        display_name=profile.get("display_name"),
+    )
+
+
+def _google_account_profile(
+    *,
+    connector_type: str,
+    access_token: str,
+) -> dict[str, str]:
+    if connector_type == "gmail":
+        payload = _get_google_json(GOOGLE_GMAIL_PROFILE_ENDPOINT, access_token)
+        email = _required_json_string(
+            payload,
+            "emailAddress",
+            error_code="google_oauth_account_unavailable",
+        )
+        return {"account_identifier": email, "display_name": "Gmail"}
+    if connector_type == "google_drive":
+        payload = _get_google_json(GOOGLE_DRIVE_ABOUT_ENDPOINT, access_token)
+        user = payload.get("user")
+        if not isinstance(user, dict):
+            raise ApiError(
+                502,
+                "google_oauth_account_unavailable",
+                "Google account identity is unavailable.",
+            )
+        email = _required_json_string(
+            user,
+            "emailAddress",
+            error_code="google_oauth_account_unavailable",
+        )
+        display_name = user.get("displayName")
+        return {
+            "account_identifier": email,
+            "display_name": display_name if isinstance(display_name, str) else "Drive",
+        }
+    raise ApiError(404, "connector_not_found", "Connector was not found.")
+
+
+def _post_google_form(url: str, values: dict[str, str]) -> dict[str, Any]:
+    body = urlencode(values).encode("utf-8")
+    request = Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    return _read_google_json(request)
+
+
+def _get_google_json(url: str, access_token: str) -> dict[str, Any]:
+    request = Request(
+        url,
+        headers={"Authorization": f"Bearer {access_token}"},
+        method="GET",
+    )
+    return _read_google_json(request)
+
+
+def _read_google_json(request: Request) -> dict[str, Any]:
+    try:
+        with urlopen(request, timeout=10) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
+        raise ApiError(
+            502,
+            "google_oauth_exchange_failed",
+            "Google OAuth exchange failed.",
+        ) from exc
+    if not isinstance(payload, dict):
+        raise ApiError(
+            502,
+            "google_oauth_exchange_failed",
+            "Google OAuth exchange failed.",
+        )
+    return payload
+
+
+def _required_json_string(
+    payload: dict[str, Any],
+    key: str,
+    *,
+    error_code: str,
+) -> str:
+    value = payload.get(key)
+    if not isinstance(value, str) or not value.strip():
+        raise ApiError(502, error_code, "Google OAuth response is incomplete.")
+    return value
+
+
+def _pkce_code_challenge(verifier: str) -> str:
+    import base64
+
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
 
 
 def _hash(value: str) -> str:

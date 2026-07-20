@@ -15,6 +15,7 @@ from atlas_api.core.authorization import (
     Channel,
     authorize,
 )
+from atlas_api.core.config import Settings
 from atlas_api.core.contracts import PaginationParameters, success_payload
 from atlas_api.core.correlation import get_correlation_id
 from atlas_api.core.errors import ApiError
@@ -22,6 +23,7 @@ from atlas_api.models.connector import ConnectorConnection, ConnectorType
 from atlas_api.services.audit import AuditEventInput, record_audit_event
 from atlas_api.services.connectors import (
     check_connection_health,
+    complete_google_oauth_connection,
     complete_oauth_connection,
     get_connection,
     get_connector_type,
@@ -90,6 +92,11 @@ class OAuthCallbackRequest(BaseModel):
     display_name: str | None = Field(default=None, min_length=1, max_length=160)
 
 
+class GoogleOAuthCallbackRequest(BaseModel):
+    state: str = Field(min_length=16, max_length=160)
+    authorization_code: str = Field(min_length=1, max_length=512)
+
+
 class ConnectorMeta(BaseModel):
     correlation_id: str | None
     next_cursor: str | None = None
@@ -128,6 +135,10 @@ ExternalClientDependency = Annotated[
 
 def _session_factory_from_request(request: Request) -> Callable[[], Session] | None:
     return cast("Callable[[], Session] | None", request.app.state.session_factory)
+
+
+def _settings_from_request(request: Request) -> Settings:
+    return cast("Settings", request.app.state.settings)
 
 
 @router.get(
@@ -222,6 +233,7 @@ def start_connector_oauth(
                 connector_type=connector_type,
                 requested_scopes=payload.requested_scopes,
                 redirect_uri=payload.redirect_uri,
+                settings=_settings_from_request(request),
             )
         except ApiError as exc:
             _audit(
@@ -309,6 +321,63 @@ def complete_connector_oauth(
             metadata={
                 "connector_type": connection.connector_type,
                 "connection_id": connection.connection_id,
+                "scope_count": len(connection.granted_scopes),
+            },
+        )
+        session.commit()
+        return success_payload(
+            _connection_payload(connection),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.post(
+    "/connectors/oauth/google/callback",
+    response_model=ConnectionResponse,
+    openapi_extra={"security": [{"ExternalClientHmac": []}]},
+)
+def complete_google_connector_oauth(
+    payload: GoogleOAuthCallbackRequest,
+    request: Request,
+    principal: ExternalClientDependency,
+) -> dict[str, object]:
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        _authorize_connector(session, principal, action="complete_oauth")
+        owner_user_id = resolve_connector_owner_user_id(
+            session,
+            principal.external_client_id,
+        )
+        try:
+            connection = complete_google_oauth_connection(
+                session,
+                owner_user_id=owner_user_id,
+                state=payload.state,
+                authorization_code=payload.authorization_code,
+                settings=_settings_from_request(request),
+            )
+        except ApiError as exc:
+            _audit(
+                session,
+                principal,
+                action="complete_oauth",
+                result="denied",
+                resource_id="google_oauth_callback",
+                reason_code=exc.code,
+                metadata={"provider": "google"},
+            )
+            session.commit()
+            raise
+        _audit(
+            session,
+            principal,
+            action="complete_oauth",
+            result="succeeded",
+            resource_id=connection.connection_id,
+            metadata={
+                "connector_type": connection.connector_type,
+                "connection_id": connection.connection_id,
+                "provider": "google",
                 "scope_count": len(connection.granted_scopes),
             },
         )

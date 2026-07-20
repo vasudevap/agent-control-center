@@ -1,7 +1,7 @@
 # WO-056 Google OAuth Production Client Preflight Report
 
 **Work Order:** [WO-056](../work-orders/056-google-oauth-production-client-and-redirects.md)
-**Status:** Preflight Complete - ADR-006 Accepted
+**Status:** Preflight Complete - Superseded by Callback Route Implementation
 **Date:** 2026-07-20
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -13,6 +13,11 @@ inspection found that Atlas has governed connector OAuth start and completion
 API contracts, but it does not currently expose a direct browser-facing Google
 OAuth redirect handler at the earlier placeholder path
 `/api/auth/google/callback`.
+
+Follow-on work accepted ADR-006 and implemented the source callback route
+recorded in
+[WO-056 Callback Route Implementation Report](./WO-056-google-oauth-callback-route-implementation-report.md).
+This preflight remains as historical source-inspection evidence.
 
 This preflight did not create or change a Google OAuth client, did not enter
 client secrets, did not request authorization codes, and did not use production
