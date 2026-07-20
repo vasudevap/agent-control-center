@@ -24,7 +24,10 @@ rollback, and stop-and-ask triggers after acceptance.
 
 Execution authority was granted by the Repository Maintainer on 2026-07-19 for
 the accepted ES-008, hosted production cutover ADR assessment, WO-053 through
-WO-060, and ADP-005 package.
+WO-060, and ADP-005 package. On 2026-07-20, the Repository Maintainer accepted
+the Grafley custom-domain direction, created `atlas-owner@grafley.com`, and
+added WO-056A as the governed custom-domain cutover dependency before Google
+OAuth is finalized.
 
 Authority remains bounded by each Work Order. Provider writes, deployment,
 migration, OAuth configuration, rollback action, release tag, and hosted
@@ -38,20 +41,22 @@ triggers.
 | 1 | `WO-053: Production Environment and Secrets Provisioning` | In Progress - Owner/OAuth Pending | Netlify/Render provider targets and Render database/signing values configured; owner identity and Google OAuth still pending | Provider-native env/secrets configured without value exposure or documented blocker |
 | 2 | `WO-054: Netlify Frontend Deployment` | Completed - Hosted Runtime Evidence Captured | Netlify target, API URL, production deploy, browser runtime-health evidence, and rollback target recorded | Frontend hosted and rollback path verified |
 | 3 | `WO-055: Render API and PostgreSQL Deployment` | Blocked - Owner/OAuth Binding and Migration Pending | API/database targets created; database URL and signing values bound; owner/OAuth values and hosted migration still pending | API/database hosted with health/readiness evidence |
-| 4 | `WO-056: Google OAuth Production Client and Redirects` | Accepted - Pending Implementation | Await hosted URL decisions | Hosted OAuth redirects work with accepted scopes |
-| 5 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
-| 6 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Accepted - Pending Implementation | Await WO-054 through WO-057 evidence | Hosted smoke, audit/log, connector, and monitoring checks pass |
-| 7 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await hosted deployment evidence | Rollback and withdrawal paths reviewed or rehearsed |
-| 8 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
+| 4 | `WO-056A: Grafley Custom Domain Cutover` | Accepted - Pending Provider DNS Targets | Await Netlify/Render custom-domain target values; Repository Maintainer will provision CNAMEs after values are known | `https://atlas.grafley.com` and `https://api.atlas.grafley.com` are active or a deferment is explicitly recorded |
+| 5 | `WO-056: Google OAuth Production Client and Redirects` | Accepted - Pending Implementation | Await final domain decision from WO-056A | Hosted OAuth redirects work with accepted scopes |
+| 6 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
+| 7 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Accepted - Pending Implementation | Await WO-054 through WO-057 evidence, including WO-056A | Hosted smoke, audit/log, connector, and monitoring checks pass |
+| 8 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await hosted deployment evidence | Rollback and withdrawal paths reviewed or rehearsed |
+| 9 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
 
 ## 4. Dependency Sequence
 
 ```text
-ES-008 accepted + WO-053 through WO-060 accepted + ADP-005 accepted
+ES-008 accepted + WO-053 through WO-060 accepted + WO-056A accepted + ADP-005 accepted
   -> WO-053 provider env/secrets provisioning
     -> parallel-safe setup where authorized:
        WO-054 Netlify frontend
        WO-055 Render API/PostgreSQL
+      -> WO-056A Grafley custom-domain cutover
       -> WO-056 Google OAuth redirects
       -> WO-057 hosted migration/backup/restore
         -> WO-058 hosted smoke/monitoring
@@ -65,7 +70,7 @@ ES-008 accepted + WO-053 through WO-060 accepted + ADP-005 accepted
 | --- | --- | --- |
 | Provider configuration | WO-053 | Serial gate before provider writes |
 | Hosting setup | WO-054, WO-055 | May run in parallel only after env map and provider authority are explicit |
-| OAuth/migration | WO-056, WO-057 | Serial because URLs, secrets, and database state must be stable |
+| Domain/OAuth/migration | WO-056A, WO-056, WO-057 | Serial because final URLs should precede OAuth and database state must be stable |
 | Release evidence | WO-058, WO-059, WO-060 | Serial final evidence and maintainer decision |
 
 Parallel agents must not modify provider configuration, migrations, OAuth
@@ -84,6 +89,8 @@ the following occurs:
 - provider dashboards would expose secret values in chat, screenshots, source,
   logs, or PRs;
 - Google requires broader scopes or external verification;
+- custom-domain setup requires a different provider, registrar, paid plan, or
+  DNS authority decision;
 - deployment topology, provider choice, environment count, secrets ownership,
   database provider, or monitoring posture changes require ADR review;
 - required CI fails and the needed fix is outside the current Work Order;
@@ -105,7 +112,8 @@ Each Work Order completed under ADP-005 must leave repository evidence:
 
 ADP-005 is complete only when:
 
-- WO-053 through WO-060 are implemented, validated, reviewed, and merged;
+- WO-053 through WO-060, including WO-056A, are implemented, validated,
+  reviewed, and merged;
 - hosted frontend and API evidence are recorded;
 - migration, backup, restore, OAuth, smoke, monitoring, and rollback evidence
   are recorded;

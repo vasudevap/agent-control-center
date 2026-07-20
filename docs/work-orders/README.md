@@ -108,12 +108,13 @@ Gmail/Drive evidence and MVP release-candidate acceptance are recorded under
 WO-045 and WO-052. Production deployment, release tagging, public launch, and
 post-MVP implementation remain gated by separate explicit authority.
 
-Work Orders 053 through 060 are accepted for the hosted MVP production cutover
-package under ES-008 and ADP-005:
+Work Orders 053 through 060, including WO-056A, are accepted for the hosted MVP
+production cutover package under ES-008 and ADP-005:
 
 - WO-053: Production Environment and Secrets Provisioning
 - WO-054: Netlify Frontend Deployment
 - WO-055: Render API and PostgreSQL Deployment
+- WO-056A: Grafley Custom Domain Cutover
 - WO-056: Google OAuth Production Client and Redirects
 - WO-057: Hosted Migration, Backup, and Restore Readiness
 - WO-058: Hosted Smoke Tests and Monitoring Confirmation
@@ -130,6 +131,9 @@ health reaches the hosted Render API and reports `Runtime not ready (4)`,
 which is the expected fail-closed backend readiness state. WO-055 has created
 the Render API service and PostgreSQL target, and has bound the database URL
 plus current signing values through provider-native Render UI. Readiness is
-blocked until owner identity and Google OAuth values are safely completed;
-migrations, release tags, and public launch remain bounded by the active Work
-Order scope and stop-and-ask triggers.
+blocked until owner identity and Google OAuth values are safely completed; the
+Repository Maintainer has created `atlas-owner@grafley.com`, accepted
+`https://atlas.grafley.com` and `https://api.atlas.grafley.com` as final
+Grafley product URLs, and will provision CNAME records after Netlify and Render
+provide exact target values under WO-056A. Migrations, release tags, and public
+launch remain bounded by the active Work Order scope and stop-and-ask triggers.
