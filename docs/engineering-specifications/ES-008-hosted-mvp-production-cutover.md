@@ -123,7 +123,11 @@ an updated Work Order, ADR, or maintainer decision.
 
 ### 5.5 Google OAuth production client and redirects
 
-- Configure Gmail and Drive OAuth redirect URIs for the hosted API.
+- Configure Gmail and Drive OAuth redirect URIs for the accepted hosted
+  callback surface. Proposed ADR-006 selects
+  `https://atlas.grafley.com/oauth/google/callback` as the browser-facing
+  redirect URI, with server-side dashboard callback handling and API-owned
+  provider token exchange.
 - Preserve the accepted `gmail.modify` and `drive.file` scope posture.
 - Do not request `https://mail.google.com/` or broader Drive scopes.
 - Verify OAuth behavior only with the authorized owner account.

@@ -43,9 +43,11 @@ URLs.
   `https://api.atlas.grafley.com`.
 - Update Render runtime configuration so `ATLAS_API_FRONTEND_ORIGIN` allows
   `https://atlas.grafley.com`.
-- Record the accepted final OAuth redirect URI candidate for WO-056:
-  `https://api.atlas.grafley.com/api/auth/google/callback`, unless the
-  implementation discovers a different canonical callback path in source.
+- Record the final Grafley domains for WO-056. Later source inspection found no
+  implemented callback route at the earlier API placeholder
+  `https://api.atlas.grafley.com/api/auth/google/callback`; proposed ADR-006
+  selects `https://atlas.grafley.com/oauth/google/callback` as the browser
+  redirect URI pending acceptance.
 - Preserve provider-generated Netlify and Render URLs as rollback references.
 
 ## 4. Explicitly Out of Scope
