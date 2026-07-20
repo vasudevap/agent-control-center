@@ -174,9 +174,9 @@ need provider-native entry without value exposure.
 The [WO-056A implementation report](./WO-056A-grafley-custom-domain-cutover-implementation-report.md)
 records Netlify and Render custom-domain binding evidence, the exact Grafley
 DNS CNAME handoff records, the maintainer-approved Render custom-domain charge,
-and the emergency Render deploy-hook regeneration after a browser DOM exposure.
-WO-056A remains pending until DNS propagation, provider TLS verification,
-runtime environment cutover, and final-domain smoke evidence are complete.
+the emergency Render deploy-hook regeneration after a browser DOM exposure,
+provider TLS recovery, final-domain runtime environment cutover, and
+final-origin CORS evidence.
 
 The [WO-056 Google OAuth preflight report](./WO-056-google-oauth-production-client-preflight-report.md)
 records source inspection for the production Google OAuth cutover. It confirms

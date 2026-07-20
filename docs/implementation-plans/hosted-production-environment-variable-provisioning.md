@@ -35,7 +35,7 @@ provider targets exist and redacted evidence is captured.
 
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Configured to hosted Render API URL; planned cutover to `https://api.atlas.grafley.com` under WO-056A |
+| `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Cut over to `https://api.atlas.grafley.com` under WO-056A; production rebuild completed |
 | `NEXT_PUBLIC_APP_ENV` | Netlify production environment, `@atlas/web` | No | Configured as production |
 | `NEXT_PUBLIC_RELEASE_VERSION` | Netlify production environment, `@atlas/web` | No | Configured to reviewed source commit |
 
@@ -46,34 +46,23 @@ Planned custom-domain cutover under WO-056A:
 
 - Final dashboard origin: `https://atlas.grafley.com`
 - Final API origin: `https://api.atlas.grafley.com`
-- Current provider-generated URLs remain rollback references until WO-056A
-  verifies DNS, TLS, and runtime behavior.
+- Current provider-generated URLs remain rollback references after WO-056A
+  verified DNS, TLS, and runtime behavior.
 - Netlify and Render custom-domain bindings are configured. The Repository
-  Maintainer has provisioned the accepted Grafley CNAME records, but runtime
-  variables must not be cut over until DNS propagation and provider TLS are
-  verified:
+  Maintainer provisioned the accepted Grafley CNAME records, provider TLS is
+  active, and runtime variables have been cut over:
   - `atlas` CNAME to `atlas-agent-control-center.netlify.app`
-    - provisioned; authoritative Netfirms DNS returns the Netlify CNAME, while
-      public resolver propagation is still converging
+    - provisioned; Netlify TLS issued and production HTTPS verified
   - `api.atlas` CNAME to `atlas-agent-control-center-api.onrender.com`
-    - provisioned and verified by Render; certificate issuance is currently in
-      error
-
-Post-TLS runtime cutover sequence under WO-056A:
-
-1. Netlify production: set `NEXT_PUBLIC_API_BASE_URL` to
-   `https://api.atlas.grafley.com` and redeploy the dashboard.
-2. Render API: set `ATLAS_API_FRONTEND_ORIGIN` to
-   `https://atlas.grafley.com` and restart/redeploy the API service.
-3. Verify hosted browser/API behavior from `https://atlas.grafley.com` before
-   WO-056 Google OAuth redirect configuration proceeds.
+    - provisioned and verified by Render; custom-domain HTTPS and final-origin
+      CORS verified
 
 ## 4. Render API Variables
 
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
 | `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Configured as production |
-| `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Configured to accepted Netlify dashboard origin; planned cutover to `https://atlas.grafley.com` under WO-056A |
+| `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Cut over to `https://atlas.grafley.com` under WO-056A and redeployed |
 | `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Configured from Render internal database URL without value exposure |
 | `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
 | `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending Google subject for `atlas-owner@grafley.com` |

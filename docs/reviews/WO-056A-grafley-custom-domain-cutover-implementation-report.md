@@ -1,26 +1,22 @@
 # WO-056A Grafley Custom Domain Cutover Implementation Report
 
 **Work Order:** [WO-056A](../work-orders/056a-grafley-custom-domain-cutover.md)
-**Status:** In Progress - DNS Propagation and Certificates Pending
+**Status:** Completed - Custom Domains and Runtime Cutover Verified
 **Date:** 2026-07-20
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
 
 ## Summary
 
-WO-056A provider-domain setup has started. The Netlify dashboard custom domain
-and Render API custom domain are configured in their provider-native settings.
-The exact DNS CNAME records needed from Grafley DNS were captured and the
-Repository Maintainer has provisioned both Grafley CNAME records. API DNS has
-been verified by Render, but Render certificate issuance is still in an error
-state. Frontend authoritative DNS now returns the Netlify CNAME, but at least
-one public resolver still served a stale wildcard/default A-record response
-during propagation.
+WO-056A is complete. The Netlify dashboard custom domain and Render API custom
+domain are configured in their provider-native settings, the Repository
+Maintainer provisioned both accepted Grafley CNAME records, provider TLS is
+active for both custom domains, and runtime configuration has been cut over to
+the final Grafley domains.
 
-WO-056A is not complete yet. The remaining gates are DNS propagation
-convergence, provider TLS/certificate verification, runtime environment
-cutover, hosted browser/API checks from the final domains, and the final OAuth
-redirect decision under WO-056.
+WO-056 remains blocked on the separate Google OAuth production callback-route
+decision recorded in the WO-056 preflight report. No Google OAuth provider
+values were entered under WO-056A.
 
 No OAuth secret, database URL, signing secret, access token, refresh token, or
 provider API token was recorded in Git.
@@ -40,17 +36,22 @@ environment variables are cut over to the final domains.
 
 Current DNS follow-up evidence after Repository Maintainer provisioning:
 
-- `api.atlas.grafley.com` resolves to the accepted Render CNAME target and is
-  verified in the Render dashboard.
+- `api.atlas.grafley.com` resolves to the accepted Render CNAME target,
+  returned `200` from `https://api.atlas.grafley.com/health/live`, and allowed
+  final-origin CORS from `https://atlas.grafley.com`.
 - `atlas.grafley.com` resolves to the accepted Netlify CNAME target from
   Netfirms authoritative DNS and from multiple public resolvers.
 - One public resolver still returned a stale/default `66.96.160.156` A-record
   response for `atlas.grafley.com` during the DNS propagation window. The
   matching Netfirms DNS record is the wildcard `*` A record, not an explicit
   `atlas` A record.
-- No Netfirms DNS change beyond the accepted `atlas` and `api.atlas` CNAME
-  records is recommended unless stale wildcard/default responses persist after
-  the propagation window.
+- Netlify TLS issuance later completed. `netlify api showSiteTLSCertificate`
+  returned certificate state `issued` for `atlas.grafley.com`, and
+  `netlify api getSite` reported `ssl: true`, `force_ssl: true`, and
+  `url: https://atlas.grafley.com`.
+- A local router resolver continued to serve the old wildcard/default A-record
+  response briefly after public resolvers had converged. That cache was treated
+  as local propagation lag, not a provider blocker.
 
 ## Provider Evidence
 
@@ -60,8 +61,7 @@ Current DNS follow-up evidence after Repository Maintainer provisioning:
 - Site ID: `cc07a93e-8ffe-47e7-b328-e5ae4247b14d`
 - Provider-generated URL: `https://atlas-agent-control-center.netlify.app`
 - Custom domain configured: `atlas.grafley.com`
-- DNS state: external Grafley DNS provisioned; propagation and certificate
-  issuance pending
+- DNS state: external Grafley DNS provisioned; provider TLS active
 - Expected DNS record: `atlas` CNAME to
   `atlas-agent-control-center.netlify.app`
 
@@ -80,9 +80,14 @@ Evidence:
   resolved through the Netlify target, while Google Public DNS still returned a
   stale/default `66.96.160.156` A-record response with a remaining TTL during
   the propagation window.
-- HTTPS probing `https://atlas.grafley.com` still failed certificate
-  validation while DNS propagation and Netlify certificate issuance were
-  pending.
+- Later public resolver checks resolved through the Netlify target on Google
+  Public DNS and Cloudflare.
+- `netlify api provisionSiteTLSCertificate` was used after DNS resolved.
+- `netlify api showSiteTLSCertificate` returned certificate state `issued` for
+  `atlas.grafley.com`, expiring on 2026-10-18.
+- `curl --resolve atlas.grafley.com:443:18.208.88.157 -I
+  https://atlas.grafley.com` and the same check against `98.84.224.111`
+  returned `HTTP/2 200` from Netlify with strict transport security.
 
 ### Render API
 
@@ -92,7 +97,7 @@ Evidence:
   `https://atlas-agent-control-center-api.onrender.com`
 - Custom domain configured: `api.atlas.grafley.com`
 - Render custom-domain status: verified after Grafley DNS provisioning
-- Render certificate status: certificate error
+- Render certificate status: recovered; custom-domain HTTPS is active
 - Expected DNS record: `api.atlas` CNAME to
   `atlas-agent-control-center-api.onrender.com`
 
@@ -125,6 +130,8 @@ Follow-up verification after Repository Maintainer DNS provisioning:
 - Render dashboard certificate status changed to `Certificate Error`.
 - HTTPS probing `https://api.atlas.grafley.com/health/live` still failed while
   the certificate error was present.
+- Later HTTPS probing `https://api.atlas.grafley.com/health/live` returned
+  `HTTP/2 200` with `{"status":"ok","service":"atlas-api","environment":"production"}`.
 
 Render guidance reviewed:
 
@@ -164,37 +171,41 @@ Residual impact:
 - No Grafley DNS records were created by Codex.
 - No Google OAuth client, client secret, or redirect URI was configured.
 - No hosted migration was run.
-- No Netlify or Render runtime environment variables were cut over to the
-  final custom domains.
 - No public launch, release tag, production mailbox scan, or production data
   workflow was performed.
 
-## Pending Final Cutover Checklist
+## Runtime Cutover Evidence
 
-Do not perform these steps until both custom domains resolve consistently and
-provider TLS/certificate status is healthy:
+Runtime cutover was performed only after provider TLS was active for the final
+Grafley domains:
 
-1. Verify `https://atlas.grafley.com` serves the Netlify-hosted dashboard over
-   valid HTTPS.
-2. Verify `https://api.atlas.grafley.com/health/live` returns the Atlas API
-   health response over valid HTTPS.
-3. Update Netlify production environment variable
-   `NEXT_PUBLIC_API_BASE_URL` from the provider-generated Render API URL to
-   `https://api.atlas.grafley.com`.
-4. Redeploy the Netlify production site so the browser-visible API base URL is
-   rebuilt into the dashboard.
-5. Update Render API environment variable `ATLAS_API_FRONTEND_ORIGIN` from the
-   provider-generated Netlify origin to `https://atlas.grafley.com`.
-6. Redeploy or restart the Render API service so the CORS origin change is
-   active.
-7. Verify browser/API integration from `https://atlas.grafley.com`, including
-   runtime-health behavior and an API readiness request with the final
-   frontend origin.
-8. Do not carry the earlier placeholder
-   `https://api.atlas.grafley.com/api/auth/google/callback` into Google
-   provider setup. Source inspection found no matching route; WO-056 must
-   choose and implement or confirm the browser-facing OAuth callback surface
-   before provider values are entered.
+- Netlify production `NEXT_PUBLIC_API_BASE_URL` was updated from
+  `https://atlas-agent-control-center-api.onrender.com` to
+  `https://api.atlas.grafley.com`.
+- `netlify api createSiteBuild` triggered production build
+  `6a5e810bc589f817962f4682` and deploy
+  `6a5e810bc589f817962f4684`; `netlify api getSiteBuild` returned
+  `deploy_state: ready`, `done: true`, and `error: null`.
+- Render service environment variable `ATLAS_API_FRONTEND_ORIGIN` was updated
+  to `https://atlas.grafley.com` through the authenticated provider dashboard
+  without exposing adjacent secret values.
+- Render deploy `dep-d9f82qhkh4rs73dnaa0g` was triggered by
+  `service_updated` and reached `live`.
+- `curl -H 'Origin: https://atlas.grafley.com'
+  https://api.atlas.grafley.com/health/ready` returned `HTTP/2 200` with
+  `access-control-allow-origin: https://atlas.grafley.com`.
+- The matching final-origin CORS preflight returned `HTTP/2 200` and `OK`.
+- Readiness remains fail-closed for the expected WO-056/owner configuration
+  problems: Google OAuth client ID, Google OAuth client secret, Google OAuth
+  redirect URI, and owner identity subject are still missing.
+
+## WO-056 OAuth Handoff
+
+Do not carry the earlier placeholder
+`https://api.atlas.grafley.com/api/auth/google/callback` into Google provider
+setup. Source inspection found no matching route; WO-056 must choose and
+implement or confirm the browser-facing OAuth callback surface before provider
+values are entered.
 
 ## Validation State
 
@@ -208,21 +219,23 @@ Completed:
   Grafley DNS CNAME records.
 - API DNS verified by Render.
 - Frontend authoritative DNS verified through the Netfirms nameserver.
+- Public DNS verified through Netlify and Render targets.
+- Netlify TLS issued for `atlas.grafley.com`.
+- Render custom-domain TLS recovered for `api.atlas.grafley.com`.
+- Netlify `NEXT_PUBLIC_API_BASE_URL` cut over to
+  `https://api.atlas.grafley.com` and rebuilt.
+- Render `ATLAS_API_FRONTEND_ORIGIN` cut over to
+  `https://atlas.grafley.com` and redeployed.
+- API liveness and final-origin readiness CORS verified from
+  `https://api.atlas.grafley.com`.
 - Render deploy hook regenerated after exposure.
 
 Pending:
 
-- DNS propagation converges for the frontend custom domain across public
-  resolvers.
-- Netlify TLS/certificate status verified for `atlas.grafley.com`.
-- Render certificate verification recovered for `api.atlas.grafley.com`.
-- Netlify `NEXT_PUBLIC_API_BASE_URL` cut over to
-  `https://api.atlas.grafley.com`.
-- Render `ATLAS_API_FRONTEND_ORIGIN` cut over to
-  `https://atlas.grafley.com`.
-- Hosted dashboard/API readiness checked from the final custom domains.
-- WO-056 Google OAuth redirect uses the final API domain unless a documented
-  deferment is accepted.
+- WO-056 must choose and implement or confirm the production Google OAuth
+  browser callback surface before Google provider values are entered.
+- WO-053/WO-055 readiness remains fail-closed until owner identity and Google
+  OAuth values are configured under the appropriate Work Orders.
 
 ## Rollback Notes
 
@@ -233,5 +246,8 @@ Rollback remains provider-native:
 - Render can remove or replace the `api.atlas.grafley.com` custom-domain
   binding while retaining
   `https://atlas-agent-control-center-api.onrender.com`.
-- Runtime variables remain on provider-generated URLs until DNS/TLS
-  verification succeeds, so no runtime URL rollback is currently required.
+- If the final-domain runtime cutover must be rolled back, restore Netlify
+  `NEXT_PUBLIC_API_BASE_URL` to
+  `https://atlas-agent-control-center-api.onrender.com`, restore Render
+  `ATLAS_API_FRONTEND_ORIGIN` to
+  `https://atlas-agent-control-center.netlify.app`, and redeploy both targets.

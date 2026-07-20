@@ -136,13 +136,11 @@ Repository Maintainer has created `atlas-owner@grafley.com`, accepted
 `https://atlas.grafley.com` and `https://api.atlas.grafley.com` as final
 Grafley product URLs, and will provision CNAME records after Netlify and Render
 provide exact target values under WO-056A. Netlify and Render custom-domain
-bindings now exist; both Grafley CNAME records have been provisioned. API DNS
-has been verified by Render, but API certificate issuance is in error.
-Frontend authoritative DNS returns the Netlify CNAME while public resolver
-propagation is still converging. TLS verification, runtime environment cutover,
-and final-domain smoke evidence remain pending. Migrations, release tags, and
-public launch remain bounded by the active Work Order scope and stop-and-ask
-triggers.
+bindings now exist; both Grafley CNAME records have been provisioned, provider
+TLS is active, runtime variables are cut over to
+`https://atlas.grafley.com` and `https://api.atlas.grafley.com`, and
+final-origin API CORS evidence passed. Migrations, release tags, and public
+launch remain bounded by the active Work Order scope and stop-and-ask triggers.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. The current connector
