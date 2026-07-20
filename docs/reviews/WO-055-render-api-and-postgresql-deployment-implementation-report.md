@@ -1,7 +1,7 @@
 # WO-055 Render API and PostgreSQL Deployment Implementation Report
 
 **Work Order:** [WO-055](../work-orders/055-render-api-and-postgresql-deployment.md)
-**Status:** Blocked - Secret/Database Binding Pending
+**Status:** Blocked - Owner/OAuth Binding and Migration Pending
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -9,10 +9,11 @@
 ## Summary
 
 WO-055 implementation has started. The Render API service and PostgreSQL
-database targets now exist, and the API liveness endpoint is reachable. The
-API readiness endpoint correctly fails closed until required database,
-owner-identity, signing, webhook, and Google OAuth configuration is entered
-through provider-native secret storage.
+database targets now exist, the API liveness endpoint is reachable, and the
+Render database URL plus external-client/webhook signing values are now bound
+through provider-native service environment variables. The API readiness
+endpoint correctly fails closed until owner-identity and Google OAuth
+configuration are entered through provider-native storage.
 
 No database connection URL, password, OAuth secret, token, or signing secret
 was displayed, copied to Git, captured in screenshots, or shared in chat.
@@ -43,6 +44,19 @@ was displayed, copied to Git, captured in screenshots, or shared in chat.
   - `ATLAS_API_ENVIRONMENT=production`
   - `ATLAS_API_REQUIRE_DATABASE=true`
 
+Provider-native update on 2026-07-20:
+
+- Bound the Render internal PostgreSQL URL to `ATLAS_API_DATABASE_URL` without
+  printing or storing the URL value.
+- Configured the current external-client identity/key variables:
+  - `ATLAS_API_EXTERNAL_CLIENT_ID`
+  - `ATLAS_API_EXTERNAL_CLIENT_KEY_ID`
+  - `ATLAS_API_EXTERNAL_CLIENT_SECRET`
+- Configured the current webhook signing variables:
+  - `ATLAS_API_WEBHOOK_SIGNING_KEY_ID`
+  - `ATLAS_API_WEBHOOK_SIGNING_SECRET`
+- Left rotation-only variables unset.
+
 ## Reconciliation - 2026-07-20
 
 Hosted dashboard smoke testing under WO-054 initially proved the Netlify
@@ -65,8 +79,13 @@ The non-secret value was configured in Render and deployed by
 
 After that deploy, the hosted API returns the expected CORS headers for the
 accepted Netlify origin and the dashboard settles to `Runtime not ready (10)`.
-The remaining `not_ready` payload is expected until provider-native secret and
-database binding is completed.
+The remaining `not_ready` payload at that point was expected until
+provider-native secret and database binding was completed.
+
+Later on 2026-07-20, provider-native Render UI updates bound the database URL,
+external-client signing values, and webhook signing values. Render deploy
+`dep-d9f5j43rjlhs73djmmog` made those values live from
+`6a1db71bb2a9404070ac5ace84a710dbe70a19f3`.
 
 ## Hosted API Evidence
 
@@ -96,6 +115,25 @@ Result:
 
 The readiness response contains stable problem codes only and does not expose
 secret values.
+
+Readiness after Render database/signing binding:
+
+```text
+curl -s -i -H 'Origin: https://atlas-agent-control-center.netlify.app' \
+  https://atlas-agent-control-center-api.onrender.com/health/ready
+```
+
+Result:
+
+```text
+HTTP/2 200
+access-control-allow-origin: https://atlas-agent-control-center.netlify.app
+
+{"status":"not_ready","service":"atlas-api","checks":{"configuration":"failed"},"problems":["google_oauth_client_id_missing","google_oauth_client_secret_missing","google_oauth_redirect_uri_missing","owner_identity_subject_missing"]}
+```
+
+Hosted dashboard smoke after the same deploy settled to
+`Runtime not ready (4)`.
 
 CORS readiness check from the accepted Netlify origin:
 
@@ -136,9 +174,11 @@ OK
 
 - No hosted migration was run.
 - No database URL was fetched with `render postgres get`.
-- No database connection string was configured on the API service.
-- No owner identity, external-client signing secret, webhook signing secret, or
-  Google OAuth secret was entered.
+- No database connection string was printed, written to files, committed, or
+  shared in chat. The internal database URL was transferred from the Render
+  database page to the Render service environment form without recording the
+  value.
+- No owner identity or Google OAuth secret was entered.
 - No production Gmail/Drive workflow was run.
 - No release tag or public launch action was performed.
 
@@ -150,6 +190,9 @@ OK
 - Render status evidence was collected through the safer resource inventory
   command, which reported service and database status without connection
   strings.
+- Render logs after deploy `dep-d9f5j43rjlhs73djmmog` showed build, liveness,
+  and service-live events without environment values, database URLs, OAuth
+  tokens, or signing secrets.
 - The API readiness endpoint proves missing production-critical values fail
   closed.
 
@@ -182,15 +225,9 @@ Passed under elevated local execution
 ## Blocker
 
 WO-055 is not complete because the API service still needs provider-native
-secret and database binding values:
+owner identity and Google OAuth values:
 
-- `ATLAS_API_DATABASE_URL`
 - `ATLAS_API_OWNER_IDENTITY_SUBJECT`
-- `ATLAS_API_EXTERNAL_CLIENT_ID`
-- `ATLAS_API_EXTERNAL_CLIENT_KEY_ID`
-- `ATLAS_API_EXTERNAL_CLIENT_SECRET`
-- `ATLAS_API_WEBHOOK_SIGNING_KEY_ID`
-- `ATLAS_API_WEBHOOK_SIGNING_SECRET`
 - `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID`
 - `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET`
 - `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI`
@@ -203,5 +240,6 @@ them in source, logs, screenshots, PRs, or chat.
 ## Completion State
 
 WO-055 is not complete. The Render targets exist and liveness is healthy, but
-readiness is intentionally blocked until secret/database values are safely
-bound and WO-057 migration authority is available.
+readiness is intentionally blocked until owner identity and Google OAuth values
+are safely bound. Hosted database migrations remain deferred until WO-057
+migration authority and backup/restore evidence are available.
