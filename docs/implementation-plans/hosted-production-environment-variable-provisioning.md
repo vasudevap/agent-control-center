@@ -88,7 +88,7 @@ Post-TLS runtime cutover sequence under WO-056A:
 | `ATLAS_API_WEBHOOK_SIGNING_NEXT_SECRET` | Render API service or environment group | Yes | Rotation only |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID` | Render API service or environment group | No | Pending Google OAuth client |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET` | Render API service or environment group | Yes | Pending provider-native secret entry |
-| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending WO-056 redirect URI decision/client setup; preferred final host is `https://api.atlas.grafley.com` after WO-056A |
+| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending WO-056 callback route decision/client setup; do not configure until the browser-facing Google redirect surface is implemented or confirmed |
 | `ATLAS_API_OWNER_SESSION_IDLE_MINUTES` | Render API service or environment group | No | Optional default available |
 | `ATLAS_API_OWNER_SESSION_ABSOLUTE_HOURS` | Render API service or environment group | No | Optional default available |
 

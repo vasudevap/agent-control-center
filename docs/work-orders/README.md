@@ -143,3 +143,9 @@ propagation is still converging. TLS verification, runtime environment cutover,
 and final-domain smoke evidence remain pending. Migrations, release tags, and
 public launch remain bounded by the active Work Order scope and stop-and-ask
 triggers.
+
+WO-056 Google OAuth preflight found no implemented browser-facing callback at
+the earlier placeholder `/api/auth/google/callback` path. The current connector
+completion route is a signed API `POST` endpoint, so Google provider values
+must not be entered until WO-056 chooses and implements or confirms the
+production callback surface.
