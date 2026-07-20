@@ -87,6 +87,14 @@ external-client signing values, and webhook signing values. Render deploy
 `dep-d9f5j43rjlhs73djmmog` made those values live from
 `6a1db71bb2a9404070ac5ace84a710dbe70a19f3`.
 
+Additional provider-native rotation on 2026-07-20 preserved the existing
+external-client identity and replaced only the current external-client key ID
+and HMAC secret so the Netlify dashboard callback route can sign
+server-to-server completion requests. Render deploy
+`dep-d9fa0r3rjlhs739t64vg` was triggered by `service_updated`, reached `live`,
+and deployed commit `c5ead8140bab8a6259a3826d19d50013343052a8`. No HMAC secret
+value was written to Git or recorded in this report.
+
 ## Hosted API Evidence
 
 Liveness:

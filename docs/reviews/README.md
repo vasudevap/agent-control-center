@@ -154,10 +154,10 @@ The [WO-053 implementation report](./WO-053-production-environment-and-secrets-p
 records the accepted provider environment and secrets provisioning start,
 redacted variable map, and read-only provider checks. Following WO-054 and
 WO-055, the Netlify and Render targets now exist and non-secret variables are
-configured. Render database URL, external-client signing, webhook signing, and
-Netlify dashboard canonical base URL are now bound through provider-native UI
-without value exposure; the remaining gates are Netlify dashboard callback
-signing, owner identity, and Google OAuth configuration, tracked jointly with
+configured. Render database URL, external-client signing, webhook signing,
+Netlify dashboard canonical base URL, and Netlify dashboard callback signing are
+now bound through provider-native UI without value exposure; the remaining
+gates are owner identity and Google OAuth configuration, tracked jointly with
 WO-055 and WO-056.
 
 The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
@@ -195,8 +195,10 @@ The [WO-056 callback route implementation report](./WO-056-google-oauth-callback
 records source implementation for the accepted ADR-006 callback route. It adds
 the dashboard browser callback, the signed API completion endpoint, production
 Google authorization URL generation when provider values exist, and callback
-tests, including the canonical Grafley-domain redirect guard. Google provider
-configuration and hosted end-to-end OAuth evidence remain pending.
+tests, including the canonical Grafley-domain redirect guard. It also records
+the hosted dashboard HMAC binding evidence after the Render/Netlify provider
+configuration step. Google provider configuration and hosted end-to-end OAuth
+evidence remain pending.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
