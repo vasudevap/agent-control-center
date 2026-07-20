@@ -44,7 +44,7 @@ def test_release_readiness_provider_files_match_cutover_authority() -> None:
     assert netlify_config["build"] == {
         "base": "apps/web",
         "command": "npm run build",
-        "publish": "apps/web/.next",
+        "publish": ".next",
         "environment": {"NEXT_TELEMETRY_DISABLED": "1"},
     }
     assert netlify_config["plugins"] == [{"package": "@netlify/plugin-nextjs"}]
