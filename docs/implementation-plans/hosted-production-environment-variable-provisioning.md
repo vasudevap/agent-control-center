@@ -53,6 +53,8 @@ Planned custom-domain cutover under WO-056A:
   cut over:
   - `atlas` CNAME to `atlas-agent-control-center.netlify.app`
   - `api.atlas` CNAME to `atlas-agent-control-center-api.onrender.com`
+    - provisioned and verified by Render; certificate issuance is currently in
+      error
 
 ## 4. Render API Variables
 
