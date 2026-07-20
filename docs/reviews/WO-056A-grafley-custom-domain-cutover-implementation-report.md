@@ -52,6 +52,14 @@ Current DNS follow-up evidence after Repository Maintainer provisioning:
 - A local router resolver continued to serve the old wildcard/default A-record
   response briefly after public resolvers had converged. That cache was treated
   as local propagation lag, not a provider blocker.
+- A post-cutover smoke check at 2026-07-20 20:24 UTC confirmed Cloudflare and
+  Google Public DNS resolving `atlas.grafley.com` through
+  `atlas-agent-control-center.netlify.app` to Netlify edge addresses. The same
+  local execution environment still resolved one direct `curl` request to the
+  old Netfirms wildcard address `66.96.160.156`, which served an expired
+  wildcard certificate. A Netlify-edge-pinned HTTPS check for
+  `atlas.grafley.com` returned `HTTP/2 200`, confirming the provider endpoint
+  is healthy once DNS reaches Netlify.
 
 ## Provider Evidence
 
@@ -88,6 +96,14 @@ Evidence:
 - `curl --resolve atlas.grafley.com:443:18.208.88.157 -I
   https://atlas.grafley.com` and the same check against `98.84.224.111`
   returned `HTTP/2 200` from Netlify with strict transport security.
+- `dig +short @1.1.1.1 atlas.grafley.com A` and
+  `dig +short @8.8.8.8 atlas.grafley.com A` returned the Netlify CNAME chain
+  and Netlify edge addresses during final smoke verification.
+- An unpinned local `curl -I https://atlas.grafley.com` request still reached
+  Netfirms address `66.96.160.156` during propagation and therefore observed an
+  expired `*.grafley.com` certificate from the old wildcard/default path. That
+  result is tracked as DNS cache propagation residue, not as the active Netlify
+  certificate state.
 
 ### Render API
 
@@ -228,6 +244,9 @@ Completed:
   `https://atlas.grafley.com` and redeployed.
 - API liveness and final-origin readiness CORS verified from
   `https://api.atlas.grafley.com`.
+- Frontend Netlify endpoint verified with public resolver evidence and
+  Netlify-edge-pinned HTTPS checks; stale local resolver paths may continue to
+  reach the old Netfirms wildcard address until caches expire.
 - Render deploy hook regenerated after exposure.
 
 Pending:
