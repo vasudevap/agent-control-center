@@ -18,13 +18,10 @@ returned Netlify's default 404 because the OpenNext output uses generated route
 metadata and blob-backed content, not only flat static files.
 
 The merged source fix uses a root `netlify.toml` with `base = "apps/web"` and
-`publish = "apps/web/.next"` because this Netlify site resolves publish paths
-relative to the repository root (`baseRelDir: false`). It also keeps the
-official Next.js runtime explicit, removes the build-time Google Fonts
-dependency, and adds deterministic `generateStaticParams` for fixture-backed
-detail routes. PR #78 merged that fix, and `netlify build --filter @atlas/web`
-now completes. The remaining blocker is Netlify deploy packaging/CI linkage,
-not source review.
+`publish = ".next"` because the linked Netlify CI build resolves `publish`
+relative to the configured base directory. It also keeps the official Next.js
+runtime explicit, removes the build-time Google Fonts dependency, and adds
+deterministic `generateStaticParams` for fixture-backed detail routes.
 
 No secret values were created, displayed, written to Git, or configured in
 Netlify during this Work Order.
@@ -35,7 +32,7 @@ Netlify during this Work Order.
   publish output:
   - base directory: `apps/web`
   - build command: `npm run build`
-  - publish directory: `apps/web/.next`
+  - publish directory: `.next` relative to `apps/web`
   - official Next.js runtime: `@netlify/plugin-nextjs`
 - Ignored local Netlify link metadata with `.netlify/`.
 - Created and linked the Netlify site target:
@@ -75,6 +72,7 @@ Netlify during this Work Order.
 | `netlify deploy --prod --build --filter @atlas/web ...` | Failed during function bundling because the local CLI doubled the generated internal function path to `apps/web/apps/web/.netlify/...` | No production deploy |
 | `netlify deploy --prod --build --context production ...` from `apps/web` | Failed during post-build publish because the local CLI doubled the publish path to `apps/web/apps/web/.next` | No production deploy |
 | `netlify deploy --trigger ...` and `netlify api createSiteBuild ...` | Remote provider build could not be triggered because the manually created Netlify site is not connected to CI build settings | No production deploy |
+| Netlify CI deploy from linked Git repository at `main@9dcae7e` | Failed because the checked-in publish path resolved to `/opt/build/repo/apps/web/apps/web/.next`; provider CI treats `publish` as relative to `base = apps/web` | No production deploy |
 | `curl -s -i https://atlas-agent-control-center.netlify.app` | Current hosted site returns HTTP 404 after the manual artifact deploy | Read-only |
 
 The `netlify env:list --json` verifier was intentionally not used after the
@@ -154,15 +152,33 @@ output pointed to a server-handler packaging path issue:
 Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/var/task/apps/web/.netlify/dist/run/handlers/request-context.cjs'
 ```
 
-PR #78 merged the base/publish source fix and local `netlify build` now
-completes. The remaining blocker is provider deployment packaging: local CLI
-deploy paths are rewritten incorrectly for this monorepo, while provider-side
-build trigger is unavailable until the Netlify site is connected to CI or an
-equivalent reviewed deploy mechanism is accepted.
+PR #78 merged the initial base/publish source fix and local `netlify build`
+completed, but the first linked Netlify CI deploy showed that provider CI
+resolves `publish` relative to `base = apps/web`. The source configuration now
+sets `publish = ".next"` to match that provider behavior.
 
 ## Completion State
 
 WO-054 is not complete. The next dependency-safe implementation action is to
-connect the Netlify site to the GitHub repository/CI build settings or approve
-an equivalent reviewed deploy mechanism, redeploy the frontend from reviewed
+merge the corrected Netlify publish path, redeploy the frontend from reviewed
 `main`, and then verify hosted dashboard render plus runtime-health evidence.
+
+## Verification - 2026-07-19 (repository-side readiness re-check)
+
+An independent repository-side re-check captured the current deploy
+configuration and the subsequent linked CI deploy proved one source change is
+required:
+
+- `apps/web/next.config.ts` uses the default Next.js server build and pins the
+  Turbopack workspace root to the repository root. `@netlify/plugin-nextjs`
+  (`^5.15.12`) is declared and referenced by the root `netlify.toml`.
+- The root `netlify.toml` keeps `base = apps/web`, `command = npm run build`,
+  and the official Next runtime plugin, but `publish` must be `.next` because
+  the provider CI build resolves it relative to `apps/web`.
+- Live check: the production URL still returns HTTP 404 (site exists; no healthy
+  deploy yet), matching the recorded blocker.
+
+Re-link note for the CI step: this working copy is not linked to the Netlify
+site (link metadata is gitignored), so the GitHub/CI linkage step must be
+performed against the Netlify account/team that owns the
+`atlas-agent-control-center` site (created under account slug `vasudevap`).
