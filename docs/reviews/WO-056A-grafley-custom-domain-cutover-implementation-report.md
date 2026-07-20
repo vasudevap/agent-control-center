@@ -190,10 +190,11 @@ provider TLS/certificate status is healthy:
 7. Verify browser/API integration from `https://atlas.grafley.com`, including
    runtime-health behavior and an API readiness request with the final
    frontend origin.
-8. Carry `https://api.atlas.grafley.com/api/auth/google/callback` forward as
-   the preferred WO-056 Google OAuth redirect URI candidate unless source
-   inspection identifies a different canonical callback route before OAuth
-   setup.
+8. Do not carry the earlier placeholder
+   `https://api.atlas.grafley.com/api/auth/google/callback` into Google
+   provider setup. Source inspection found no matching route; WO-056 must
+   choose and implement or confirm the browser-facing OAuth callback surface
+   before provider values are entered.
 
 ## Validation State
 

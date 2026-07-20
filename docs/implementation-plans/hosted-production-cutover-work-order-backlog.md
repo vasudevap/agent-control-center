@@ -26,7 +26,7 @@ acceptance.
 | WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Completed - Hosted Runtime Evidence Captured |
 | WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Owner/OAuth Binding and Migration Pending |
 | WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | In Progress - DNS Propagation and Certificates Pending |
-| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation |
+| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation - Callback Route Decision Required |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Accepted - Pending Implementation |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
@@ -109,6 +109,15 @@ Objective:
 
 - Configure Google OAuth client redirect URIs for the hosted API while
   preserving `gmail.modify` and `drive.file` scope posture.
+
+Current state:
+
+- Source preflight found no direct browser-facing Google OAuth callback route
+  at the earlier placeholder `/api/auth/google/callback` path. The implemented
+  connector completion route is `POST /api/v1/connectors/{connector_type}/oauth/callback`
+  behind the external-client HMAC boundary, so WO-056 must choose and implement
+  or confirm the production browser callback surface before Google provider
+  values are entered.
 
 ### WO-057 - Hosted Migration, Backup, and Restore Readiness
 

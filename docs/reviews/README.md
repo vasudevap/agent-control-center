@@ -178,6 +178,13 @@ and the emergency Render deploy-hook regeneration after a browser DOM exposure.
 WO-056A remains pending until DNS propagation, provider TLS verification,
 runtime environment cutover, and final-domain smoke evidence are complete.
 
+The [WO-056 Google OAuth preflight report](./WO-056-google-oauth-production-client-preflight-report.md)
+records source inspection for the production Google OAuth cutover. It confirms
+that the earlier placeholder API callback URL is not implemented, that current
+connector OAuth completion is a signed `POST` API contract, and that WO-056
+requires a callback route implementation decision before Google provider values
+are entered.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation
