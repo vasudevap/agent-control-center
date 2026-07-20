@@ -20,7 +20,7 @@ state, redaction posture, and owner expectations only.
 
 | Provider target | Expected location | WO-053 state | Blocking dependency |
 | --- | --- | --- | --- |
-| Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Configured, deploy unhealthy | Server-handler packaging fix pending PR/merge/redeploy |
+| Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Configured, deploy healthy | Runtime-health browser fetch blocked until API CORS source fix is deployed |
 | Render API service | Render service environment variables or environment group | Partially configured | Secret and database URL variables still require provider-native value entry |
 | Render PostgreSQL database | Render PostgreSQL internal connection reference | Created | Connection reference still requires safe provider-native binding to API service |
 | Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Hosted API callback URL is available after WO-055 |
@@ -47,6 +47,7 @@ values.
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
 | `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Configured as production |
+| `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Pending deployment of narrow dashboard CORS support |
 | `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Pending provider-native database binding without value exposure |
 | `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
 | `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Ready for owner identity value after service exists |
