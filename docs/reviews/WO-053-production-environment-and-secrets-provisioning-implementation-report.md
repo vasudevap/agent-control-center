@@ -1,7 +1,7 @@
 # WO-053 Production Environment and Secrets Provisioning Implementation Report
 
 **Work Order:** [WO-053](../work-orders/053-production-environment-and-secrets-provisioning.md)
-**Status:** In Progress - Render Database and Signing Bound; Owner/OAuth Pending
+**Status:** In Progress - Dashboard/API Signing Bound; Owner/OAuth Pending
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -32,6 +32,43 @@ Evidence, with values redacted before output:
 No OAuth client secret, authorization code, access token, refresh token,
 database URL, HMAC secret, or provider API token was written to Git or printed
 in validation output.
+
+## Reconciliation - 2026-07-20 (dashboard HMAC binding)
+
+The dashboard/API HMAC pair required for server-side dashboard callback
+completion has been rotated and bound through provider-native storage.
+
+Evidence, with secret values omitted:
+
+- Render preserved the existing `ATLAS_API_EXTERNAL_CLIENT_ID` value and
+  replaced only the current external-client key ID and HMAC secret.
+- Render deploy `dep-d9fa0r3rjlhs739t64vg` was triggered by
+  `service_updated`, reached `live`, and deployed commit
+  `c5ead8140bab8a6259a3826d19d50013343052a8`.
+- Netlify production now has:
+  - `ATLAS_DASHBOARD_EXTERNAL_CLIENT_ID`
+  - `ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID`
+  - `ATLAS_DASHBOARD_EXTERNAL_CLIENT_SECRET`
+- The Netlify dashboard HMAC secret is marked secret in provider metadata and
+  has a non-empty production value. Empty provider placeholders exist for
+  non-production contexts and do not change production behavior.
+- Netlify build `6a5ea0ffc589f8cbec2f4680` created deploy
+  `6a5ea0ffc589f8cbec2f4682`, which reached `deploy_state=ready` with
+  `error=null`.
+- Hosted readiness after the rotation still fails closed only for the expected
+  owner and Google OAuth values:
+  `google_oauth_client_id_missing`,
+  `google_oauth_client_secret_missing`,
+  `google_oauth_redirect_uri_missing`, and
+  `owner_identity_subject_missing`.
+- Unsigned API callback requests still return `401`.
+- The hosted browser callback route redirects invalid provider callback input
+  to `https://atlas.grafley.com/connectors?oauth=google&status=failed` without
+  exposing callback query values.
+
+No OAuth client secret, authorization code, access token, refresh token,
+database URL, HMAC secret, or provider API token was written to Git, committed,
+or intentionally printed in validation output.
 
 ## Reconciliation - 2026-07-19 (post WO-054 / WO-055)
 
@@ -150,7 +187,7 @@ No matches
 | Risk / deferred item | Status | Next authority |
 | --- | --- | --- |
 | Owner identity and Google OAuth values are not yet entered | Pending | Provider-native owner/OAuth entry (tracked with WO-055 / WO-056) |
-| Netlify dashboard callback signing values are not yet entered | Pending | Provider-native Netlify server-side `ATLAS_DASHBOARD_EXTERNAL_CLIENT_*` values must match the governed API external-client configuration |
+| Netlify dashboard callback signing values | Complete | Provider-native Netlify server-side `ATLAS_DASHBOARD_EXTERNAL_CLIENT_*` values are configured and matched to the rotated Render external-client key |
 | Netlify dashboard canonical base URL | Complete | `ATLAS_DASHBOARD_BASE_URL` configured and verified for production after PR #93 |
 | Render provider access | Established | Render service/database created; database URL, external-client signing, and webhook signing bound through provider-native UI |
 | Google OAuth production redirect cannot be finalized | Expected | WO-056 requires Google OAuth client details and authorized owner account evidence |
@@ -163,7 +200,8 @@ WO-053 is not complete. Provider targets have since been created under WO-054
 configured. Render database URL, external-client signing, and webhook signing
 values have now been bound through provider-native UI without value exposure.
 Netlify dashboard canonical base URL has also been configured and verified
-without value exposure. The remaining dependency-safe actions are provider-native
-Netlify dashboard callback signing, owner identity, and Google OAuth client
-configuration; readiness must continue to fail closed until those API-required
-values are bound.
+without value exposure. Netlify dashboard callback signing values have been
+configured and matched to the rotated Render external-client key without value
+exposure. The remaining dependency-safe actions are provider-native owner
+identity and Google OAuth client configuration; readiness must continue to fail
+closed until those API-required values are bound.

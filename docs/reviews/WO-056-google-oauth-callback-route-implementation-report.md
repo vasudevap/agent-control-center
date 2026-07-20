@@ -70,7 +70,8 @@ Before entering Google provider values:
    Grafley product domain when provider infrastructure presents an internal
    request origin. Completed on 2026-07-20 after PR #93 merged.
 3. Configure Netlify server-only dashboard callback signing variables through
-   provider-native environment storage, without `NEXT_PUBLIC_`.
+   provider-native environment storage, without `NEXT_PUBLIC_`. Completed on
+   2026-07-20 with a rotated Render external-client key.
 4. Configure Render Google OAuth values through provider-native environment
    storage.
 5. Verify the deployed callback route and signed API completion path.
@@ -204,6 +205,57 @@ google_oauth_redirect_uri_missing
 owner_identity_subject_missing
 ```
 
+Hosted dashboard HMAC binding follow-up:
+
+```text
+render deploys list srv-d9e2rprbc2fs73f4l23g --output json
+```
+
+Result, with environment values omitted:
+
+```text
+Render deploy dep-d9fa0r3rjlhs739t64vg reached status=live from
+trigger=service_updated at commit c5ead8140bab8a6259a3826d19d50013343052a8.
+```
+
+```text
+netlify api getEnvVars --data '{"account_id":"652ed3c4f4e7dd56552d3e4c","site_id":"cc07a93e-8ffe-47e7-b328-e5ae4247b14d"}'
+```
+
+Result, with values redacted before output:
+
+```text
+ATLAS_DASHBOARD_EXTERNAL_CLIENT_ID has a non-empty production value.
+ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID has a non-empty production value.
+ATLAS_DASHBOARD_EXTERNAL_CLIENT_SECRET is marked secret and has a non-empty
+production value.
+```
+
+```text
+netlify api createSiteBuild --data '{"site_id":"cc07a93e-8ffe-47e7-b328-e5ae4247b14d"}'
+netlify api getSiteBuild --data '{"build_id":"6a5ea0ffc589f8cbec2f4680"}'
+```
+
+Result:
+
+```text
+Build 6a5ea0ffc589f8cbec2f4680 created deploy
+6a5ea0ffc589f8cbec2f4682 and reached deploy_state=ready with error=null.
+```
+
+```text
+curl -s -I -w "%{http_code}\n" \
+  "https://atlas.grafley.com/oauth/google/callback?state=[invalid-state]&code=[invalid-code]"
+```
+
+Result:
+
+```text
+HTTP/2 307
+location: https://atlas.grafley.com/connectors?oauth=google&status=failed
+307
+```
+
 Frontend type check:
 
 ```text
@@ -251,6 +303,9 @@ Passed
 - Browser JavaScript does not sign Atlas API requests.
 - Dashboard callback signing values use server-only environment variables and
   are not prefixed with `NEXT_PUBLIC_`.
+- Dashboard callback signing values are bound through provider-native Netlify
+  environment storage and matched to the rotated Render external-client key
+  without committing or printing the HMAC secret.
 - API callback route remains protected by the existing external-client HMAC
   boundary.
 - API resolves connector type from stored state instead of trusting callback
@@ -267,6 +322,6 @@ Passed
 | --- | --- | --- |
 | Google provider values are not configured | Pending | Configure after source route deployment and explicit provider-action step |
 | Netlify canonical dashboard base URL is configured | Complete | PR #93 merged; Netlify production `ATLAS_DASHBOARD_BASE_URL` verified redacted; hosted callback denial redirects to `https://atlas.grafley.com/connectors?oauth=google&status=denied` |
-| Netlify server-side callback signing values are not configured | Pending | Configure provider-native Netlify variables without `NEXT_PUBLIC_` |
+| Netlify server-side callback signing values are configured | Complete | Provider-native Netlify `ATLAS_DASHBOARD_EXTERNAL_CLIENT_*` values are configured and matched to the rotated Render external-client key |
 | Hosted end-to-end OAuth evidence is not captured | Pending | Capture under the provider configuration step with redacted evidence |
 | Credential encryption service remains reference-only metadata | Existing limitation | Do not store raw token values outside the accepted credential boundary; future credential-vault hardening remains a separate security/infrastructure task |
