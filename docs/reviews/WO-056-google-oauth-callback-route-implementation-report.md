@@ -51,6 +51,8 @@ no production mailbox data was used.
   - derives Drive account identity from the Drive About endpoint;
   - creates only credential-reference metadata and never returns token values.
 - Environment documentation:
+  - records Netlify server-only dashboard base URL variable:
+    `ATLAS_DASHBOARD_BASE_URL`;
   - records Netlify server-only dashboard callback signing variables:
     `ATLAS_DASHBOARD_EXTERNAL_CLIENT_ID`,
     `ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID`, and
@@ -63,12 +65,16 @@ The source route exists, but provider configuration remains pending.
 Before entering Google provider values:
 
 1. Merge and deploy this callback-route implementation to Netlify and Render.
-2. Configure Netlify server-only dashboard callback signing variables through
+2. Configure Netlify server-only `ATLAS_DASHBOARD_BASE_URL` to
+   `https://atlas.grafley.com` so callback redirects remain on the accepted
+   Grafley product domain when provider infrastructure presents an internal
+   request origin.
+3. Configure Netlify server-only dashboard callback signing variables through
    provider-native environment storage, without `NEXT_PUBLIC_`.
-3. Configure Render Google OAuth values through provider-native environment
+4. Configure Render Google OAuth values through provider-native environment
    storage.
-4. Verify the deployed callback route and signed API completion path.
-5. Configure Google OAuth with redirect URI
+5. Verify the deployed callback route and signed API completion path.
+6. Configure Google OAuth with redirect URI
    `https://atlas.grafley.com/oauth/google/callback`.
 
 ## Validation Commands
@@ -125,6 +131,19 @@ Result:
 2 passed, 5 tests passed
 ```
 
+Follow-up canonical redirect validation:
+
+```text
+cd apps/web
+npm test -- --run src/app/oauth/google/callback/route.test.ts
+```
+
+Result:
+
+```text
+1 passed, 4 tests passed
+```
+
 Frontend type check:
 
 ```text
@@ -167,6 +186,8 @@ Passed
 
 - Browser redirects never include authorization code, state, provider error
   detail, token, or secret values after callback handling.
+- Browser redirects use the server-side dashboard base URL when configured,
+  keeping owner navigation on the accepted Grafley product domain.
 - Browser JavaScript does not sign Atlas API requests.
 - Dashboard callback signing values use server-only environment variables and
   are not prefixed with `NEXT_PUBLIC_`.
@@ -185,6 +206,7 @@ Passed
 | Item | Status | Next action |
 | --- | --- | --- |
 | Google provider values are not configured | Pending | Configure after source route deployment and explicit provider-action step |
+| Netlify canonical dashboard base URL is not configured | Pending | Configure `ATLAS_DASHBOARD_BASE_URL=https://atlas.grafley.com` in provider-native Netlify environment variables |
 | Netlify server-side callback signing values are not configured | Pending | Configure provider-native Netlify variables without `NEXT_PUBLIC_` |
 | Hosted end-to-end OAuth evidence is not captured | Pending | Capture under the provider configuration step with redacted evidence |
 | Credential encryption service remains reference-only metadata | Existing limitation | Do not store raw token values outside the accepted credential boundary; future credential-vault hardening remains a separate security/infrastructure task |
