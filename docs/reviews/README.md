@@ -154,10 +154,11 @@ The [WO-053 implementation report](./WO-053-production-environment-and-secrets-p
 records the accepted provider environment and secrets provisioning start,
 redacted variable map, and read-only provider checks. Following WO-054 and
 WO-055, the Netlify and Render targets now exist and non-secret variables are
-configured. Render database URL, external-client signing, and webhook signing
-values are now bound through provider-native UI without value exposure; the
-remaining gate is owner identity and Google OAuth configuration, tracked
-jointly with WO-055 and WO-056.
+configured. Render database URL, external-client signing, webhook signing, and
+Netlify dashboard canonical base URL are now bound through provider-native UI
+without value exposure; the remaining gates are Netlify dashboard callback
+signing, owner identity, and Google OAuth configuration, tracked jointly with
+WO-055 and WO-056.
 
 The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
 records the Netlify site creation, source-level Netlify build configuration,

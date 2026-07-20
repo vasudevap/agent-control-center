@@ -68,7 +68,7 @@ Before entering Google provider values:
 2. Configure Netlify server-only `ATLAS_DASHBOARD_BASE_URL` to
    `https://atlas.grafley.com` so callback redirects remain on the accepted
    Grafley product domain when provider infrastructure presents an internal
-   request origin.
+   request origin. Completed on 2026-07-20 after PR #93 merged.
 3. Configure Netlify server-only dashboard callback signing variables through
    provider-native environment storage, without `NEXT_PUBLIC_`.
 4. Configure Render Google OAuth values through provider-native environment
@@ -144,6 +144,66 @@ Result:
 1 passed, 4 tests passed
 ```
 
+Hosted follow-up verification after PR #93:
+
+```text
+netlify api getEnvVar --data '{"account_id":"652ed3c4f4e7dd56552d3e4c","site_id":"cc07a93e-8ffe-47e7-b328-e5ae4247b14d","key":"ATLAS_DASHBOARD_BASE_URL"}'
+```
+
+Result, with values redacted before output:
+
+```text
+ATLAS_DASHBOARD_BASE_URL is non-secret, available in all Netlify scopes, and
+has a non-empty production value. Netlify also stores empty placeholder values
+for dev, branch-deploy, deploy-preview, and dev-server contexts.
+```
+
+```text
+netlify api createSiteBuild --data '{"site_id":"cc07a93e-8ffe-47e7-b328-e5ae4247b14d"}'
+netlify api getSiteBuild --data '{"build_id":"6a5e9b7efb8cc864c21fa9f8"}'
+```
+
+Result:
+
+```text
+Build 6a5e9b7efb8cc864c21fa9f8 created deploy
+6a5e9b7efb8cc864c21fa9fa and reached deploy_state=ready with error=null.
+```
+
+```text
+curl -s -I -w "%{http_code}\n" \
+  "https://atlas.grafley.com/oauth/google/callback?error=access_denied"
+```
+
+Result:
+
+```text
+HTTP/2 307
+location: https://atlas.grafley.com/connectors?oauth=google&status=denied
+307
+```
+
+```text
+curl -s -o /dev/null -w "%{http_code}\n" \
+  -X POST https://api.atlas.grafley.com/api/v1/connectors/oauth/google/callback
+```
+
+Result:
+
+```text
+401
+```
+
+Production readiness remains fail-closed only for the expected pending owner
+and Google OAuth provider values:
+
+```text
+google_oauth_client_id_missing
+google_oauth_client_secret_missing
+google_oauth_redirect_uri_missing
+owner_identity_subject_missing
+```
+
 Frontend type check:
 
 ```text
@@ -206,7 +266,7 @@ Passed
 | Item | Status | Next action |
 | --- | --- | --- |
 | Google provider values are not configured | Pending | Configure after source route deployment and explicit provider-action step |
-| Netlify canonical dashboard base URL is not configured | Pending | Configure `ATLAS_DASHBOARD_BASE_URL=https://atlas.grafley.com` in provider-native Netlify environment variables |
+| Netlify canonical dashboard base URL is configured | Complete | PR #93 merged; Netlify production `ATLAS_DASHBOARD_BASE_URL` verified redacted; hosted callback denial redirects to `https://atlas.grafley.com/connectors?oauth=google&status=denied` |
 | Netlify server-side callback signing values are not configured | Pending | Configure provider-native Netlify variables without `NEXT_PUBLIC_` |
 | Hosted end-to-end OAuth evidence is not captured | Pending | Capture under the provider configuration step with redacted evidence |
 | Credential encryption service remains reference-only metadata | Existing limitation | Do not store raw token values outside the accepted credential boundary; future credential-vault hardening remains a separate security/infrastructure task |

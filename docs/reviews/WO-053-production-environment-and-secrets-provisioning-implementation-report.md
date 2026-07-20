@@ -6,6 +6,33 @@
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
 
+## Reconciliation - 2026-07-20 (post PR #93)
+
+After the ADR-006 callback route was implemented and deployed, Netlify
+production was configured with the non-secret server-side
+`ATLAS_DASHBOARD_BASE_URL` value required to keep hosted OAuth callback
+redirects on the accepted Grafley product domain.
+
+Evidence, with values redacted before output:
+
+- `ATLAS_DASHBOARD_BASE_URL` exists in Netlify for the
+  `atlas-agent-control-center` site, is not marked secret, and has a non-empty
+  production value.
+- Netlify also stores empty placeholder values for `dev`, `branch-deploy`,
+  `deploy-preview`, and `dev-server`; these do not change the production
+  behavior.
+- Production build `6a5e9b7efb8cc864c21fa9f8` created deploy
+  `6a5e9b7efb8cc864c21fa9fa`, which reached `deploy_state=ready` with
+  `error=null`.
+- A hosted callback-denial check returned `HTTP/2 307` with
+  `location:
+  https://atlas.grafley.com/connectors?oauth=google&status=denied`, confirming
+  the callback no longer redirects to the Netlify provider hostname.
+
+No OAuth client secret, authorization code, access token, refresh token,
+database URL, HMAC secret, or provider API token was written to Git or printed
+in validation output.
+
 ## Reconciliation - 2026-07-19 (post WO-054 / WO-055)
 
 The original blocker recorded below ("provider targets not yet provisioned")
@@ -123,6 +150,8 @@ No matches
 | Risk / deferred item | Status | Next authority |
 | --- | --- | --- |
 | Owner identity and Google OAuth values are not yet entered | Pending | Provider-native owner/OAuth entry (tracked with WO-055 / WO-056) |
+| Netlify dashboard callback signing values are not yet entered | Pending | Provider-native Netlify server-side `ATLAS_DASHBOARD_EXTERNAL_CLIENT_*` values must match the governed API external-client configuration |
+| Netlify dashboard canonical base URL | Complete | `ATLAS_DASHBOARD_BASE_URL` configured and verified for production after PR #93 |
 | Render provider access | Established | Render service/database created; database URL, external-client signing, and webhook signing bound through provider-native UI |
 | Google OAuth production redirect cannot be finalized | Expected | WO-056 requires Google OAuth client details and authorized owner account evidence |
 | Production readiness remains not ready | Expected | Readiness must fail closed until required variables exist |
@@ -133,6 +162,8 @@ WO-053 is not complete. Provider targets have since been created under WO-054
 (Netlify) and WO-055 (Render API and PostgreSQL), and non-secret variables are
 configured. Render database URL, external-client signing, and webhook signing
 values have now been bound through provider-native UI without value exposure.
-The remaining dependency-safe action is provider-native owner identity and
-Google OAuth client configuration; readiness must continue to fail closed until
-those values are bound.
+Netlify dashboard canonical base URL has also been configured and verified
+without value exposure. The remaining dependency-safe actions are provider-native
+Netlify dashboard callback signing, owner identity, and Google OAuth client
+configuration; readiness must continue to fail closed until those API-required
+values are bound.
