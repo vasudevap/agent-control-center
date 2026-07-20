@@ -13,13 +13,15 @@ has since been resolved by subsequent same-day Work Orders; the original
 sections are retained as a point-in-time record.
 
 - The Atlas Netlify site now exists (`atlas-agent-control-center`, created under
-  WO-054). Live check: the production URL returns HTTP 404 (site exists; no
-  healthy deploy yet).
+  WO-054). Live check after the WO-054 reconciliation deploy: the production
+  URL returns HTTP 200 and the hosted dashboard runtime indicator reaches the
+  API.
 - The Render API service and PostgreSQL database now exist (created under
   WO-055). Live check: `/health/live` returns `status: ok`; `/health/ready`
   fails closed with configuration problem codes only (no secret values).
 - Non-secret provider variables are configured on both providers per the WO-054
-  and WO-055 implementation reports.
+  and WO-055 implementation reports, including the Render API frontend origin
+  used for the dashboard readiness CORS path.
 
 WO-053's remaining gate is therefore no longer provider-target creation but
 provider-native entry of the secret values (database URL, owner identity,

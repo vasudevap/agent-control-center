@@ -45,20 +45,28 @@ was displayed, copied to Git, captured in screenshots, or shared in chat.
 
 ## Reconciliation - 2026-07-20
 
-Hosted dashboard smoke testing under WO-054 proved the Netlify deployment can
-render with `NEXT_PUBLIC_API_BASE_URL`, but browser runtime health settles to
-`Runtime unavailable`. Direct API checks show `/health/ready` returns stable
-readiness problem codes over curl, while responses from the Netlify origin lack
-`Access-Control-Allow-Origin` and browser preflight receives `405`.
+Hosted dashboard smoke testing under WO-054 initially proved the Netlify
+deployment could render with `NEXT_PUBLIC_API_BASE_URL`, but browser runtime
+health settled to `Runtime unavailable`. Direct API checks showed
+`/health/ready` returned stable readiness problem codes over curl, while
+responses from the Netlify origin lacked `Access-Control-Allow-Origin` and
+browser preflight received `405`.
 
 A narrow source fix now adds optional CORS support controlled by
 `ATLAS_API_FRONTEND_ORIGIN`. It is intended to allow only the accepted Netlify
 origin to perform browser-safe `GET` calls such as `/health/ready`; it does not
 weaken readiness checks, expose secrets, or broaden provider topology.
 
-Pending non-secret API value after source deployment:
+The non-secret value was configured in Render and deployed by
+`dep-d9f3m1ernols73fc43k0` from
+`fd04ec47edd5ad425dbc4de6e09bf707fb3b2156`:
 
 - `ATLAS_API_FRONTEND_ORIGIN=https://atlas-agent-control-center.netlify.app`
+
+After that deploy, the hosted API returns the expected CORS headers for the
+accepted Netlify origin and the dashboard settles to `Runtime not ready (10)`.
+The remaining `not_ready` payload is expected until provider-native secret and
+database binding is completed.
 
 ## Hosted API Evidence
 
@@ -88,6 +96,41 @@ Result:
 
 The readiness response contains stable problem codes only and does not expose
 secret values.
+
+CORS readiness check from the accepted Netlify origin:
+
+```text
+curl -s -i -H 'Origin: https://atlas-agent-control-center.netlify.app' \
+  https://atlas-agent-control-center-api.onrender.com/health/ready
+```
+
+Result:
+
+```text
+HTTP/2 200
+access-control-allow-origin: https://atlas-agent-control-center.netlify.app
+
+{"status":"not_ready","service":"atlas-api","checks":{"configuration":"failed"},"problems":["database_url_missing","external_client_id_missing","external_client_key_id_missing","external_client_secret_missing","google_oauth_client_id_missing","google_oauth_client_secret_missing","google_oauth_redirect_uri_missing","owner_identity_subject_missing","webhook_signing_key_id_missing","webhook_signing_secret_missing"]}
+```
+
+CORS preflight:
+
+```text
+curl -s -i -X OPTIONS -H 'Origin: https://atlas-agent-control-center.netlify.app' \
+  -H 'Access-Control-Request-Method: GET' \
+  -H 'Access-Control-Request-Headers: accept' \
+  https://atlas-agent-control-center-api.onrender.com/health/ready
+```
+
+Result:
+
+```text
+HTTP/2 200
+access-control-allow-methods: GET
+access-control-allow-origin: https://atlas-agent-control-center.netlify.app
+
+OK
+```
 
 ## Explicitly Not Performed
 
