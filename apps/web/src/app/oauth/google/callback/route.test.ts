@@ -10,6 +10,7 @@ describe("Google OAuth callback route", () => {
 
   it("completes through the signed Atlas API callback and redirects cleanly", async () => {
     vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.atlas.grafley.com");
+    vi.stubEnv("ATLAS_DASHBOARD_BASE_URL", "https://atlas.grafley.com");
     vi.stubEnv("ATLAS_DASHBOARD_EXTERNAL_CLIENT_ID", "client-1");
     vi.stubEnv("ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID", "key-1");
     vi.stubEnv("ATLAS_DASHBOARD_EXTERNAL_CLIENT_SECRET", "secret-1");
@@ -37,6 +38,20 @@ describe("Google OAuth callback route", () => {
       "https://atlas.grafley.com/connectors?oauth=google&status=connected",
     );
     expect(location).not.toContain("code-1");
+  });
+
+  it("uses the configured dashboard base URL when provider infrastructure rewrites the request origin", async () => {
+    vi.stubEnv("ATLAS_DASHBOARD_BASE_URL", "https://atlas.grafley.com");
+
+    const response = await GET(
+      new Request(
+        "https://atlas-agent-control-center.netlify.app/oauth/google/callback?error=access_denied",
+      ),
+    );
+
+    expect(response.headers.get("location")).toBe(
+      "https://atlas.grafley.com/connectors?oauth=google&status=denied",
+    );
   });
 
   it("redirects with denied status for provider-denied callbacks", async () => {

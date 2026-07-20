@@ -56,6 +56,7 @@ All backend variables use the `ATLAS_API_` prefix.
 
 | Variable | Required for hosted dashboard | Secret | Owner | Purpose |
 | --- | --- | --- | --- | --- |
+| `ATLAS_DASHBOARD_BASE_URL` | Yes | No | Maintainer | Canonical dashboard origin used by server-side callback routes when provider infrastructure presents an internal/provider request origin |
 | `NEXT_PUBLIC_API_BASE_URL` | Yes | No | Maintainer | Browser-visible Atlas API base URL |
 | `NEXT_PUBLIC_APP_ENV` | Yes | No | Maintainer | Browser-visible environment label |
 | `NEXT_PUBLIC_RELEASE_VERSION` | Recommended | No | Maintainer | Browser-visible release/version identifier |
@@ -70,6 +71,10 @@ Dashboard variables without the `NEXT_PUBLIC_` prefix must remain server-side
 only in Netlify. They must not be read from client components, returned in API
 responses, embedded in built client bundles, screenshots, logs, or committed
 configuration files.
+
+`ATLAS_DASHBOARD_BASE_URL` is intentionally server-side even though it is not a
+secret. Server-side callback routes use it to redirect owners back to the
+accepted public Grafley dashboard origin after provider-mediated flows.
 
 ## 5. Provider Storage Rules
 

@@ -194,8 +194,8 @@ The [WO-056 callback route implementation report](./WO-056-google-oauth-callback
 records source implementation for the accepted ADR-006 callback route. It adds
 the dashboard browser callback, the signed API completion endpoint, production
 Google authorization URL generation when provider values exist, and callback
-tests. Google provider configuration and hosted end-to-end OAuth evidence remain
-pending.
+tests, including the canonical Grafley-domain redirect guard. Google provider
+configuration and hosted end-to-end OAuth evidence remain pending.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,

@@ -6,10 +6,25 @@ import {
 } from "@/lib/atlas-api-signing";
 
 const GOOGLE_CALLBACK_PATH = "/api/v1/connectors/oauth/google/callback";
+const DASHBOARD_BASE_URL_ENV = "ATLAS_DASHBOARD_BASE_URL";
+
+function dashboardRedirectUrl(requestUrl: URL): URL {
+  const configuredBaseUrl = process.env[DASHBOARD_BASE_URL_ENV]?.trim();
+  if (configuredBaseUrl) {
+    try {
+      return new URL("/connectors", new URL(configuredBaseUrl).origin);
+    } catch {
+      // Fall back to the request origin so malformed environment values do not
+      // expose callback query parameters or prevent a clean owner redirect.
+    }
+  }
+
+  return new URL("/connectors", requestUrl.origin);
+}
 
 export async function GET(request: Request): Promise<NextResponse> {
   const requestUrl = new URL(request.url);
-  const redirectUrl = new URL("/connectors", requestUrl.origin);
+  const redirectUrl = dashboardRedirectUrl(requestUrl);
   redirectUrl.searchParams.set("oauth", "google");
 
   const providerError = requestUrl.searchParams.get("error");
