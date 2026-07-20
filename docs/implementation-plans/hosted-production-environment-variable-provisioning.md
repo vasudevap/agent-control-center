@@ -21,11 +21,11 @@ state, redaction posture, and owner expectations only.
 | Provider target | Expected location | WO-053 state | Blocking dependency |
 | --- | --- | --- | --- |
 | Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Configured, deploy healthy | Runtime-health browser evidence captured; backend readiness remains WO-055 |
-| Render API service | Render service environment variables or environment group | Partially configured | Secret and database URL variables still require provider-native value entry |
-| Render PostgreSQL database | Render PostgreSQL internal connection reference | Created | Connection reference still requires safe provider-native binding to API service |
-| Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Hosted API callback URL is available after WO-055 |
-| External product client | Render API environment variables or environment group | Not configured | API service target must exist before provider-native storage |
-| Webhook signing | Render API environment variables or environment group | Not configured | API service target must exist before provider-native storage |
+| Render API service | Render service environment variables or environment group | Partially configured | Owner identity and Google OAuth variables still require provider-native value entry |
+| Render PostgreSQL database | Render PostgreSQL internal connection reference | Created and bound | Hosted migrations require WO-057 authority and backup/restore evidence |
+| Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Requires WO-056 Google OAuth client details and authorized owner account evidence |
+| External product client | Render API environment variables or environment group | Configured in API environment | Database-side client/owner linkage remains migration/seed dependent |
+| Webhook signing | Render API environment variables or environment group | Configured in API environment | Rotation-only variables remain unset |
 
 WO-053 can verify the inventory and redaction posture before target resources
 exist. It must not claim provider-side provisioning is complete until the
@@ -48,21 +48,21 @@ values.
 | --- | --- | --- | --- |
 | `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Configured as production |
 | `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Configured to accepted Netlify dashboard origin |
-| `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Pending provider-native database binding without value exposure |
+| `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Configured from Render internal database URL without value exposure |
 | `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
-| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Ready for owner identity value after service exists |
-| `ATLAS_API_EXTERNAL_CLIENT_ID` | Render API service or environment group | No | Ready for value after service exists |
-| `ATLAS_API_EXTERNAL_CLIENT_KEY_ID` | Render API service or environment group | No | Ready for value after service exists |
-| `ATLAS_API_EXTERNAL_CLIENT_SECRET` | Render API service or environment group | Yes | Pending provider-native secret entry |
+| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending maintainer/Google owner identity subject |
+| `ATLAS_API_EXTERNAL_CLIENT_ID` | Render API service or environment group | No | Configured |
+| `ATLAS_API_EXTERNAL_CLIENT_KEY_ID` | Render API service or environment group | No | Configured |
+| `ATLAS_API_EXTERNAL_CLIENT_SECRET` | Render API service or environment group | Yes | Configured without value exposure |
 | `ATLAS_API_EXTERNAL_CLIENT_NEXT_KEY_ID` | Render API service or environment group | No | Rotation only |
 | `ATLAS_API_EXTERNAL_CLIENT_NEXT_SECRET` | Render API service or environment group | Yes | Rotation only |
-| `ATLAS_API_WEBHOOK_SIGNING_KEY_ID` | Render API service or environment group | No | Ready for value after service exists |
-| `ATLAS_API_WEBHOOK_SIGNING_SECRET` | Render API service or environment group | Yes | Pending provider-native secret entry |
+| `ATLAS_API_WEBHOOK_SIGNING_KEY_ID` | Render API service or environment group | No | Configured |
+| `ATLAS_API_WEBHOOK_SIGNING_SECRET` | Render API service or environment group | Yes | Configured without value exposure |
 | `ATLAS_API_WEBHOOK_SIGNING_NEXT_KEY_ID` | Render API service or environment group | No | Rotation only |
 | `ATLAS_API_WEBHOOK_SIGNING_NEXT_SECRET` | Render API service or environment group | Yes | Rotation only |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID` | Render API service or environment group | No | Pending Google OAuth client |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET` | Render API service or environment group | Yes | Pending provider-native secret entry |
-| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending hosted API URL |
+| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending WO-056 redirect URI decision/client setup |
 | `ATLAS_API_OWNER_SESSION_IDLE_MINUTES` | Render API service or environment group | No | Optional default available |
 | `ATLAS_API_OWNER_SESSION_ABSOLUTE_HOURS` | Render API service or environment group | No | Optional default available |
 

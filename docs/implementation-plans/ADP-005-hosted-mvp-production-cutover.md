@@ -35,9 +35,9 @@ triggers.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-053: Production Environment and Secrets Provisioning` | Accepted - In Progress | Implement provider env/secrets provisioning evidence | Provider-native env/secrets configured without value exposure or documented blocker |
+| 1 | `WO-053: Production Environment and Secrets Provisioning` | In Progress - Owner/OAuth Pending | Netlify/Render provider targets and Render database/signing values configured; owner identity and Google OAuth still pending | Provider-native env/secrets configured without value exposure or documented blocker |
 | 2 | `WO-054: Netlify Frontend Deployment` | Completed - Hosted Runtime Evidence Captured | Netlify target, API URL, production deploy, browser runtime-health evidence, and rollback target recorded | Frontend hosted and rollback path verified |
-| 3 | `WO-055: Render API and PostgreSQL Deployment` | Blocked - Secret/Database Binding Pending | API and database targets created; provider-native secret/database binding still pending | API/database hosted with health/readiness evidence |
+| 3 | `WO-055: Render API and PostgreSQL Deployment` | Blocked - Owner/OAuth Binding and Migration Pending | API/database targets created; database URL and signing values bound; owner/OAuth values and hosted migration still pending | API/database hosted with health/readiness evidence |
 | 4 | `WO-056: Google OAuth Production Client and Redirects` | Accepted - Pending Implementation | Await hosted URL decisions | Hosted OAuth redirects work with accepted scopes |
 | 5 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
 | 6 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Accepted - Pending Implementation | Await WO-054 through WO-057 evidence | Hosted smoke, audit/log, connector, and monitoring checks pass |

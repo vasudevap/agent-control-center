@@ -154,8 +154,10 @@ The [WO-053 implementation report](./WO-053-production-environment-and-secrets-p
 records the accepted provider environment and secrets provisioning start,
 redacted variable map, and read-only provider checks. Following WO-054 and
 WO-055, the Netlify and Render targets now exist and non-secret variables are
-configured; the remaining gate is provider-native entry of the secret values,
-tracked jointly with WO-055.
+configured. Render database URL, external-client signing, and webhook signing
+values are now bound through provider-native UI without value exposure; the
+remaining gate is owner identity and Google OAuth configuration, tracked
+jointly with WO-055 and WO-056.
 
 The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
 records the Netlify site creation, source-level Netlify build configuration,
@@ -165,9 +167,9 @@ runtime-health evidence, and the Netlify rollback target.
 
 The [WO-055 implementation report](./WO-055-render-api-and-postgresql-deployment-implementation-report.md)
 records the Render API service and PostgreSQL target creation, API liveness
-evidence, fail-closed readiness evidence, and current blocker: secret and
-database binding values still need provider-native entry without value
-exposure.
+evidence, fail-closed readiness evidence, Render database/signing binding
+evidence, and current blocker: owner identity and Google OAuth values still
+need provider-native entry without value exposure.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
