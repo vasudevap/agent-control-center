@@ -49,12 +49,24 @@ Planned custom-domain cutover under WO-056A:
 - Current provider-generated URLs remain rollback references until WO-056A
   verifies DNS, TLS, and runtime behavior.
 - Netlify and Render custom-domain bindings are configured. The Repository
-  Maintainer must provision Grafley CNAME records before runtime variables are
-  cut over:
+  Maintainer has provisioned the accepted Grafley CNAME records, but runtime
+  variables must not be cut over until DNS propagation and provider TLS are
+  verified:
   - `atlas` CNAME to `atlas-agent-control-center.netlify.app`
+    - provisioned; authoritative Netfirms DNS returns the Netlify CNAME, while
+      public resolver propagation is still converging
   - `api.atlas` CNAME to `atlas-agent-control-center-api.onrender.com`
     - provisioned and verified by Render; certificate issuance is currently in
       error
+
+Post-TLS runtime cutover sequence under WO-056A:
+
+1. Netlify production: set `NEXT_PUBLIC_API_BASE_URL` to
+   `https://api.atlas.grafley.com` and redeploy the dashboard.
+2. Render API: set `ATLAS_API_FRONTEND_ORIGIN` to
+   `https://atlas.grafley.com` and restart/redeploy the API service.
+3. Verify hosted browser/API behavior from `https://atlas.grafley.com` before
+   WO-056 Google OAuth redirect configuration proceeds.
 
 ## 4. Render API Variables
 

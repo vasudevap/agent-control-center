@@ -25,7 +25,7 @@ acceptance.
 | WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | In Progress - Owner/OAuth Pending |
 | WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Completed - Hosted Runtime Evidence Captured |
 | WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Owner/OAuth Binding and Migration Pending |
-| WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | In Progress - Frontend DNS and API Certificate Pending |
+| WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | In Progress - DNS Propagation and Certificates Pending |
 | WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Accepted - Pending Implementation |
@@ -95,8 +95,9 @@ Current state:
 
 - Netlify and Render custom-domain bindings exist. API DNS has been
   provisioned and verified by Render, but API certificate issuance is in error.
-  Frontend DNS, DNS/TLS verification, and runtime environment cutover remain
-  pending.
+  Frontend DNS has been provisioned and authoritative Netfirms DNS returns the
+  Netlify CNAME, but public resolver propagation, DNS/TLS verification, and
+  runtime environment cutover remain pending.
 
 ### WO-056 - Google OAuth Production Client and Redirects
 
