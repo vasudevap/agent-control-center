@@ -22,6 +22,8 @@ hosted URLs, validation evidence, residual risks, and ADP-005 closeout.
 | Release tag | Created only if explicitly authorized |
 | Source of truth | Git remains technical source of truth |
 | Phase transition | Phase 8 requires new authority |
+| Final frontend URL | `https://atlas.grafley.com`, unless WO-056A records an accepted deferment |
+| Final API URL | `https://api.atlas.grafley.com`, unless WO-056A records an accepted deferment |
 
 ## 3. Approved Scope if Accepted
 
@@ -29,8 +31,8 @@ hosted URLs, validation evidence, residual risks, and ADP-005 closeout.
 - Record go/no-go decision and residual-risk disposition.
 - If explicitly authorized, create an annotated immutable release tag at the
   verified commit and push it.
-- Record hosted URLs, rollback posture, monitoring posture, and post-cutover
-  follow-ups.
+- Record hosted URLs, including final Grafley custom domains or an accepted
+  deferment, rollback posture, monitoring posture, and post-cutover follow-ups.
 - Close ADP-005.
 
 ## 4. Explicitly Out of Scope

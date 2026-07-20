@@ -25,9 +25,10 @@ acceptance.
 | WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | In Progress - Owner/OAuth Pending |
 | WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Completed - Hosted Runtime Evidence Captured |
 | WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Owner/OAuth Binding and Migration Pending |
-| WO-056 | Google OAuth Production Client and Redirects | WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation |
+| WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | Accepted - Pending Provider DNS Targets |
+| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | Accepted - Pending Implementation |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
-| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057 | No | Accepted - Pending Implementation |
+| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Accepted - Pending Implementation |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
 | WO-060 | Release Tag and Production Closeout | WO-058, WO-059 | No | Accepted - Pending Implementation |
 
@@ -38,7 +39,7 @@ acceptance.
 | Wave 0 | ES-008, ADR assessment, backlog, ADP-005 acceptance | Governance readiness | Documentation review only |
 | Wave 1 | WO-053 | Provider env/secrets inventory and provisioning authority | Serial gate before provider writes |
 | Wave 2 | WO-054, WO-055 | Netlify frontend and Render API/PostgreSQL setup | Parallel only if provider boundaries are clear |
-| Wave 3 | WO-056, WO-057 | OAuth redirects, migration, backup/restore | Serial because they depend on hosted URLs and database |
+| Wave 3 | WO-056A, WO-056, WO-057 | Grafley custom domains, OAuth redirects, migration, backup/restore | Serial because OAuth should use final URLs and migration depends on hosted database readiness |
 | Wave 4 | WO-058, WO-059 | Hosted smoke and rollback evidence | Serial release-safety lane |
 | Wave 5 | WO-060 | Go/no-go, optional tag, closeout | Maintainer decision lane |
 
@@ -76,6 +77,19 @@ Objective:
 
 - Deploy the Atlas FastAPI service and PostgreSQL database on Render with
   health/readiness, logs, runtime settings, and provider rollback evidence.
+
+### WO-056A - Grafley Custom Domain Cutover
+
+Work Order:
+
+- `docs/work-orders/056a-grafley-custom-domain-cutover.md`
+
+Objective:
+
+- Configure and verify the accepted Grafley product domains
+  `https://atlas.grafley.com` and `https://api.atlas.grafley.com`, capture
+  provider CNAME targets for Repository Maintainer DNS provisioning, and make
+  the final domain decision before Google OAuth is finalized.
 
 ### WO-056 - Google OAuth Production Client and Redirects
 
@@ -144,6 +158,8 @@ Stop before implementation if:
 - Google requires broader OAuth scopes or external verification;
 - production mailbox data, personal mailbox data, or non-synthetic test data
   would be used to fill evidence gaps;
+- custom-domain setup requires a different provider, registrar, paid plan, or
+  DNS authority decision;
 - production migration or rollback instructions are ambiguous;
 - required CI fails and the needed fix is outside the current Work Order;
 - a new ADR is required.
@@ -151,6 +167,9 @@ Stop before implementation if:
 ## 6. Acceptance Boundary
 
 This backlog was accepted by the Repository Maintainer on 2026-07-19 with
-ES-008 and ADP-005. It authorizes only the bounded Work Order sequence above.
-Deployment, provider configuration, migrations, release tags, and production
-use must remain inside the active Work Order scope and stop-and-ask triggers.
+ES-008 and ADP-005. WO-056A was added on 2026-07-20 after the Repository
+Maintainer accepted Grafley custom domains and created
+`atlas-owner@grafley.com` as the dedicated owner account. It authorizes only the
+bounded Work Order sequence above. Deployment, provider configuration,
+migrations, release tags, and production use must remain inside the active Work
+Order scope and stop-and-ask triggers.

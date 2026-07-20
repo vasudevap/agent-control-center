@@ -22,6 +22,7 @@ for hosted MVP cutover without exposing secret values.
 | Source control | Secret values never enter Git, logs, screenshots, PRs, or chat |
 | Runtime readiness | Missing production-critical config fails closed |
 | Account boundary | Single-owner Grafley/Atlas MVP deployment only |
+| Owner account | Dedicated Grafley owner account `atlas-owner@grafley.com` |
 
 ## 3. Approved Scope if Accepted
 

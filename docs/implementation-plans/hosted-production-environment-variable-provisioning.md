@@ -23,7 +23,7 @@ state, redaction posture, and owner expectations only.
 | Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Configured, deploy healthy | Runtime-health browser evidence captured; backend readiness remains WO-055 |
 | Render API service | Render service environment variables or environment group | Partially configured | Owner identity and Google OAuth variables still require provider-native value entry |
 | Render PostgreSQL database | Render PostgreSQL internal connection reference | Created and bound | Hosted migrations require WO-057 authority and backup/restore evidence |
-| Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Requires WO-056 Google OAuth client details and authorized owner account evidence |
+| Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Requires WO-056 Google OAuth client details and `atlas-owner@grafley.com` owner account evidence |
 | External product client | Render API environment variables or environment group | Configured in API environment | Database-side client/owner linkage remains migration/seed dependent |
 | Webhook signing | Render API environment variables or environment group | Configured in API environment | Rotation-only variables remain unset |
 
@@ -35,22 +35,31 @@ provider targets exist and redacted evidence is captured.
 
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Configured to hosted Render API URL |
+| `NEXT_PUBLIC_API_BASE_URL` | Netlify production environment, `@atlas/web` | No | Configured to hosted Render API URL; planned cutover to `https://api.atlas.grafley.com` under WO-056A |
 | `NEXT_PUBLIC_APP_ENV` | Netlify production environment, `@atlas/web` | No | Configured as production |
 | `NEXT_PUBLIC_RELEASE_VERSION` | Netlify production environment, `@atlas/web` | No | Configured to reviewed source commit |
 
 `NEXT_PUBLIC_` variables are browser-visible and must never contain secret
 values.
 
+Planned custom-domain cutover under WO-056A:
+
+- Final dashboard origin: `https://atlas.grafley.com`
+- Final API origin: `https://api.atlas.grafley.com`
+- Current provider-generated URLs remain rollback references until WO-056A
+  verifies DNS, TLS, and runtime behavior.
+- The Repository Maintainer will provision Grafley CNAME records after Netlify
+  and Render provide exact provider target values.
+
 ## 4. Render API Variables
 
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
 | `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Configured as production |
-| `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Configured to accepted Netlify dashboard origin |
+| `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Configured to accepted Netlify dashboard origin; planned cutover to `https://atlas.grafley.com` under WO-056A |
 | `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Configured from Render internal database URL without value exposure |
 | `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
-| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending maintainer/Google owner identity subject |
+| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending Google subject for `atlas-owner@grafley.com` |
 | `ATLAS_API_EXTERNAL_CLIENT_ID` | Render API service or environment group | No | Configured |
 | `ATLAS_API_EXTERNAL_CLIENT_KEY_ID` | Render API service or environment group | No | Configured |
 | `ATLAS_API_EXTERNAL_CLIENT_SECRET` | Render API service or environment group | Yes | Configured without value exposure |
@@ -62,7 +71,7 @@ values.
 | `ATLAS_API_WEBHOOK_SIGNING_NEXT_SECRET` | Render API service or environment group | Yes | Rotation only |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID` | Render API service or environment group | No | Pending Google OAuth client |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET` | Render API service or environment group | Yes | Pending provider-native secret entry |
-| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending WO-056 redirect URI decision/client setup |
+| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending WO-056 redirect URI decision/client setup; preferred final host is `https://api.atlas.grafley.com` after WO-056A |
 | `ATLAS_API_OWNER_SESSION_IDLE_MINUTES` | Render API service or environment group | No | Optional default available |
 | `ATLAS_API_OWNER_SESSION_ABSOLUTE_HOURS` | Render API service or environment group | No | Optional default available |
 
