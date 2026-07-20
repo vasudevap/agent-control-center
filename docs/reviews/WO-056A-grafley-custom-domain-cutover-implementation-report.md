@@ -1,7 +1,7 @@
 # WO-056A Grafley Custom Domain Cutover Implementation Report
 
 **Work Order:** [WO-056A](../work-orders/056a-grafley-custom-domain-cutover.md)
-**Status:** In Progress - DNS Provisioning Pending
+**Status:** In Progress - Frontend DNS and API Certificate Pending
 **Date:** 2026-07-20
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -11,12 +11,14 @@
 WO-056A provider-domain setup has started. The Netlify dashboard custom domain
 and Render API custom domain are configured in their provider-native settings,
 and the exact DNS CNAME records needed from Grafley DNS have been captured for
-Repository Maintainer provisioning.
+Repository Maintainer provisioning. The API DNS record has since been
+provisioned and verified by Render, but Render certificate issuance is still in
+an error state.
 
-WO-056A is not complete yet. The remaining gates are Grafley DNS provisioning,
-DNS propagation, provider TLS/certificate verification, runtime environment
-cutover, hosted browser/API checks from the final domains, and the final OAuth
-redirect decision under WO-056.
+WO-056A is not complete yet. The remaining gates are frontend DNS provisioning,
+API certificate recovery, provider TLS/certificate verification, runtime
+environment cutover, hosted browser/API checks from the final domains, and the
+final OAuth redirect decision under WO-056.
 
 No OAuth secret, database URL, signing secret, access token, refresh token, or
 provider API token was recorded in Git.
@@ -63,8 +65,8 @@ Evidence:
 - Provider-generated URL:
   `https://atlas-agent-control-center-api.onrender.com`
 - Custom domain configured: `api.atlas.grafley.com`
-- Render custom-domain status: waiting for DNS
-- Render certificate status: waiting for verification
+- Render custom-domain status: verified after Grafley DNS provisioning
+- Render certificate status: certificate error
 - Expected DNS record: `api.atlas` CNAME to
   `atlas-agent-control-center-api.onrender.com`
 
@@ -81,6 +83,35 @@ Evidence:
 - The Render dashboard accepted `api.atlas.grafley.com` and displayed the DNS
   instruction to add a CNAME record with target
   `atlas-agent-control-center-api.onrender.com`.
+
+Follow-up verification after Repository Maintainer DNS provisioning:
+
+- `dig +short api.atlas.grafley.com CNAME` returned
+  `atlas-agent-control-center-api.onrender.com.`
+- `dig +short api.atlas.grafley.com` resolved through Render/Cloudflare
+  infrastructure to IPv4 addresses.
+- `dig +short api.atlas.grafley.com AAAA` returned only the CNAME chain and no
+  IPv6 address.
+- `dig +short api.atlas.grafley.com CAA` returned only the CNAME chain and no
+  restrictive CAA record.
+- Render dashboard verification changed `api.atlas.grafley.com` to
+  `Verified`.
+- Render dashboard certificate status changed to `Certificate Error`.
+- HTTPS probing `https://api.atlas.grafley.com/health/live` still failed while
+  the certificate error was present.
+
+Render guidance reviewed:
+
+- Render custom-domain documentation says DNS verification can lag after DNS
+  changes, Render issues TLS certificates after successful verification, and
+  DNS changes can take 24 hours or longer to propagate.
+- Render DNS guidance says to remove `AAAA` records for custom domains while
+  configuring Render because Render uses IPv4.
+- Render CAA guidance says that domains with CAA records must allow Render's
+  certificate authorities: Let's Encrypt and Google Trust Services.
+
+No conflicting `AAAA` address or restrictive CAA record was observed from the
+local DNS checks at the time of this report update.
 
 ## Secret Exposure and Rotation Record
 
@@ -124,11 +155,10 @@ Completed:
 
 Pending:
 
-- Repository Maintainer provisions Grafley DNS CNAME records.
-- DNS propagation verified for both custom domains.
+- Repository Maintainer provisions the frontend Grafley DNS CNAME record.
+- DNS propagation verified for the frontend custom domain.
 - Netlify TLS/certificate status verified for `atlas.grafley.com`.
-- Render DNS and certificate verification completed for
-  `api.atlas.grafley.com`.
+- Render certificate verification recovered for `api.atlas.grafley.com`.
 - Netlify `NEXT_PUBLIC_API_BASE_URL` cut over to
   `https://api.atlas.grafley.com`.
 - Render `ATLAS_API_FRONTEND_ORIGIN` cut over to

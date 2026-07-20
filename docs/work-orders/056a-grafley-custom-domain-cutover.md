@@ -1,6 +1,6 @@
 # Work Order 056A: Grafley Custom Domain Cutover
 
-**Status:** In Progress - DNS Provisioning Pending
+**Status:** In Progress - Frontend DNS and API Certificate Pending
 **Work Order ID:** WO-056A
 **Type:** Custom domain and DNS cutover
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-20 after accepting the Grafley-hosted URL recommendation
