@@ -22,13 +22,13 @@ acceptance.
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | In Progress - Owner Identity Subject Pending |
+| WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | Completed - Provider Configuration Bound |
 | WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Completed - Hosted Runtime Evidence Captured |
-| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Owner Identity Subject and Migration Pending |
+| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | In Progress - Hosted API Ready; Migration Pending |
 | WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | Completed - Custom Domains and Runtime Cutover Verified |
-| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Google OAuth Provider Configured; Owner OIDC Configuration and Subject Pending |
-| WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | In Progress - Provider Configuration Complete; Source Deployment, Owner Verification, and Subject Pending |
-| WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
+| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Google OAuth Provider Configured; Owner OIDC Gate Cleared |
+| WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | Completed - Owner Identity Bound and Readiness Verified |
+| WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Ready for Implementation |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Accepted - Pending Implementation |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
 | WO-060 | Release Tag and Production Closeout | WO-058, WO-059 | No | Accepted - Pending Implementation |
@@ -149,19 +149,18 @@ Current state:
   The API owner-OIDC start and callback routes, dedicated configuration,
   transaction-cookie handling, server-side exchange boundary, injectable
   ID-token verification, minimized owner-facing output, and offline tests are
-  implemented. The separate Google OIDC client and all five required Render
-  OIDC values are configured; the API was rebuilt and readiness now reports
-  only `owner_identity_subject_missing`. The public start route is still `404`,
-  because the local WO-061 source slice has not yet been merged and deployed
-  from `main`.
+  implemented. PR #96 merged the source slice to `main`, Render deployed it,
+  controlled authorization completed with `grafleyinc@gmail.com`, and the
+  derived opaque owner subject was manually entered in Render without value
+  exposure.
 - The Atlas Render target is project-scoped: **My project -> Production ->
   atlas-agent-control-center-api -> Environment**. The workspace homepage's
   ungrouped service list is not a complete Atlas inventory. Canonical resource
   IDs are recorded in the WO-061 review report and environment-provisioning
   record.
-- Remaining work is a governed merge and Render deployment of the source slice,
-  one controlled authorization for `grafleyinc@gmail.com`, manual entry of the
-  derived immutable subject, and a final readiness check.
+- Final readiness now returns `ready` with no configuration problems. Remaining
+  cutover work moves to WO-057 migration/backup/restore evidence and later
+  smoke, rollback, release tag, and public-launch gates.
 
 ### WO-057 - Hosted Migration, Backup, and Restore Readiness
 

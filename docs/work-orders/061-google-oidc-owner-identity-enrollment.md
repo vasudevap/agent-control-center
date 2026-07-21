@@ -1,6 +1,6 @@
 # Work Order 061: Google OIDC Owner Identity Enrollment
 
-**Status:** In Progress - Provider Configuration Complete; Source Deployment, Owner Verification, and Subject Pending
+**Status:** Completed - Owner Identity Bound and Readiness Verified
 **Work Order ID:** WO-061
 **Type:** Identity and hosted configuration
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
@@ -12,9 +12,11 @@
 
 **Implementation Authority:** Accepted by Repository Maintainer on 2026-07-20
 for local source implementation only. Provider-action authority was granted on
-2026-07-20. The dedicated Google OIDC client and required Render OIDC
-configuration are now in place. Owner-subject entry, controlled login, hosted
-verification, and production use remain pending.
+2026-07-20. Source merge/deploy authority, controlled owner authorization, and
+manual owner-subject entry were completed on 2026-07-21. The production API
+readiness endpoint verifies the owner identity blocker is removed. Production
+use, migrations, release tagging, and public launch remain governed by later
+Work Orders.
 
 ## 1. Purpose
 
@@ -76,9 +78,10 @@ The accepted local source slice implemented:
   output, bad state, tampered transaction cookie, unexpected owner email,
   verifier denial, provider denial redaction, and fail-closed configuration.
 
-This local implementation did not configure a Google OIDC client, change Render
-secrets, perform a provider login, enter an owner subject, or verify hosted
-readiness.
+At the time of local source implementation, this source slice did not configure
+a Google OIDC client, change Render secrets, perform a provider login, enter an
+owner subject, or verify hosted readiness. Those hosted steps are recorded in
+the later evidence sections below.
 
 ## 3B. Provider Configuration Evidence
 
@@ -109,14 +112,35 @@ atlas-agent-control-center-api -> Environment**. The workspace home may list
 only ungrouped resources, such as `artifact-hub`, and is not evidence that the
 Atlas resources are absent.
 
-The five dedicated owner-OIDC Render values are configured without recording
+The five dedicated owner-OIDC Render values were configured without recording
 their values: client ID, client secret, exact redirect URI, bootstrap email,
-and transaction secret. The hosted readiness endpoint now reports only
-`owner_identity_subject_missing`, confirming that owner-OIDC configuration is
-no longer the configuration blocker. This verifies configuration parsing only:
-the public owner-OIDC start route still returns `404` because the local WO-061
-source slice has not yet been merged and deployed from `main`. No owner subject
-has been entered and no controlled owner authorization has yet been performed.
+and transaction secret. Before the WO-061 source slice was merged and deployed,
+hosted readiness reported only `owner_identity_subject_missing`, confirming
+that owner-OIDC configuration parsing was no longer the configuration blocker.
+
+## 3C. Hosted Deployment and Owner Enrollment Evidence
+
+On 2026-07-21, PR #96 merged the WO-061 source slice to `main` at merge commit
+`7ffb962`. Render deployed the merged API source for service
+`atlas-agent-control-center-api` (`srv-d9e2rprbc2fs73f4l23g`).
+
+The public owner-OIDC start route returned a Google authorization redirect with
+only the accepted `openid email` scopes, exact redirect URI, account-selection
+prompt, state, nonce, and PKCE. A controlled authorization was completed with
+the authorized Google account, `grafleyinc@gmail.com`. The derived opaque
+Google subject was manually entered by the Repository Maintainer in Render as
+`ATLAS_API_OWNER_IDENTITY_SUBJECT`; the subject value is intentionally not
+recorded in Git, docs, screenshots, PRs, logs, or chat.
+
+After the Render rebuild/deploy, the production readiness endpoint returned:
+
+```json
+{"status":"ready","service":"atlas-api","checks":{"configuration":"ok"},"problems":[]}
+```
+
+This removes the `owner_identity_subject_missing` blocker without changing the
+Gmail/Drive connector OAuth client, accepted connector scopes, or runtime
+authorization boundaries.
 
 ## 4. Explicitly Out of Scope
 
