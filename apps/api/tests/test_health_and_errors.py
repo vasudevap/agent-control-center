@@ -92,6 +92,11 @@ def test_readiness_reports_production_like_configuration_without_values() -> Non
         "google_oauth_client_secret_missing",
         "google_oauth_redirect_uri_missing",
         "owner_identity_subject_missing",
+        "owner_oidc_bootstrap_email_missing",
+        "owner_oidc_client_id_missing",
+        "owner_oidc_client_secret_missing",
+        "owner_oidc_redirect_uri_missing",
+        "owner_oidc_transaction_secret_missing",
         "webhook_signing_key_id_missing",
         "webhook_signing_secret_missing",
     ]

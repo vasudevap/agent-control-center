@@ -11,6 +11,7 @@ from atlas_api.api.approvals import approval_router, manual_router
 from atlas_api.api.connectors import router as connectors_router
 from atlas_api.api.knowledge_facts import router as knowledge_facts_router
 from atlas_api.api.knowledge_questions import router as knowledge_questions_router
+from atlas_api.api.owner_identity import router as owner_identity_router
 from atlas_api.api.routes import router
 from atlas_api.api.runs import router as runs_router
 from atlas_api.core.config import Settings, get_settings
@@ -31,6 +32,10 @@ OPENAPI_TAGS = [
     {
         "name": "manual-handling",
         "description": "Non-approval manual-handling contracts.",
+    },
+    {
+        "name": "owner-identity",
+        "description": "Single-owner Google OIDC enrollment boundary.",
     },
     {"name": "runs", "description": "Generic run lifecycle contracts."},
 ]
@@ -64,6 +69,7 @@ def create_app(
     app.include_router(approval_router)
     app.include_router(manual_router)
     app.include_router(connectors_router)
+    app.include_router(owner_identity_router)
     app.include_router(knowledge_facts_router)
     app.include_router(knowledge_questions_router)
     app.include_router(runs_router)

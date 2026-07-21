@@ -1,6 +1,6 @@
 # Work Order 056: Google OAuth Production Client and Redirects
 
-**Status:** In Progress - Callback Route Implemented; Provider Configuration Pending
+**Status:** In Progress - Google OAuth Provider Configured; Owner OIDC Configuration and Subject Pending
 **Work Order ID:** WO-056
 **Type:** Google OAuth cutover
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending hosted URL decisions
@@ -24,7 +24,7 @@ API while preserving the accepted Gmail and Drive scope posture.
 | Drive scope | `https://www.googleapis.com/auth/drive.file` |
 | Broad Gmail scope | `https://mail.google.com/` remains prohibited |
 | Account boundary | Authorized single-owner account only |
-| Owner account | Dedicated Grafley owner account `atlas-owner@grafley.com` |
+| Owner account | Google account `grafleyinc@gmail.com`, confirmed by Repository Maintainer on 2026-07-20 after `atlas-owner@grafley.com` was found not to be a Google account |
 | Preferred redirect host | Final Grafley dashboard domain after WO-056A custom-domain cutover |
 | Accepted browser redirect URI | `https://atlas.grafley.com/oauth/google/callback` under accepted ADR-006 |
 | Source-confirmed callback state | `GET /oauth/google/callback` exists in the dashboard and completes through signed server-to-server `POST /api/v1/connectors/oauth/google/callback` |
@@ -33,6 +33,9 @@ API while preserving the accepted Gmail and Drive scope posture.
 
 - Configure OAuth redirect URIs for the accepted hosted callback route after the
   source route is deployed and verified.
+- Google provider setup was completed in project
+  `atlas-agent-control-center` for `grafleyinc@gmail.com` on 2026-07-20 with
+  the accepted redirect URI and without recording client secret values.
 - Do not configure Google OAuth against the earlier placeholder
   `https://api.atlas.grafley.com/api/auth/google/callback`; source inspection
   found no matching route.

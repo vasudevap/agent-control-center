@@ -123,16 +123,20 @@ production cutover package under ES-008 and ADP-005:
 
 The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
-WO-053 implementation remains blocked for owner identity and Google OAuth
-values.
+WO-053 implementation remains blocked for the separate owner-OIDC provider
+configuration and the immutable owner identity subject.
 WO-054 has created and linked the Netlify target, and the corrected Netlify
 publish path now deploys the hosted dashboard successfully. Browser runtime
-health reaches the hosted Render API and reports `Runtime not ready (4)`,
-which is the expected fail-closed backend readiness state. WO-055 has created
+health reached the hosted Render API and reported `Runtime not ready (4)` in
+the pre-WO-061 deployment evidence, which was the expected fail-closed backend
+readiness state at that time. WO-055 has created
 the Render API service and PostgreSQL target, and has bound the database URL
 plus current signing values through provider-native Render UI. Readiness is
-blocked until owner identity and Google OAuth values are safely completed; the
-Repository Maintainer has created `atlas-owner@grafley.com`, accepted
+blocked until the separately governed owner-OIDC configuration and owner
+identity subject are safely completed; the
+Repository Maintainer confirmed `grafleyinc@gmail.com` as the single-owner
+Google account after `atlas-owner@grafley.com` was found not to be a Google
+account, accepted
 `https://atlas.grafley.com` and `https://api.atlas.grafley.com` as final
 Grafley product URLs, and will provision CNAME records after Netlify and Render
 provide exact target values under WO-056A. Netlify and Render custom-domain
@@ -148,4 +152,15 @@ and uses `https://atlas.grafley.com/oauth/google/callback` as the
 browser-facing Google OAuth redirect URI, with server-side dashboard callback
 handling and API-owned provider token exchange. The source callback route and
 signed API completion endpoint are implemented; Google provider values must not
-be entered until the callback route is deployed and verified.
+be entered until the callback route is deployed and verified. Google OAuth
+provider configuration was completed for `grafleyinc@gmail.com` in Google Cloud
+project `atlas-agent-control-center`; Render now has the Google OAuth client
+ID, client secret, and redirect URI configured without value exposure.
+
+WO-061 is accepted and in progress for Google OIDC owner identity enrollment.
+The local source implementation adds the dedicated
+`/auth/owner/google/start` and `/auth/owner/google/callback` API routes,
+separate owner-OIDC configuration, transaction-cookie controls, and offline
+tests under ADR-007. Provider configuration, controlled login, Render
+owner-subject entry, hosted verification, migrations, release tags, and public
+launch remain gated.

@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     google_oauth_client_id: str | None = None
     google_oauth_client_secret: SecretStr | None = None
     google_oauth_redirect_uri: str | None = None
+    owner_oidc_client_id: str | None = None
+    owner_oidc_client_secret: SecretStr | None = None
+    owner_oidc_redirect_uri: str | None = None
+    owner_oidc_bootstrap_email: str | None = None
+    owner_oidc_transaction_secret: SecretStr | None = None
     require_database: bool = False
     owner_identity_subject: str | None = None
     owner_session_idle_minutes: int = Field(default=30, ge=1, le=1440)
@@ -85,6 +90,19 @@ class Settings(BaseSettings):
             "google_oauth_redirect_uri_configured": (
                 self.google_oauth_redirect_uri is not None
             ),
+            "owner_oidc_client_id_configured": self.owner_oidc_client_id is not None,
+            "owner_oidc_client_secret": self._redact(
+                self.owner_oidc_client_secret
+            ),
+            "owner_oidc_redirect_uri_configured": (
+                self.owner_oidc_redirect_uri is not None
+            ),
+            "owner_oidc_bootstrap_email_configured": (
+                self.owner_oidc_bootstrap_email is not None
+            ),
+            "owner_oidc_transaction_secret": self._redact(
+                self.owner_oidc_transaction_secret
+            ),
             "require_database": self.require_database,
             "owner_identity_subject_configured": (
                 self.owner_identity_subject is not None
@@ -109,6 +127,13 @@ class Settings(BaseSettings):
             "google_oauth_client_id_missing": self.google_oauth_client_id,
             "google_oauth_client_secret_missing": self.google_oauth_client_secret,
             "google_oauth_redirect_uri_missing": self.google_oauth_redirect_uri,
+            "owner_oidc_bootstrap_email_missing": self.owner_oidc_bootstrap_email,
+            "owner_oidc_client_id_missing": self.owner_oidc_client_id,
+            "owner_oidc_client_secret_missing": self.owner_oidc_client_secret,
+            "owner_oidc_redirect_uri_missing": self.owner_oidc_redirect_uri,
+            "owner_oidc_transaction_secret_missing": (
+                self.owner_oidc_transaction_secret
+            ),
             "owner_identity_subject_missing": self.owner_identity_subject,
             "webhook_signing_key_id_missing": self.webhook_signing_key_id,
             "webhook_signing_secret_missing": self.webhook_signing_secret,

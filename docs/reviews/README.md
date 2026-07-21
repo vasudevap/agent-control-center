@@ -200,6 +200,12 @@ the hosted dashboard HMAC binding evidence after the Render/Netlify provider
 configuration step. Google provider configuration and hosted end-to-end OAuth
 evidence remain pending.
 
+The [WO-061 local source implementation report](./WO-061-google-oidc-owner-identity-enrollment-implementation-report.md)
+records the accepted ADR-007 owner-OIDC enrollment source slice, including the
+dedicated API start/callback routes, transaction-cookie controls, server-side
+exchange and ID-token verification boundary, bootstrap email enforcement,
+offline validation, and provider-configuration gates still pending.
+
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,
 external-client authentication scaffold, webhook delivery scaffold, validation

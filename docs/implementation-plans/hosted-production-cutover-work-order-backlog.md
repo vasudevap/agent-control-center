@@ -22,11 +22,12 @@ acceptance.
 
 | Work Order | Name | Depends On | Parallelizable | Status |
 | --- | --- | --- | --- | --- |
-| WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | In Progress - Owner/OAuth Pending |
+| WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | In Progress - Owner Identity Subject Pending |
 | WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Completed - Hosted Runtime Evidence Captured |
-| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Owner/OAuth Binding and Migration Pending |
+| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Blocked - Owner Identity Subject and Migration Pending |
 | WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | Completed - Custom Domains and Runtime Cutover Verified |
-| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Callback Route Implemented; Provider Configuration Pending |
+| WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Google OAuth Provider Configured; Owner OIDC Configuration and Subject Pending |
+| WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | In Progress - Provider Configuration Complete; Source Deployment, Owner Verification, and Subject Pending |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Pending Implementation |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Accepted - Pending Implementation |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
@@ -39,7 +40,7 @@ acceptance.
 | Wave 0 | ES-008, ADR assessment, backlog, ADP-005 acceptance | Governance readiness | Documentation review only |
 | Wave 1 | WO-053 | Provider env/secrets inventory and provisioning authority | Serial gate before provider writes |
 | Wave 2 | WO-054, WO-055 | Netlify frontend and Render API/PostgreSQL setup | Parallel only if provider boundaries are clear |
-| Wave 3 | WO-056A, WO-056, WO-057 | Grafley custom domains, OAuth redirects, migration, backup/restore | Serial because OAuth should use final URLs and migration depends on hosted database readiness |
+| Wave 3 | WO-056A, WO-056, WO-061, WO-057 | Grafley custom domains, connector OAuth, owner OIDC enrollment, migration, backup/restore | Serial because each Google client should use final URLs and migration depends on hosted database readiness |
 | Wave 4 | WO-058, WO-059 | Hosted smoke and rollback evidence | Serial release-safety lane |
 | Wave 5 | WO-060 | Go/no-go, optional tag, closeout | Maintainer decision lane |
 
@@ -123,8 +124,44 @@ Current state:
   redirect URI, with server-side dashboard callback handling and API-owned
   provider token exchange.
 - The source callback route and signed API completion endpoint are implemented.
-  Provider configuration remains blocked until the callback route is deployed
-  and verified.
+  Google provider configuration is complete for Google Cloud project
+  `atlas-agent-control-center`, Google account `grafleyinc@gmail.com`, and
+  redirect URI `https://atlas.grafley.com/oauth/google/callback`. Render has
+  the Google OAuth client ID, client secret, and redirect URI configured without
+  value exposure. The remaining release blockers are the separately governed
+  owner-OIDC configuration and immutable owner identity subject under WO-061.
+
+### WO-061 - Google OIDC Owner Identity Enrollment
+
+Work Order:
+
+- `docs/work-orders/061-google-oidc-owner-identity-enrollment.md`
+
+Objective:
+
+- Establish a separate Google OIDC identity-verification path to derive and
+  bind the immutable `sub` for `grafleyinc@gmail.com` without changing the
+  Gmail/Drive connector OAuth scopes or client.
+
+Current state:
+
+- ADR-007 and WO-061 were accepted by the Repository Maintainer on 2026-07-20.
+  The API owner-OIDC start and callback routes, dedicated configuration,
+  transaction-cookie handling, server-side exchange boundary, injectable
+  ID-token verification, minimized owner-facing output, and offline tests are
+  implemented. The separate Google OIDC client and all five required Render
+  OIDC values are configured; the API was rebuilt and readiness now reports
+  only `owner_identity_subject_missing`. The public start route is still `404`,
+  because the local WO-061 source slice has not yet been merged and deployed
+  from `main`.
+- The Atlas Render target is project-scoped: **My project -> Production ->
+  atlas-agent-control-center-api -> Environment**. The workspace homepage's
+  ungrouped service list is not a complete Atlas inventory. Canonical resource
+  IDs are recorded in the WO-061 review report and environment-provisioning
+  record.
+- Remaining work is a governed merge and Render deployment of the source slice,
+  one controlled authorization for `grafleyinc@gmail.com`, manual entry of the
+  derived immutable subject, and a final readiness check.
 
 ### WO-057 - Hosted Migration, Backup, and Restore Readiness
 
@@ -192,8 +229,11 @@ Stop before implementation if:
 
 This backlog was accepted by the Repository Maintainer on 2026-07-19 with
 ES-008 and ADP-005. WO-056A was added on 2026-07-20 after the Repository
-Maintainer accepted Grafley custom domains and created
-`atlas-owner@grafley.com` as the dedicated owner account. It authorizes only the
-bounded Work Order sequence above. Deployment, provider configuration,
-migrations, release tags, and production use must remain inside the active Work
-Order scope and stop-and-ask triggers.
+Maintainer accepted Grafley custom domains. Later on 2026-07-20, the Repository
+Maintainer confirmed that `atlas-owner@grafley.com` is not a Google account and
+authorized `grafleyinc@gmail.com` as the single-owner Google account for the
+OAuth cutover. ADR-007 and WO-061 were accepted later that day for local
+source implementation only. This backlog authorizes only the bounded Work
+Order sequence above. Deployment, provider configuration, migrations, release
+tags, and production use must remain inside the active Work Order scope and
+stop-and-ask triggers.

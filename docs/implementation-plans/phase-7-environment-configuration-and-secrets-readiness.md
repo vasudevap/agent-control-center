@@ -49,6 +49,11 @@ All backend variables use the `ATLAS_API_` prefix.
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID` | Yes | No | Maintainer | Google OAuth client identifier for Gmail and Drive connector setup |
 | `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET` | Yes | Yes | Maintainer | Google OAuth client secret |
 | `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Yes | No | Maintainer | Approved Google OAuth redirect URI |
+| `ATLAS_API_OWNER_OIDC_CLIENT_ID` | Yes | No | Maintainer | Dedicated Google OIDC client identifier for one-time owner identity enrollment |
+| `ATLAS_API_OWNER_OIDC_CLIENT_SECRET` | Yes | Yes | Maintainer | Dedicated Google OIDC client secret; never reuse the connector OAuth secret |
+| `ATLAS_API_OWNER_OIDC_REDIRECT_URI` | Yes | No | Maintainer | Exact owner OIDC callback URI |
+| `ATLAS_API_OWNER_OIDC_BOOTSTRAP_EMAIL` | Yes | No | Maintainer | Exact verified email permitted during one-time owner enrollment |
+| `ATLAS_API_OWNER_OIDC_TRANSACTION_SECRET` | Yes | Yes | Maintainer | Transaction-cookie signing material for owner OIDC |
 | `ATLAS_API_OWNER_SESSION_IDLE_MINUTES` | Optional | No | Maintainer | Owner session idle timeout, default 30 minutes |
 | `ATLAS_API_OWNER_SESSION_ABSOLUTE_HOURS` | Optional | No | Maintainer | Owner session absolute timeout, default 12 hours |
 
@@ -100,12 +105,17 @@ codes until all required release-critical values are configured:
 - `google_oauth_client_secret_missing`
 - `google_oauth_redirect_uri_missing`
 - `owner_identity_subject_missing`
+- `owner_oidc_bootstrap_email_missing`
+- `owner_oidc_client_id_missing`
+- `owner_oidc_client_secret_missing`
+- `owner_oidc_redirect_uri_missing`
+- `owner_oidc_transaction_secret_missing`
 - `webhook_signing_key_id_missing`
 - `webhook_signing_secret_missing`
 
 Readiness problem codes must not include secret values.
 
-## 7. OAuth Setup Expectations
+## 7. OAuth and Owner OIDC Setup Expectations
 
 - Keep the accepted Google scopes: `gmail.modify` and `drive.file`.
 - Do not request `https://mail.google.com/`.
@@ -115,6 +125,13 @@ Readiness problem codes must not include secret values.
 - Rotate or revoke the Google OAuth client secret if exposure is suspected.
 - Do not use live Google credentials until a Work Order explicitly authorizes
   the target account and evidence boundary.
+- Keep owner identity enrollment on a separate Google OIDC client with only
+  `openid` and `email`, as accepted by ADR-007.
+- Set `ATLAS_API_OWNER_OIDC_REDIRECT_URI` exactly to
+  `https://api.atlas.grafley.com/auth/owner/google/callback` for the hosted
+  owner client.
+- Do not configure the owner OIDC client, Render values, or owner subject
+  without the applicable WO-061 provider-action authority.
 
 ## 8. Rotation and Emergency Response
 
