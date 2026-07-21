@@ -25,9 +25,13 @@ rollback, and stop-and-ask triggers after acceptance.
 Execution authority was granted by the Repository Maintainer on 2026-07-19 for
 the accepted ES-008, hosted production cutover ADR assessment, WO-053 through
 WO-060, and ADP-005 package. On 2026-07-20, the Repository Maintainer accepted
-the Grafley custom-domain direction, created `atlas-owner@grafley.com`, and
-added WO-056A as the governed custom-domain cutover dependency before Google
-OAuth is finalized.
+the Grafley custom-domain direction and added WO-056A as the governed
+custom-domain cutover dependency before Google OAuth is finalized. Later on
+2026-07-20, the Repository Maintainer confirmed that `atlas-owner@grafley.com`
+is not a Google account and authorized `grafleyinc@gmail.com` as the
+single-owner Google OAuth account for the cutover. The Repository Maintainer
+also accepted ADR-007 and WO-061 for local source implementation only; Google
+OIDC provider configuration and hosted verification remain separately gated.
 
 Authority remains bounded by each Work Order. Provider writes, deployment,
 migration, OAuth configuration, rollback action, release tag, and hosted
@@ -38,15 +42,16 @@ triggers.
 
 | Order | Work Order | Current State | ADP Execution Action | Completion Gate |
 | ---: | --- | --- | --- | --- |
-| 1 | `WO-053: Production Environment and Secrets Provisioning` | In Progress - Owner/OAuth Pending | Netlify/Render provider targets and Render database/signing values configured; owner identity and Google OAuth still pending | Provider-native env/secrets configured without value exposure or documented blocker |
+| 1 | `WO-053: Production Environment and Secrets Provisioning` | In Progress - Owner OIDC Configuration and Subject Pending | Netlify/Render provider targets, Render database/signing values, and connector Google OAuth values configured; dedicated owner-OIDC values and owner subject remain pending | Provider-native env/secrets configured without value exposure or documented blocker |
 | 2 | `WO-054: Netlify Frontend Deployment` | Completed - Hosted Runtime Evidence Captured | Netlify target, API URL, production deploy, browser runtime-health evidence, and rollback target recorded | Frontend hosted and rollback path verified |
-| 3 | `WO-055: Render API and PostgreSQL Deployment` | Blocked - Owner/OAuth Binding and Migration Pending | API/database targets created; database URL and signing values bound; owner/OAuth values and hosted migration still pending | API/database hosted with health/readiness evidence |
+| 3 | `WO-055: Render API and PostgreSQL Deployment` | Blocked - Owner OIDC Configuration, Subject, and Migration Pending | API/database targets created; database URL, signing values, and connector Google OAuth values bound; owner-OIDC configuration, owner subject, and hosted migration remain pending | API/database hosted with health/readiness evidence |
 | 4 | `WO-056A: Grafley Custom Domain Cutover` | Completed - Custom Domains and Runtime Cutover Verified | Netlify and Render custom-domain bindings are configured; both Grafley CNAMEs are provisioned; provider TLS is active; Netlify and Render runtime variables are cut over to the final domains | `https://atlas.grafley.com` and `https://api.atlas.grafley.com` are active |
-| 5 | `WO-056: Google OAuth Production Client and Redirects` | In Progress - Callback Route Implemented; Provider Configuration Pending | Deploy and verify the ADR-006 dashboard callback route before Google provider values are entered; source preflight found no direct browser-facing callback at the earlier placeholder path | Hosted OAuth redirects work with accepted scopes |
-| 6 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
-| 7 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Accepted - Pending Implementation | Await WO-054 through WO-057 evidence, including WO-056A | Hosted smoke, audit/log, connector, and monitoring checks pass |
-| 8 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await hosted deployment evidence | Rollback and withdrawal paths reviewed or rehearsed |
-| 9 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
+| 5 | `WO-056: Google OAuth Production Client and Redirects` | In Progress - Google OAuth Provider Configured; Owner OIDC Configuration and Subject Pending | Connector Google OAuth project/client/scopes/test user and Render OAuth environment values configured without value exposure; the separate owner-OIDC lane remains under WO-061 | Hosted OAuth redirects work with accepted scopes |
+| 6 | `WO-061: Google OIDC Owner Identity Enrollment` | In Progress - Local Source Implemented; Provider Configuration Pending | Local owner-OIDC start/callback source and offline tests implemented under ADR-007; provider configuration and controlled login remain pending explicit authority | Immutable owner subject derived and entered without value exposure |
+| 7 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Accepted - Pending Implementation | Await hosted database readiness | Hosted DB migration and recovery evidence recorded |
+| 8 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Accepted - Pending Implementation | Await WO-054 through WO-057 evidence, including WO-056A | Hosted smoke, audit/log, connector, and monitoring checks pass |
+| 9 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await hosted deployment evidence | Rollback and withdrawal paths reviewed or rehearsed |
+| 10 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
 
 ## 4. Dependency Sequence
 
@@ -58,6 +63,7 @@ ES-008 accepted + WO-053 through WO-060 accepted + WO-056A accepted + ADP-005 ac
        WO-055 Render API/PostgreSQL
       -> WO-056A Grafley custom-domain cutover
       -> WO-056 Google OAuth redirects
+      -> WO-061 Google OIDC owner identity enrollment
       -> WO-057 hosted migration/backup/restore
         -> WO-058 hosted smoke/monitoring
         -> WO-059 rollback/withdrawal rehearsal
@@ -70,7 +76,7 @@ ES-008 accepted + WO-053 through WO-060 accepted + WO-056A accepted + ADP-005 ac
 | --- | --- | --- |
 | Provider configuration | WO-053 | Serial gate before provider writes |
 | Hosting setup | WO-054, WO-055 | May run in parallel only after env map and provider authority are explicit |
-| Domain/OAuth/migration | WO-056A, WO-056, WO-057 | Serial because final URLs should precede OAuth and database state must be stable |
+| Domain/OAuth/migration | WO-056A, WO-056, WO-061, WO-057 | Serial because final URLs should precede each Google client configuration and database state must be stable |
 | Release evidence | WO-058, WO-059, WO-060 | Serial final evidence and maintainer decision |
 
 Parallel agents must not modify provider configuration, migrations, OAuth

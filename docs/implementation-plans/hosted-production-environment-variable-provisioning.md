@@ -21,9 +21,10 @@ state, redaction posture, and owner expectations only.
 | Provider target | Expected location | WO-053 state | Blocking dependency |
 | --- | --- | --- | --- |
 | Netlify dashboard site | Netlify site environment variables for `@atlas/web` | Configured, deploy healthy | Runtime-health browser evidence captured; backend readiness remains WO-055 |
-| Render API service | Render service environment variables or environment group | Partially configured | Owner identity and Google OAuth variables still require provider-native value entry |
+| Render API service | Render service environment variables or environment group | Partially configured | Owner identity subject still requires provider-native value entry |
 | Render PostgreSQL database | Render PostgreSQL internal connection reference | Created and bound | Hosted migrations require WO-057 authority and backup/restore evidence |
-| Google OAuth client | Google Cloud OAuth client configuration and secret store | Not configured | Requires WO-056 Google OAuth client details and `atlas-owner@grafley.com` owner account evidence |
+| Google OAuth client | Google Cloud OAuth client configuration and secret store | Configured | Configured for `grafleyinc@gmail.com` after Repository Maintainer confirmed `atlas-owner@grafley.com` is not a Google account |
+| Google OIDC owner client | Google Cloud OAuth client configuration and Render secret store | Configured | Immutable owner subject and controlled authorization remain WO-061 work |
 | External product client | Render API environment variables or environment group | Configured in API environment | Database-side client/owner linkage remains migration/seed dependent |
 | Webhook signing | Render API environment variables or environment group | Configured in API environment | Rotation-only variables remain unset |
 
@@ -59,13 +60,32 @@ Planned custom-domain cutover under WO-056A:
 
 ## 4. Render API Variables
 
+### Canonical Render Location
+
+Atlas production resources are project-scoped. Use **My project -> Production
+-> atlas-agent-control-center-api -> Environment**, not the workspace homepage
+resource list. The homepage can show only ungrouped services and is not a
+complete inventory.
+
+| Boundary | Canonical identity |
+| --- | --- |
+| Workspace | `My Workspace` (`tea-d8dqftek1jcs7399msjg`) |
+| Project | `My project` (`prj-d8dqn1mk1jcs7399ubvg`) |
+| Environment | `Production` (`evm-d8dqn1mk1jcs7399uc00`) |
+| API service | `atlas-agent-control-center-api` (`srv-d9e2rprbc2fs73f4l23g`) |
+| PostgreSQL database | `atlas-agent-control-center-db` (`dpg-d9e2rkbrjlhs73bkc6dg-a`) |
+
+The repository maintainer's Render login is the established provider identity
+for this workspace. Do not infer the provider account from Google, Gmail, or
+Grafley account context.
+
 | Variable | Provider location | Secret | Current WO-053 state |
 | --- | --- | --- | --- |
 | `ATLAS_API_ENVIRONMENT` | Render API service or environment group | No | Configured as production |
 | `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Cut over to `https://atlas.grafley.com` under WO-056A and redeployed |
 | `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Configured from Render internal database URL without value exposure |
 | `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
-| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending Google subject for `atlas-owner@grafley.com` |
+| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending immutable Google subject for `grafleyinc@gmail.com` |
 | `ATLAS_API_EXTERNAL_CLIENT_ID` | Render API service or environment group | No | Configured |
 | `ATLAS_API_EXTERNAL_CLIENT_KEY_ID` | Render API service or environment group | No | Configured |
 | `ATLAS_API_EXTERNAL_CLIENT_SECRET` | Render API service or environment group | Yes | Configured without value exposure |
@@ -75,9 +95,14 @@ Planned custom-domain cutover under WO-056A:
 | `ATLAS_API_WEBHOOK_SIGNING_SECRET` | Render API service or environment group | Yes | Configured without value exposure |
 | `ATLAS_API_WEBHOOK_SIGNING_NEXT_KEY_ID` | Render API service or environment group | No | Rotation only |
 | `ATLAS_API_WEBHOOK_SIGNING_NEXT_SECRET` | Render API service or environment group | Yes | Rotation only |
-| `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID` | Render API service or environment group | No | Pending Google OAuth client |
-| `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET` | Render API service or environment group | Yes | Pending provider-native secret entry |
-| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Pending WO-056 callback route decision/client setup; do not configure until the browser-facing Google redirect surface is implemented or confirmed |
+| `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID` | Render API service or environment group | No | Configured from Google OAuth web client without value exposure |
+| `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET` | Render API service or environment group | Yes | Configured through provider-native Render secret entry without value exposure |
+| `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` | Render API service or environment group | No | Configured as `https://atlas.grafley.com/oauth/google/callback` |
+| `ATLAS_API_OWNER_OIDC_CLIENT_ID` | Render API service | No | Configured for the separate WO-061 Google OIDC client without value exposure |
+| `ATLAS_API_OWNER_OIDC_CLIENT_SECRET` | Render API service | Yes | Configured through provider-native secret entry; rotated during setup and not recorded |
+| `ATLAS_API_OWNER_OIDC_REDIRECT_URI` | Render API service | No | Configured as `https://api.atlas.grafley.com/auth/owner/google/callback` |
+| `ATLAS_API_OWNER_OIDC_BOOTSTRAP_EMAIL` | Render API service | No | Configured as the accepted owner bootstrap account |
+| `ATLAS_API_OWNER_OIDC_TRANSACTION_SECRET` | Render API service | Yes | Generated and configured in Render; rotated during setup and not recorded |
 | `ATLAS_API_OWNER_SESSION_IDLE_MINUTES` | Render API service or environment group | No | Optional default available |
 | `ATLAS_API_OWNER_SESSION_ABSOLUTE_HOURS` | Render API service or environment group | No | Optional default available |
 
@@ -102,6 +127,7 @@ Planned custom-domain cutover under WO-056A:
 | Render API secrets | Repository Maintainer | Rotate affected service secret and redeploy |
 | Render PostgreSQL URL | Repository Maintainer | Rotate database credentials or restore provider reference |
 | Google OAuth client secret | Repository Maintainer | Rotate or revoke OAuth client secret in Google Cloud |
+| Google OIDC owner client secret | Repository Maintainer | Rotate or revoke the dedicated owner OIDC client secret in Google Cloud |
 | External-client signing secret | Repository Maintainer | Add next key, migrate client, retire exposed key |
 | Webhook signing secret | Repository Maintainer | Add next key, migrate receiver verification, retire exposed key |
 

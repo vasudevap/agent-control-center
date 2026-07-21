@@ -21,7 +21,7 @@ URLs.
 | Concern | Decision |
 | --- | --- |
 | Product ownership | Atlas is a Grafley product |
-| Owner account | `atlas-owner@grafley.com` is the dedicated Atlas owner account |
+| Owner account | `grafleyinc@gmail.com` is the authorized single-owner Google account for OAuth after Repository Maintainer confirmation on 2026-07-20 |
 | Frontend domain | `https://atlas.grafley.com` |
 | API domain | `https://api.atlas.grafley.com` |
 | DNS authority | Repository Maintainer provisions Grafley DNS records after provider target values are known |

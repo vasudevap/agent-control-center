@@ -25,6 +25,11 @@ def test_production_like_environments_require_release_configuration(
         "google_oauth_client_secret_missing",
         "google_oauth_redirect_uri_missing",
         "owner_identity_subject_missing",
+        "owner_oidc_bootstrap_email_missing",
+        "owner_oidc_client_id_missing",
+        "owner_oidc_client_secret_missing",
+        "owner_oidc_redirect_uri_missing",
+        "owner_oidc_transaction_secret_missing",
         "webhook_signing_key_id_missing",
         "webhook_signing_secret_missing",
     ]
@@ -43,6 +48,13 @@ def test_production_like_readiness_passes_with_required_release_configuration(
         google_oauth_client_id="google-oauth-client-id.example.test",
         google_oauth_client_secret="example-google-oauth-client-secret",
         google_oauth_redirect_uri="https://atlas.example.test/oauth/google/callback",
+        owner_oidc_client_id="owner-oidc-client-id.example.test",
+        owner_oidc_client_secret="example-owner-oidc-client-secret",
+        owner_oidc_redirect_uri=(
+            "https://api.atlas.example.test/auth/owner/google/callback"
+        ),
+        owner_oidc_bootstrap_email="owner@example.test",
+        owner_oidc_transaction_secret="example-owner-oidc-transaction-secret",
         owner_identity_subject="owner@example.test",
         webhook_signing_key_id="atlas-webhook-current",
         webhook_signing_secret="example-webhook-signing-secret",
@@ -83,6 +95,13 @@ def test_secret_settings_are_redacted() -> None:
         google_oauth_client_id="google-oauth-client-id.example.test",
         google_oauth_client_secret="example-google-oauth-client-secret",
         google_oauth_redirect_uri="https://atlas.example.test/oauth/google/callback",
+        owner_oidc_client_id="owner-oidc-client-id.example.test",
+        owner_oidc_client_secret="example-owner-oidc-client-secret",
+        owner_oidc_redirect_uri=(
+            "https://api.atlas.example.test/auth/owner/google/callback"
+        ),
+        owner_oidc_bootstrap_email="owner@example.test",
+        owner_oidc_transaction_secret="example-owner-oidc-transaction-secret",
     )
 
     assert settings.redacted == {
@@ -101,6 +120,11 @@ def test_secret_settings_are_redacted() -> None:
         "google_oauth_client_id_configured": True,
         "google_oauth_client_secret": "***",
         "google_oauth_redirect_uri_configured": True,
+        "owner_oidc_client_id_configured": True,
+        "owner_oidc_client_secret": "***",
+        "owner_oidc_redirect_uri_configured": True,
+        "owner_oidc_bootstrap_email_configured": True,
+        "owner_oidc_transaction_secret": "***",
         "require_database": False,
         "owner_identity_subject_configured": False,
         "owner_session_idle_minutes": 30,

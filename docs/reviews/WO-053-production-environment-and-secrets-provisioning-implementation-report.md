@@ -1,12 +1,55 @@
 # WO-053 Production Environment and Secrets Provisioning Implementation Report
 
 **Work Order:** [WO-053](../work-orders/053-production-environment-and-secrets-provisioning.md)
-**Status:** In Progress - Dashboard/API Signing Bound; Owner/OAuth Pending
+**Status:** In Progress - Google OAuth Bound; Owner OIDC Configuration and Subject Pending
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
 
 ## Reconciliation - 2026-07-20 (post PR #93)
+
+## Reconciliation - 2026-07-20 (WO-061 local source implementation)
+
+The hosted readiness observations below are point-in-time evidence from the
+deployed source before WO-061. The accepted WO-061 local source change adds
+five release-critical owner-OIDC settings. No Google OIDC client, Render owner
+OIDC setting, owner subject, provider login, or hosted redeployment was changed
+under that source-only authority. The current remaining gate is therefore
+owner-OIDC provider configuration followed by owner-subject enrollment.
+
+## Reconciliation - 2026-07-20 (Google OAuth provider binding)
+
+The Repository Maintainer confirmed that `atlas-owner@grafley.com` is not a
+Google account and explicitly authorized `grafleyinc@gmail.com` as the
+single-owner Google OAuth account for the hosted cutover.
+
+Provider evidence, with secret values omitted:
+
+- Google Cloud project `atlas-agent-control-center` was created under
+  `grafleyinc@gmail.com`.
+- Google Auth Platform was configured for app name
+  `Atlas Agent Control Center`, external/testing audience, support/developer
+  contact `grafleyinc@gmail.com`, and test user `grafleyinc@gmail.com`.
+- Accepted scopes only were configured:
+  `https://www.googleapis.com/auth/gmail.modify` and
+  `https://www.googleapis.com/auth/drive.file`.
+- Gmail API and Google Drive API were enabled for the project.
+- OAuth web client `Atlas production web client` was configured with
+  authorized JavaScript origin `https://atlas.grafley.com` and redirect URI
+  `https://atlas.grafley.com/oauth/google/callback`.
+- Render service `atlas-agent-control-center-api` was configured with
+  `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID`,
+  `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET`, and
+  `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` through provider-native environment
+  storage.
+- Render environment-update deploy started at 2026-07-20 7:20 PM Eastern.
+- Hosted readiness after the deploy no longer reports Google OAuth variable
+  problems and remains fail-closed only for
+  `owner_identity_subject_missing`.
+
+No OAuth client secret, authorization code, access token, refresh token,
+database URL, HMAC secret, or provider API token was written to Git, committed,
+printed, or captured in documentation output.
 
 After the ADR-006 callback route was implemented and deployed, Netlify
 production was configured with the non-secret server-side
@@ -186,7 +229,8 @@ No matches
 
 | Risk / deferred item | Status | Next authority |
 | --- | --- | --- |
-| Owner identity and Google OAuth values are not yet entered | Pending | Provider-native owner/OAuth entry (tracked with WO-055 / WO-056) |
+| Owner identity subject is not yet entered | Pending | Requires immutable Google subject for `grafleyinc@gmail.com` |
+| Google OAuth values are configured | Complete | Google Cloud project/client/scopes/test user and Render OAuth env values configured without value exposure |
 | Netlify dashboard callback signing values | Complete | Provider-native Netlify server-side `ATLAS_DASHBOARD_EXTERNAL_CLIENT_*` values are configured and matched to the rotated Render external-client key |
 | Netlify dashboard canonical base URL | Complete | `ATLAS_DASHBOARD_BASE_URL` configured and verified for production after PR #93 |
 | Render provider access | Established | Render service/database created; database URL, external-client signing, and webhook signing bound through provider-native UI |
@@ -202,6 +246,7 @@ values have now been bound through provider-native UI without value exposure.
 Netlify dashboard canonical base URL has also been configured and verified
 without value exposure. Netlify dashboard callback signing values have been
 configured and matched to the rotated Render external-client key without value
-exposure. The remaining dependency-safe actions are provider-native owner
-identity and Google OAuth client configuration; readiness must continue to fail
-closed until those API-required values are bound.
+exposure. Google OAuth client values have been configured through Google Cloud
+and Render without value exposure. The remaining dependency-safe action is
+provider-native owner identity subject binding; readiness must continue to fail
+closed until that API-required value is bound.

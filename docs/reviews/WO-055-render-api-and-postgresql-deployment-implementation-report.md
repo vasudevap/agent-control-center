@@ -1,10 +1,19 @@
 # WO-055 Render API and PostgreSQL Deployment Implementation Report
 
 **Work Order:** [WO-055](../work-orders/055-render-api-and-postgresql-deployment.md)
-**Status:** Blocked - Owner/OAuth Binding and Migration Pending
+**Status:** Blocked - Owner OIDC Configuration, Subject, and Migration Pending
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
+
+## Reconciliation - 2026-07-20 (WO-061 local source implementation)
+
+The deployment evidence below predates the WO-061 local source change. That
+change adds five release-critical owner-OIDC settings to the next deployed API
+revision. No Google OIDC client, Render owner-OIDC value, owner subject,
+provider login, or hosted redeployment was performed under the source-only
+authority. The current gates are owner-OIDC provider configuration, immutable
+owner-subject enrollment, and the separately governed migration work.
 
 ## Summary
 
@@ -12,8 +21,9 @@ WO-055 implementation has started. The Render API service and PostgreSQL
 database targets now exist, the API liveness endpoint is reachable, and the
 Render database URL plus external-client/webhook signing values are now bound
 through provider-native service environment variables. The API readiness
-endpoint correctly fails closed until owner-identity and Google OAuth
-configuration are entered through provider-native storage.
+endpoint correctly fails closed until release-critical configuration is entered
+through provider-native storage. The current source additionally requires the
+separately governed owner-OIDC configuration before owner-subject enrollment.
 
 No database connection URL, password, OAuth secret, token, or signing secret
 was displayed, copied to Git, captured in screenshots, or shared in chat.
@@ -94,6 +104,13 @@ server-to-server completion requests. Render deploy
 `dep-d9fa0r3rjlhs739t64vg` was triggered by `service_updated`, reached `live`,
 and deployed commit `c5ead8140bab8a6259a3826d19d50013343052a8`. No HMAC secret
 value was written to Git or recorded in this report.
+
+Google OAuth provider-native binding on 2026-07-20 configured
+`ATLAS_API_GOOGLE_OAUTH_CLIENT_ID`, `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET`, and
+`ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` in Render without value exposure. Hosted
+readiness after that Render environment update no longer reported Google OAuth
+variable problems and remained fail-closed only for
+`owner_identity_subject_missing` in the then-deployed revision.
 
 ## Hosted API Evidence
 
@@ -186,7 +203,9 @@ OK
   shared in chat. The internal database URL was transferred from the Render
   database page to the Render service environment form without recording the
   value.
-- No owner identity or Google OAuth secret was entered.
+- Google OAuth values were later entered through provider-native storage
+  without value exposure. The current source additionally awaits separately
+  governed owner-OIDC configuration and owner-subject enrollment.
 - No production Gmail/Drive workflow was run.
 - No release tag or public launch action was performed.
 

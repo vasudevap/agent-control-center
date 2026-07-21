@@ -1,7 +1,7 @@
 # WO-056 Google OAuth Callback Route Implementation Report
 
 **Work Order:** [WO-056](../work-orders/056-google-oauth-production-client-and-redirects.md)
-**Status:** Callback Route Implemented - Provider Configuration Pending
+**Status:** Google OAuth Provider Configured - Owner OIDC Configuration and Subject Pending
 **Date:** 2026-07-20
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Architecture Decision:** [ADR-006](../decisions/ADR-006-browser-mediated-google-oauth-callback-surface.md)
@@ -10,6 +10,12 @@
 
 WO-056 now has the source-level callback surface accepted by ADR-006.
 
+The hosted readiness response recorded below predates the WO-061 local source
+implementation. That source adds a separately governed owner-OIDC client and
+five release-critical settings; it made no Google or Render provider changes.
+The current release blockers are owner-OIDC provider configuration and the
+immutable owner subject, both governed by WO-061.
+
 The dashboard exposes `GET /oauth/google/callback` and completes the callback
 server-side through signed Atlas API HMAC headers. The API exposes
 `POST /api/v1/connectors/oauth/google/callback` for authenticated
@@ -17,10 +23,15 @@ server-to-server completion and keeps connector state, state validation,
 provider token exchange, account identity derivation, scope enforcement,
 credential-reference creation, and audit evidence in the API boundary.
 
-No Google provider values were configured, no OAuth client secret was entered,
-no authorization code was requested from Google, no access token or refresh
-token value was persisted in source, fixtures, logs, screenshots, or docs, and
-no production mailbox data was used.
+Google provider values have now been configured through Google Cloud and Render
+provider-native storage. No OAuth client secret value, authorization code,
+access token, refresh token value, production mailbox data, or full email
+content was persisted in source, fixtures, logs, screenshots, or docs.
+
+The Repository Maintainer confirmed on 2026-07-20 that
+`atlas-owner@grafley.com` is not a Google account and authorized
+`grafleyinc@gmail.com` as the single-owner Google OAuth account for the hosted
+cutover.
 
 ## Scope Implemented
 
@@ -58,11 +69,42 @@ no production mailbox data was used.
     `ATLAS_DASHBOARD_EXTERNAL_CLIENT_KEY_ID`, and
     `ATLAS_DASHBOARD_EXTERNAL_CLIENT_SECRET`.
 
-## Remaining Provider Configuration Gate
+## Provider Configuration Evidence - 2026-07-20
 
-The source route exists, but provider configuration remains pending.
+Google provider configuration is complete for the accepted redirect and scope
+posture:
 
-Before entering Google provider values:
+- Google Cloud project: `atlas-agent-control-center`
+- Google account: `grafleyinc@gmail.com`
+- OAuth app name: `Atlas Agent Control Center`
+- Publishing status: Testing
+- Test user: `grafleyinc@gmail.com`
+- Accepted scopes:
+  - `https://www.googleapis.com/auth/gmail.modify`
+  - `https://www.googleapis.com/auth/drive.file`
+- Enabled APIs:
+  - Gmail API
+  - Google Drive API
+- OAuth web client name: `Atlas production web client`
+- Authorized JavaScript origin: `https://atlas.grafley.com`
+- Authorized redirect URI: `https://atlas.grafley.com/oauth/google/callback`
+- Render service `atlas-agent-control-center-api` has:
+  - `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID`
+  - `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET`
+  - `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI`
+
+Hosted readiness after the Render environment update:
+
+```text
+{"status":"not_ready","service":"atlas-api","checks":{"configuration":"failed"},"problems":["owner_identity_subject_missing"]}
+```
+
+## Remaining Owner Identity Gate
+
+The source route exists and Google provider configuration is complete. The
+remaining readiness gate is owner identity subject binding.
+
+Completed provider setup sequence:
 
 1. Merge and deploy this callback-route implementation to Netlify and Render.
 2. Configure Netlify server-only `ATLAS_DASHBOARD_BASE_URL` to
@@ -73,7 +115,7 @@ Before entering Google provider values:
    provider-native environment storage, without `NEXT_PUBLIC_`. Completed on
    2026-07-20 with a rotated Render external-client key.
 4. Configure Render Google OAuth values through provider-native environment
-   storage.
+   storage. Completed on 2026-07-20.
 5. Verify the deployed callback route and signed API completion path.
 6. Configure Google OAuth with redirect URI
    `https://atlas.grafley.com/oauth/google/callback`.
@@ -320,7 +362,8 @@ Passed
 
 | Item | Status | Next action |
 | --- | --- | --- |
-| Google provider values are not configured | Pending | Configure after source route deployment and explicit provider-action step |
+| Google provider values are configured | Complete | Google Cloud project/client/scopes/test user and Render OAuth env values configured without value exposure |
+| Owner identity subject is not configured | Pending | Requires immutable Google subject for `grafleyinc@gmail.com` before readiness can pass |
 | Netlify canonical dashboard base URL is configured | Complete | PR #93 merged; Netlify production `ATLAS_DASHBOARD_BASE_URL` verified redacted; hosted callback denial redirects to `https://atlas.grafley.com/connectors?oauth=google&status=denied` |
 | Netlify server-side callback signing values are configured | Complete | Provider-native Netlify `ATLAS_DASHBOARD_EXTERNAL_CLIENT_*` values are configured and matched to the rotated Render external-client key |
 | Hosted end-to-end OAuth evidence is not captured | Pending | Capture under the provider configuration step with redacted evidence |

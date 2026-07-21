@@ -61,7 +61,8 @@ The default `local` environment does not require a database. Any environment
 with `ATLAS_API_REQUIRE_DATABASE=true` reports `database_url_missing` through
 readiness until `ATLAS_API_DATABASE_URL` is set. `staging` and `production` are
 production-like and also require the release-critical owner identity,
-external-client signing, webhook signing, and Google OAuth configuration
+external-client signing, webhook signing, Google OAuth, and owner-OIDC
+configuration
 documented in
 [`docs/implementation-plans/phase-7-environment-configuration-and-secrets-readiness.md`](../../docs/implementation-plans/phase-7-environment-configuration-and-secrets-readiness.md).
 Configuration uses the `ATLAS_API_` prefix. Do not commit `.env` files or real
@@ -84,7 +85,13 @@ Webhook signing uses `ATLAS_API_WEBHOOK_SIGNING_KEY_ID` and
 `ATLAS_API_GOOGLE_OAUTH_CLIENT_ID`,
 `ATLAS_API_GOOGLE_OAUTH_CLIENT_SECRET`, and
 `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI`, while preserving the accepted
-`gmail.modify` and `drive.file` scope posture.
+`gmail.modify` and `drive.file` scope posture. Owner identity enrollment uses
+a separate OIDC client with `ATLAS_API_OWNER_OIDC_CLIENT_ID`,
+`ATLAS_API_OWNER_OIDC_CLIENT_SECRET`,
+`ATLAS_API_OWNER_OIDC_REDIRECT_URI`,
+`ATLAS_API_OWNER_OIDC_BOOTSTRAP_EMAIL`, and
+`ATLAS_API_OWNER_OIDC_TRANSACTION_SECRET`. Do not reuse connector OAuth
+secrets for owner OIDC.
 
 Operational API routes use the versioned `/api/v1` contract. Successful
 responses are wrapped in `data` and optional `meta`; errors use a stable

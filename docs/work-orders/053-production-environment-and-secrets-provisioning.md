@@ -1,6 +1,6 @@
 # Work Order 053: Production Environment and Secrets Provisioning
 
-**Status:** In Progress - Owner/OAuth Pending
+**Status:** In Progress - Owner OIDC Configuration and Subject Pending
 **Work Order ID:** WO-053
 **Type:** Production configuration and secret provisioning
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19
@@ -22,7 +22,7 @@ for hosted MVP cutover without exposing secret values.
 | Source control | Secret values never enter Git, logs, screenshots, PRs, or chat |
 | Runtime readiness | Missing production-critical config fails closed |
 | Account boundary | Single-owner Grafley/Atlas MVP deployment only |
-| Owner account | Dedicated Grafley owner account `atlas-owner@grafley.com` |
+| Owner account | Google account `grafleyinc@gmail.com`, confirmed by Repository Maintainer on 2026-07-20 after `atlas-owner@grafley.com` was found not to be a Google account |
 
 ## 3. Approved Scope if Accepted
 

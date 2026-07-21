@@ -75,7 +75,9 @@ API requests and must not receive OAuth token material.
 The final Google provider setup for WO-056 must use:
 
 - OAuth app/product identity: Atlas, a Grafley product.
-- Administrative owner account: `atlas-owner@grafley.com`.
+- Administrative owner account: `grafleyinc@gmail.com`, authorized by the
+  Repository Maintainer on 2026-07-20 after `atlas-owner@grafley.com` was found
+  not to be a Google account.
 - Authorized JavaScript origin: `https://atlas.grafley.com`, if required by
   the selected Google OAuth client type.
 - Authorized redirect URI:
