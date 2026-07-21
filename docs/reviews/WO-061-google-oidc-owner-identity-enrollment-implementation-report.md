@@ -1,6 +1,6 @@
-# WO-061 Google OIDC Owner Identity Enrollment - Local Source Implementation Report
+# WO-061 Google OIDC Owner Identity Enrollment - Implementation Report
 
-**Status:** Provider configuration complete; owner verification and subject pending
+**Status:** Completed - Owner Identity Bound and Readiness Verified
 **Date:** 2026-07-20
 **Work Order:** [WO-061](../work-orders/061-google-oidc-owner-identity-enrollment.md)
 **ADR:** [ADR-007](../decisions/ADR-007-google-oidc-owner-identity-enrollment.md)
@@ -17,10 +17,11 @@ handling, PKCE/state/nonce support, server-side token exchange, injectable
 JWKS-backed ID-token verification, bootstrap email enforcement, minimized
 browser output, and offline tests.
 
-The source implementation itself made no provider changes. The subsequent
-provider progress is recorded below. No owner subject was changed, no
-controlled owner login was performed, and hosted readiness remains deliberately
-blocked only on that missing immutable subject.
+The source implementation itself initially made no provider changes. The
+subsequent provider, merge/deploy, controlled authorization, manual subject
+entry, and hosted readiness evidence are recorded below. No owner subject value,
+provider credential, authorization code, token, or ID token is recorded in this
+report.
 
 ## Provider Progress
 
@@ -40,14 +41,38 @@ environment ID `evm-d8dqn1mk1jcs7399uc00`, API service ID
 `dpg-d9e2rkbrjlhs73bkc6dg-a`. The canonical path is **My project -> Production
 -> atlas-agent-control-center-api -> Environment**.
 
-The five dedicated Render owner-OIDC values are configured and the service was
+The five dedicated Render owner-OIDC values were configured and the service was
 rebuilt without exposing their values. During setup, the dedicated Google
 client credential and Render transaction secret were rotated; superseded Google
-credentials were revoked and deleted. The hosted readiness endpoint returned
-the expected configuration-only blocker, `owner_identity_subject_missing`,
-rather than an owner-OIDC configuration error. The public
-`/auth/owner/google/start` route returns `404`, correctly showing that Render
-is still deploying `main` before this unmerged local source slice.
+credentials were revoked and deleted. Before PR #96 was merged and deployed,
+the hosted readiness endpoint returned the expected configuration-only blocker,
+`owner_identity_subject_missing`, rather than an owner-OIDC configuration
+error.
+
+## Hosted Deployment and Owner Enrollment - 2026-07-21
+
+PR #96 merged the WO-061 source slice to `main` at merge commit `7ffb962`, and
+Render deployed the merged API source for service
+`atlas-agent-control-center-api` (`srv-d9e2rprbc2fs73f4l23g`).
+
+The hosted `/auth/owner/google/start` route returned a Google authorization
+redirect with only the accepted `openid email` scopes, the accepted owner-OIDC
+callback URI, account-selection prompt, state, nonce, and PKCE. The controlled
+authorization was completed with `grafleyinc@gmail.com`. The Repository
+Maintainer manually entered the derived opaque Google subject in Render as
+`ATLAS_API_OWNER_IDENTITY_SUBJECT`; the value is intentionally omitted from all
+records.
+
+After Render rebuilt and deployed with the owner subject configured,
+`https://api.atlas.grafley.com/health/ready` returned:
+
+```json
+{"status":"ready","service":"atlas-api","checks":{"configuration":"ok"},"problems":[]}
+```
+
+The `owner_identity_subject_missing` readiness blocker is removed. The
+Gmail/Drive connector OAuth client, accepted Gmail/Drive scopes, and connector
+runtime authorization boundary were not changed by WO-061.
 
 ## Source Changes
 
@@ -104,15 +129,9 @@ provider denial redaction, and fail-closed configuration.
 
 ## Remaining Work
 
-- Refresh the API dependency environment with the new `PyJWT[crypto]`
-  dependency before hosted deployment.
-- Merge the reviewed WO-061 source slice through the governed pull-request
-  process and allow Render to deploy that `main` revision.
-- Perform one controlled authorization with `grafleyinc@gmail.com`.
-- Enter only the derived opaque subject in Render as
-  `ATLAS_API_OWNER_IDENTITY_SUBJECT`.
-- Redeploy after manual subject entry and verify readiness no longer reports
-  `owner_identity_subject_missing`, without printing the subject value.
+No WO-061 implementation work remains. Later hosted cutover work remains
+bounded by the separate Work Orders for migrations, smoke testing, rollback
+rehearsal, release tagging, and public launch.
 
 ## Rollback
 

@@ -85,7 +85,7 @@ Grafley account context.
 | `ATLAS_API_FRONTEND_ORIGIN` | Render API service or environment group | No | Cut over to `https://atlas.grafley.com` under WO-056A and redeployed |
 | `ATLAS_API_DATABASE_URL` | Render API service, database reference | Yes | Configured from Render internal database URL without value exposure |
 | `ATLAS_API_REQUIRE_DATABASE` | Render API service or environment group | No | Configured as true |
-| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Pending immutable Google subject for `grafleyinc@gmail.com` |
+| `ATLAS_API_OWNER_IDENTITY_SUBJECT` | Render API service or environment group | No | Configured from controlled `grafleyinc@gmail.com` owner authorization without recording the value |
 | `ATLAS_API_EXTERNAL_CLIENT_ID` | Render API service or environment group | No | Configured |
 | `ATLAS_API_EXTERNAL_CLIENT_KEY_ID` | Render API service or environment group | No | Configured |
 | `ATLAS_API_EXTERNAL_CLIENT_SECRET` | Render API service or environment group | Yes | Configured without value exposure |

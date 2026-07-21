@@ -1,7 +1,7 @@
 # WO-056 Google OAuth Callback Route Implementation Report
 
 **Work Order:** [WO-056](../work-orders/056-google-oauth-production-client-and-redirects.md)
-**Status:** Google OAuth Provider Configured - Owner OIDC Configuration and Subject Pending
+**Status:** Google OAuth Provider Configured - Owner OIDC Gate Cleared
 **Date:** 2026-07-20
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Architecture Decision:** [ADR-006](../decisions/ADR-006-browser-mediated-google-oauth-callback-surface.md)
@@ -10,11 +10,11 @@
 
 WO-056 now has the source-level callback surface accepted by ADR-006.
 
-The hosted readiness response recorded below predates the WO-061 local source
-implementation. That source adds a separately governed owner-OIDC client and
-five release-critical settings; it made no Google or Render provider changes.
-The current release blockers are owner-OIDC provider configuration and the
-immutable owner subject, both governed by WO-061.
+The hosted readiness response recorded below predates the completed WO-061
+owner identity enrollment. WO-061 has since deployed the separate owner-OIDC
+client lane, completed controlled owner authorization, manually bound the
+immutable owner subject in Render without value exposure, and cleared the
+owner identity readiness gate.
 
 The dashboard exposes `GET /oauth/google/callback` and completes the callback
 server-side through signed Atlas API HMAC headers. The API exposes
@@ -237,8 +237,8 @@ Result:
 401
 ```
 
-Production readiness remains fail-closed only for the expected pending owner
-and Google OAuth provider values:
+At that point, production readiness remained fail-closed only for the then
+pending owner and Google OAuth provider values:
 
 ```text
 google_oauth_client_id_missing

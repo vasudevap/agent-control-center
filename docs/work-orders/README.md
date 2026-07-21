@@ -123,17 +123,18 @@ production cutover package under ES-008 and ADP-005:
 
 The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
-WO-053 implementation remains blocked for the separate owner-OIDC provider
-configuration and the immutable owner identity subject.
+WO-053 provider configuration is now complete for the current hosted MVP
+cutover scope, including the separate owner-OIDC provider values and immutable
+owner identity subject, without recording secret or subject values.
 WO-054 has created and linked the Netlify target, and the corrected Netlify
 publish path now deploys the hosted dashboard successfully. Browser runtime
 health reached the hosted Render API and reported `Runtime not ready (4)` in
 the pre-WO-061 deployment evidence, which was the expected fail-closed backend
-readiness state at that time. WO-055 has created
-the Render API service and PostgreSQL target, and has bound the database URL
-plus current signing values through provider-native Render UI. Readiness is
-blocked until the separately governed owner-OIDC configuration and owner
-identity subject are safely completed; the
+readiness state at that time. WO-055 has created the Render API service and
+PostgreSQL target, and has bound the database URL plus current signing values
+through provider-native Render UI. After WO-061 owner-subject binding, API
+readiness now returns `ready` with no configuration problems; hosted migrations
+remain governed by WO-057. The
 Repository Maintainer confirmed `grafleyinc@gmail.com` as the single-owner
 Google account after `atlas-owner@grafley.com` was found not to be a Google
 account, accepted
@@ -157,10 +158,10 @@ provider configuration was completed for `grafleyinc@gmail.com` in Google Cloud
 project `atlas-agent-control-center`; Render now has the Google OAuth client
 ID, client secret, and redirect URI configured without value exposure.
 
-WO-061 is accepted and in progress for Google OIDC owner identity enrollment.
-The local source implementation adds the dedicated
-`/auth/owner/google/start` and `/auth/owner/google/callback` API routes,
-separate owner-OIDC configuration, transaction-cookie controls, and offline
-tests under ADR-007. Provider configuration, controlled login, Render
-owner-subject entry, hosted verification, migrations, release tags, and public
-launch remain gated.
+WO-061 is completed for Google OIDC owner identity enrollment. The governed
+source slice was merged through PR #96, deployed to Render, completed one
+controlled authorization with `grafleyinc@gmail.com`, manually bound the
+derived opaque owner subject in Render without value exposure, and verified
+`https://api.atlas.grafley.com/health/ready` returns `ready` with
+`problems: []`. Migrations, release tags, and public launch remain gated by
+later Work Orders.

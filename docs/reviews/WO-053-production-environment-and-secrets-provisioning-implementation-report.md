@@ -1,7 +1,7 @@
 # WO-053 Production Environment and Secrets Provisioning Implementation Report
 
 **Work Order:** [WO-053](../work-orders/053-production-environment-and-secrets-provisioning.md)
-**Status:** In Progress - Google OAuth Bound; Owner OIDC Configuration and Subject Pending
+**Status:** Completed - Provider Configuration Bound
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
@@ -14,8 +14,17 @@ The hosted readiness observations below are point-in-time evidence from the
 deployed source before WO-061. The accepted WO-061 local source change adds
 five release-critical owner-OIDC settings. No Google OIDC client, Render owner
 OIDC setting, owner subject, provider login, or hosted redeployment was changed
-under that source-only authority. The current remaining gate is therefore
+under that source-only authority. At that point, the remaining gate was
 owner-OIDC provider configuration followed by owner-subject enrollment.
+
+## Reconciliation - 2026-07-21 (owner identity subject binding)
+
+WO-061 has since completed the governed merge/deploy, controlled authorization
+with `grafleyinc@gmail.com`, manual `ATLAS_API_OWNER_IDENTITY_SUBJECT` entry in
+Render, and hosted readiness verification. The subject value is intentionally
+not recorded. Provider-native configuration for WO-053 is complete for the
+current hosted MVP cutover scope; later migrations, smoke testing, rollback
+rehearsal, release tagging, and public launch remain separately governed.
 
 ## Reconciliation - 2026-07-20 (Google OAuth provider binding)
 
@@ -43,8 +52,8 @@ Provider evidence, with secret values omitted:
   `ATLAS_API_GOOGLE_OAUTH_REDIRECT_URI` through provider-native environment
   storage.
 - Render environment-update deploy started at 2026-07-20 7:20 PM Eastern.
-- Hosted readiness after the deploy no longer reports Google OAuth variable
-  problems and remains fail-closed only for
+- Hosted readiness after the deploy no longer reported Google OAuth variable
+  problems and, at that point, remained fail-closed only for
   `owner_identity_subject_missing`.
 
 No OAuth client secret, authorization code, access token, refresh token,
@@ -239,14 +248,11 @@ No matches
 
 ## Completion State
 
-WO-053 is not complete. Provider targets have since been created under WO-054
-(Netlify) and WO-055 (Render API and PostgreSQL), and non-secret variables are
-configured. Render database URL, external-client signing, and webhook signing
-values have now been bound through provider-native UI without value exposure.
-Netlify dashboard canonical base URL has also been configured and verified
-without value exposure. Netlify dashboard callback signing values have been
-configured and matched to the rotated Render external-client key without value
-exposure. Google OAuth client values have been configured through Google Cloud
-and Render without value exposure. The remaining dependency-safe action is
-provider-native owner identity subject binding; readiness must continue to fail
-closed until that API-required value is bound.
+WO-053 is complete for the current hosted MVP cutover scope. Provider targets
+were created under WO-054 (Netlify) and WO-055 (Render API and PostgreSQL), and
+non-secret variables are configured. Render database URL, external-client
+signing, webhook signing, Google OAuth values, owner-OIDC values, and the
+manual owner identity subject binding have been configured through
+provider-native storage without value exposure. Netlify dashboard canonical
+base URL and callback signing values have also been configured and verified
+without value exposure.

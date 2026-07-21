@@ -156,9 +156,9 @@ redacted variable map, and read-only provider checks. Following WO-054 and
 WO-055, the Netlify and Render targets now exist and non-secret variables are
 configured. Render database URL, external-client signing, webhook signing,
 Netlify dashboard canonical base URL, and Netlify dashboard callback signing are
-now bound through provider-native UI without value exposure; the remaining
-gates are owner identity and Google OAuth configuration, tracked jointly with
-WO-055 and WO-056.
+now bound through provider-native UI without value exposure. Google OAuth and
+owner identity provider values, including the manually bound owner subject,
+have since been configured without value exposure.
 
 The [WO-054 implementation report](./WO-054-netlify-frontend-deployment-implementation-report.md)
 records the Netlify site creation, source-level Netlify build configuration,
@@ -169,8 +169,9 @@ runtime-health evidence, and the Netlify rollback target.
 The [WO-055 implementation report](./WO-055-render-api-and-postgresql-deployment-implementation-report.md)
 records the Render API service and PostgreSQL target creation, API liveness
 evidence, fail-closed readiness evidence, Render database/signing binding
-evidence, and current blocker: owner identity and Google OAuth values still
-need provider-native entry without value exposure.
+evidence, and the later hosted readiness state after Google OAuth and owner
+identity values were bound without value exposure. Hosted database migrations
+remain governed by WO-057.
 
 The [WO-056A implementation report](./WO-056A-grafley-custom-domain-cutover-implementation-report.md)
 records Netlify and Render custom-domain binding evidence, the exact Grafley
@@ -197,14 +198,14 @@ the dashboard browser callback, the signed API completion endpoint, production
 Google authorization URL generation when provider values exist, and callback
 tests, including the canonical Grafley-domain redirect guard. It also records
 the hosted dashboard HMAC binding evidence after the Render/Netlify provider
-configuration step. Google provider configuration and hosted end-to-end OAuth
-evidence remain pending.
+configuration step. Google provider configuration is complete; hosted
+end-to-end connector OAuth evidence remains governed by WO-056.
 
-The [WO-061 local source implementation report](./WO-061-google-oidc-owner-identity-enrollment-implementation-report.md)
-records the accepted ADR-007 owner-OIDC enrollment source slice, including the
-dedicated API start/callback routes, transaction-cookie controls, server-side
-exchange and ID-token verification boundary, bootstrap email enforcement,
-offline validation, and provider-configuration gates still pending.
+The [WO-061 implementation report](./WO-061-google-oidc-owner-identity-enrollment-implementation-report.md)
+records the accepted ADR-007 owner-OIDC enrollment source slice, governed
+merge/deploy through PR #96, controlled authorization with
+`grafleyinc@gmail.com`, manual owner subject binding without value exposure,
+and hosted readiness verification.
 
 The [WO-015 implementation report](./WO-015-platform-foundation-implementation-report.md)
 records the FastAPI backend foundation, persistence model, migration,

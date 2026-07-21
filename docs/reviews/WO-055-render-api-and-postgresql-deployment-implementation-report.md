@@ -1,29 +1,29 @@
 # WO-055 Render API and PostgreSQL Deployment Implementation Report
 
 **Work Order:** [WO-055](../work-orders/055-render-api-and-postgresql-deployment.md)
-**Status:** Blocked - Owner OIDC Configuration, Subject, and Migration Pending
+**Status:** In Progress - Hosted API Ready; Migration Pending
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing ADP:** [ADP-005](../implementation-plans/ADP-005-hosted-mvp-production-cutover.md)
 
 ## Reconciliation - 2026-07-20 (WO-061 local source implementation)
 
-The deployment evidence below predates the WO-061 local source change. That
-change adds five release-critical owner-OIDC settings to the next deployed API
-revision. No Google OIDC client, Render owner-OIDC value, owner subject,
-provider login, or hosted redeployment was performed under the source-only
-authority. The current gates are owner-OIDC provider configuration, immutable
-owner-subject enrollment, and the separately governed migration work.
+The deployment evidence below predates the completed WO-061 owner identity
+enrollment. WO-061 has since deployed the owner-OIDC API routes, completed
+controlled owner authorization with `grafleyinc@gmail.com`, manually bound the
+opaque owner subject in Render without value exposure, and cleared the hosted
+configuration-readiness gate. The remaining WO-055-adjacent gate is the
+separately governed migration work under WO-057.
 
 ## Summary
 
 WO-055 implementation has started. The Render API service and PostgreSQL
 database targets now exist, the API liveness endpoint is reachable, and the
 Render database URL plus external-client/webhook signing values are now bound
-through provider-native service environment variables. The API readiness
-endpoint correctly fails closed until release-critical configuration is entered
-through provider-native storage. The current source additionally requires the
-separately governed owner-OIDC configuration before owner-subject enrollment.
+through provider-native service environment variables. After WO-061 owner
+identity binding, the API readiness endpoint returns `ready` with no
+configuration problems. Hosted database migrations remain separately governed
+by WO-057.
 
 No database connection URL, password, OAuth secret, token, or signing secret
 was displayed, copied to Git, captured in screenshots, or shared in chat.
@@ -266,7 +266,8 @@ them in source, logs, screenshots, PRs, or chat.
 
 ## Completion State
 
-WO-055 is not complete. The Render targets exist and liveness is healthy, but
-readiness is intentionally blocked until owner identity and Google OAuth values
-are safely bound. Hosted database migrations remain deferred until WO-057
-migration authority and backup/restore evidence are available.
+WO-055 is no longer blocked by owner identity or Google OAuth configuration.
+The Render targets exist, liveness is healthy, and hosted readiness now returns
+`ready` with no configuration problems. Hosted database migrations remain
+deferred until WO-057 migration authority and backup/restore evidence are
+available.
