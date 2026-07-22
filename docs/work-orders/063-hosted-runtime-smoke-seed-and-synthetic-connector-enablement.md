@@ -1,6 +1,6 @@
 # Work Order 063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement
 
-**Status:** Source Implemented - Pending Hosted Deployment and WO-058 Rerun
+**Status:** Completed - Hosted Seed Verified and WO-058 Rerun Passed
 **Work Order ID:** WO-063
 **Type:** Hosted runtime smoke unblocker
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-22
@@ -90,7 +90,9 @@ Require:
   dashboard surfaces;
 - a review report under `docs/reviews/`.
 
-WO-063 completes only when WO-058 can be rerun successfully without using
+WO-063 completed after PR #109 merged, Netlify production deployed
+`main@18336a3`, the hosted API exposed the seed route, the owner-authenticated
+synthetic seed succeeded, and WO-058 reran successfully without using
 fixture-only operational evidence or exposing sensitive values.
 
 ## 7. Rollback Expectations

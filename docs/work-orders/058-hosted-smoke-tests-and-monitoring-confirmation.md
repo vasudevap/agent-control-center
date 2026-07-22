@@ -1,6 +1,6 @@
 # Work Order 058: Hosted Smoke Tests and Monitoring Confirmation
 
-**Status:** Blocked - Runtime Smoke Seed and Connector Connections Unavailable
+**Status:** Completed - Hosted Smoke Passed After WO-063
 **Work Order ID:** WO-058
 **Type:** Hosted validation and monitoring confirmation
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending WO-054 through WO-057 evidence
@@ -68,7 +68,7 @@ Proposed remediation scope is drafted as
 WO-062 has since been implemented, merged, deployed, and rerun against the
 hosted dashboard.
 
-## 6.2 Current Blocker
+## 6.2 Superseded Runtime Seed Blocker
 
 Hosted smoke rerun on 2026-07-22 confirmed that the dashboard runtime
 integration is deployed and owner-authenticated:
@@ -94,6 +94,36 @@ this blocker and WO-058 is rerun successfully.
 
 Proposed remediation scope is drafted as
 [WO-063 Hosted Runtime Smoke Seed and Synthetic Connector Enablement](./063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md).
+
+WO-063 has since been implemented, merged, deployed, and used for a successful
+WO-058 hosted smoke rerun.
+
+## 6.3 Successful Rerun After WO-063
+
+Hosted smoke rerun on 2026-07-22 passed after PR #109 deployed the
+owner-authenticated synthetic runtime smoke seed:
+
+- owner session verification returned authenticated through the dashboard
+  facade;
+- Netlify production deployed `main@18336a3`;
+- API liveness and readiness returned healthy / ready;
+- `POST /api/v1/dashboard/smoke-seed` failed closed without an owner session
+  and succeeded with owner session, CSRF, and idempotency;
+- hosted runtime evidence showed two synthetic connector connections
+  (`gmail` and `google_drive`) with `connected` / `healthy` status;
+- hosted runtime evidence showed one synthetic manual run with `succeeded`
+  status;
+- hosted runtime evidence showed one pending synthetic draft-review approval;
+- hosted audit evidence included metadata-only seed events;
+- hosted monitoring evidence returned `ready` with zero readiness problems.
+
+No Gmail or Drive OAuth consent was submitted during this rerun. No provider
+tokens, owner subject values, CSRF tokens, cookies, mailbox content, Drive
+content, raw logs, or secrets were recorded.
+
+WO-059 may proceed next under its accepted rollback and release-withdrawal
+rehearsal scope. WO-060 remains blocked until WO-059 completes and the
+Repository Maintainer records the required go/no-go / tag authority decision.
 
 ## 7. Stop-and-Ask Triggers
 

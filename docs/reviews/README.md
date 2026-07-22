@@ -130,10 +130,10 @@ deployment rollback, incident triage, indeterminate send, provider outage, and
 release withdrawal runbooks.
 
 The [WO-063 implementation report](./WO-063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement-implementation-report.md)
-records the hosted runtime smoke seed source implementation, synthetic-only
+records the hosted runtime smoke seed implementation, synthetic-only
 connector/run/approval evidence, owner-session/CSRF/idempotency controls,
-metadata-only audit posture, validation evidence, and remaining hosted
-deployment plus WO-058 rerun gate.
+metadata-only audit posture, validation evidence, hosted deployment evidence,
+and successful WO-058 rerun gate.
 
 The [WO-046 implementation report](./WO-046-dashboard-productization-and-runtime-operations-implementation-report.md)
 records the browser-safe runtime health indicator, dashboard runtime readiness
@@ -185,10 +185,10 @@ local migration validation, hosted migration execution, final current-head
 verification, and post-migration API health evidence.
 
 The [WO-058 hosted smoke report](./WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md)
-records the passing hosted dashboard/API health, CORS, and OAuth-denial checks,
-and the cutover blocker: deployed dashboard operational pages remain
-session-only fictional fixtures and cannot exercise the required owner,
-connector, run, approval, audit, log, or monitoring workflow.
+records the hosted dashboard/API health, CORS, OAuth-denial checks, earlier
+dashboard/runtime blockers, WO-062 and WO-063 remediation evidence, and the
+successful 2026-07-22 hosted smoke rerun using synthetic connector, run,
+approval, metadata-only audit, and monitoring evidence.
 
 The [WO-056A implementation report](./WO-056A-grafley-custom-domain-cutover-implementation-report.md)
 records Netlify and Render custom-domain binding evidence, the exact Grafley

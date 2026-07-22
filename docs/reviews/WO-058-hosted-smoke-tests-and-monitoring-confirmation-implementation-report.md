@@ -137,3 +137,40 @@ implemented, deployed, and WO-058 is rerun successfully.
 
 Proposed remediation scope:
 [WO-063 Hosted Runtime Smoke Seed and Synthetic Connector Enablement](../work-orders/063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md).
+
+## Successful Rerun After WO-063 - 2026-07-22
+
+WO-063 was implemented, merged through PR #109, deployed, and used to rerun the
+hosted smoke gate successfully.
+
+Post-merge and deployment evidence:
+
+| Area | Check | Result |
+| --- | --- | --- |
+| Source merge | PR #109 | Merged to `main` at `18336a3cfec936b97456c8a594ece5969eadad95`. |
+| Netlify production deploy | Deploy `6a60e50ca105e1000899df08` | Ready; `context=production`; `commit_ref=18336a3cfec936b97456c8a594ece5969eadad95`; published 2026-07-22T15:44:05.208Z. |
+| Netlify secret scan | Deploy validation report `6a60e53d54264d0ab0ccb804` | No classic or enhanced secret-scan matches. |
+| API liveness | `GET https://api.atlas.grafley.com/health/live` | `status=ok`; `service=atlas-api`; `environment=production`. |
+| API readiness | `GET https://api.atlas.grafley.com/health/ready` | `status=ready`; configuration check `ok`; no problems. |
+| Unauthenticated seed boundary | `POST /api/v1/dashboard/smoke-seed` without owner session | `401 owner_session_missing`; route exists and fails closed. |
+| Owner session | `GET /api/v1/dashboard/session` from Chrome owner session | `200`; authenticated; active; Google identity provider; CSRF available but not recorded. |
+| Synthetic seed | Owner-authenticated `POST /api/v1/dashboard/smoke-seed` | `200`; `synthetic=true`; `scope=hosted_mvp_smoke`; two connections; one run; one approval. |
+| Connectors | `GET /api/v1/dashboard/connectors` | Synthetic `gmail` and `google_drive` connections returned `connected` / `healthy`. |
+| Runs | `GET /api/v1/dashboard/runs` | Synthetic run `run_32c066d59fe7457a8c80cd72c805dc71` returned `succeeded` with `manual` trigger source. |
+| Approvals | `GET /api/v1/dashboard/approvals?status=pending` | Synthetic approval `appr_5a64dc95895743d4b73f65e081ed58cb` returned `pending` with `synthetic_draft_review`. |
+| Audit | `GET /api/v1/dashboard/audit` | Metadata-only `dashboard.seed_runtime_smoke` and `smoke_seed.hosted_runtime_seeded` events returned `succeeded`. |
+| Monitoring | `GET /api/v1/dashboard/monitoring` | `readiness_status=ready`; `readiness_problem_count=0`; `runtime_origin=atlas-api`; `agent_count=1`. |
+
+All evidence remained synthetic and metadata-only. No Gmail or Drive OAuth
+consent was submitted during the rerun. No Gmail or Drive content was read,
+searched, created, modified, or deleted. No provider tokens, OAuth codes, CSRF
+tokens, cookies, owner subject values, secrets, raw logs, Gmail messages, or
+Drive objects were recorded.
+
+## Final Disposition
+
+WO-058 passed after WO-063 resolved the runtime seed and synthetic connector
+evidence blocker. The hosted cutover may proceed to WO-059 rollback and
+release-withdrawal rehearsal. WO-060 remains blocked until WO-059 completes and
+the Repository Maintainer records the required go/no-go / release-tag authority
+decision.

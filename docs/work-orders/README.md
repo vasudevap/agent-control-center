@@ -126,8 +126,8 @@ original WO-058 hosted dashboard integration blocker:
 
 - WO-062: Hosted Dashboard Runtime Integration
 
-Work Order 063 was accepted as the remediation scope for the remaining WO-058
-runtime smoke seed and synthetic connector enablement blocker:
+Work Order 063 was accepted and completed as the remediation scope for the
+remaining WO-058 runtime smoke seed and synthetic connector enablement blocker:
 
 - WO-063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement
 
@@ -163,15 +163,15 @@ triggers.
 WO-058 was originally blocked because the hosted dashboard operational surfaces
 used session-only fictional fixtures for connector, run, approval, audit,
 alert, log, and monitoring views. WO-062 replaced the release-critical hosted
-paths with owner-authenticated, server-signed runtime integrations. The
+paths with owner-authenticated, server-signed runtime integrations. A later
 2026-07-22 WO-058 rerun confirmed that Connectors, Runs, Approvals, Audit, and
-Alerts now render live runtime states, but the smoke gate remains blocked
-because Gmail and Google Drive are not connected, connector health checks are
-disabled until connector OAuth exists, no synthetic manual-run seed is exposed,
-and no synthetic approval state exists. WO-063 source implementation adds the
-owner-authenticated synthetic smoke seed needed to resolve that runtime seed /
-connector enablement blocker. WO-059 and WO-060 must not begin until WO-063 is
-deployed and WO-058 reruns successfully.
+Alerts rendered live runtime states, but still lacked connected Gmail/Drive
+evidence, a synthetic manual run, and a synthetic approval state. WO-063 added
+the owner-authenticated synthetic smoke seed and the final 2026-07-22 WO-058
+rerun passed with synthetic connector, run, approval, metadata-only audit, and
+monitoring evidence. WO-059 is now the next dependency-ready Work Order.
+WO-060 must not begin until WO-059 completes and the Repository Maintainer
+records the required go/no-go / release-tag authority decision.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. ADR-006 is accepted

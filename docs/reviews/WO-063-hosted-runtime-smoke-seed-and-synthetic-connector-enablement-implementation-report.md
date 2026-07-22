@@ -1,6 +1,6 @@
 # WO-063 Hosted Runtime Smoke Seed and Synthetic Connector Enablement - Implementation Report
 
-**Status:** Source Implemented - Pending Hosted Deployment and WO-058 Rerun
+**Status:** Completed - Hosted Seed Verified and WO-058 Rerun Passed
 **Date:** 2026-07-22
 **Work Order:** [WO-063](../work-orders/063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md)
 **Scope Authorized:** Repository Maintainer accepted WO-063 and authorized implementation on 2026-07-22.
@@ -86,14 +86,49 @@ Results:
 - Focused touched-file secret scan: no secret values found; reported only
   expected negative assertions for `access_token` and `refresh_token` absence.
 
-## Remaining Work
+## Hosted Deployment and WO-058 Rerun Evidence
 
-WO-063 is source-implemented locally. It is not complete until the source is
-merged, deployed to the hosted targets, and WO-058 reruns successfully through
-the owner-authenticated dashboard surfaces using the synthetic seed evidence.
+PR #109 merged WO-063 to `main` on 2026-07-22 at merge commit
+`18336a3cfec936b97456c8a594ece5969eadad95`.
 
-WO-059 rollback/withdrawal rehearsal and WO-060 release closeout remain blocked
-until WO-058 passes after WO-063 deployment.
+Post-merge hosted evidence:
+
+- Netlify production deploy `6a60e50ca105e1000899df08` published
+  `main@18336a3`; secret scanning reported no classic or enhanced matches.
+- `GET https://api.atlas.grafley.com/health/live` returned `status=ok`,
+  `service=atlas-api`, `environment=production`.
+- `GET https://api.atlas.grafley.com/health/ready` returned `status=ready`
+  with no readiness problems.
+- Unauthenticated `POST /api/v1/dashboard/smoke-seed` returned
+  `401 owner_session_missing`, confirming the route fails closed.
+- Owner session verification returned `200`, authenticated, active, and Google
+  identity provider through the dashboard facade.
+- Owner-authenticated `POST /api/v1/dashboard/smoke-seed` returned `200` with
+  `synthetic=true`, `scope=hosted_mvp_smoke`, two connector connections, one
+  succeeded run, and one pending synthetic draft-review approval.
+- Dashboard runtime API evidence showed synthetic Gmail and Google Drive
+  connections with `connected` / `healthy` status.
+- Runtime run evidence showed run
+  `run_32c066d59fe7457a8c80cd72c805dc71` with `succeeded` status and
+  `manual` trigger source.
+- Runtime approval evidence showed approval
+  `appr_5a64dc95895743d4b73f65e081ed58cb` with `pending` status and
+  `synthetic_draft_review` action type.
+- Runtime audit evidence showed `dashboard.seed_runtime_smoke` and
+  `smoke_seed.hosted_runtime_seeded` events with `metadata_only` redaction and
+  `succeeded` result.
+- Runtime monitoring evidence returned `ready`, zero readiness problems,
+  `runtime_origin=atlas-api`, and one runtime agent.
+
+No Gmail or Drive OAuth consent was submitted. No Google APIs were called. No
+mailbox or Drive data was read, searched, created, modified, or deleted. No
+provider token, OAuth code, CSRF token, cookie, owner subject value, secret, raw
+log, Gmail message, or Drive object was recorded.
+
+WO-063 is complete. WO-058 reran successfully after WO-063 deployment. WO-059
+rollback/withdrawal rehearsal is now the next dependency-ready cutover Work
+Order; WO-060 remains blocked until WO-059 completes and final go/no-go / tag
+authority is recorded.
 
 ## Rollback
 
