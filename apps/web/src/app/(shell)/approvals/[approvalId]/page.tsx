@@ -18,5 +18,5 @@ export default async function ApprovalDetailPage({
     ? from
     : "/approvals?view=queue";
 
-  return <ApprovalDetailWorkspace approval={getApprovalById(approvalId)} returnTo={returnTo} />;
+  return <ApprovalDetailWorkspace approval={getApprovalById(approvalId)} requestedId={approvalId} returnTo={returnTo} />;
 }

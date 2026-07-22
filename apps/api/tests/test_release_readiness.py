@@ -26,12 +26,41 @@ def test_release_readiness_source_contracts_are_present() -> None:
         'atlas-schedule-sweep = "atlas_api.cli.sweep_schedules:main"'
         in api_pyproject
     )
+    assert (
+        'atlas-migration-cutover = "atlas_api.cli.migration_cutover:main"'
+        in api_pyproject
+    )
     assert (REPO_ROOT / "apps/api/alembic.ini").is_file()
 
     assert "image: postgres:18" in ci_workflow
     assert "python -m alembic upgrade head" in ci_workflow
     assert "python -m alembic downgrade base" in ci_workflow
     assert "npm run build" in ci_workflow
+
+
+def test_hosted_migration_readiness_artifacts_are_present() -> None:
+    readiness_record = (
+        REPO_ROOT
+        / "docs/implementation-plans/hosted-migration-backup-restore-readiness.md"
+    )
+    review_record = REPO_ROOT / (
+        "docs/reviews/"
+        "WO-057-hosted-migration-backup-and-restore-readiness-implementation-report.md"
+    )
+
+    assert readiness_record.is_file()
+    assert review_record.is_file()
+
+    readiness_text = readiness_record.read_text()
+    assert "atlas-migration-cutover --mode check --require-current-head" in (
+        readiness_text
+    )
+    assert "atlas-migration-cutover --mode upgrade" in readiness_text
+    assert "--confirm-hosted-migration" in readiness_text
+    assert "--backup-evidence-id" in readiness_text
+    assert "Point-in-Time Recovery" in readiness_text
+    assert "Create export" in readiness_text
+    assert "Do not restore in place" in readiness_text
 
 
 def test_release_readiness_provider_files_match_cutover_authority() -> None:

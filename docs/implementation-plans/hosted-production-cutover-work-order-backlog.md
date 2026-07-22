@@ -24,14 +24,15 @@ acceptance.
 | --- | --- | --- | --- | --- |
 | WO-053 | Production Environment and Secrets Provisioning | ES-008 accepted | Limited | Completed - Provider Configuration Bound |
 | WO-054 | Netlify Frontend Deployment | WO-053 env map | Limited | Completed - Hosted Runtime Evidence Captured |
-| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | In Progress - Hosted API Ready; Migration Pending |
+| WO-055 | Render API and PostgreSQL Deployment | WO-053 env map | Limited | Completed - Hosted API and Database Ready |
 | WO-056A | Grafley Custom Domain Cutover | WO-054, WO-055 hosted provider targets | No | Completed - Custom Domains and Runtime Cutover Verified |
 | WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Google OAuth Provider Configured; Owner OIDC Gate Cleared |
 | WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | Completed - Owner Identity Bound and Readiness Verified |
-| WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Accepted - Ready for Implementation |
-| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Accepted - Pending Implementation |
-| WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
-| WO-060 | Release Tag and Production Closeout | WO-058, WO-059 | No | Accepted - Pending Implementation |
+| WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Completed - Hosted Migration Verified |
+| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Hosted Dashboard Is Not Connected to Runtime Services |
+| WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun |
+| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-062 | No | Accepted - Pending Implementation |
+| WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
 
 ## 3. Dependency Waves
 
@@ -41,7 +42,7 @@ acceptance.
 | Wave 1 | WO-053 | Provider env/secrets inventory and provisioning authority | Serial gate before provider writes |
 | Wave 2 | WO-054, WO-055 | Netlify frontend and Render API/PostgreSQL setup | Parallel only if provider boundaries are clear |
 | Wave 3 | WO-056A, WO-056, WO-061, WO-057 | Grafley custom domains, connector OAuth, owner OIDC enrollment, migration, backup/restore | Serial because each Google client should use final URLs and migration depends on hosted database readiness |
-| Wave 4 | WO-058, WO-059 | Hosted smoke and rollback evidence | Serial release-safety lane |
+| Wave 4 | WO-058, WO-062, WO-058 rerun, WO-059 | Hosted smoke, dashboard runtime remediation, rerun evidence, and rollback evidence | Serial release-safety lane |
 | Wave 5 | WO-060 | Go/no-go, optional tag, closeout | Maintainer decision lane |
 
 ## 4. Accepted Work Orders
@@ -173,6 +174,15 @@ Objective:
 - Execute or rehearse hosted database migration with backup, restore, and
   rollback evidence.
 
+Current state:
+
+- Render PostgreSQL backup path evidence is recorded as
+  `render-pitr-paid-plan-2026-07-21`. The Repository Maintainer authorized
+  hosted migration on 2026-07-21. Hosted Alembic upgrade ran through Render
+  one-off job `job-d9ft82btqb8s73b9430g`, and final current-head verification
+  passed through `job-d9ft8dnavr4c73e0751g` with repository head
+  `0017_gmail_send_outcomes`.
+
 ### WO-058 - Hosted Smoke Tests and Monitoring Confirmation
 
 Work Order:
@@ -184,6 +194,37 @@ Objective:
 - Validate hosted frontend/API behavior, health/readiness, connector state,
   synthetic Gmail/Drive workflow evidence if authorized, audit/log signals, and
   owner monitoring expectations.
+
+Current state:
+
+- Hosted smoke validation on 2026-07-21 passed dashboard rendering, dashboard
+  runtime readiness, API liveness/readiness, API health, final-origin CORS,
+  and the OAuth-denial redirect. It is blocked because the deployed dashboard
+  identifies its operational surfaces as fictional session-only prototypes;
+  it cannot perform or display the real owner-session, connector, run,
+  approval, audit, log, or monitoring checks required by this Work Order.
+  Evidence is recorded in
+  `docs/reviews/WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md`.
+
+### WO-062 - Hosted Dashboard Runtime Integration
+
+Work Order:
+
+- `docs/work-orders/062-hosted-dashboard-runtime-integration.md`
+
+Objective:
+
+- Resolve the WO-058 blocker by replacing release-critical fixture-only
+  dashboard paths with owner-authenticated, server-signed hosted API
+  integrations for connector, run, approval, audit, and monitoring evidence.
+
+Current state:
+
+- Accepted after WO-058 recorded that the deployed dashboard cannot exercise
+  the real owner-session, connector, run, approval, audit, log, or monitoring
+  workflow required for hosted smoke completion. WO-062 must be accepted,
+  implemented, deployed, and followed by a successful WO-058 rerun before
+  WO-059 or WO-060 can begin.
 
 ### WO-059 - Production Rollback and Release Withdrawal Rehearsal
 

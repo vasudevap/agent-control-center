@@ -9,6 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from atlas_api.api.agent_registry import router as agent_registry_router
 from atlas_api.api.approvals import approval_router, manual_router
 from atlas_api.api.connectors import router as connectors_router
+from atlas_api.api.dashboard import router as dashboard_router
 from atlas_api.api.knowledge_facts import router as knowledge_facts_router
 from atlas_api.api.knowledge_questions import router as knowledge_questions_router
 from atlas_api.api.owner_identity import router as owner_identity_router
@@ -28,6 +29,10 @@ OPENAPI_TAGS = [
     {"name": "agents", "description": "Generic agent registry contracts."},
     {"name": "approvals", "description": "Generic approval decision contracts."},
     {"name": "connectors", "description": "Connector OAuth and health contracts."},
+    {
+        "name": "dashboard",
+        "description": "Owner-authenticated dashboard runtime facade.",
+    },
     {"name": "knowledge", "description": "Reserved knowledge API contract."},
     {
         "name": "manual-handling",
@@ -58,9 +63,15 @@ def create_app(
         app.add_middleware(
             CORSMiddleware,
             allow_origins=[resolved_settings.frontend_origin],
-            allow_methods=["GET"],
-            allow_headers=["Accept", "X-Correlation-Id"],
-            allow_credentials=False,
+            allow_methods=["GET", "POST"],
+            allow_headers=[
+                "Accept",
+                "Content-Type",
+                "Idempotency-Key",
+                "X-Atlas-CSRF-Token",
+                "X-Correlation-Id",
+            ],
+            allow_credentials=True,
         )
     app.add_middleware(CorrelationIdMiddleware)
     register_exception_handlers(app)
@@ -69,6 +80,7 @@ def create_app(
     app.include_router(approval_router)
     app.include_router(manual_router)
     app.include_router(connectors_router)
+    app.include_router(dashboard_router)
     app.include_router(owner_identity_router)
     app.include_router(knowledge_facts_router)
     app.include_router(knowledge_questions_router)

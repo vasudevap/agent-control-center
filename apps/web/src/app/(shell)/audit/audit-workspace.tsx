@@ -28,6 +28,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardRuntimeMode,
+  readDashboardAudit,
+  readDashboardSession,
+  toAuditEvents,
+} from "@/lib/dashboard-runtime";
 
 type SortKey = "result" | "event" | "actor" | "resource" | "occurred";
 const SELECT_CLASS =
@@ -74,6 +82,9 @@ function EventDetails({ event }: { event: AuditEvent }) {
 }
 
 export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
+  const [liveEvents, setLiveEvents] = React.useState<AuditEvent[]>([]);
   const [query, setQuery] = React.useState("");
   const [action, setAction] = React.useState<AuditAction | "all">("all");
   const [result, setResult] = React.useState<AuditResult | "all">("all");
@@ -83,8 +94,43 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
   );
   const [sort, setSort] = React.useState<SortKey>("occurred");
   const [direction, setDirection] = React.useState<SortDirection>("desc");
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode("fixture");
+        return;
+      }
+      setRuntimeMode("loading");
+      try {
+        await readDashboardSession();
+        const runtimeEvents = await readDashboardAudit();
+        if (!cancelled) {
+          setLiveEvents(toAuditEvents(runtimeEvents));
+          setRuntimeMode("live");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+        } else {
+          setRuntimeMode("error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const activeEvents = runtimeMode === "live" ? liveEvents : events;
   const normalized = query.trim().toLowerCase();
-  const visible = events
+  const visible = activeEvents
     .filter(
       (event) =>
         (!normalized ||
@@ -144,7 +190,11 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
       <PageHeader
         eyebrow="Governance"
         title="Audit"
-        description="Inspect fictional governance history and correlation context."
+        description={
+          runtimeMode === "live"
+            ? "Inspect metadata-only Atlas audit events and correlation context."
+            : "Inspect fictional governance history and correlation context."
+        }
         icon={ClipboardList}
         meta={
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground-secondary">
@@ -154,9 +204,32 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
         }
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-        <strong>Frontend prototype.</strong> These append-only-looking examples
-        are not operational audit records or a system of record. Nothing is
-        written, exported, edited, or deleted.
+        {runtimeMode === "live" ? (
+          <>
+            <strong>Live runtime.</strong> Audit events are loaded from the
+            owner-authenticated Atlas API dashboard facade. This view exposes
+            metadata only.
+          </>
+        ) : runtimeMode === "unauthenticated" ? (
+          <>
+            <strong>Owner sign-in required.</strong> Runtime audit evidence is
+            blocked until the owner session is established.{" "}
+            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
+              Sign in with Google
+            </a>
+            .
+          </>
+        ) : runtimeMode === "loading" ? (
+          "Loading owner-authenticated audit metadata..."
+        ) : runtimeMode === "error" ? (
+          "Runtime audit metadata is unavailable. Fixture history remains quarantined from release evidence."
+        ) : (
+          <>
+            <strong>Frontend prototype.</strong> No runtime API base URL is
+            configured for this build; these examples are not operational audit
+            records or a system of record.
+          </>
+        )}
       </div>
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchField
@@ -177,7 +250,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           }
         >
           <option value="all">All actions</option>
-          {unique(events.map((event) => event.action)).map((value) => (
+          {unique(activeEvents.map((event) => event.action)).map((value) => (
             <option key={value}>{value}</option>
           ))}
         </select>
@@ -193,7 +266,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           }
         >
           <option value="all">All results</option>
-          {unique(events.map((event) => event.result)).map((value) => (
+          {unique(activeEvents.map((event) => event.result)).map((value) => (
             <option key={value} value={value}>
               {value[0].toUpperCase() + value.slice(1)}
             </option>
@@ -209,7 +282,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           onChange={(event) => setActor(event.target.value)}
         >
           <option value="all">All actors</option>
-          {unique(events.map((event) => event.actor)).map((value) => (
+          {unique(activeEvents.map((event) => event.actor)).map((value) => (
             <option key={value}>{value}</option>
           ))}
         </select>
@@ -225,7 +298,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           }
         >
           <option value="all">All resources</option>
-          {unique(events.map((event) => event.resourceType)).map((value) => (
+          {unique(activeEvents.map((event) => event.resourceType)).map((value) => (
             <option key={value}>{value}</option>
           ))}
         </select>
@@ -236,7 +309,8 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           </Button>
         )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
-          {visible.length} of {events.length} fictional events
+          {visible.length} of {activeEvents.length}{" "}
+          {runtimeMode === "live" ? "runtime events" : "fictional events"}
         </p>
       </div>
       {visible.length === 0 ? (
@@ -249,7 +323,9 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
             description={
               hasFilters
                 ? "Clear filters to restore the fictional history."
-                : "No audit fixtures are available."
+                : runtimeMode === "live"
+                  ? "No runtime audit events are available."
+                  : "No audit fixtures are available."
             }
             action={
               hasFilters ? (

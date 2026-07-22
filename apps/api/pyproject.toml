@@ -15,6 +15,7 @@ dependencies = [
 
 [project.scripts]
 atlas-schedule-sweep = "atlas_api.cli.sweep_schedules:main"
+atlas-migration-cutover = "atlas_api.cli.migration_cutover:main"
 
 [project.optional-dependencies]
 dev = [

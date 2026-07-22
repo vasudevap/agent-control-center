@@ -1,13 +1,13 @@
 # Work Order 058: Hosted Smoke Tests and Monitoring Confirmation
 
-**Status:** Accepted - Pending Implementation
+**Status:** Blocked - Hosted Dashboard Is Not Connected to Runtime Services
 **Work Order ID:** WO-058
 **Type:** Hosted validation and monitoring confirmation
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending WO-054 through WO-057 evidence
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-054 through WO-057 complete
-**Review Record:** TBD
+**Review Record:** [WO-058 hosted smoke tests and monitoring confirmation report](../reviews/WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md)
 
 ## 1. Purpose
 
@@ -47,6 +47,23 @@ implementation report under `docs/reviews/`.
 
 If smoke validation fails, stop cutover, record blocker evidence, and follow
 WO-059 rollback or corrective-forward procedures.
+
+## 6.1 Current Blocker
+
+Hosted smoke validation on 2026-07-21 confirmed that the dashboard and API
+health endpoints are reachable and ready. It also confirmed that the deployed
+dashboard's Connectors, Runs, Approvals, Audit, and Alerts surfaces are
+explicitly fictional, session-only frontend prototypes. They do not call the
+hosted runtime or expose the authenticated owner workflow required to verify
+real connector health, a synthetic Gmail/Drive run, approval state, audit
+events, log correlation, or monitoring signals.
+
+The cutover is stopped. Do not begin WO-059 or WO-060 until a separately
+accepted, implemented, and deployed dashboard-to-runtime integration scope has
+resolved this blocker and WO-058 is rerun.
+
+Proposed remediation scope is drafted as
+[WO-062 Hosted Dashboard Runtime Integration](./062-hosted-dashboard-runtime-integration.md).
 
 ## 7. Stop-and-Ask Triggers
 

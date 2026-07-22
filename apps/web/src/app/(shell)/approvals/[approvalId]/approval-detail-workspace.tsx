@@ -15,13 +15,27 @@ import { applySimulatedDecision, canSimulateDecision, expireDuringSimulatedRevie
 import type { ApprovalRecord } from "../approval-data";
 import { findRunById } from "@/app/(shell)/runs/run-data";
 import { findArtifactById } from "@/app/(shell)/artifacts/artifact-data";
+import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardRuntimeMode,
+  readDashboardApproval,
+  readDashboardSession,
+  toApprovalRecords,
+} from "@/lib/dashboard-runtime";
 
-function Notice() {
+function Notice({ runtimeMode }: { runtimeMode: DashboardRuntimeMode }) {
   return (
     <Card className="border-info-border bg-info-bg">
       <CardContent className="flex gap-2.5 p-3 text-xs leading-relaxed text-info">
         <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-        <p><strong>Frontend prototype.</strong> Any decision is a session-only local simulation. It does not affect a real agent, runtime, service, policy engine, audit system, or persisted record.</p>
+        {runtimeMode === "live" ? (
+          <p><strong>Live runtime.</strong> This approval metadata is loaded from the owner-authenticated Atlas API dashboard facade. Decision controls are not enabled until a safe mutation facade is accepted.</p>
+        ) : runtimeMode === "unauthenticated" ? (
+          <p><strong>Owner sign-in required.</strong> Runtime approval detail is blocked until the owner session is established. <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>Sign in with Google</a>.</p>
+        ) : (
+          <p><strong>Frontend prototype.</strong> Any decision is a session-only local simulation. It does not affect a real agent, runtime, service, policy engine, audit system, or persisted record.</p>
+        )}
       </CardContent>
     </Card>
   );
@@ -49,7 +63,9 @@ function Details({ items, fullWidth = [] }: { items: Record<string, React.ReactN
   );
 }
 
-export function ApprovalDetailWorkspace({ approval, presentationState = "ready", now = Date.now, returnTo = "/approvals?view=queue" }: { approval?: ApprovalRecord; presentationState?: "ready" | "loading" | "error"; now?: () => number; returnTo?: string }) {
+export function ApprovalDetailWorkspace({ approval, requestedId, presentationState = "ready", now = Date.now, returnTo = "/approvals?view=queue" }: { approval?: ApprovalRecord; requestedId?: string; presentationState?: "ready" | "loading" | "error"; now?: () => number; returnTo?: string }) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
   const [current, setCurrent] = React.useState(approval);
   const [decision, setDecision] = React.useState<SimulatedDecision | null>(null);
   const [reason, setReason] = React.useState("");
@@ -62,20 +78,59 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
     ? "Return to History"
     : "Return to Queue";
 
-  if (presentationState === "loading") return <div className="grid gap-4"><Skeleton className="h-16 w-1/2" /><Skeleton className="h-96 w-full" /></div>;
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode("fixture");
+        return;
+      }
+      const approvalId = approval?.id ?? requestedId;
+      if (!approvalId) {
+        setRuntimeMode("error");
+        return;
+      }
+      setRuntimeMode("loading");
+      try {
+        await readDashboardSession();
+        const runtimeApproval = await readDashboardApproval(approvalId);
+        if (!cancelled) {
+          setCurrent(toApprovalRecords([runtimeApproval])[0]);
+          setRuntimeMode("live");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+        } else {
+          setRuntimeMode(approval ? "fixture" : "error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, [approval, requestedId]);
+
+  if (presentationState === "loading" || runtimeMode === "loading") return <div className="grid gap-4"><Skeleton className="h-16 w-1/2" /><Skeleton className="h-96 w-full" /></div>;
   if (presentationState === "error" || !current) {
     return (
       <Card className="border-error-border bg-error-bg">
         <CardContent className="p-6">
           <h1 className="text-lg font-semibold text-error">Approval unavailable</h1>
-          <p className="mt-2 text-sm text-error">This fictional approval cannot be displayed. No real approval service was contacted.</p>
+          <p className="mt-2 text-sm text-error">{runtimeMode === "unauthenticated" ? "Owner sign-in is required before runtime approval detail can be loaded." : runtimeMode === "error" ? "The hosted runtime did not return this approval detail." : "This fictional approval cannot be displayed. No real approval service was contacted."}</p>
           <Button asChild className="mt-4" variant="secondary"><Link href="/approvals?view=queue">Return to Queue</Link></Button>
         </CardContent>
       </Card>
     );
   }
 
-  const actionable = current.state === "Pending";
+  const actionable = runtimeMode !== "live" && current.state === "Pending";
   const approveAvailable = canSimulateDecision(current, "approve");
   const stepUpRequired = requiresSimulatedStepUp(current);
   const reasonRequired = decision === "reject" || decision === "request-clarification" || (decision === "approve" && (current.risk === "High" || current.risk === "Critical"));
@@ -115,7 +170,17 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
     setReason("");
   };
 
-  const DecisionCard = (
+  const DecisionCard = runtimeMode === "live" ? (
+    <Card className="overflow-hidden" role="region" aria-label="Decision controls unavailable">
+      <CardHeader className="border-b border-border-default bg-surface-secondary">
+        <CardTitle>Decision controls unavailable</CardTitle>
+        <CardDescription>Runtime approval decisions require a separately accepted mutation facade.</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-2.5 pt-3 text-sm text-foreground-secondary sm:pt-3">
+        This live view is metadata-only and does not simulate, approve, reject, or persist decisions.
+      </CardContent>
+    </Card>
+  ) : (
     <Card className="overflow-hidden" role="region" aria-label="Decision controls" aria-describedby={!approveAvailable && actionable ? unavailableExplanationId : undefined}>
       <CardHeader className="border-b border-border-default bg-surface-secondary">
         <CardTitle>Decide</CardTitle>
@@ -145,7 +210,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
   const relatedArtifact = current.artifact ? findArtifactById(current.artifact.id) : undefined;
   const requestContext = {
     Agent: <Link className="text-brand hover:underline" href={`/agents/${current.agent.id}`}>{current.agent.name}</Link>,
-    Run: relatedRun ? <Link className="text-brand hover:underline" href={`/runs/${relatedRun.id}`}>{relatedRun.id}</Link> : `${current.runId} (unavailable in prototype)`,
+    Run: relatedRun ? <Link className="text-brand hover:underline" href={`/runs/${relatedRun.id}`}>{relatedRun.id}</Link> : runtimeMode === "live" ? current.runId : `${current.runId} (unavailable in prototype)`,
     Artifact: current.artifact ? relatedArtifact ? <Link className="text-brand hover:underline" href={`/artifacts/${relatedArtifact.id}`}>{relatedArtifact.name} ({relatedArtifact.id})</Link> : `${current.artifact.name} (${current.artifact.id}; unavailable in prototype)` : "No related artifact in this fixture",
     Requested: new Date(current.requestedAt).toLocaleString(),
     Expiry: <ExpiryLabel approval={current} />,
@@ -167,12 +232,12 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
         meta={<><RiskChip risk={current.risk as RiskLevel} plain /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
         actions={<Button asChild variant="ghost" size="sm"><Link href={returnTo}><ArrowLeft className="size-4" aria-hidden="true" />{returnLabel}</Link></Button>}
       />
-      <Notice />
+      <Notice runtimeMode={runtimeMode} />
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="grid gap-5">
-          <InfoCard title="Proposed action" description="The exact fictional action being reviewed.">
+          <InfoCard title="Proposed action" description={runtimeMode === "live" ? "Metadata for the runtime approval being reviewed." : "The exact fictional action being reviewed."}>
             <Details items={{ Action: current.action, Target: current.target, "Payload summary": current.payloadSummary, Consequence: current.consequence, "Affected scope": current.scope, Environment: current.environment }} fullWidth={["Payload summary"]} />
           </InfoCard>
           <InfoCard title="Policy and governance rationale" description="Why an operator review is required.">
@@ -200,7 +265,7 @@ export function ApprovalDetailWorkspace({ approval, presentationState = "ready",
               )}
             </div>
           </InfoCard>
-          <InfoCard title="Activity" description="Local prototype activity is explicitly labeled.">
+          <InfoCard title="Activity" description={runtimeMode === "live" ? "Metadata-only runtime activity context." : "Local prototype activity is explicitly labeled."}>
             <ol className="grid gap-4 border-l border-border-default pl-5">
               {current.activity.map((item, index) => (
                 <li key={`${item.at}-${index}`} className="relative">

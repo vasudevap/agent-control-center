@@ -7,6 +7,17 @@ import {
   type ConnectorRecord,
   type ConnectorStatus,
 } from "./connector-data";
+import {
+  checkConnectionHealth,
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardConnection,
+  type DashboardRuntimeMode,
+  readDashboardConnectors,
+  readDashboardSession,
+  startConnectorOAuth,
+  toConnectorRecords,
+} from "@/lib/dashboard-runtime";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
@@ -96,7 +107,7 @@ function ConnectorDetails({ connector }: { connector: ConnectorRecord }) {
         </div>
         <div>
           <p className="font-mono text-[10px] uppercase text-foreground-tertiary">
-            Fictional scopes
+            Declared scopes
           </p>
           <ul className="mt-2 grid gap-1 font-mono text-foreground-secondary">
             {connector.scopes.map((scope) => (
@@ -105,8 +116,8 @@ function ConnectorDetails({ connector }: { connector: ConnectorRecord }) {
           </ul>
         </div>
         <p className="text-foreground-secondary">
-          Descriptors only. No token, secret, provider client, or permission
-          grant exists.
+          Metadata only. No token, secret, provider client, OAuth code, or raw
+          permission grant is exposed in this dashboard.
         </p>
       </div>
     </details>
@@ -118,6 +129,13 @@ export function ConnectorsWorkspace({
 }: {
   connectors: ConnectorRecord[];
 }) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
+  const [liveConnectors, setLiveConnectors] = React.useState<ConnectorRecord[]>([]);
+  const [connections, setConnections] = React.useState<
+    Record<string, DashboardConnection>
+  >({});
+  const [csrfToken, setCsrfToken] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<ConnectorStatus | "all">("all");
   const [auth, setAuth] = React.useState<AuthenticationType | "all">("all");
@@ -129,7 +147,51 @@ export function ConnectorsWorkspace({
   const [confirmRevoke, setConfirmRevoke] =
     React.useState<ConnectorRecord | null>(null);
   const [notice, setNotice] = React.useState("");
-  const records = connectors.map((connector) => ({
+
+  const loadRuntime = React.useCallback(async () => {
+    if (!dashboardApiBaseUrl()) {
+      setRuntimeMode("fixture");
+      return;
+    }
+    setRuntimeMode("loading");
+    try {
+      const session = await readDashboardSession();
+      const payload = await readDashboardConnectors();
+      setCsrfToken(session.csrf_token);
+      setConnections(
+        Object.fromEntries(
+          payload.connections.map((connection) => [
+            connection.connector_type,
+            connection,
+          ]),
+        ),
+      );
+      setLiveConnectors(
+        toConnectorRecords(payload.descriptors, payload.connections),
+      );
+      setRuntimeMode("live");
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        "status" in error &&
+        (error as { status: number }).status === 401
+      ) {
+        setRuntimeMode("unauthenticated");
+      } else {
+        setRuntimeMode("error");
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void loadRuntime();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [loadRuntime]);
+
+  const activeConnectors = runtimeMode === "live" ? liveConnectors : connectors;
+  const records = activeConnectors.map((connector) => ({
     ...connector,
     status: overrides[connector.id] ?? connector.status,
   }));
@@ -193,33 +255,52 @@ export function ConnectorsWorkspace({
         : null;
 
   const Actions = ({ connector }: { connector: ConnectorRecord }) => {
+    const connection = connections[connector.id];
     const primary = primaryAction(connector);
     return (
       <div className="relative z-20 flex flex-wrap gap-2">
         {primary && (
           <Button
             size="sm"
-            onClick={() =>
-              setSimulated(connector, primary.status, primary.action)
-            }
+            onClick={async () => {
+              if (runtimeMode === "live") {
+                const result = await startConnectorOAuth(connector, csrfToken);
+                window.location.assign(result.authorization_url);
+                return;
+              }
+              setSimulated(connector, primary.status, primary.action);
+            }}
           >
             <RotateCw aria-hidden="true" />
-            {primary.label}
+            {runtimeMode === "live"
+              ? connector.status === "offline"
+                ? "Connect"
+                : "Reconnect"
+              : primary.label}
           </Button>
         )}
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => {
-            setNotice(
-              `Simulated health check for ${connector.name}. No provider was contacted.`,
-            );
+          disabled={runtimeMode === "live" && !connection}
+          onClick={async () => {
+            if (runtimeMode === "live" && connection) {
+              await checkConnectionHealth(connection.connection_id, csrfToken);
+              await loadRuntime();
+              setNotice(`Runtime health check completed for ${connector.name}.`);
+            } else {
+              setNotice(
+                `Simulated health check for ${connector.name}. No provider was contacted.`,
+              );
+            }
           }}
         >
           <Activity aria-hidden="true" />
-          Simulate health check
+          {runtimeMode === "live" ? "Run health check" : "Simulate health check"}
         </Button>
-        {connector.status !== "offline" && connector.status !== "revoked" && (
+        {runtimeMode !== "live" &&
+          connector.status !== "offline" &&
+          connector.status !== "revoked" && (
           <Button
             variant="ghost"
             size="sm"
@@ -238,13 +319,40 @@ export function ConnectorsWorkspace({
       <PageHeader
         eyebrow="Governance"
         title="Connectors"
-        description="Review fictional connection descriptors and least-privilege declarations."
+        description={
+          runtimeMode === "live"
+            ? "Review owner-authenticated connector descriptors, connection health, and OAuth start paths."
+            : "Review fictional connection descriptors and least-privilege declarations."
+        }
         icon={PlugZap}
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-        <strong>Frontend prototype.</strong> No OAuth, provider, token,
-        credential, secret, or connection service exists. Every action is a
-        session-only simulation.
+        {runtimeMode === "live" ? (
+          <>
+            <strong>Live runtime.</strong> Data is loaded from the
+            owner-authenticated Atlas API dashboard facade. Secrets and provider
+            tokens stay server-side.
+          </>
+        ) : runtimeMode === "unauthenticated" ? (
+          <>
+            <strong>Owner sign-in required.</strong> Runtime connector controls
+            are blocked until the owner session is established.{" "}
+            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
+              Sign in with Google
+            </a>
+            .
+          </>
+        ) : runtimeMode === "loading" ? (
+          "Loading owner-authenticated connector data..."
+        ) : runtimeMode === "error" ? (
+          "Runtime connector data is unavailable. Fixture data remains quarantined from release evidence."
+        ) : (
+          <>
+            <strong>Frontend prototype.</strong> No runtime API base URL is
+            configured for this build; every action is a session-only
+            simulation.
+          </>
+        )}
       </div>
       <p className="sr-only" aria-live="polite">
         {notice}
@@ -301,7 +409,8 @@ export function ConnectorsWorkspace({
           </Button>
         )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
-          {visible.length} of {connectors.length} fictional connectors
+          {visible.length} of {activeConnectors.length}{" "}
+          {runtimeMode === "live" ? "runtime connectors" : "fictional connectors"}
         </p>
       </div>
       {visible.length === 0 ? (

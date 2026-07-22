@@ -4,7 +4,10 @@ import pytest
 from pydantic import ValidationError
 
 from atlas_api.core.config import Settings
-from atlas_api.db.config import require_database_url
+from atlas_api.db.config import (
+    normalize_database_url_for_sqlalchemy,
+    require_database_url,
+)
 
 
 def test_local_and_development_do_not_require_a_database_by_default() -> None:
@@ -78,6 +81,31 @@ def test_database_migrations_receive_the_configured_database_url() -> None:
     settings = Settings(database_url="postgresql+psycopg://placeholder")
 
     assert require_database_url(settings) == "postgresql+psycopg://placeholder"
+
+
+@pytest.mark.parametrize(
+    ("database_url", "expected"),
+    [
+        (
+            "postgresql://user:pass@example.test/db",
+            "postgresql+psycopg://user:pass@example.test/db",
+        ),
+        (
+            "postgres://user:pass@example.test/db",
+            "postgresql+psycopg://user:pass@example.test/db",
+        ),
+        (
+            "postgresql+psycopg://user:pass@example.test/db",
+            "postgresql+psycopg://user:pass@example.test/db",
+        ),
+        ("sqlite:////tmp/atlas.db", "sqlite:////tmp/atlas.db"),
+    ],
+)
+def test_database_urls_are_normalized_for_sqlalchemy(
+    database_url: str,
+    expected: str,
+) -> None:
+    assert normalize_database_url_for_sqlalchemy(database_url) == expected
 
 
 def test_secret_settings_are_redacted() -> None:

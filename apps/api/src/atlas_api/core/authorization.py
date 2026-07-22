@@ -35,6 +35,24 @@ class AuthorizationDecision:
 
 def authorize(context: AuthorizationContext) -> AuthorizationDecision:
     if (
+        context.actor_kind is ActorKind.HUMAN_OWNER
+        and context.channel is Channel.DASHBOARD
+        and context.resource
+        in {"agent", "connector", "agent_run", "approval", "audit", "monitoring"}
+        and context.action
+        in {
+            "list",
+            "read",
+            "read_evidence",
+            "read_health",
+            "start_oauth",
+            "create",
+        }
+        and context.risk_level in {"low", "medium"}
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+
+    if (
         context.actor_kind is ActorKind.EXTERNAL_CLIENT
         and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
         and context.resource == "external_client_authentication"

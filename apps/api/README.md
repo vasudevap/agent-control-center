@@ -51,6 +51,30 @@ The migration command fails safely when `ATLAS_API_DATABASE_URL` is absent and
 does not print the configured value. GitHub Actions runs the same migration
 smoke check against a disposable PostgreSQL 18 service with synthetic data.
 
+For hosted cutover evidence, use the guarded migration helper. The read-only
+check records sanitized current/head evidence:
+
+```bash
+ATLAS_API_DATABASE_URL='<provider-managed-url>' atlas-migration-cutover --mode check --require-current-head
+```
+
+The upgrade path is intentionally harder to run. It requires explicit hosted
+migration authority plus a short non-secret backup evidence label:
+
+```bash
+ATLAS_API_DATABASE_URL='<provider-managed-url>' atlas-migration-cutover --mode upgrade --confirm-hosted-migration --authority-ticket WO-057-maintainer-approval --backup-evidence-id render-pitr-paid-plan-2026-07-21 --require-current-head
+```
+
+The helper prints JSON evidence with environment, repository head, before/after
+revision, and evidence labels only. It does not print the database URL. Do not
+run the upgrade mode against hosted PostgreSQL until the WO-057 backup/restore
+gate and maintainer authority are both recorded.
+
+Provider-managed `postgres://` and `postgresql://` values are normalized to
+SQLAlchemy's installed `postgresql+psycopg://` driver form in migration and
+scheduled-job helpers. Do not print or rewrite the provider-managed URL to
+source-controlled files.
+
 Run the local development server after installing dependencies:
 
 ```bash

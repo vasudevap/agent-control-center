@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowLeft, FileText, Info, Workflow } from "lucide-react";
 import type { RunRecord } from "../run-data";
@@ -20,6 +23,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardRuntimeMode,
+  readDashboardAgents,
+  readDashboardRun,
+  readDashboardSession,
+  toRunRecords,
+} from "@/lib/dashboard-runtime";
 
 function Fact({
   label,
@@ -64,7 +76,50 @@ export function RunDetailWorkspace({
   run?: RunRecord;
   requestedId: string;
 }) {
-  if (!run)
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
+  const [liveRun, setLiveRun] = React.useState<RunRecord | undefined>();
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode("fixture");
+        return;
+      }
+      setRuntimeMode("loading");
+      try {
+        await readDashboardSession();
+        const [agents, runtimeRun] = await Promise.all([
+          readDashboardAgents(),
+          readDashboardRun(requestedId),
+        ]);
+        if (!cancelled) {
+          setLiveRun(toRunRecords([runtimeRun], agents)[0]);
+          setRuntimeMode("live");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+        } else {
+          setRuntimeMode(run ? "fixture" : "error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, [requestedId, run]);
+
+  const currentRun = runtimeMode === "live" ? liveRun : run;
+
+  if (!currentRun)
     return (
       <div className="grid gap-5">
         <Breadcrumb
@@ -75,7 +130,15 @@ export function RunDetailWorkspace({
           title="Run unavailable"
           identifier={requestedId}
           icon={Workflow}
-          description="This identifier is not represented by the local prototype fixtures."
+          description={
+            runtimeMode === "loading"
+              ? "Loading owner-authenticated runtime detail."
+              : runtimeMode === "unauthenticated"
+                ? "Owner sign-in is required before runtime detail can be loaded."
+                : runtimeMode === "error"
+                  ? "The hosted runtime did not return this run detail."
+                  : "This identifier is not represented by the local prototype fixtures."
+          }
           actions={
             <Button asChild size="sm" variant="secondary">
               <Link href="/runs">
@@ -87,8 +150,17 @@ export function RunDetailWorkspace({
         />
         <Card>
           <CardContent className="p-8 text-center text-sm text-foreground-secondary">
-            No service lookup occurred. Choose a fixture from the Runs
-            inventory.
+            {runtimeMode === "unauthenticated" ? (
+              <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
+                Sign in with Google
+              </a>
+            ) : runtimeMode === "loading" ? (
+              "Loading runtime run detail..."
+            ) : runtimeMode === "error" ? (
+              "Runtime detail lookup failed or the run is unavailable."
+            ) : (
+              "No service lookup occurred. Choose a fixture from the Runs inventory."
+            )}
           </CardContent>
         </Card>
       </div>
@@ -97,15 +169,15 @@ export function RunDetailWorkspace({
   return (
     <div className="grid gap-5">
       <Breadcrumb
-        items={[{ label: "Runs", href: "/runs" }, { label: run.id }]}
+        items={[{ label: "Runs", href: "/runs" }, { label: currentRun.id }]}
       />
       <PageHeader
         eyebrow="Run"
-        title={run.agent.name}
-        identifier={run.id}
-        description={run.summary}
+        title={currentRun.agent.name}
+        identifier={currentRun.id}
+        description={currentRun.summary}
         icon={Workflow}
-        meta={<StatusBadge status={run.status} plain />}
+        meta={<StatusBadge status={currentRun.status} plain />}
         actions={
           <Button asChild size="sm" variant="ghost">
             <Link href="/runs">
@@ -116,45 +188,63 @@ export function RunDetailWorkspace({
         }
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-        <strong>Frontend prototype.</strong> This timeline, its logs, and all
-        metadata are fictional. No runtime, retry, cancellation, or persistence
-        behavior exists.
+        {runtimeMode === "live" ? (
+          <>
+            <strong>Live runtime.</strong> Metadata is loaded from the
+            owner-authenticated Atlas API dashboard facade. Logs and step bodies
+            remain redacted unless a safe runtime contract exposes them.
+          </>
+        ) : (
+          <>
+            <strong>Frontend prototype.</strong> This timeline, its logs, and
+            all metadata are fictional. No runtime, retry, cancellation, or
+            persistence behavior exists.
+          </>
+        )}
       </div>
       <div className="grid gap-5 xl:grid-cols-[20rem_minmax(0,1fr)]">
         <aside>
           <div className="sticky top-[calc(var(--statusbar-height)+var(--topbar-height)+1rem)] grid gap-4">
             <SectionCard
               title="At a glance"
-              description="Fixture execution and correlation context."
+              description={
+                runtimeMode === "live"
+                  ? "Runtime execution and correlation context."
+                  : "Fixture execution and correlation context."
+              }
             >
               <dl className="divide-y divide-border-subtle">
                 <Fact label="Status">
-                  <StatusBadge status={run.status} plain />
+                  <StatusBadge status={currentRun.status} plain />
                 </Fact>
                 <Fact label="Agent">
                   <Link
                     className="text-brand hover:underline"
-                    href={`/agents/${run.agent.id}`}
+                    href={`/agents/${currentRun.agent.id}`}
                   >
-                    {run.agent.name}
+                    {currentRun.agent.name}
                   </Link>
                 </Fact>
-                <Fact label="Trigger">{run.trigger}</Fact>
+                <Fact label="Trigger">{currentRun.trigger}</Fact>
                 <Fact label="Started">
-                  {new Date(run.startedAt).toLocaleString()}
+                  {new Date(currentRun.startedAt).toLocaleString()}
                 </Fact>
-                <Fact label="Duration">{run.duration}</Fact>
-                <Fact label="Retries">{run.retryCount}</Fact>
-                <Fact label="Cost estimate">{run.costEstimate}</Fact>
-                <Fact label="Correlation">{run.correlationId}</Fact>
+                <Fact label="Duration">{currentRun.duration}</Fact>
+                <Fact label="Retries">{currentRun.retryCount}</Fact>
+                <Fact label="Cost estimate">{currentRun.costEstimate}</Fact>
+                <Fact label="Correlation">{currentRun.correlationId}</Fact>
               </dl>
             </SectionCard>
             <SectionCard
               title="Related records"
-              description="Canonical links exist only for local fixtures."
+              description={
+                runtimeMode === "live"
+                  ? "Related runtime links appear when exposed by safe contracts."
+                  : "Canonical links exist only for local fixtures."
+              }
             >
               <div className="grid gap-2">
-                {run.approvalIds.map((id) => (
+                {currentRun.approvalIds.map((id) => (
                   <Link
                     key={id}
                     href={`/approvals/${id}`}
@@ -163,7 +253,7 @@ export function RunDetailWorkspace({
                     Approval {id}
                   </Link>
                 ))}
-                {run.artifactIds.map((id) => (
+                {currentRun.artifactIds.map((id) => (
                   <Link
                     key={id}
                     href={`/artifacts/${id}`}
@@ -172,9 +262,9 @@ export function RunDetailWorkspace({
                     Artifact {id}
                   </Link>
                 ))}
-                {run.approvalIds.length + run.artifactIds.length === 0 && (
+                {currentRun.approvalIds.length + currentRun.artifactIds.length === 0 && (
                   <p className="text-sm text-foreground-secondary">
-                    No related local fixtures.
+                    No related records exposed for this run.
                   </p>
                 )}
               </div>
@@ -182,7 +272,7 @@ export function RunDetailWorkspace({
           </div>
         </aside>
         <main className="grid gap-5">
-          {run.error && (
+          {currentRun.error && (
             <Card className="border-error-border bg-error-bg">
               <CardContent className="flex gap-3 p-4">
                 <AlertCircle
@@ -194,11 +284,11 @@ export function RunDetailWorkspace({
                     Normalized fixture error
                   </h2>
                   <p className="mt-1 text-sm text-foreground">
-                    {run.error.summary}
+                    {currentRun.error.summary}
                   </p>
                   <p className="mt-2 font-mono text-xs text-error">
-                    {run.error.code} · {run.error.category} ·{" "}
-                    {run.error.retryable ? "Retryable" : "Not retryable"}
+                    {currentRun.error.code} · {currentRun.error.category} ·{" "}
+                    {currentRun.error.retryable ? "Retryable" : "Not retryable"}
                   </p>
                 </div>
               </CardContent>
@@ -206,7 +296,11 @@ export function RunDetailWorkspace({
           )}
           <SectionCard
             title="Execution timeline"
-            description="Ordered fixture steps with type, state, duration, and redacted summaries."
+            description={
+              runtimeMode === "live"
+                ? "Runtime step detail is redacted until a safe log contract exposes it."
+                : "Ordered fixture steps with type, state, duration, and redacted summaries."
+            }
           >
             <div className="overflow-hidden rounded-atlas-md border border-border-default">
               <Table>
@@ -222,7 +316,7 @@ export function RunDetailWorkspace({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {run.steps.map((step) => (
+                  {currentRun.steps.map((step) => (
                     <TableRow key={step.id}>
                       <TableCell className="min-w-[15rem] whitespace-normal text-xs">
                         <span className="font-medium text-foreground">
@@ -253,10 +347,14 @@ export function RunDetailWorkspace({
           </SectionCard>
           <SectionCard
             title="Operational log excerpts"
-            description="Fictional troubleshooting context, distinct from audit history."
+            description={
+              runtimeMode === "live"
+                ? "Runtime logs are not exposed by this safe dashboard facade."
+                : "Fictional troubleshooting context, distinct from audit history."
+            }
           >
             <ol className="grid gap-3">
-              {run.logs.map((log) => (
+              {currentRun.logs.map((log) => (
                 <li
                   key={log.id}
                   className="grid gap-1 rounded-atlas-sm border border-border-default bg-surface-secondary p-3 sm:grid-cols-[8rem_8rem_minmax(0,1fr)]"

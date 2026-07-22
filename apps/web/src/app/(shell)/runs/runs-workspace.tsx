@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { FilterX, Workflow } from "lucide-react";
+import { FilterX, Play, Workflow } from "lucide-react";
 import {
   RUN_FIXTURES,
   RUN_STATUS_LABELS,
@@ -10,6 +10,17 @@ import {
   type RunStatus,
   type RunTrigger,
 } from "./run-data";
+import {
+  createDashboardRun,
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardAgent,
+  type DashboardRuntimeMode,
+  readDashboardAgents,
+  readDashboardRuns,
+  readDashboardSession,
+  toRunRecords,
+} from "@/lib/dashboard-runtime";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
@@ -119,14 +130,60 @@ export function RunsWorkspace({
   runs?: RunRecord[];
   state?: ViewState;
 }) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
+  const [liveRuns, setLiveRuns] = React.useState<RunRecord[]>([]);
+  const [agents, setAgents] = React.useState<DashboardAgent[]>([]);
+  const [csrfToken, setCsrfToken] = React.useState("");
+  const [notice, setNotice] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<RunStatus | "all">("all");
   const [trigger, setTrigger] = React.useState<RunTrigger | "all">("all");
   const [sort, setSort] = React.useState<SortKey>("started");
   const [direction, setDirection] = React.useState<SortDirection>("desc");
   const [viewState, setViewState] = React.useState(state);
+  const loadRuntime = React.useCallback(async () => {
+    if (!dashboardApiBaseUrl()) {
+      setRuntimeMode("fixture");
+      return;
+    }
+    setRuntimeMode("loading");
+    try {
+      const session = await readDashboardSession();
+      const [runtimeAgents, runtimeRuns] = await Promise.all([
+        readDashboardAgents(),
+        readDashboardRuns(),
+      ]);
+      setCsrfToken(session.csrf_token);
+      setAgents(runtimeAgents);
+      setLiveRuns(toRunRecords(runtimeRuns, runtimeAgents));
+      setRuntimeMode("live");
+      setViewState("loaded");
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        "status" in error &&
+        (error as { status: number }).status === 401
+      ) {
+        setRuntimeMode("unauthenticated");
+      } else {
+        setRuntimeMode("error");
+        setViewState("error");
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void loadRuntime();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [loadRuntime]);
+
+  const activeRuns = runtimeMode === "live" ? liveRuns : runs;
+  const manualAgents = agents.filter((agent) => agent.supports_manual_run);
   const visibleRuns = sortRuns(
-    filterRuns(runs, query, status, trigger),
+    filterRuns(activeRuns, query, status, trigger),
     sort,
     direction,
   );
@@ -151,13 +208,43 @@ export function RunsWorkspace({
       <PageHeader
         eyebrow="Operations"
         title="Runs"
-        description="Inspect fictional execution history across the Atlas agent fleet."
+        description={
+          runtimeMode === "live"
+            ? "Inspect owner-authenticated Atlas runtime execution history and start synthetic manual runs."
+            : "Inspect fictional execution history across the Atlas agent fleet."
+        }
         icon={Workflow}
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-        <strong>Frontend prototype.</strong> Runs, logs, costs, and controls are
-        fictional local fixtures. No runtime or service is contacted.
+        {runtimeMode === "live" ? (
+          <>
+            <strong>Live runtime.</strong> Runs are loaded from the Atlas API
+            dashboard facade. Manual starts use owner CSRF and idempotency.
+          </>
+        ) : runtimeMode === "unauthenticated" ? (
+          <>
+            <strong>Owner sign-in required.</strong> Runtime run history is
+            blocked until the owner session is established.{" "}
+            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
+              Sign in with Google
+            </a>
+            .
+          </>
+        ) : runtimeMode === "loading" ? (
+          "Loading owner-authenticated run data..."
+        ) : runtimeMode === "error" ? (
+          "Runtime run data is unavailable. Fixture history remains quarantined from release evidence."
+        ) : (
+          <>
+            <strong>Frontend prototype.</strong> No runtime API base URL is
+            configured for this build; runs, logs, costs, and controls are
+            fictional local fixtures.
+          </>
+        )}
       </div>
+      <p className="sr-only" aria-live="polite">
+        {notice}
+      </p>
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchField
           value={query}
@@ -205,8 +292,25 @@ export function RunsWorkspace({
             Clear filters
           </Button>
         )}
+        {runtimeMode === "live" && manualAgents.length > 0 && (
+          <Button
+            size="sm"
+            onClick={async () => {
+              const created = await createDashboardRun(
+                manualAgents[0].agent_id,
+                csrfToken,
+              );
+              setNotice(`Runtime run ${created.run_id} was queued.`);
+              await loadRuntime();
+            }}
+          >
+            <Play aria-hidden="true" />
+            Start {manualAgents[0].display_name}
+          </Button>
+        )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
-          {visibleRuns.length} of {runs.length} fictional runs
+          {visibleRuns.length} of {activeRuns.length}{" "}
+          {runtimeMode === "live" ? "runtime runs" : "fictional runs"}
         </p>
       </div>
 
