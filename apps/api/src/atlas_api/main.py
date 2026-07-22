@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from fastapi import FastAPI
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 from starlette.middleware.cors import CORSMiddleware
 
 from atlas_api.api.agent_registry import router as agent_registry_router
@@ -18,6 +19,7 @@ from atlas_api.api.runs import router as runs_router
 from atlas_api.core.config import Settings, get_settings
 from atlas_api.core.correlation import CorrelationIdMiddleware
 from atlas_api.core.errors import register_exception_handlers
+from atlas_api.db.config import require_database_url
 
 OPENAPI_TAGS = [
     {"name": "health", "description": "Unversioned infrastructure health checks."},
@@ -51,6 +53,9 @@ def create_app(
     session_factory: Callable[[], Session] | None = None,
 ) -> FastAPI:
     resolved_settings = settings or get_settings()
+    resolved_session_factory = session_factory or _session_factory_from_settings(
+        resolved_settings
+    )
     app = FastAPI(
         title="Atlas API",
         version="0.1.0",
@@ -58,7 +63,7 @@ def create_app(
         openapi_tags=OPENAPI_TAGS,
     )
     app.state.settings = resolved_settings
-    app.state.session_factory = session_factory
+    app.state.session_factory = resolved_session_factory
     if resolved_settings.frontend_origin:
         app.add_middleware(
             CORSMiddleware,
@@ -87,6 +92,15 @@ def create_app(
     app.include_router(runs_router)
     _configure_openapi(app)
     return app
+
+
+def _session_factory_from_settings(
+    settings: Settings,
+) -> Callable[[], Session] | None:
+    if settings.database_url is None:
+        return None
+    engine = create_engine(require_database_url(settings), pool_pre_ping=True)
+    return sessionmaker(engine)
 
 
 def _configure_openapi(app: FastAPI) -> None:

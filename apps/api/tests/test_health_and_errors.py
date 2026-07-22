@@ -117,6 +117,14 @@ def test_versioned_health_uses_the_success_envelope() -> None:
     }
 
 
+def test_app_uses_database_url_for_default_session_factory() -> None:
+    app = create_app(Settings(environment="test", database_url="sqlite://"))
+
+    assert app.state.session_factory is not None
+    with app.state.session_factory() as session:
+        assert session.is_active
+
+
 def test_knowledge_endpoint_requires_external_client_configuration() -> None:
     client = TestClient(create_app(Settings(environment="test")))
 
