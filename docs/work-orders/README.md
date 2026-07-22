@@ -144,8 +144,11 @@ provide exact target values under WO-056A. Netlify and Render custom-domain
 bindings now exist; both Grafley CNAME records have been provisioned, provider
 TLS is active, runtime variables are cut over to
 `https://atlas.grafley.com` and `https://api.atlas.grafley.com`, and
-final-origin API CORS evidence passed. Migrations, release tags, and public
-launch remain bounded by the active Work Order scope and stop-and-ask triggers.
+final-origin API CORS evidence passed. WO-057 now has source guardrails, a
+hosted migration/backup/restore procedure, local migration validation, hosted
+migration evidence, and final current-head verification. Release tags and
+public launch remain bounded by the active Work Order scope and stop-and-ask
+triggers.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. ADR-006 is accepted

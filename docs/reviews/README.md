@@ -173,6 +173,17 @@ evidence, and the later hosted readiness state after Google OAuth and owner
 identity values were bound without value exposure. Hosted database migrations
 remain governed by WO-057.
 
+The [WO-057 implementation report](./WO-057-hosted-migration-backup-and-restore-readiness-implementation-report.md)
+records the guarded migration evidence command, Render backup/restore path,
+local migration validation, hosted migration execution, final current-head
+verification, and post-migration API health evidence.
+
+The [WO-058 hosted smoke report](./WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md)
+records the passing hosted dashboard/API health, CORS, and OAuth-denial checks,
+and the cutover blocker: deployed dashboard operational pages remain
+session-only fictional fixtures and cannot exercise the required owner,
+connector, run, approval, audit, log, or monitoring workflow.
+
 The [WO-056A implementation report](./WO-056A-grafley-custom-domain-cutover-implementation-report.md)
 records Netlify and Render custom-domain binding evidence, the exact Grafley
 DNS CNAME handoff records, the maintainer-approved Render custom-domain charge,
