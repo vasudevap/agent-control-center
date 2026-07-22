@@ -31,7 +31,7 @@ acceptance.
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Completed - Hosted Migration Verified |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Runtime Smoke Seed and Connector Connections Unavailable |
 | WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Completed - Deployed and Authenticated Runtime Surfaces Verified |
-| WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Draft - Pending Acceptance |
+| WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Source Implemented - Pending Hosted Deployment and WO-058 Rerun |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Accepted - Pending Implementation |
 | WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
 
@@ -244,10 +244,12 @@ Objective:
 
 Current state:
 
-- Drafted after the WO-058 rerun confirmed that live dashboard integration is
-  working but production has no connected Gmail/Drive connectors, no synthetic
-  manual-run seed, and no synthetic approval state. WO-063 must be accepted,
-  implemented, deployed, and followed by a successful WO-058 rerun before
+- Accepted by the Repository Maintainer on 2026-07-22 after the WO-058 rerun
+  confirmed that live dashboard integration is working but production has no
+  connected Gmail/Drive connectors, no synthetic manual-run seed, and no
+  synthetic approval state. Source implementation now provides an
+  owner-session, CSRF, and idempotency-gated synthetic hosted smoke seed. It
+  must be merged, deployed, and followed by a successful WO-058 rerun before
   WO-059 or WO-060 can begin.
 
 ### WO-059 - Production Rollback and Release Withdrawal Rehearsal

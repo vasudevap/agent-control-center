@@ -1,13 +1,13 @@
 # Work Order 063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement
 
-**Status:** Draft - Pending Acceptance
+**Status:** Source Implemented - Pending Hosted Deployment and WO-058 Rerun
 **Work Order ID:** WO-063
 **Type:** Hosted runtime smoke unblocker
-**Implementation Authorization:** Not yet granted
+**Implementation Authorization:** Granted by Repository Maintainer on 2026-07-22
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-062 deployed and authenticated runtime dashboard evidence captured; WO-058 rerun blocker recorded
-**Review Record:** TBD
+**Review Record:** [WO-063 Implementation Report](../reviews/WO-063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement-implementation-report.md)
 
 ## 1. Purpose
 

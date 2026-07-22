@@ -230,4 +230,82 @@ describe("dashboard runtime facade client", () => {
 
     expect(connectors[0]?.scopes).toEqual(["gmail.metadata", "gmail.modify"]);
   });
+
+  it("maps WO-063 synthetic smoke runtime records into live dashboard state", () => {
+    const connectors = toConnectorRecords(
+      [
+        {
+          connector_type: "gmail",
+          display_name: "Gmail",
+          version: "0.1.0",
+          authentication_type: "oauth2",
+          status: "active",
+          supported_operations: ["gmail.create_draft"],
+          required_scopes: {
+            "gmail.create_draft": ["https://www.googleapis.com/auth/gmail.modify"],
+          },
+          supports_health_check: true,
+          supports_revocation: true,
+          supports_refresh: true,
+        },
+      ],
+      [
+        {
+          connection_id: "con_smoke",
+          connector_type: "gmail",
+          display_name: "Synthetic Gmail Smoke Connector",
+          account_identifier: "synthetic-smoke+gmail@grafley.invalid",
+          status: "connected",
+          granted_scopes: ["https://www.googleapis.com/auth/gmail.modify"],
+          health_status: "healthy",
+          last_success_at: "2026-07-22T00:00:00.000Z",
+          last_failure_at: null,
+          last_health_checked_at: "2026-07-22T00:00:00.000Z",
+          last_error_code: null,
+        },
+      ],
+    );
+    const runs = toRunRecords(
+      [
+        {
+          run_id: "run_smoke",
+          agent_id: "agt_smoke",
+          status: "succeeded",
+          trigger_source: "manual",
+          correlation_id: "corr_smoke",
+          timeout_seconds: 300,
+          retry_count: 0,
+          failure_reason_code: null,
+          started_at: "2026-07-22T00:00:00.000Z",
+          completed_at: "2026-07-22T00:00:05.000Z",
+          cancelled_at: null,
+          created_at: "2026-07-22T00:00:00.000Z",
+          updated_at: "2026-07-22T00:00:05.000Z",
+        },
+      ],
+      [
+        {
+          agent_id: "agt_smoke",
+          slug: "hosted-runtime-smoke-agent",
+          display_name: "Hosted Runtime Smoke Agent",
+          description: "Synthetic smoke agent",
+          status: "active",
+          risk_level: "medium",
+          supports_manual_run: true,
+        },
+      ],
+    );
+
+    expect(connectors[0]).toMatchObject({
+      id: "gmail",
+      status: "healthy",
+      accountLabel: "synthetic-smoke+gmail@grafley.invalid",
+    });
+    expect(runs[0]).toMatchObject({
+      id: "run_smoke",
+      status: "succeeded",
+      trigger: "Manual",
+      agent: { name: "Hosted Runtime Smoke Agent" },
+    });
+  });
 });

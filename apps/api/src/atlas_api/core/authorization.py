@@ -53,6 +53,15 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
         return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
 
     if (
+        context.actor_kind is ActorKind.HUMAN_OWNER
+        and context.channel is Channel.DASHBOARD
+        and context.resource == "runtime_smoke_seed"
+        and context.action == "create"
+        and context.risk_level == "medium"
+    ):
+        return AuthorizationDecision(allowed=True, reason_code="explicit_allow")
+
+    if (
         context.actor_kind is ActorKind.EXTERNAL_CLIENT
         and context.channel is Channel.EXTERNAL_PRODUCT_CLIENT
         and context.resource == "external_client_authentication"
