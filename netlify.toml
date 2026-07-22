@@ -5,11 +5,6 @@
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
-  # Public runtime origin required at Next.js client-bundle build time. The
-  # matching production Netlify variable remains the operational source of
-  # truth; this guardrail prevents a missing provider injection from silently
-  # shipping the fixture-only dashboard.
-  NEXT_PUBLIC_API_BASE_URL = "https://api.atlas.grafley.com"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
