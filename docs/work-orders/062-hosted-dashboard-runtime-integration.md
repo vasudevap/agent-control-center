@@ -1,6 +1,6 @@
 # Work Order 062: Hosted Dashboard Runtime Integration
 
-**Status:** Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun
+**Status:** Completed - Deployed and Authenticated Runtime Surfaces Verified
 **Work Order ID:** WO-062
 **Type:** Hosted dashboard remediation and runtime integration
 **Implementation Authorization:** Accepted by Repository Maintainer; autonomous implementation, WO-058 rerun, WO-059, and WO-060 continuation authorized in one sequence
@@ -143,3 +143,18 @@ After WO-062 is implemented and deployed, rerun WO-058 with synthetic-only
 evidence. WO-059 and WO-060 remain blocked until WO-058 records successful
 hosted owner-session, connector health, run, approval/draft state, audit/log,
 and monitoring evidence through the integrated hosted dashboard.
+
+## 9.1 Rerun Result
+
+WO-062 was implemented, merged, deployed, and authenticated browser-verified on
+2026-07-22. Connectors, Runs, Approvals, Audit, and Alerts now render live
+runtime states through the owner-authenticated dashboard facade.
+
+WO-058 remains blocked by a narrower runtime seed / connector configuration
+gap: Gmail and Google Drive are visible as live runtime descriptors but are not
+connected, health checks are disabled until connector OAuth exists, the live
+Runs page has no synthetic manual-run seed, and the live Approvals page has no
+synthetic approval state.
+
+Next remediation scope:
+[WO-063 Hosted Runtime Smoke Seed and Synthetic Connector Enablement](./063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md).

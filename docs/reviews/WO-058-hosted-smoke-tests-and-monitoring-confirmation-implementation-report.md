@@ -81,3 +81,59 @@ owner and external-client boundary before it can be implemented.
 After that work is deployed, rerun WO-058 with a synthetic-only Gmail/Drive
 workflow and minimized evidence. WO-059 and WO-060 remain blocked by this
 failed smoke gate.
+
+## Rerun After WO-062 - 2026-07-22
+
+WO-062 was implemented, merged, deployed, and followed by two production
+follow-up fixes before rerunning this smoke gate:
+
+- PR #105 implemented the owner-authenticated dashboard facade and web runtime
+  integration.
+- PR #106 fixed production API session-factory wiring so dashboard facade
+  routes can use the configured hosted database.
+- PR #107 fixed the authenticated Connectors page adapter for the hosted
+  connector descriptor shape.
+
+Post-merge evidence:
+
+| Area | Check | Result |
+| --- | --- | --- |
+| Main CI | GitHub Actions run `29889387816` for `main@3ce58c8` | Passed; Validate completed in 3m6s. |
+| Netlify production deploy | Deploy `6a603d84c07e05000871e659` | Ready; `context=production`; `commit_ref=3ce58c8e1507540408d3b2c57069273cce1e39d3`; published 2026-07-22T03:49:12.943Z. |
+| Netlify secret scan | Deploy validation report `6a603db092d2f45f649f55bc` | No classic or enhanced secret-scan matches. |
+| API readiness | `GET https://api.atlas.grafley.com/health/ready` | `status=ready`; configuration check `ok`; no problems. |
+| Unauthenticated session boundary | `GET https://api.atlas.grafley.com/api/v1/dashboard/session` without owner cookie | `401 owner_session_missing`, confirming the facade fails closed outside the owner session. |
+| Owner sign-in | Chrome owner login with Google account selected by Repository Maintainer | Redirected to `https://atlas.grafley.com/connectors?owner_session=signed_in`. |
+| Dashboard shell | Browser smoke at `https://atlas.grafley.com/` | Rendered `RUNTIME READY`. |
+| Connectors | `https://atlas.grafley.com/connectors` after owner sign-in | Rendered `Live runtime`; showed Gmail and Google Drive runtime descriptors; no page error. |
+| Runs | `https://atlas.grafley.com/runs` after owner sign-in | Rendered `Live runtime`; showed `0 of 0 runtime runs`; no manual-run control. |
+| Approvals | `https://atlas.grafley.com/approvals` after owner sign-in | Rendered `Live runtime`; showed no pending runtime approval requests. |
+| Audit | `https://atlas.grafley.com/audit` after owner sign-in | Rendered `Live runtime`; showed 11 metadata-only runtime audit events. |
+| Alerts / monitoring | `https://atlas.grafley.com/alerts` after owner sign-in | Rendered `Live runtime`; showed runtime-readiness monitoring evidence and no active readiness blockers. |
+
+No Gmail or Drive mailbox data was read, searched, created, changed, or
+deleted. No connector OAuth consent was submitted during this rerun. No
+provider token, OAuth code, secret, owner subject, raw log, or mailbox content
+was recorded.
+
+## Current Blocking Evidence - 2026-07-22
+
+WO-062 resolved the earlier dashboard-to-runtime blocker, but the WO-058 smoke
+gate still cannot pass:
+
+| Required check | Disposition |
+| --- | --- |
+| Owner session | Passed: owner sign-in completed and live runtime pages no longer show the unauthenticated gate. |
+| Gmail/Drive connector health | Blocked: Gmail and Google Drive are visible as runtime descriptors, but both are `Offline` / `Not connected`; `Run health check` controls are disabled until connector OAuth exists. |
+| Synthetic Gmail/Drive workflow | Blocked: no Gmail/Drive connector connection exists, and no synthetic runtime agent/manual-run seed is exposed. |
+| Manual run evidence | Blocked: live Runs reports `0 of 0 runtime runs` and exposes no manual-run action. |
+| Approval/draft state | Blocked: live Approvals reports no pending runtime approval requests; no synthetic approval state exists to inspect. |
+| Audit and log signals | Partially passed: metadata-only runtime audit events are visible, but no synthetic run/approval action exists to correlate. |
+| Owner monitoring confirmation | Passed: live monitoring shows hosted runtime readiness evidence. |
+
+The cutover remains stopped. WO-059 and WO-060 remain blocked until a governed
+runtime smoke seed / synthetic connector enablement scope is accepted,
+implemented, deployed, and WO-058 is rerun successfully.
+
+Proposed remediation scope:
+[WO-063 Hosted Runtime Smoke Seed and Synthetic Connector Enablement](../work-orders/063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md).

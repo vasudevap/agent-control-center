@@ -1,6 +1,6 @@
 # WO-062 Hosted Dashboard Runtime Integration - Implementation Report
 
-**Status:** Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun
+**Status:** Completed - Deployed and Authenticated Runtime Surfaces Verified
 **Date:** 2026-07-22
 **Work Order:** [WO-062](../work-orders/062-hosted-dashboard-runtime-integration.md)
 **Scope Authorized:** Repository Maintainer accepted WO-062 and authorized autonomous implementation, WO-058 rerun, WO-059, and WO-060 continuation.
@@ -98,10 +98,11 @@ Results:
 
 ## Remaining Work
 
-WO-062 source implementation is locally validated. Remaining governed work is
-to merge and deploy this branch, verify hosted owner sign-in/session behavior,
-rerun WO-058 against the hosted runtime path, and only then proceed through
-WO-059 rollback/withdrawal rehearsal and WO-060 release closeout.
+WO-062 source implementation, deployment, and authenticated browser
+verification are complete. WO-058 was rerun against the hosted runtime path and
+is now blocked by a narrower runtime smoke seed / connector enablement gap,
+not by dashboard-to-runtime integration. WO-059 rollback/withdrawal rehearsal
+and WO-060 release closeout remain blocked until WO-058 reruns successfully.
 
 ## Post-Merge Hosted Verification Finding - 2026-07-22
 
@@ -176,6 +177,12 @@ Results:
 - Web production build: passed
 - `git diff --check`: passed
 - Touched-file secret scan: no matches
+
+PR #107 merged to `main` as `3ce58c8`. GitHub Actions run `29889387816`
+passed, and Netlify production deploy `6a603d84c07e05000871e659` published
+`main@3ce58c8e1507540408d3b2c57069273cce1e39d3` with no secret-scan matches.
+Authenticated browser rerun confirmed that the Connectors page renders
+`Live runtime` with Gmail and Google Drive descriptors and no page error.
 
 ## Rollback
 

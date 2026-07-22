@@ -29,9 +29,10 @@ acceptance.
 | WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Google OAuth Provider Configured; Owner OIDC Gate Cleared |
 | WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | Completed - Owner Identity Bound and Readiness Verified |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Completed - Hosted Migration Verified |
-| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Hosted Dashboard Is Not Connected to Runtime Services |
-| WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun |
-| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-062 | No | Accepted - Pending Implementation |
+| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Runtime Smoke Seed and Connector Connections Unavailable |
+| WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Completed - Deployed and Authenticated Runtime Surfaces Verified |
+| WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Draft - Pending Acceptance |
+| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Accepted - Pending Implementation |
 | WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
 
 ## 3. Dependency Waves
@@ -42,7 +43,7 @@ acceptance.
 | Wave 1 | WO-053 | Provider env/secrets inventory and provisioning authority | Serial gate before provider writes |
 | Wave 2 | WO-054, WO-055 | Netlify frontend and Render API/PostgreSQL setup | Parallel only if provider boundaries are clear |
 | Wave 3 | WO-056A, WO-056, WO-061, WO-057 | Grafley custom domains, connector OAuth, owner OIDC enrollment, migration, backup/restore | Serial because each Google client should use final URLs and migration depends on hosted database readiness |
-| Wave 4 | WO-058, WO-062, WO-058 rerun, WO-059 | Hosted smoke, dashboard runtime remediation, rerun evidence, and rollback evidence | Serial release-safety lane |
+| Wave 4 | WO-058, WO-062, WO-063, WO-058 rerun, WO-059 | Hosted smoke, dashboard runtime remediation, runtime smoke seed unblocker, rerun evidence, and rollback evidence | Serial release-safety lane |
 | Wave 5 | WO-060 | Go/no-go, optional tag, closeout | Maintainer decision lane |
 
 ## 4. Accepted Work Orders
@@ -199,10 +200,13 @@ Current state:
 
 - Hosted smoke validation on 2026-07-21 passed dashboard rendering, dashboard
   runtime readiness, API liveness/readiness, API health, final-origin CORS,
-  and the OAuth-denial redirect. It is blocked because the deployed dashboard
-  identifies its operational surfaces as fictional session-only prototypes;
-  it cannot perform or display the real owner-session, connector, run,
-  approval, audit, log, or monitoring checks required by this Work Order.
+  and the OAuth-denial redirect, but failed because the deployed dashboard was
+  fixture-only. WO-062 resolved that blocker.
+- Hosted smoke rerun on 2026-07-22 passed owner sign-in and live dashboard
+  runtime rendering for Connectors, Runs, Approvals, Audit, and Alerts, but
+  remains blocked because Gmail and Google Drive are not connected, connector
+  health checks are disabled until connector OAuth exists, no synthetic
+  manual-run seed is exposed, and no synthetic approval state exists.
   Evidence is recorded in
   `docs/reviews/WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md`.
 
@@ -220,9 +224,29 @@ Objective:
 
 Current state:
 
-- Accepted after WO-058 recorded that the deployed dashboard cannot exercise
-  the real owner-session, connector, run, approval, audit, log, or monitoring
-  workflow required for hosted smoke completion. WO-062 must be accepted,
+- Completed. PR #105 implemented the runtime integration, PR #106 fixed the
+  hosted API session factory, and PR #107 fixed authenticated connector scope
+  normalization. The owner-authenticated hosted dashboard now renders live
+  runtime states for Connectors, Runs, Approvals, Audit, and Alerts.
+
+### WO-063 - Hosted Runtime Smoke Seed and Synthetic Connector Enablement
+
+Work Order:
+
+- `docs/work-orders/063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md`
+
+Objective:
+
+- Resolve the remaining WO-058 blocker by providing a safe, synthetic-only
+  hosted runtime smoke seed or explicitly approved connector enablement path
+  that can produce connector health, manual run, approval/draft, audit/log, and
+  monitoring evidence without using production mailbox content.
+
+Current state:
+
+- Drafted after the WO-058 rerun confirmed that live dashboard integration is
+  working but production has no connected Gmail/Drive connectors, no synthetic
+  manual-run seed, and no synthetic approval state. WO-063 must be accepted,
   implemented, deployed, and followed by a successful WO-058 rerun before
   WO-059 or WO-060 can begin.
 
@@ -237,6 +261,11 @@ Objective:
 - Confirm Netlify, Render, migration, OAuth, Gmail/Drive cleanup, and release
   withdrawal procedures before go/no-go.
 
+Current state:
+
+- Blocked until WO-063 is accepted/implemented if required and WO-058 reruns
+  successfully.
+
 ### WO-060 - Release Tag and Production Closeout
 
 Work Order:
@@ -247,6 +276,10 @@ Objective:
 
 - Record the final go/no-go decision, optional release-tag authority, hosted
   URLs, validation evidence, residual risks, and ADP-005 closeout.
+
+Current state:
+
+- Blocked until WO-058 reruns successfully and WO-059 completes.
 
 ## 5. Stop-and-Ask Triggers
 

@@ -1,6 +1,6 @@
 # Work Order 058: Hosted Smoke Tests and Monitoring Confirmation
 
-**Status:** Blocked - Hosted Dashboard Is Not Connected to Runtime Services
+**Status:** Blocked - Runtime Smoke Seed and Connector Connections Unavailable
 **Work Order ID:** WO-058
 **Type:** Hosted validation and monitoring confirmation
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending WO-054 through WO-057 evidence
@@ -48,7 +48,7 @@ implementation report under `docs/reviews/`.
 If smoke validation fails, stop cutover, record blocker evidence, and follow
 WO-059 rollback or corrective-forward procedures.
 
-## 6.1 Current Blocker
+## 6.1 Superseded Blocker
 
 Hosted smoke validation on 2026-07-21 confirmed that the dashboard and API
 health endpoints are reachable and ready. It also confirmed that the deployed
@@ -64,6 +64,36 @@ resolved this blocker and WO-058 is rerun.
 
 Proposed remediation scope is drafted as
 [WO-062 Hosted Dashboard Runtime Integration](./062-hosted-dashboard-runtime-integration.md).
+
+WO-062 has since been implemented, merged, deployed, and rerun against the
+hosted dashboard.
+
+## 6.2 Current Blocker
+
+Hosted smoke rerun on 2026-07-22 confirmed that the dashboard runtime
+integration is deployed and owner-authenticated:
+
+- the dashboard renders `RUNTIME READY`;
+- the owner session redirects to
+  `https://atlas.grafley.com/connectors?owner_session=signed_in`;
+- Connectors, Runs, Approvals, Audit, and Alerts render live runtime states
+  through the owner-authenticated dashboard facade;
+- metadata-only audit and monitoring evidence is visible.
+
+The smoke gate still cannot complete. The live Connectors page reports Gmail
+and Google Drive as runtime descriptors, but both are `Offline` /
+`Not connected`, and runtime health checks are disabled until owner connector
+OAuth is completed. The live Runs page reports `0 of 0 runtime runs` and does
+not expose a synthetic manual-run control because no runtime agent/manual-run
+seed is available through the facade. The Approvals page has no pending runtime
+approval state to inspect.
+
+Do not begin WO-059 or WO-060 until a separately accepted, implemented, and
+deployed runtime smoke seed / synthetic connector enablement scope resolves
+this blocker and WO-058 is rerun successfully.
+
+Proposed remediation scope is drafted as
+[WO-063 Hosted Runtime Smoke Seed and Synthetic Connector Enablement](./063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement.md).
 
 ## 7. Stop-and-Ask Triggers
 
