@@ -103,6 +103,40 @@ to merge and deploy this branch, verify hosted owner sign-in/session behavior,
 rerun WO-058 against the hosted runtime path, and only then proceed through
 WO-059 rollback/withdrawal rehearsal and WO-060 release closeout.
 
+## Post-Merge Hosted Verification Finding - 2026-07-22
+
+After PR #105 merged and Netlify deployed `main@ff59a93`, hosted verification
+confirmed the dashboard facade routes were present in OpenAPI, but
+`GET https://api.atlas.grafley.com/api/v1/dashboard/session` returned
+`dashboard_store_not_configured`.
+
+Root cause: production `create_app()` populated `app.state.session_factory`
+only when tests injected a session factory. The hosted app had a valid
+`ATLAS_API_DATABASE_URL` and readiness was green, but no default SQLAlchemy
+session factory was created from that setting for API routes that require DB
+access.
+
+Follow-up fix: `create_app()` now builds a default SQLAlchemy `sessionmaker`
+from the existing normalized database URL when one is configured and no test
+session factory is injected. The fix does not add a new provider setting or
+schema change.
+
+Additional validation for the follow-up fix:
+
+```text
+apps/api/.venv/bin/python -m ruff check apps/api/src apps/api/tests
+apps/api/.venv/bin/python -m mypy apps/api/src
+apps/api/.venv/bin/python -m pytest apps/api/tests
+git diff --check
+```
+
+Results:
+
+- API Ruff: passed
+- API mypy: passed
+- API full pytest: 166 passed, 1 existing Starlette/httpx deprecation warning
+- `git diff --check`: passed
+
 ## Rollback
 
 Rollback can disable or revert the dashboard facade router and the web runtime
