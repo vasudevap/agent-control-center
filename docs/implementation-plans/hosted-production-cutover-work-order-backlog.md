@@ -1,6 +1,6 @@
 # Hosted Production Cutover Work Order Backlog
 
-**Status:** Accepted - In Progress
+**Status:** Completed - Hosted MVP Cutover Tagged
 **Owner:** Repository Maintainer
 **Date:** 2026-07-19
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
@@ -33,7 +33,7 @@ acceptance.
 | WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Completed - Deployed and Authenticated Runtime Surfaces Verified |
 | WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Completed - Hosted Seed Verified and WO-058 Rerun Passed |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Completed - Non-Destructive Rehearsal Recorded |
-| WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Approved for Hosted MVP Cutover - Tag Pending Main Verification |
+| WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Completed - Release Tagged |
 
 ## 3. Dependency Waves
 
@@ -293,8 +293,9 @@ Current state:
   `docs/reviews/WO-060-release-tag-and-production-closeout-readiness-report.md`.
   The Repository Maintainer approved the hosted single-owner MVP cutover,
   accepted the documented residual risks, standardized release tags as
-  `vMAJOR.MINOR.PATCH[-stage.N]`, and authorized `v0.3.0-alpha.1` after the
-  closeout evidence is merged to verified `main`.
+  `vMAJOR.MINOR.PATCH[-stage.N]`, authorized `v0.3.0-alpha.1`, and completed
+  the release tag at verified `main` merge commit
+  `bf3f34d21ecbe4d794b12105bfe44707277ce75b`.
 
 ## 5. Stop-and-Ask Triggers
 

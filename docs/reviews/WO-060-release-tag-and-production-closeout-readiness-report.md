@@ -1,11 +1,13 @@
 # WO-060 Release Tag and Production Closeout Report
 
 **Work Order:** [WO-060](../work-orders/060-release-tag-and-production-closeout.md)
-**Status:** Approved for Hosted MVP Cutover - Tag Pending Main Verification
+**Status:** Completed - Release Tagged
 **Date:** 2026-07-22
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Release tag:** `v0.3.0-alpha.1`
+**Tag object:** `e8ea8b9c31ae4bc601f48916d053acdd30fcb38a`
+**Release commit:** `bf3f34d21ecbe4d794b12105bfe44707277ce75b`
 
 ## Summary
 
@@ -16,9 +18,9 @@ approved the hosted single-owner MVP cutover, accepted the documented residual
 risks, and authorized `v0.3.0-alpha.1` as the immutable annotated release tag
 for this milestone.
 
-The tag must be created only after this closeout evidence is committed,
-reviewed, merged to `main`, and the target `main` commit is verified. No tag is
-created in this documentation change itself.
+The closeout evidence was merged through PR #110. Annotated tag
+`v0.3.0-alpha.1` was then created and pushed at the verified `main` merge
+commit `bf3f34d21ecbe4d794b12105bfe44707277ce75b`.
 
 No provider write, deployment, production rollback, production restore,
 credential rotation, OAuth grant revocation, release withdrawal, public launch,
@@ -63,9 +65,9 @@ credential revocation, provider cleanup, or release-tag movement.
 | --- | --- | --- |
 | Hosted MVP go/no-go | Go for hosted single-owner MVP cutover. | Approved |
 | Residual-risk disposition | Accept the documented residual risks for this milestone. | Accepted |
-| Release tag | Use `v0.3.0-alpha.1` after closeout evidence is merged to verified `main`. | Authorized, pending verified `main` |
+| Release tag | Use `v0.3.0-alpha.1` after closeout evidence is merged to verified `main`. | Created and pushed |
 | Public launch boundary | Public launch communications remain out of scope. | Not authorized |
-| ADP-005 closeout | Close ADP-005 once this record is merged and optional tag verification is recorded. | Approved, pending merge/tag evidence |
+| ADP-005 closeout | Close ADP-005 once this record is merged and optional tag verification is recorded. | Completed |
 
 ## Accepted Residual Risks
 
@@ -74,7 +76,7 @@ credential revocation, provider cleanup, or release-tag movement.
 | Restore has not been rehearsed against a Render recovery instance | WO-057 prefers corrective-forward migration first; isolated PITR or logical restore requires separate restore authority. | Accepted for hosted MVP cutover; live restore remains separately authority-gated. |
 | Render Recovery page screenshot/export artifact is not stored in Git | WO-057 records a non-secret PITR evidence label. | Accepted as label-only evidence for this milestone. |
 | Synthetic smoke evidence does not exercise live Gmail or Drive provider content | WO-058 and WO-063 intentionally use synthetic-only, metadata-only evidence. | Accepted for hosted single-owner MVP; broader live-provider testing requires a later Work Order. |
-| Release tag is not created in this closeout commit | Release management requires immutable annotated tags on verified `main`. | Accepted as an ordering control; tag `v0.3.0-alpha.1` is authorized after merge to verified `main`. |
+| Tag verification evidence is recorded after tag creation | Release management requires immutable annotated tags on verified `main`. | Accepted as a post-tag evidence record; tag `v0.3.0-alpha.1` peels to the verified PR #110 merge commit. |
 | Phase 8 is not authorized | ES-008 excludes Phase 8 implementation, multi-user operation, and broader public launch. | Accepted; next implementation requires new governing authority. |
 
 ## Closeout Record
@@ -85,15 +87,37 @@ credential revocation, provider cleanup, or release-tag movement.
 | API URL | `https://api.atlas.grafley.com` |
 | Hosted smoke result | Passed on 2026-07-22 after WO-063 deployment |
 | Rollback posture | Provider-native Netlify and Render rollback; database corrective-forward preferred; restore requires explicit authority |
-| Tag posture | `v0.3.0-alpha.1` authorized after this closeout evidence is merged to verified `main`; existing tags remain immutable |
+| Tag posture | `v0.3.0-alpha.1` created and pushed; existing tags remain immutable |
 | Release boundary | Single-owner hosted MVP cutover under ES-008 and ADP-005 |
 | Public launch | Not authorized by WO-060 |
 | Phase 8 | Not authorized by WO-060 |
 
+## Release Tag Verification
+
+PR #110 merged to `main` at
+`bf3f34d21ecbe4d794b12105bfe44707277ce75b` after required CI passed.
+GitHub Actions run `29960602464` completed successfully, including typecheck,
+lint, tests, backend typecheck, backend lint, backend tests, backend
+migrations, and build. Netlify deploy preview status was successful.
+
+Tag verification:
+
+```text
+git ls-remote --tags origin v0.3.0-alpha.1
+e8ea8b9c31ae4bc601f48916d053acdd30fcb38a refs/tags/v0.3.0-alpha.1
+
+git ls-remote --tags origin v0.3.0-alpha.1^{}
+bf3f34d21ecbe4d794b12105bfe44707277ce75b refs/tags/v0.3.0-alpha.1^{}
+```
+
+The first SHA is the annotated tag object. The peeled tag target is the PR #110
+merge commit on verified `main`.
+
 ## Validation
 
-This is a documentation-only readiness packet. Source CI is not applicable
-because no application, migration, dependency, or runtime source changed.
+This is a documentation-only post-tag verification update. Source CI is not
+applicable because no application, migration, dependency, or runtime source
+changed after the release tag.
 
 Required local validation for this packet:
 
@@ -115,7 +139,8 @@ performing live cleanup, or starting Phase 8 without separate authority.
 
 ## Final Disposition
 
-WO-060 is approved for hosted single-owner MVP cutover. The next release action
-is to commit and merge this closeout evidence to `main`, verify the resulting
-`main` commit, create annotated tag `v0.3.0-alpha.1`, push the tag, and record
-tag verification evidence without moving or reusing any existing tag.
+WO-060 is complete. The hosted single-owner MVP cutover is tagged as
+`v0.3.0-alpha.1` at the verified PR #110 merge commit. Public launch,
+production rollback or restore, provider cleanup, Phase 8 implementation,
+multi-user operation, broader Google scopes, and live Gmail/Drive content use
+remain outside this closeout and require separate authority.

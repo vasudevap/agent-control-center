@@ -169,9 +169,12 @@ Alerts rendered live runtime states, but still lacked connected Gmail/Drive
 evidence, a synthetic manual run, and a synthetic approval state. WO-063 added
 the owner-authenticated synthetic smoke seed and the final 2026-07-22 WO-058
 rerun passed with synthetic connector, run, approval, metadata-only audit, and
-monitoring evidence. WO-059 is now the next dependency-ready Work Order.
-WO-060 must not begin until WO-059 completes and the Repository Maintainer
-records the required go/no-go / release-tag authority decision.
+monitoring evidence. WO-059 completed the non-destructive rollback and
+release-withdrawal rehearsal. WO-060 recorded the hosted single-owner MVP
+go decision, accepted residual risks, standardized release tags as
+`vMAJOR.MINOR.PATCH[-stage.N]`, and created immutable annotated tag
+`v0.3.0-alpha.1` at the verified PR #110 merge commit. Public launch and
+Phase 8 implementation remain separately gated.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. ADR-006 is accepted
@@ -189,5 +192,5 @@ source slice was merged through PR #96, deployed to Render, completed one
 controlled authorization with `grafleyinc@gmail.com`, manually bound the
 derived opaque owner subject in Render without value exposure, and verified
 `https://api.atlas.grafley.com/health/ready` returns `ready` with
-`problems: []`. Migrations, release tags, and public launch remain gated by
-later Work Orders.
+`problems: []`. The hosted MVP release tag was completed under WO-060; public
+launch and Phase 8 implementation remain gated by later authority.
