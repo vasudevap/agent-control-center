@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from atlas_api.core.config import Settings
+from atlas_api.models.external_client import ExternalProductClient, User
 from atlas_api.models.owner_session import OwnerSession
 
 SESSION_COOKIE_NAME = "atlas_owner_session"
@@ -75,6 +76,52 @@ def issue_owner_session(
     )
 
 
+def ensure_owner_user(
+    database: Session,
+    *,
+    provider: str,
+    subject: str,
+    email: str,
+    display_name: str,
+    settings: Settings,
+) -> User:
+    verify_owner_identity(
+        VerifiedIdentity(provider=provider, subject=subject),
+        settings,
+    )
+    user = database.scalar(
+        select(User).where(
+            User.identity_provider == provider,
+            User.identity_subject == subject,
+        )
+    )
+    if user is None:
+        user = User(
+            email=email,
+            display_name=display_name,
+            identity_provider=provider,
+            identity_subject=subject,
+            status="active",
+        )
+        database.add(user)
+        database.flush()
+    elif user.status != "active":
+        raise OwnerSessionError("owner_user_inactive")
+    else:
+        user.email = email
+        user.display_name = display_name
+
+    if settings.external_client_id is not None:
+        client = database.get(ExternalProductClient, settings.external_client_id)
+        if client is not None:
+            if client.human_owner_user_id is None:
+                client.human_owner_user_id = user.user_id
+            elif client.human_owner_user_id != user.user_id:
+                raise OwnerSessionError("owner_external_client_mismatch")
+    database.flush()
+    return user
+
+
 def validate_owner_session(
     database: Session,
     *,
@@ -125,6 +172,20 @@ def revoke_owner_session(
     )
     if record is not None and record.revoked_at is None:
         record.revoked_at = now
+
+
+def rotate_owner_session_csrf(
+    database: Session,
+    *,
+    principal: OwnerSessionPrincipal,
+) -> str:
+    record = database.get(OwnerSession, principal.owner_session_id)
+    if record is None or record.revoked_at is not None:
+        raise OwnerSessionError("owner_session_invalid")
+    csrf_token = secrets.token_urlsafe(32)
+    record.csrf_token_hash = _digest(csrf_token)
+    database.flush()
+    return csrf_token
 
 
 def set_owner_session_cookies(response: Response, issued: IssuedOwnerSession) -> None:

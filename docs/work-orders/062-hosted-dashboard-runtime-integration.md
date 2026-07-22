@@ -1,13 +1,13 @@
 # Work Order 062: Hosted Dashboard Runtime Integration
 
-**Status:** Proposed - Pending Acceptance
+**Status:** Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun
 **Work Order ID:** WO-062
 **Type:** Hosted dashboard remediation and runtime integration
-**Implementation Authorization:** Not granted until this Work Order is accepted by the Repository Maintainer
+**Implementation Authorization:** Accepted by Repository Maintainer; autonomous implementation, WO-058 rerun, WO-059, and WO-060 continuation authorized in one sequence
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-019, WO-020, WO-046, WO-056, WO-057, WO-058 blocker evidence, WO-061
-**Review Record:** TBD
+**Review Record:** [WO-062 Implementation Report](../reviews/WO-062-hosted-dashboard-runtime-integration-implementation-report.md)
 
 ## 1. Purpose
 
@@ -28,18 +28,19 @@ begin WO-059/WO-060.
 | Browser secret boundary | External-client HMAC secrets remain server-side only and are never exposed to browser JavaScript, local storage, page props, logs, or screenshots. |
 | Owner access boundary | Hosted operational dashboard access must be gated by the existing single-owner session or an accepted equivalent owner-authenticated boundary before live runtime actions are exposed. |
 | API authority | The dashboard consumes existing backend contracts; it does not create new backend semantics unless a small facade endpoint is required and reviewed within this scope. |
-| Runtime integration path | Use a server-side Next.js runtime client or route-handler proxy that signs Atlas API requests with provider-managed dashboard external-client credentials. |
+| Runtime integration path | Use API-owned dashboard facade endpoints gated by the existing host-only owner session cookie, with the dashboard browser calling the API using credentials. This avoids exposing external-client HMAC secrets to the browser and avoids requiring a Next.js server proxy to read API-host cookies. |
 | Initial integration slice | Start with read-only status and connector inventory/connection health before enabling controlled OAuth start, manual run creation, approval decisions, or revocation actions. |
 | Evidence data | Synthetic only unless separately authorized; no production mailbox scans, broad provider extraction, or personal mailbox content. |
 | Fixture posture | Fixture-only operational pages must be replaced, removed, or clearly quarantined away from release-critical hosted paths. |
 
 ## 3. Approved Scope if Accepted
 
-- Add a server-side Atlas dashboard API client that supports signed `GET` and
-  `POST` requests, correlation IDs, idempotency keys where required, timeout
-  handling, structured errors, and secret redaction.
-- Gate all server-side dashboard runtime routes behind the accepted owner
-  session boundary or a separately accepted owner-authenticated equivalent.
+- Add API-owned dashboard facade endpoints that support owner-authenticated
+  `GET` and controlled state-changing requests, correlation IDs, idempotency
+  keys where required, timeout handling, structured errors, and secret
+  redaction.
+- Gate all dashboard runtime routes behind the accepted owner session boundary
+  or a separately accepted owner-authenticated equivalent.
 - Replace the hosted Connectors page's release-critical path with real
   connector descriptors, connection list, connection health, and safe OAuth
   start evidence using the hosted API.
@@ -91,8 +92,8 @@ authorization or audit controls are excluded.
 Require:
 
 - frontend unit/component tests for all touched runtime pages and states;
-- server-side signing tests covering `GET`, `POST`, correlation IDs,
-  idempotency, and secret redaction;
+- API dashboard facade tests covering owner session validation, `GET`, controlled
+  state-changing requests, correlation IDs, idempotency, and secret redaction;
 - owner-session gate tests proving unauthorized browser access fails closed;
 - backend contract compatibility tests or smoke checks for touched API
   surfaces;

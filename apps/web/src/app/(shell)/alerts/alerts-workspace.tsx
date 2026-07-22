@@ -16,6 +16,14 @@ import {
   type AlertSeverity,
   type AlertStatus,
 } from "./alert-data";
+import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardRuntimeMode,
+  readDashboardMonitoring,
+  readDashboardSession,
+  toMonitoringAlerts,
+} from "@/lib/dashboard-runtime";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
@@ -86,11 +94,13 @@ function AlertDetails({
   status,
   onSimulate,
   defaultOpen,
+  canSimulate = true,
 }: {
   alert: AlertRecord;
   status: AlertStatus;
   onSimulate: () => void;
   defaultOpen?: boolean;
+  canSimulate?: boolean;
 }) {
   return (
     <details
@@ -131,7 +141,7 @@ function AlertDetails({
               <Link href={`/runs/${alert.relatedRunId}`}>View run</Link>
             </Button>
           )}
-          {status === "active" && (
+          {status === "active" && canSimulate && (
             <Button type="button" size="sm" onClick={onSimulate}>
               Simulate investigation
             </Button>
@@ -149,6 +159,9 @@ export function AlertsWorkspace({
   alerts: AlertRecord[];
   initialAlertId?: string;
 }) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
+  const [liveAlerts, setLiveAlerts] = React.useState<AlertRecord[]>([]);
   const [query, setQuery] = React.useState("");
   const [severity, setSeverity] = React.useState<AlertSeverity | "all">("all");
   const [status, setStatus] = React.useState<AlertStatus | "all">("all");
@@ -159,9 +172,45 @@ export function AlertsWorkspace({
     {},
   );
   const [announcement, setAnnouncement] = React.useState("");
-  const records = alerts.map((alert) => ({
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode("fixture");
+        return;
+      }
+      setRuntimeMode("loading");
+      try {
+        await readDashboardSession();
+        const monitoring = await readDashboardMonitoring();
+        if (!cancelled) {
+          setLiveAlerts(toMonitoringAlerts(monitoring));
+          setRuntimeMode("live");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+        } else {
+          setRuntimeMode("error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const activeAlerts = runtimeMode === "live" ? liveAlerts : alerts;
+  const records = activeAlerts.map((alert) => ({
     ...alert,
-    status: simulated[alert.id] ?? alert.status,
+    status:
+      runtimeMode === "live" ? alert.status : simulated[alert.id] ?? alert.status,
   }));
   const normalized = query.trim().toLowerCase();
   const visible = records
@@ -224,13 +273,39 @@ export function AlertsWorkspace({
       <PageHeader
         eyebrow="Operations"
         title="Alerts"
-        description="Triage fictional operational signals without contacting a runtime or provider."
+        description={
+          runtimeMode === "live"
+            ? "Review lightweight hosted runtime monitoring posture from the Atlas API."
+            : "Triage fictional operational signals without contacting a runtime or provider."
+        }
         icon={BellRing}
       />
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-        <strong>Frontend prototype.</strong> Alert evidence and status are local
-        fixtures. “Simulate” changes only this page’s display state and resets
-        on refresh.
+        {runtimeMode === "live" ? (
+          <>
+            <strong>Live runtime.</strong> Monitoring evidence is loaded from
+            the owner-authenticated Atlas API dashboard facade.
+          </>
+        ) : runtimeMode === "unauthenticated" ? (
+          <>
+            <strong>Owner sign-in required.</strong> Runtime monitoring is
+            blocked until the owner session is established.{" "}
+            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
+              Sign in with Google
+            </a>
+            .
+          </>
+        ) : runtimeMode === "loading" ? (
+          "Loading owner-authenticated monitoring posture..."
+        ) : runtimeMode === "error" ? (
+          "Runtime monitoring is unavailable. Fixture alerts remain quarantined from release evidence."
+        ) : (
+          <>
+            <strong>Frontend prototype.</strong> No runtime API base URL is
+            configured for this build; alert evidence and status are local
+            fixtures.
+          </>
+        )}
       </div>
       <p className="sr-only" aria-live="polite">
         {announcement}
@@ -286,7 +361,7 @@ export function AlertsWorkspace({
           onChange={(event) => setSource(event.target.value)}
         >
           <option value="all">All sources</option>
-          {[...new Set(alerts.map((alert) => alert.source))].map((value) => (
+          {[...new Set(activeAlerts.map((alert) => alert.source))].map((value) => (
             <option key={value}>{value}</option>
           ))}
         </select>
@@ -297,7 +372,8 @@ export function AlertsWorkspace({
           </Button>
         )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
-          {visible.length} of {alerts.length} fictional alerts
+          {visible.length} of {activeAlerts.length}{" "}
+          {runtimeMode === "live" ? "runtime alerts" : "fictional alerts"}
         </p>
       </div>
       {visible.length === 0 ? (
@@ -308,7 +384,9 @@ export function AlertsWorkspace({
             description={
               hasFilters
                 ? "Clear filters to restore the fictional alert inventory."
-                : "No alert fixtures are available."
+                : runtimeMode === "live"
+                  ? "No runtime monitoring alerts are available."
+                  : "No alert fixtures are available."
             }
             action={
               hasFilters ? (
@@ -374,6 +452,7 @@ export function AlertsWorkspace({
                         status={alert.status}
                         onSimulate={() => simulate(alert)}
                         defaultOpen={initialAlertId === alert.id}
+                        canSimulate={runtimeMode !== "live"}
                       />
                     </TableCell>
                     <TableCell className="align-top text-xs">
@@ -431,6 +510,7 @@ export function AlertsWorkspace({
                       status={alert.status}
                       onSimulate={() => simulate(alert)}
                       defaultOpen={initialAlertId === alert.id}
+                      canSimulate={runtimeMode !== "live"}
                     />
                   </CardContent>
                 </Card>

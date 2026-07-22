@@ -30,7 +30,7 @@ acceptance.
 | WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | Completed - Owner Identity Bound and Readiness Verified |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Completed - Hosted Migration Verified |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Hosted Dashboard Is Not Connected to Runtime Services |
-| WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Proposed - Pending Acceptance |
+| WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun |
 | WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-062 | No | Accepted - Pending Implementation |
 | WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
 
@@ -220,7 +220,7 @@ Objective:
 
 Current state:
 
-- Proposed after WO-058 recorded that the deployed dashboard cannot exercise
+- Accepted after WO-058 recorded that the deployed dashboard cannot exercise
   the real owner-session, connector, run, approval, audit, log, or monitoring
   workflow required for hosted smoke completion. WO-062 must be accepted,
   implemented, deployed, and followed by a successful WO-058 rerun before

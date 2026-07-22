@@ -4,18 +4,14 @@ export type AuditResult = Extract<
   AtlasStatus,
   "approved" | "rejected" | "succeeded" | "failed"
 >;
-export type AuditAction =
-  | "Approval decision"
-  | "Policy evaluation"
-  | "Agent control"
-  | "Fixture access";
-export type AuditResourceType = "Approval" | "Policy" | "Agent" | "Artifact";
+export type AuditAction = string;
+export type AuditResourceType = string;
 
 export interface AuditEvent {
   id: string;
   occurredAt: string;
   actor: string;
-  actorType: "Human" | "System fixture";
+  actorType: "Human" | "System fixture" | string;
   action: AuditAction;
   result: AuditResult;
   resourceType: AuditResourceType;

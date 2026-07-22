@@ -12,6 +12,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getAriaSort, SortHeader, type SortDirection } from "@/components/ui/sort-header";
 import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indicator";
 import { cn } from "@/lib/utils";
+import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  type DashboardRuntimeMode,
+  readDashboardApprovals,
+  readDashboardSession,
+  toApprovalRecords,
+} from "@/lib/dashboard-runtime";
 import { isQueueApproval, type ApprovalRecord } from "./approval-data";
 import { getExpiryPresentation, relativeTime } from "./approval-presentation";
 import { ExpiryLabel, ReviewProgressTag, StateChip, reviewRank } from "./approval-badges";
@@ -84,6 +92,9 @@ function stateFromParams(params: URLSearchParams): CollectionState {
 }
 
 export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: { approvals: ApprovalRecord[]; presentationState?: Presentation }) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>("fixture");
+  const [liveApprovals, setLiveApprovals] = React.useState<ApprovalRecord[]>([]);
   const initialState = React.useMemo(() => stateFromParams(new URLSearchParams()), []);
   const [view, setView] = React.useState<View>(initialState.view);
   const [query, setQuery] = React.useState(initialState.query);
@@ -93,6 +104,42 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
   const [sort, setSort] = React.useState<SortKey>(initialState.sort);
   const [direction, setDirection] = React.useState<SortDirection>(initialState.direction);
   const [page, setPage] = React.useState(initialState.page);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode("fixture");
+        return;
+      }
+      setRuntimeMode("loading");
+      try {
+        await readDashboardSession();
+        const runtimeApprovals = await readDashboardApprovals(
+          view === "queue" ? "pending" : "approved",
+        );
+        if (!cancelled) {
+          setLiveApprovals(toApprovalRecords(runtimeApprovals));
+          setRuntimeMode("live");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+        } else {
+          setRuntimeMode("error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, [view]);
 
   React.useEffect(() => {
     const restoreFromLocation = () => {
@@ -118,7 +165,14 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
     window.history[mode === "push" ? "pushState" : "replaceState"](null, "", url);
   };
 
-  const queue = approvals.filter(isQueueApproval);
+  const activeApprovals = runtimeMode === "live" ? liveApprovals : approvals;
+  const effectivePresentation: Presentation =
+    runtimeMode === "loading"
+      ? "loading"
+      : runtimeMode === "error"
+        ? "error"
+        : presentationState;
+  const queue = activeApprovals.filter(isQueueApproval);
   const expiringCount = queue.filter((item) => ["nearing", "imminent"].includes(getExpiryPresentation(item.expiresAt, item.requestedAt).urgency)).length;
 
   const onSort = (key: SortKey) => {
@@ -133,7 +187,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
 
   const listed = React.useMemo(() => {
     const dirMul = direction === "asc" ? 1 : -1;
-    return approvals
+    return activeApprovals
       .filter((item) => (view === "queue" ? isQueueApproval(item) : !isQueueApproval(item)))
       .filter((item) => {
         const text = [item.id, item.agent.id, item.agent.name, item.action, item.target, item.runId, item.policy, item.evidence.source].join(" ").toLowerCase();
@@ -159,7 +213,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
                   : expiryUrgencyRank(a) - expiryUrgencyRank(b) || riskRank(b.risk) - riskRank(a.risk);
         return comparison * dirMul;
       });
-  }, [approvalState, review, approvals, direction, query, risk, sort, view]);
+  }, [activeApprovals, approvalState, review, direction, query, risk, sort, view]);
 
   const maxPage = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
   const currentPage = Math.min(page, maxPage);
@@ -180,11 +234,40 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
   return (
     <div className="flex min-w-0 flex-col gap-5">
       <PageHeader eyebrow="Governance" title="Approvals" icon={APPROVALS_ICON} description="Review and authorize proposed actions before an agent may proceed." />
+      <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
+        {runtimeMode === "live" ? (
+          <>
+            <strong>Live runtime.</strong> Approval metadata is loaded from the
+            owner-authenticated Atlas API dashboard facade. Sensitive payloads
+            stay server-side.
+          </>
+        ) : runtimeMode === "unauthenticated" ? (
+          <>
+            <strong>Owner sign-in required.</strong> Runtime approvals are
+            blocked until the owner session is established.{" "}
+            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
+              Sign in with Google
+            </a>
+            .
+          </>
+        ) : runtimeMode === "loading" ? (
+          "Loading owner-authenticated approval metadata..."
+        ) : runtimeMode === "error" ? (
+          "Runtime approval metadata is unavailable. Fixture approvals remain quarantined from release evidence."
+        ) : (
+          <>
+            <strong>Frontend prototype.</strong> No runtime API base URL is
+            configured for this build; approval rows are local fixtures.
+          </>
+        )}
+      </div>
 
-      {presentationState === "loading" ? (
+      {effectivePresentation === "loading" ? (
         <div className="grid gap-3"><Skeleton className="h-32 w-full" /><Skeleton className="h-64 w-full" /></div>
-      ) : presentationState === "error" ? (
-        <StateCard title="Approval data is unavailable" detail="This controlled error state did not contact a real approval service." />
+      ) : runtimeMode === "unauthenticated" ? (
+        <StateCard title="Owner sign-in required" detail="Sign in to load runtime approval records from the Atlas API." action={<Button asChild><a href={dashboardSignInUrl()}>Sign in with Google</a></Button>} />
+      ) : effectivePresentation === "error" ? (
+        <StateCard title="Approval data is unavailable" detail={runtimeMode === "error" ? "The owner-authenticated dashboard facade could not return approval metadata." : "This controlled error state did not contact a real approval service."} />
       ) : (
         <section className="grid gap-3" aria-label={view === "queue" ? "Approval Queue" : "Approval History"}>
           <div className="grid overflow-hidden rounded-atlas-md border border-border-default bg-surface-secondary">
@@ -215,7 +298,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 p-3">
               <p className="text-xs text-foreground-secondary">
-                Showing <span className="font-mono font-semibold text-foreground">{listed.length}</span> of {view === "queue" ? queue.length : approvals.length - queue.length} {view} records.
+                Showing <span className="font-mono font-semibold text-foreground">{listed.length}</span> of {view === "queue" ? queue.length : activeApprovals.length - queue.length} {view} records.
                 {view === "queue" && expiringCount > 0 ? ` ${expiringCount} nearing expiry.` : ""}
               </p>
               <Button variant="ghost" size="sm" onClick={reset}>Clear filters</Button>
@@ -231,8 +314,8 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
             </div>
           </div>
 
-          {presentationState === "empty" || (view === "queue" && queue.length === 0) ? (
-            <StateCard title="No actions currently require authorization" detail="Fictional approval requests will appear here when available." />
+          {effectivePresentation === "empty" || (view === "queue" && queue.length === 0) ? (
+            <StateCard title="No actions currently require authorization" detail={runtimeMode === "live" ? "No runtime approval requests are pending." : "Fictional approval requests will appear here when available."} />
           ) : shown.length === 0 ? (
             <StateCard title="No approvals match the current search or filters" detail="Adjust local controls to return to the fixture set." action={<Button variant="secondary" onClick={reset}>Clear filters</Button>} />
           ) : (
