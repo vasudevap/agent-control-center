@@ -32,7 +32,7 @@ acceptance.
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Completed - Hosted Smoke Passed After WO-063 |
 | WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Completed - Deployed and Authenticated Runtime Surfaces Verified |
 | WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Completed - Hosted Seed Verified and WO-058 Rerun Passed |
-| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Accepted - Pending Implementation |
+| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Completed - Non-Destructive Rehearsal Recorded |
 | WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
 
 ## 3. Dependency Waves
@@ -268,10 +268,13 @@ Objective:
 
 Current state:
 
-- Dependency-ready. WO-058 reran successfully after WO-063. Implementation may
-  proceed under WO-059 scope, without destructive rollback, credential
-  revocation, production restore, tag movement, or release withdrawal action
-  unless separately and explicitly authorized at action time.
+- Completed as a non-destructive dry-review on 2026-07-22 after the successful
+  WO-058 rerun. The rehearsal confirms the provider-native rollback,
+  recovery/corrective-forward, OAuth and synthetic-artifact cleanup, and
+  repository release-withdrawal paths. No provider write, deployment rollback,
+  production restore, credential revocation, tag movement, or release
+  withdrawal was performed. The review record is
+  [WO-059 rollback and release-withdrawal rehearsal report](../reviews/WO-059-production-rollback-and-release-withdrawal-rehearsal-implementation-report.md).
 
 ### WO-060 - Release Tag and Production Closeout
 

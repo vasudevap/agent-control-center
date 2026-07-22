@@ -1,13 +1,13 @@
 # Work Order 059: Production Rollback and Release Withdrawal Rehearsal
 
-**Status:** Accepted - Pending Implementation
+**Status:** Completed - Non-Destructive Rehearsal Recorded
 **Work Order ID:** WO-059
 **Type:** Rollback and withdrawal readiness
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-19; pending hosted deployment evidence
 **Engineering Specification:** [ES-008](../engineering-specifications/ES-008-hosted-mvp-production-cutover.md)
 **Governing Plan:** [Hosted Production Cutover Work Order Backlog](../implementation-plans/hosted-production-cutover-work-order-backlog.md)
 **Prerequisites:** WO-054 through WO-058 evidence available
-**Review Record:** TBD
+**Review Record:** [WO-059 rollback and release-withdrawal rehearsal report](../reviews/WO-059-production-rollback-and-release-withdrawal-rehearsal-implementation-report.md)
 
 ## 1. Purpose
 
