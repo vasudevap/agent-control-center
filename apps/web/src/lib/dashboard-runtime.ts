@@ -40,7 +40,7 @@ export interface DashboardConnectorDescriptor {
   authentication_type: string;
   status: string;
   supported_operations: string[];
-  required_scopes: string[];
+  required_scopes: string[] | Record<string, string[]>;
   supports_health_check: boolean;
   supports_revocation: boolean;
   supports_refresh: boolean;
@@ -265,9 +265,7 @@ export function toConnectorRecords(
       accountLabel:
         connection?.account_identifier || connection?.display_name || "Not connected",
       capabilities: descriptor.supported_operations,
-      scopes: connection?.granted_scopes.length
-        ? connection.granted_scopes
-        : descriptor.required_scopes,
+      scopes: scopesForDisplay(connection?.granted_scopes, descriptor.required_scopes),
       lastCheck: lastCheckLabel(
         connection?.last_health_checked_at ??
           connection?.last_success_at ??
@@ -401,6 +399,15 @@ export function toMonitoringAlerts(monitoring: DashboardMonitoring): AlertRecord
       correlationId: "runtime-monitoring",
     },
   ];
+}
+
+function scopesForDisplay(
+  grantedScopes: string[] | undefined,
+  requiredScopes: DashboardConnectorDescriptor["required_scopes"],
+) {
+  if (grantedScopes?.length) return grantedScopes;
+  if (Array.isArray(requiredScopes)) return requiredScopes;
+  return [...new Set(Object.values(requiredScopes).flat())];
 }
 
 function connectorStatus(

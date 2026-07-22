@@ -205,4 +205,29 @@ describe("dashboard runtime facade client", () => {
       status: "resolved",
     });
   });
+
+  it("flattens operation-scoped connector requirements from the hosted API", () => {
+    const connectors = toConnectorRecords(
+      [
+        {
+          connector_type: "gmail",
+          display_name: "Gmail",
+          version: "1.0.0",
+          authentication_type: "oauth2",
+          status: "active",
+          supported_operations: ["gmail.read_metadata", "gmail.create_draft"],
+          required_scopes: {
+            "gmail.read_metadata": ["gmail.metadata"],
+            "gmail.create_draft": ["gmail.metadata", "gmail.modify"],
+          },
+          supports_health_check: true,
+          supports_revocation: true,
+          supports_refresh: true,
+        },
+      ],
+      [],
+    );
+
+    expect(connectors[0]?.scopes).toEqual(["gmail.metadata", "gmail.modify"]);
+  });
 });
