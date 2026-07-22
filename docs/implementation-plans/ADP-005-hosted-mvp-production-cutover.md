@@ -52,8 +52,10 @@ triggers.
 | 6 | `WO-061: Google OIDC Owner Identity Enrollment` | Completed - Owner Identity Bound and Readiness Verified | Owner-OIDC source merged/deployed, provider values configured, controlled login completed, subject manually bound, and readiness verified without value exposure | Immutable owner subject derived and entered without value exposure |
 | 7 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Completed - Hosted Migration Verified | Hosted API/database readiness is confirmed; guarded migration command and recovery procedure are implemented; hosted migration ran through Render one-off job `job-d9ft82btqb8s73b9430g`; current-head verification passed through `job-d9ft8dnavr4c73e0751g` | Hosted DB migration and recovery evidence recorded |
 | 8 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Blocked - Hosted Dashboard Is Not Connected to Runtime Services | Dashboard/API availability checks passed; authenticated runtime smoke checks are impossible because deployed operational dashboard surfaces are session-only fixtures | Hosted smoke, audit/log, connector, and monitoring checks pass |
-| 9 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await hosted deployment evidence | Rollback and withdrawal paths reviewed or rehearsed |
-| 10 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
+| 9 | `WO-062: Hosted Dashboard Runtime Integration` | Proposed - Pending Acceptance | Await maintainer acceptance for dashboard-to-runtime remediation scope, then implement owner-authenticated server-signed dashboard API integration and redeploy | Hosted dashboard can produce real runtime evidence required for WO-058 rerun |
+| 10 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Blocked - Await WO-062 | Rerun after WO-062 is accepted, implemented, deployed, and validated | Hosted smoke, audit/log, connector, and monitoring checks pass |
+| 11 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await successful WO-058 rerun evidence | Rollback and withdrawal paths reviewed or rehearsed |
+| 12 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
 
 ## 4. Dependency Sequence
 
@@ -67,7 +69,9 @@ ES-008 accepted + WO-053 through WO-060 accepted + WO-056A accepted + ADP-005 ac
       -> WO-056 Google OAuth redirects
       -> WO-061 Google OIDC owner identity enrollment
       -> WO-057 hosted migration/backup/restore
-        -> WO-058 hosted smoke/monitoring
+        -> WO-058 hosted smoke/monitoring attempt
+          -> WO-062 hosted dashboard runtime integration if WO-058 remains blocked
+        -> WO-058 hosted smoke/monitoring rerun
         -> WO-059 rollback/withdrawal rehearsal
           -> WO-060 go/no-go, optional tag, closeout
 ```
@@ -79,7 +83,7 @@ ES-008 accepted + WO-053 through WO-060 accepted + WO-056A accepted + ADP-005 ac
 | Provider configuration | WO-053 | Serial gate before provider writes |
 | Hosting setup | WO-054, WO-055 | May run in parallel only after env map and provider authority are explicit |
 | Domain/OAuth/migration | WO-056A, WO-056, WO-061, WO-057 | Serial because final URLs should precede each Google client configuration and database state must be stable |
-| Release evidence | WO-058, WO-059, WO-060 | Serial final evidence and maintainer decision |
+| Release evidence | WO-058, WO-062, WO-058 rerun, WO-059, WO-060 | Serial final evidence, remediation, rerun, and maintainer decision |
 
 Parallel agents must not modify provider configuration, migrations, OAuth
 settings, release tags, or rollback records without rebasing and reconciling

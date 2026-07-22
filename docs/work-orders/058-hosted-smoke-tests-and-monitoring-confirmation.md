@@ -62,6 +62,9 @@ The cutover is stopped. Do not begin WO-059 or WO-060 until a separately
 accepted, implemented, and deployed dashboard-to-runtime integration scope has
 resolved this blocker and WO-058 is rerun.
 
+Proposed remediation scope is drafted as
+[WO-062 Hosted Dashboard Runtime Integration](./062-hosted-dashboard-runtime-integration.md).
+
 ## 7. Stop-and-Ask Triggers
 
 Stop before using real mailbox content, ignoring failed smoke checks, exposing

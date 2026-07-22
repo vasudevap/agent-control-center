@@ -30,8 +30,9 @@ acceptance.
 | WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | Completed - Owner Identity Bound and Readiness Verified |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Completed - Hosted Migration Verified |
 | WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Hosted Dashboard Is Not Connected to Runtime Services |
-| WO-059 | Production Rollback and Release Withdrawal Rehearsal | WO-054 through WO-058 | No | Accepted - Pending Implementation |
-| WO-060 | Release Tag and Production Closeout | WO-058, WO-059 | No | Accepted - Pending Implementation |
+| WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Proposed - Pending Acceptance |
+| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-062 | No | Accepted - Pending Implementation |
+| WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
 
 ## 3. Dependency Waves
 
@@ -41,7 +42,7 @@ acceptance.
 | Wave 1 | WO-053 | Provider env/secrets inventory and provisioning authority | Serial gate before provider writes |
 | Wave 2 | WO-054, WO-055 | Netlify frontend and Render API/PostgreSQL setup | Parallel only if provider boundaries are clear |
 | Wave 3 | WO-056A, WO-056, WO-061, WO-057 | Grafley custom domains, connector OAuth, owner OIDC enrollment, migration, backup/restore | Serial because each Google client should use final URLs and migration depends on hosted database readiness |
-| Wave 4 | WO-058, WO-059 | Hosted smoke and rollback evidence | Serial release-safety lane |
+| Wave 4 | WO-058, WO-062, WO-058 rerun, WO-059 | Hosted smoke, dashboard runtime remediation, rerun evidence, and rollback evidence | Serial release-safety lane |
 | Wave 5 | WO-060 | Go/no-go, optional tag, closeout | Maintainer decision lane |
 
 ## 4. Accepted Work Orders
@@ -204,6 +205,26 @@ Current state:
   approval, audit, log, or monitoring checks required by this Work Order.
   Evidence is recorded in
   `docs/reviews/WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md`.
+
+### WO-062 - Hosted Dashboard Runtime Integration
+
+Work Order:
+
+- `docs/work-orders/062-hosted-dashboard-runtime-integration.md`
+
+Objective:
+
+- Resolve the WO-058 blocker by replacing release-critical fixture-only
+  dashboard paths with owner-authenticated, server-signed hosted API
+  integrations for connector, run, approval, audit, and monitoring evidence.
+
+Current state:
+
+- Proposed after WO-058 recorded that the deployed dashboard cannot exercise
+  the real owner-session, connector, run, approval, audit, log, or monitoring
+  workflow required for hosted smoke completion. WO-062 must be accepted,
+  implemented, deployed, and followed by a successful WO-058 rerun before
+  WO-059 or WO-060 can begin.
 
 ### WO-059 - Production Rollback and Release Withdrawal Rehearsal
 

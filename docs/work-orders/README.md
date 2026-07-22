@@ -121,6 +121,11 @@ production cutover package under ES-008 and ADP-005:
 - WO-059: Production Rollback and Release Withdrawal Rehearsal
 - WO-060: Release Tag and Production Closeout
 
+Work Order 062 is proposed as the remediation scope for the WO-058 hosted
+smoke blocker:
+
+- WO-062: Hosted Dashboard Runtime Integration
+
 The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
 WO-053 provider configuration is now complete for the current hosted MVP
@@ -149,6 +154,12 @@ hosted migration/backup/restore procedure, local migration validation, hosted
 migration evidence, and final current-head verification. Release tags and
 public launch remain bounded by the active Work Order scope and stop-and-ask
 triggers.
+
+WO-058 is blocked because the hosted dashboard operational surfaces still use
+session-only fictional fixtures for connector, run, approval, audit, alert, log,
+and monitoring views. WO-062 is drafted to replace the release-critical hosted
+paths with owner-authenticated, server-signed runtime integrations before
+WO-058 is rerun. WO-059 and WO-060 must not begin until that rerun passes.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. ADR-006 is accepted
