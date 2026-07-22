@@ -29,11 +29,11 @@ acceptance.
 | WO-056 | Google OAuth Production Client and Redirects | WO-056A final domain decision, WO-054, WO-055 URL decisions | No | In Progress - Google OAuth Provider Configured; Owner OIDC Gate Cleared |
 | WO-061 | Google OIDC Owner Identity Enrollment | ADR-007, WO-055 hosted API | No | Completed - Owner Identity Bound and Readiness Verified |
 | WO-057 | Hosted Migration, Backup, and Restore Readiness | WO-055 database ready | No | Completed - Hosted Migration Verified |
-| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Blocked - Runtime Smoke Seed and Connector Connections Unavailable |
+| WO-058 | Hosted Smoke Tests and Monitoring Confirmation | WO-054 through WO-057, including WO-056A | No | Completed - Hosted Smoke Passed After WO-063 |
 | WO-062 | Hosted Dashboard Runtime Integration | WO-058 blocker evidence, WO-019, WO-020, WO-046, WO-061 | No | Completed - Deployed and Authenticated Runtime Surfaces Verified |
-| WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Source Implemented - Pending Hosted Deployment and WO-058 Rerun |
-| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Accepted - Pending Implementation |
-| WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Accepted - Pending Implementation |
+| WO-063 | Hosted Runtime Smoke Seed and Synthetic Connector Enablement | WO-062 deployed; WO-058 rerun blocker evidence | No | Completed - Hosted Seed Verified and WO-058 Rerun Passed |
+| WO-059 | Production Rollback and Release Withdrawal Rehearsal | Successful WO-058 rerun after WO-063 | No | Completed - Non-Destructive Rehearsal Recorded |
+| WO-060 | Release Tag and Production Closeout | Successful WO-058 rerun, WO-059 | No | Approved for Hosted MVP Cutover - Tag Pending Main Verification |
 
 ## 3. Dependency Waves
 
@@ -204,9 +204,15 @@ Current state:
   fixture-only. WO-062 resolved that blocker.
 - Hosted smoke rerun on 2026-07-22 passed owner sign-in and live dashboard
   runtime rendering for Connectors, Runs, Approvals, Audit, and Alerts, but
-  remains blocked because Gmail and Google Drive are not connected, connector
-  health checks are disabled until connector OAuth exists, no synthetic
-  manual-run seed is exposed, and no synthetic approval state exists.
+  remained blocked because Gmail and Google Drive were not connected, connector
+  health checks were disabled until connector OAuth existed, no synthetic
+  manual-run seed was exposed, and no synthetic approval state existed.
+- After WO-063 merged and deployed, the final 2026-07-22 rerun passed with
+  synthetic `gmail` and `google_drive` connections, one succeeded synthetic
+  manual run, one pending synthetic draft-review approval, metadata-only audit
+  events, and ready monitoring evidence. No Gmail or Drive content, provider
+  token, OAuth code, CSRF token, owner subject value, secret, or raw log was
+  recorded.
   Evidence is recorded in
   `docs/reviews/WO-058-hosted-smoke-tests-and-monitoring-confirmation-implementation-report.md`.
 
@@ -244,13 +250,10 @@ Objective:
 
 Current state:
 
-- Accepted by the Repository Maintainer on 2026-07-22 after the WO-058 rerun
-  confirmed that live dashboard integration is working but production has no
-  connected Gmail/Drive connectors, no synthetic manual-run seed, and no
-  synthetic approval state. Source implementation now provides an
-  owner-session, CSRF, and idempotency-gated synthetic hosted smoke seed. It
-  must be merged, deployed, and followed by a successful WO-058 rerun before
-  WO-059 or WO-060 can begin.
+- Completed. PR #109 implemented, merged, and deployed the owner-session,
+  CSRF, and idempotency-gated synthetic hosted smoke seed. The
+  owner-authenticated seed produced synthetic connector, manual-run, approval,
+  metadata-only audit, and monitoring evidence, and WO-058 reran successfully.
 
 ### WO-059 - Production Rollback and Release Withdrawal Rehearsal
 
@@ -265,8 +268,13 @@ Objective:
 
 Current state:
 
-- Blocked until WO-063 is accepted/implemented if required and WO-058 reruns
-  successfully.
+- Completed as a non-destructive dry-review on 2026-07-22 after the successful
+  WO-058 rerun. The rehearsal confirms the provider-native rollback,
+  recovery/corrective-forward, OAuth and synthetic-artifact cleanup, and
+  repository release-withdrawal paths. No provider write, deployment rollback,
+  production restore, credential revocation, tag movement, or release
+  withdrawal was performed. The review record is
+  [WO-059 rollback and release-withdrawal rehearsal report](../reviews/WO-059-production-rollback-and-release-withdrawal-rehearsal-implementation-report.md).
 
 ### WO-060 - Release Tag and Production Closeout
 
@@ -281,7 +289,12 @@ Objective:
 
 Current state:
 
-- Blocked until WO-058 reruns successfully and WO-059 completes.
+- WO-059 is complete. The WO-060 closeout packet is recorded in
+  `docs/reviews/WO-060-release-tag-and-production-closeout-readiness-report.md`.
+  The Repository Maintainer approved the hosted single-owner MVP cutover,
+  accepted the documented residual risks, standardized release tags as
+  `vMAJOR.MINOR.PATCH[-stage.N]`, and authorized `v0.3.0-alpha.1` after the
+  closeout evidence is merged to verified `main`.
 
 ## 5. Stop-and-Ask Triggers
 

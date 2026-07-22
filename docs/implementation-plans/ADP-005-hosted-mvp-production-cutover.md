@@ -1,6 +1,6 @@
 # ADP-005: Hosted MVP Production Cutover
 
-**Status:** Accepted - In Progress
+**Status:** Approved for Closeout - Tag Pending Main Verification
 **Program ID:** ADP-005
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
@@ -51,11 +51,11 @@ triggers.
 | 5 | `WO-056: Google OAuth Production Client and Redirects` | In Progress - Google OAuth Provider Configured; Owner OIDC Gate Cleared | Connector Google OAuth project/client/scopes/test user and Render OAuth environment values configured without value exposure; the separate owner-OIDC lane is complete under WO-061 | Hosted OAuth redirects work with accepted scopes |
 | 6 | `WO-061: Google OIDC Owner Identity Enrollment` | Completed - Owner Identity Bound and Readiness Verified | Owner-OIDC source merged/deployed, provider values configured, controlled login completed, subject manually bound, and readiness verified without value exposure | Immutable owner subject derived and entered without value exposure |
 | 7 | `WO-057: Hosted Migration, Backup, and Restore Readiness` | Completed - Hosted Migration Verified | Hosted API/database readiness is confirmed; guarded migration command and recovery procedure are implemented; hosted migration ran through Render one-off job `job-d9ft82btqb8s73b9430g`; current-head verification passed through `job-d9ft8dnavr4c73e0751g` | Hosted DB migration and recovery evidence recorded |
-| 8 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Blocked - Hosted Dashboard Is Not Connected to Runtime Services | Dashboard/API availability checks passed; authenticated runtime smoke checks are impossible because deployed operational dashboard surfaces are session-only fixtures | Hosted smoke, audit/log, connector, and monitoring checks pass |
-| 9 | `WO-062: Hosted Dashboard Runtime Integration` | Implemented - Local Validation Passed; Awaiting Deployment and WO-058 Rerun | Owner-authenticated API dashboard facade and browser integration implemented locally; merge/deploy, hosted validation, and WO-058 rerun remain next | Hosted dashboard can produce real runtime evidence required for WO-058 rerun |
-| 10 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Blocked - Await WO-062 | Rerun after WO-062 is accepted, implemented, deployed, and validated | Hosted smoke, audit/log, connector, and monitoring checks pass |
-| 11 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Await successful WO-058 rerun evidence | Rollback and withdrawal paths reviewed or rehearsed |
-| 12 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await final evidence and maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
+| 8 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Completed - Hosted Smoke Passed After WO-063 | Initial smoke blockers were resolved through WO-062 dashboard runtime integration and WO-063 synthetic runtime smoke seed; final rerun passed with synthetic connector, run, approval, audit, and monitoring evidence | Hosted smoke, audit/log, connector, and monitoring checks pass |
+| 9 | `WO-062: Hosted Dashboard Runtime Integration` | Completed - Deployed and Authenticated Runtime Surfaces Verified | Owner-authenticated API dashboard facade and browser integration merged, deployed, and verified through WO-058 rerun evidence | Hosted dashboard can produce real runtime evidence required for WO-058 rerun |
+| 10 | `WO-063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement` | Completed - Hosted Seed Verified and WO-058 Rerun Passed | Owner-authenticated synthetic smoke seed merged, deployed, and used to produce connector, run, approval, metadata-only audit, and monitoring evidence | Runtime seed unblocks WO-058 without production mailbox or Drive content |
+| 11 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Completed - Non-Destructive Rehearsal Recorded | Rehearsal completed after successful WO-058 rerun evidence | Rollback and withdrawal paths reviewed or rehearsed |
+| 12 | `WO-060: Release Tag and Production Closeout` | Approved for Hosted MVP Cutover - Tag Pending Main Verification | Record final maintainer decision, accepted residual risks, standardized tag convention, and `v0.3.0-alpha.1` tag authority | Go/no-go decision, optional tag, URLs, and closeout recorded |
 
 ## 4. Dependency Sequence
 
@@ -83,7 +83,7 @@ ES-008 accepted + WO-053 through WO-060 accepted + WO-056A accepted + ADP-005 ac
 | Provider configuration | WO-053 | Serial gate before provider writes |
 | Hosting setup | WO-054, WO-055 | May run in parallel only after env map and provider authority are explicit |
 | Domain/OAuth/migration | WO-056A, WO-056, WO-061, WO-057 | Serial because final URLs should precede each Google client configuration and database state must be stable |
-| Release evidence | WO-058, WO-062, WO-058 rerun, WO-059, WO-060 | Serial final evidence, remediation, rerun, and maintainer decision |
+| Release evidence | WO-058, WO-062, WO-063, WO-058 rerun, WO-059, WO-060 | Serial final evidence, remediation, rerun, rollback rehearsal, and maintainer decision |
 
 Parallel agents must not modify provider configuration, migrations, OAuth
 settings, release tags, or rollback records without rebasing and reconciling
@@ -122,7 +122,7 @@ Each Work Order completed under ADP-005 must leave repository evidence:
 
 ## 8. Completion Definition
 
-ADP-005 is complete only when:
+ADP-005 is approved for closeout once:
 
 - WO-053 through WO-060, including WO-056A, are implemented, validated,
   reviewed, and merged;
@@ -132,4 +132,6 @@ ADP-005 is complete only when:
 - no unresolved safety, security, credential, provider, deployment, rollback,
   release-tag, or CI blocker remains;
 - residual risks are accepted by the Repository Maintainer;
-- the final go/no-go and production closeout decision is recorded.
+- the final go/no-go and production closeout decision is recorded;
+- annotated tag `v0.3.0-alpha.1` is created at the verified `main` closeout
+  commit and pushed without moving or reusing any existing tag.
