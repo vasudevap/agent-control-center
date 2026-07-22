@@ -137,6 +137,46 @@ Results:
 - API full pytest: 166 passed, 1 existing Starlette/httpx deprecation warning
 - `git diff --check`: passed
 
+## Authenticated Hosted Verification Finding - 2026-07-22
+
+After PR #106 deployed and owner sign-in completed in Chrome, the hosted
+dashboard reached `https://atlas.grafley.com/connectors?owner_session=signed_in`
+and no longer showed the unauthenticated runtime gate. The Connectors page then
+rendered the application error boundary. Browser console evidence identified a
+runtime adapter crash: `TypeError: e.scopes.map is not a function`.
+
+Root cause: the hosted dashboard facade returned connector
+`required_scopes` using the existing backend connector contract shape,
+`operation_id -> scope[]`, while the WO-062 web adapter assumed the field was a
+flat `string[]`. The API contract was not wrong; the frontend adapter was too
+narrow for the accepted backend shape.
+
+Follow-up fix: the web dashboard adapter now accepts either a flat scope list
+or an operation-scoped scope map, flattens and de-duplicates map values for
+display, and preserves granted scopes when an owner connection already exists.
+
+Additional validation for the adapter fix:
+
+```text
+npm test --workspace apps/web -- dashboard-runtime.test.ts
+npm run typecheck --workspace apps/web
+npm run lint --workspace apps/web
+npm test --workspace apps/web
+npm run build --workspace apps/web
+git diff --check
+rg -n "(sk-[A-Za-z0-9]|OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_CLIENT_SECRET|NOTION_TOKEN|ntn_|BEGIN PRIVATE KEY|password\s*=|refresh_token|access_token)" apps/web/src/lib/dashboard-runtime.ts apps/web/src/lib/dashboard-runtime.test.ts
+```
+
+Results:
+
+- Focused web runtime-client tests: 1 file passed, 5 tests passed
+- Web typecheck: passed
+- Web lint: passed
+- Web full tests: 22 files passed, 99 tests passed
+- Web production build: passed
+- `git diff --check`: passed
+- Touched-file secret scan: no matches
+
 ## Rollback
 
 Rollback can disable or revert the dashboard facade router and the web runtime
