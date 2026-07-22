@@ -121,10 +121,15 @@ production cutover package under ES-008 and ADP-005:
 - WO-059: Production Rollback and Release Withdrawal Rehearsal
 - WO-060: Release Tag and Production Closeout
 
-Work Order 062 is proposed as the remediation scope for the WO-058 hosted
-smoke blocker:
+Work Order 062 was accepted and completed as the remediation scope for the
+original WO-058 hosted dashboard integration blocker:
 
 - WO-062: Hosted Dashboard Runtime Integration
+
+Work Order 063 is drafted as the remediation scope for the remaining WO-058
+runtime smoke seed and synthetic connector enablement blocker:
+
+- WO-063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement
 
 The hosted cutover sequence is recorded in
 [`docs/implementation-plans/hosted-production-cutover-work-order-backlog.md`](../implementation-plans/hosted-production-cutover-work-order-backlog.md).
@@ -155,11 +160,17 @@ migration evidence, and final current-head verification. Release tags and
 public launch remain bounded by the active Work Order scope and stop-and-ask
 triggers.
 
-WO-058 is blocked because the hosted dashboard operational surfaces still use
-session-only fictional fixtures for connector, run, approval, audit, alert, log,
-and monitoring views. WO-062 is drafted to replace the release-critical hosted
-paths with owner-authenticated, server-signed runtime integrations before
-WO-058 is rerun. WO-059 and WO-060 must not begin until that rerun passes.
+WO-058 was originally blocked because the hosted dashboard operational surfaces
+used session-only fictional fixtures for connector, run, approval, audit,
+alert, log, and monitoring views. WO-062 replaced the release-critical hosted
+paths with owner-authenticated, server-signed runtime integrations. The
+2026-07-22 WO-058 rerun confirmed that Connectors, Runs, Approvals, Audit, and
+Alerts now render live runtime states, but the smoke gate remains blocked
+because Gmail and Google Drive are not connected, connector health checks are
+disabled until connector OAuth exists, no synthetic manual-run seed is exposed,
+and no synthetic approval state exists. WO-063 is drafted to resolve that
+runtime seed / connector enablement blocker. WO-059 and WO-060 must not begin
+until WO-058 reruns successfully.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. ADR-006 is accepted
