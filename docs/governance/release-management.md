@@ -2,15 +2,33 @@
 
 ## Version model
 
-Atlas follows Semantic Versioning:
+Atlas follows Semantic Versioning with standardized release tags in this
+format:
+
+```text
+vMAJOR.MINOR.PATCH[-stage.N]
+```
+
+Use these prerelease stages:
+
+- `alpha.N` for internal, single-owner, portfolio, or governed-but-not-public
+  milestones.
+- `beta.N` for hosted or controlled-user releases with accepted residual risks.
+- `rc.N` for release candidates where no known blocker remains.
+- No suffix only for stable/public releases.
+
+Version increments follow this project convention:
 
 - **Major** — incompatible change or major product/platform change.
-- **Minor** — backward-compatible capability or substantial milestone.
+- **Minor** — backward-compatible capability, completed phase package, hosted
+  cutover, or substantial governed product/platform milestone.
 - **Patch** — backward-compatible defect correction or maintenance release.
 
-Prerelease identifiers are `alpha`, `beta`, and `rc`, followed by an incrementing number. Tags use `vMAJOR.MINOR.PATCH[-prerelease.N]`, are annotated, and are never moved or reused.
+Tags are annotated, are never moved or reused, and use the release message to
+name the milestone plus the governing artifacts included in the release.
 
 The consolidation release `v0.2.0-alpha.1` is immutable. The expected release after ES-001 is `v0.2.0-alpha.2`.
+The hosted single-owner MVP cutover release is `v0.3.0-alpha.1`.
 
 ## Readiness and release procedure
 

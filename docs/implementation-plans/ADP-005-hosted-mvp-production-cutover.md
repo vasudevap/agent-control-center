@@ -1,6 +1,6 @@
 # ADP-005: Hosted MVP Production Cutover
 
-**Status:** Accepted - In Progress
+**Status:** Approved for Closeout - Tag Pending Main Verification
 **Program ID:** ADP-005
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
@@ -54,8 +54,8 @@ triggers.
 | 8 | `WO-058: Hosted Smoke Tests and Monitoring Confirmation` | Completed - Hosted Smoke Passed After WO-063 | Initial smoke blockers were resolved through WO-062 dashboard runtime integration and WO-063 synthetic runtime smoke seed; final rerun passed with synthetic connector, run, approval, audit, and monitoring evidence | Hosted smoke, audit/log, connector, and monitoring checks pass |
 | 9 | `WO-062: Hosted Dashboard Runtime Integration` | Completed - Deployed and Authenticated Runtime Surfaces Verified | Owner-authenticated API dashboard facade and browser integration merged, deployed, and verified through WO-058 rerun evidence | Hosted dashboard can produce real runtime evidence required for WO-058 rerun |
 | 10 | `WO-063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement` | Completed - Hosted Seed Verified and WO-058 Rerun Passed | Owner-authenticated synthetic smoke seed merged, deployed, and used to produce connector, run, approval, metadata-only audit, and monitoring evidence | Runtime seed unblocks WO-058 without production mailbox or Drive content |
-| 11 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Accepted - Pending Implementation | Proceed after successful WO-058 rerun evidence | Rollback and withdrawal paths reviewed or rehearsed |
-| 12 | `WO-060: Release Tag and Production Closeout` | Accepted - Pending Implementation | Await WO-059 completion and final maintainer decision | Go/no-go decision, optional tag, URLs, and closeout recorded |
+| 11 | `WO-059: Production Rollback and Release Withdrawal Rehearsal` | Completed - Non-Destructive Rehearsal Recorded | Rehearsal completed after successful WO-058 rerun evidence | Rollback and withdrawal paths reviewed or rehearsed |
+| 12 | `WO-060: Release Tag and Production Closeout` | Approved for Hosted MVP Cutover - Tag Pending Main Verification | Record final maintainer decision, accepted residual risks, standardized tag convention, and `v0.3.0-alpha.1` tag authority | Go/no-go decision, optional tag, URLs, and closeout recorded |
 
 ## 4. Dependency Sequence
 
@@ -122,7 +122,7 @@ Each Work Order completed under ADP-005 must leave repository evidence:
 
 ## 8. Completion Definition
 
-ADP-005 is complete only when:
+ADP-005 is approved for closeout once:
 
 - WO-053 through WO-060, including WO-056A, are implemented, validated,
   reviewed, and merged;
@@ -132,4 +132,6 @@ ADP-005 is complete only when:
 - no unresolved safety, security, credential, provider, deployment, rollback,
   release-tag, or CI blocker remains;
 - residual risks are accepted by the Repository Maintainer;
-- the final go/no-go and production closeout decision is recorded.
+- the final go/no-go and production closeout decision is recorded;
+- annotated tag `v0.3.0-alpha.1` is created at the verified `main` closeout
+  commit and pushed without moving or reusing any existing tag.
