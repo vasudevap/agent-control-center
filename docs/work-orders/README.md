@@ -126,7 +126,7 @@ original WO-058 hosted dashboard integration blocker:
 
 - WO-062: Hosted Dashboard Runtime Integration
 
-Work Order 063 is drafted as the remediation scope for the remaining WO-058
+Work Order 063 was accepted as the remediation scope for the remaining WO-058
 runtime smoke seed and synthetic connector enablement blocker:
 
 - WO-063: Hosted Runtime Smoke Seed and Synthetic Connector Enablement
@@ -168,9 +168,10 @@ paths with owner-authenticated, server-signed runtime integrations. The
 Alerts now render live runtime states, but the smoke gate remains blocked
 because Gmail and Google Drive are not connected, connector health checks are
 disabled until connector OAuth exists, no synthetic manual-run seed is exposed,
-and no synthetic approval state exists. WO-063 is drafted to resolve that
-runtime seed / connector enablement blocker. WO-059 and WO-060 must not begin
-until WO-058 reruns successfully.
+and no synthetic approval state exists. WO-063 source implementation adds the
+owner-authenticated synthetic smoke seed needed to resolve that runtime seed /
+connector enablement blocker. WO-059 and WO-060 must not begin until WO-063 is
+deployed and WO-058 reruns successfully.
 
 WO-056 Google OAuth preflight found no implemented browser-facing callback at
 the earlier placeholder `/api/auth/google/callback` path. ADR-006 is accepted

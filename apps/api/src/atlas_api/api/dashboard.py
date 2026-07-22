@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import UTC, datetime
-from typing import Annotated, Any, cast
+from typing import Annotated, Any, Literal, cast
 
 from fastapi import APIRouter, Cookie, Depends, Header, Query, Request, Response
 from pydantic import BaseModel, Field
@@ -40,6 +40,10 @@ from atlas_api.services.connectors import (
     start_oauth_connection,
 )
 from atlas_api.services.runs import create_manual_run, get_run, list_runs
+from atlas_api.services.smoke_seed import (
+    RuntimeSmokeSeedResult,
+    seed_hosted_runtime_smoke,
+)
 
 router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
 
@@ -53,6 +57,10 @@ class ConnectorOAuthStartRequest(BaseModel):
     connector_type: str = Field(min_length=1, max_length=80)
     requested_scopes: list[str] = Field(min_length=1, max_length=8)
     redirect_uri: str = Field(min_length=8, max_length=500)
+
+
+class RuntimeSmokeSeedRequest(BaseModel):
+    scope: Literal["hosted_mvp_smoke"] = "hosted_mvp_smoke"
 
 
 def _settings_from_request(request: Request) -> Settings:
@@ -423,6 +431,53 @@ def create_dashboard_run(
         )
 
 
+@router.post("/smoke-seed")
+def seed_dashboard_runtime_smoke(
+    payload: RuntimeSmokeSeedRequest,
+    request: Request,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    from atlas_api.core.contracts import validate_idempotency_key
+
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="runtime_smoke_seed",
+            action="create",
+            risk_level="medium",
+        )
+        result = seed_hosted_runtime_smoke(
+            session,
+            owner_user_id=principal.user_id,
+            idempotency_key=validate_idempotency_key(idempotency_key),
+            correlation_id=get_correlation_id() or "correlation_unavailable",
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="seed_runtime_smoke",
+            result="succeeded",
+            resource_type="runtime_smoke_seed",
+            resource_id=result.run.run_id,
+            metadata={
+                "run_id": result.run.run_id,
+                "count": len(result.connections),
+                "status": result.run.status,
+            },
+        )
+        session.commit()
+        return success_payload(
+            _smoke_seed_payload(result),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
 @router.get("/approvals")
 def read_dashboard_approvals(
     request: Request,
@@ -775,4 +830,17 @@ def _audit_payload(event: AuditEvent) -> dict[str, object]:
         "redaction_state": event.redaction_state,
         "metadata_json": event.metadata_json,
         "occurred_at": event.occurred_at,
+    }
+
+
+def _smoke_seed_payload(result: RuntimeSmokeSeedResult) -> dict[str, object]:
+    return {
+        "scope": result.scope,
+        "synthetic": result.synthetic,
+        "agent": _agent_payload(result.agent),
+        "connections": [
+            _connection_payload(connection) for connection in result.connections
+        ],
+        "run": _run_payload(result.run),
+        "approval": _approval_summary(result.approval),
     }

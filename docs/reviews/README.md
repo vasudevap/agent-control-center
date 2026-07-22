@@ -129,6 +129,12 @@ controlled-account, OAuth revocation, Drive cleanup, migration rollback,
 deployment rollback, incident triage, indeterminate send, provider outage, and
 release withdrawal runbooks.
 
+The [WO-063 implementation report](./WO-063-hosted-runtime-smoke-seed-and-synthetic-connector-enablement-implementation-report.md)
+records the hosted runtime smoke seed source implementation, synthetic-only
+connector/run/approval evidence, owner-session/CSRF/idempotency controls,
+metadata-only audit posture, validation evidence, and remaining hosted
+deployment plus WO-058 rerun gate.
+
 The [WO-046 implementation report](./WO-046-dashboard-productization-and-runtime-operations-implementation-report.md)
 records the browser-safe runtime health indicator, dashboard runtime readiness
 boundary, fixture quarantine posture, validation evidence, and residual

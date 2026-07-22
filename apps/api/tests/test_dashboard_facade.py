@@ -14,8 +14,11 @@ from atlas_api.core.owner_sessions import SESSION_COOKIE_NAME, issue_owner_sessi
 from atlas_api.db.base import Base
 from atlas_api.main import create_app
 from atlas_api.models.agent import AgentRegistration
+from atlas_api.models.approval import ApprovalRequest
 from atlas_api.models.audit import AuditEvent
+from atlas_api.models.connector import ConnectorConnection
 from atlas_api.models.external_client import ExternalProductClient, User
+from atlas_api.models.run import AgentRun, AgentRunStep
 from atlas_api.services.agent_registry import create_agent_registration
 
 OWNER_ID = "usr_dashboard_owner"
@@ -194,6 +197,128 @@ def test_dashboard_state_change_requires_rotated_csrf(
     detail = client.get(f"/api/v1/dashboard/runs/{created.json()['data']['run_id']}")
     assert detail.status_code == 200
     assert detail.json()["data"]["run_id"] == created.json()["data"]["run_id"]
+
+
+def test_dashboard_smoke_seed_creates_synthetic_runtime_evidence(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, _ = authenticated_client(database_factory)
+    session_response = client.get("/api/v1/dashboard/session")
+    csrf_token = session_response.json()["data"]["csrf_token"]
+
+    response = client.post(
+        "/api/v1/dashboard/smoke-seed",
+        json={"scope": "hosted_mvp_smoke"},
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "dashboard-smoke-seed-0001",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()["data"]
+    assert payload["scope"] == "hosted_mvp_smoke"
+    assert payload["synthetic"] is True
+    assert payload["agent"]["slug"] == "hosted-runtime-smoke-agent"
+    assert payload["run"]["status"] == "succeeded"
+    assert payload["run"]["trigger_source"] == "manual"
+    assert payload["approval"]["status"] == "pending"
+    assert {item["connector_type"] for item in payload["connections"]} == {
+        "gmail",
+        "google_drive",
+    }
+    assert all(
+        item["status"] == "connected" and item["health_status"] == "healthy"
+        for item in payload["connections"]
+    )
+    assert "grafley.invalid" in response.text
+    assert "dashboard-secret" not in response.text
+    assert "google-secret" not in response.text
+    assert "access_token" not in response.text
+    assert "refresh_token" not in response.text
+
+    connectors = client.get("/api/v1/dashboard/connectors")
+    runs = client.get("/api/v1/dashboard/runs")
+    approvals = client.get("/api/v1/dashboard/approvals")
+    audit = client.get("/api/v1/dashboard/audit")
+
+    assert connectors.status_code == 200
+    assert len(connectors.json()["data"]["connections"]) == 2
+    assert runs.status_code == 200
+    assert runs.json()["data"][0]["run_id"] == payload["run"]["run_id"]
+    assert approvals.status_code == 200
+    assert approvals.json()["data"][0]["approval_id"] == payload["approval"][
+        "approval_id"
+    ]
+    assert audit.status_code == 200
+    assert "smoke_seed.hosted_runtime_seeded" in {
+        item["event_type"] for item in audit.json()["data"]
+    }
+    with database_factory() as session:
+        assert session.scalar(select(ConnectorConnection)) is not None
+        assert session.scalar(select(AgentRun)) is not None
+        assert session.scalar(select(AgentRunStep)) is not None
+        assert session.scalar(select(ApprovalRequest)) is not None
+
+
+def test_dashboard_smoke_seed_requires_csrf_and_idempotency(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, _ = authenticated_client(database_factory)
+    session_response = client.get("/api/v1/dashboard/session")
+    csrf_token = session_response.json()["data"]["csrf_token"]
+
+    missing_csrf = client.post(
+        "/api/v1/dashboard/smoke-seed",
+        json={"scope": "hosted_mvp_smoke"},
+        headers={"Idempotency-Key": "dashboard-smoke-seed-0002"},
+    )
+    missing_idempotency = client.post(
+        "/api/v1/dashboard/smoke-seed",
+        json={"scope": "hosted_mvp_smoke"},
+        headers={"X-Atlas-CSRF-Token": csrf_token},
+    )
+
+    assert missing_csrf.status_code == 401
+    assert missing_csrf.json()["error"]["code"] == "owner_session_csrf_invalid"
+    assert missing_idempotency.status_code == 422
+    assert missing_idempotency.json()["error"]["code"] == "idempotency_key_invalid"
+
+
+def test_dashboard_smoke_seed_is_idempotent(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, _ = authenticated_client(database_factory)
+    session_response = client.get("/api/v1/dashboard/session")
+    csrf_token = session_response.json()["data"]["csrf_token"]
+    headers = {
+        "X-Atlas-CSRF-Token": csrf_token,
+        "Idempotency-Key": "dashboard-smoke-seed-0003",
+    }
+
+    first = client.post(
+        "/api/v1/dashboard/smoke-seed",
+        json={"scope": "hosted_mvp_smoke"},
+        headers=headers,
+    )
+    second = client.post(
+        "/api/v1/dashboard/smoke-seed",
+        json={"scope": "hosted_mvp_smoke"},
+        headers=headers,
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert first.json()["data"]["run"]["run_id"] == second.json()["data"]["run"][
+        "run_id"
+    ]
+    assert first.json()["data"]["approval"]["approval_id"] == second.json()["data"][
+        "approval"
+    ]["approval_id"]
+    with database_factory() as session:
+        assert len(list(session.scalars(select(ConnectorConnection)))) == 2
+        assert len(list(session.scalars(select(AgentRun)))) == 1
+        assert len(list(session.scalars(select(ApprovalRequest)))) == 1
 
 
 def test_dashboard_audit_and_monitoring_are_metadata_only(
