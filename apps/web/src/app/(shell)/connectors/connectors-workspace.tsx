@@ -10,17 +10,17 @@ import {
 import {
   checkConnectionHealth,
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   type DashboardConnection,
   type DashboardRuntimeMode,
   readDashboardConnectors,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   startConnectorOAuth,
   toConnectorRecords,
 } from "@/lib/dashboard-runtime";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -130,7 +130,9 @@ export function ConnectorsWorkspace({
   connectors: ConnectorRecord[];
 }) {
   const [runtimeMode, setRuntimeMode] =
-    React.useState<DashboardRuntimeMode>("fixture");
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : "fixture",
+    );
   const [liveConnectors, setLiveConnectors] = React.useState<ConnectorRecord[]>([]);
   const [connections, setConnections] = React.useState<
     Record<string, DashboardConnection>
@@ -155,7 +157,7 @@ export function ConnectorsWorkspace({
     }
     setRuntimeMode("loading");
     try {
-      const session = await readDashboardSession();
+      const session = await readDashboardSessionOrRequireSignIn();
       const payload = await readDashboardConnectors();
       setCsrfToken(session.csrf_token);
       setConnections(
@@ -322,25 +324,20 @@ export function ConnectorsWorkspace({
         description={
           runtimeMode === "live"
             ? "Review owner-authenticated connector descriptors, connection health, and OAuth start paths."
-            : "Review fictional connection descriptors and least-privilege declarations."
+            : "Review connection descriptors and least-privilege declarations."
         }
         icon={PlugZap}
       />
+      {runtimeMode === "unauthenticated" && (
+        <SignedOutState description="Sign in to load runtime connector data from the Atlas API." />
+      )}
+      {runtimeMode !== "unauthenticated" && (
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Data is loaded from the
             owner-authenticated Atlas API dashboard facade. Secrets and provider
             tokens stay server-side.
-          </>
-        ) : runtimeMode === "unauthenticated" ? (
-          <>
-            <strong>Owner sign-in required.</strong> Runtime connector controls
-            are blocked until the owner session is established.{" "}
-            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
-              Sign in with Google
-            </a>
-            .
           </>
         ) : runtimeMode === "loading" ? (
           "Loading owner-authenticated connector data..."
@@ -354,9 +351,13 @@ export function ConnectorsWorkspace({
           </>
         )}
       </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <p className="sr-only" aria-live="polite">
         {notice}
       </p>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchField
           value={query}
@@ -413,6 +414,9 @@ export function ConnectorsWorkspace({
           {runtimeMode === "live" ? "runtime connectors" : "fictional connectors"}
         </p>
       </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
+      <>
       {visible.length === 0 ? (
         <Card>
           <EmptyState
@@ -590,6 +594,8 @@ export function ConnectorsWorkspace({
         >
           {notice}
         </div>
+      )}
+      </>
       )}
       <Dialog
         open={Boolean(confirmRevoke)}

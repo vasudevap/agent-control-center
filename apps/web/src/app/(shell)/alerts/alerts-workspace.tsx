@@ -18,15 +18,15 @@ import {
 } from "./alert-data";
 import {
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   type DashboardRuntimeMode,
   readDashboardMonitoring,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   toMonitoringAlerts,
 } from "@/lib/dashboard-runtime";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -160,7 +160,9 @@ export function AlertsWorkspace({
   initialAlertId?: string;
 }) {
   const [runtimeMode, setRuntimeMode] =
-    React.useState<DashboardRuntimeMode>("fixture");
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : "fixture",
+    );
   const [liveAlerts, setLiveAlerts] = React.useState<AlertRecord[]>([]);
   const [query, setQuery] = React.useState("");
   const [severity, setSeverity] = React.useState<AlertSeverity | "all">("all");
@@ -181,7 +183,7 @@ export function AlertsWorkspace({
       }
       setRuntimeMode("loading");
       try {
-        await readDashboardSession();
+        await readDashboardSessionOrRequireSignIn();
         const monitoring = await readDashboardMonitoring();
         if (!cancelled) {
           setLiveAlerts(toMonitoringAlerts(monitoring));
@@ -276,24 +278,19 @@ export function AlertsWorkspace({
         description={
           runtimeMode === "live"
             ? "Review lightweight hosted runtime monitoring posture from the Atlas API."
-            : "Triage fictional operational signals without contacting a runtime or provider."
+            : "Triage operational signals across the Atlas runtime."
         }
         icon={BellRing}
       />
+      {runtimeMode === "unauthenticated" && (
+        <SignedOutState description="Sign in to load runtime alert monitoring from the Atlas API." />
+      )}
+      {runtimeMode !== "unauthenticated" && (
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Monitoring evidence is loaded from
             the owner-authenticated Atlas API dashboard facade.
-          </>
-        ) : runtimeMode === "unauthenticated" ? (
-          <>
-            <strong>Owner sign-in required.</strong> Runtime monitoring is
-            blocked until the owner session is established.{" "}
-            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
-              Sign in with Google
-            </a>
-            .
           </>
         ) : runtimeMode === "loading" ? (
           "Loading owner-authenticated monitoring posture..."
@@ -307,9 +304,13 @@ export function AlertsWorkspace({
           </>
         )}
       </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchField
           value={query}
@@ -376,6 +377,9 @@ export function AlertsWorkspace({
           {runtimeMode === "live" ? "runtime alerts" : "fictional alerts"}
         </p>
       </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
+      <>
       {visible.length === 0 ? (
         <Card>
           <EmptyState
@@ -518,6 +522,8 @@ export function AlertsWorkspace({
             ))}
           </ul>
         </>
+      )}
+      </>
       )}
     </div>
   );

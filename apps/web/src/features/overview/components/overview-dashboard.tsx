@@ -9,18 +9,17 @@ import { UpcomingScheduleSection } from "./upcoming-schedule-section";
 import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
 import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
 import { mockAlerts } from "../data/mock-data";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ErrorState } from "@/components/state/error-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   readDashboardAgents,
   readDashboardApprovals,
   readDashboardMonitoring,
   readDashboardRuns,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   toAgentRecords,
   toApprovalRecords,
   toMonitoringAlerts,
@@ -45,7 +44,7 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
       }
       setRuntimeMode("loading");
       try {
-        await readDashboardSession();
+        await readDashboardSessionOrRequireSignIn();
         const [runtimeAgents, runtimeRuns, runtimeApprovals, monitoring] =
           await Promise.all([
             readDashboardAgents(),
@@ -102,20 +101,7 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
           <Skeleton className="h-72 w-full" />
         </div>
       ) : runtimeMode === "unauthenticated" ? (
-        <Card>
-          <ErrorState
-            title="Owner sign-in required"
-            description="Sign in to load runtime overview data from the Atlas API."
-            className="py-12"
-          />
-          {dashboardSignInUrl() && (
-            <div className="flex justify-center pb-6">
-              <Button asChild>
-                <a href={dashboardSignInUrl()}>Sign in with Google</a>
-              </Button>
-            </div>
-          )}
-        </Card>
+        <SignedOutState description="Sign in to load runtime overview data from the Atlas API." />
       ) : runtimeMode === "error" ? (
         <Card>
           <ErrorState
