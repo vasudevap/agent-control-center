@@ -4,6 +4,15 @@ import * as React from "react";
 import Link from "next/link";
 import { Bot, CircleOff, FilterX } from "lucide-react";
 import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  readDashboardAgents,
+  readDashboardRuns,
+  readDashboardSession,
+  toAgentRecords,
+  type DashboardRuntimeMode,
+} from "@/lib/dashboard-runtime";
+import {
   HEALTH_LABELS,
   MOCK_AGENTS,
   STATUS_LABELS,
@@ -30,6 +39,7 @@ type SortKey = "attention" | "health" | "agent" | "status" | "owner" | "lastRun"
 interface AgentsInventoryProps {
   agents?: AgentRecord[];
   state?: InventoryState;
+  runtimeRequired?: boolean;
 }
 
 // Ascending severity, mirroring risk's Low-to-Critical convention in Approvals.
@@ -171,40 +181,125 @@ function InventorySkeleton() {
   );
 }
 
-export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: AgentsInventoryProps) {
+export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtimeRequired = false }: AgentsInventoryProps) {
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>(() =>
+      runtimeRequired ? (dashboardApiBaseUrl() ? "loading" : "error") : "fixture",
+    );
+  const [liveAgents, setLiveAgents] = React.useState<AgentRecord[]>([]);
+  const [viewState, setViewState] = React.useState<InventoryState>(() =>
+    runtimeRequired ? (dashboardApiBaseUrl() ? "loading" : "error") : state,
+  );
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<AgentStatus | "all">("all");
   const [healthFilter, setHealthFilter] = React.useState<AgentHealth | "all">("all");
   const [sort, setSort] = React.useState<SortKey>("attention");
   const [direction, setDirection] = React.useState<SortDirection>("asc");
 
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode(runtimeRequired ? "error" : "fixture");
+        setViewState(runtimeRequired ? "error" : state);
+        return;
+      }
+      setRuntimeMode("loading");
+      setViewState("loading");
+      try {
+        await readDashboardSession();
+        const [runtimeAgents, runtimeRuns] = await Promise.all([
+          readDashboardAgents(),
+          readDashboardRuns(),
+        ]);
+        if (!cancelled) {
+          setLiveAgents(toAgentRecords(runtimeAgents, runtimeRuns));
+          setRuntimeMode("live");
+          setViewState("loaded");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+          setViewState("error");
+        } else {
+          setRuntimeMode("error");
+          setViewState("error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, [runtimeRequired, state]);
+
   const onSort = (key: SortKey) => {
     if (key === sort) setDirection((d) => (d === "asc" ? "desc" : "asc"));
     else { setSort(key); setDirection("asc"); }
   };
 
+  const activeAgents = runtimeMode === "live" ? liveAgents : runtimeRequired ? [] : agents;
   const hasActiveFilters = searchQuery.trim() !== "" || statusFilter !== "all" || healthFilter !== "all";
-  const filteredAgents = sortAgents(filterAgents(agents, searchQuery, statusFilter, healthFilter), sort, direction);
+  const filteredAgents = sortAgents(filterAgents(activeAgents, searchQuery, statusFilter, healthFilter), sort, direction);
   const clearFilters = () => { setSearchQuery(""); setStatusFilter("all"); setHealthFilter("all"); };
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader eyebrow="Fleet" title="Agents" icon={Bot} description="Monitor the status, health, and activity of your AI workforce." />
+      <PageHeader
+        eyebrow="Fleet"
+        title="Agents"
+        icon={Bot}
+        description={
+          runtimeMode === "live"
+            ? "Monitor owner-authenticated Atlas runtime agent registrations."
+            : "Monitor the status, health, and activity of your AI workforce."
+        }
+      />
 
-      {state === "loading" && <InventorySkeleton />}
+      {runtimeMode === "live" && (
+        <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
+          <strong>Live runtime.</strong> Agent registrations, health, and latest
+          run state are loaded from the owner-authenticated Atlas API dashboard
+          facade.
+        </div>
+      )}
 
-      {state === "error" && (
+      {viewState === "loading" && <InventorySkeleton />}
+
+      {viewState === "error" && (
         <Card>
-          <ErrorState title="Agents inventory could not be displayed" description="The local inventory state is unavailable. No agent operation was started." className="py-16" />
+          <ErrorState
+            title={runtimeMode === "unauthenticated" ? "Owner sign-in required" : "Agents inventory could not be displayed"}
+            description={
+              runtimeMode === "unauthenticated"
+                ? "Sign in to load runtime agent registrations from the Atlas API."
+                : runtimeRequired && !dashboardApiBaseUrl()
+                  ? "No runtime API base URL is configured for this build, so the live Agents inventory cannot be displayed."
+                  : "The owner-authenticated dashboard facade could not return agent registrations. No agent operation was started."
+            }
+            className="py-16"
+          />
+          {runtimeMode === "unauthenticated" && dashboardSignInUrl() && (
+            <div className="flex justify-center pb-6">
+              <Button asChild>
+                <a href={dashboardSignInUrl()}>Sign in with Google</a>
+              </Button>
+            </div>
+          )}
         </Card>
       )}
 
-      {state === "loaded" && agents.length > 0 && (
+      {viewState === "loaded" && activeAgents.length > 0 && (
         <section className="flex flex-col gap-3" aria-labelledby="agents-inventory-heading">
           <div className="flex flex-col gap-3 rounded-atlas-md border border-border-default bg-surface-secondary p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 id="agents-inventory-heading" className="text-xs font-semibold uppercase tracking-wide text-foreground-secondary">
-                Showing {filteredAgents.length} of {agents.length}
+                Showing {filteredAgents.length} of {activeAgents.length}
               </h2>
               {hasActiveFilters && (
                 <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
@@ -237,6 +332,21 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded" }: Agen
             </Card>
           )}
         </section>
+      )}
+
+      {viewState === "loaded" && activeAgents.length === 0 && (
+        <Card>
+          <EmptyState
+            icon={CircleOff}
+            title="No agents are registered"
+            description={
+              runtimeMode === "live"
+                ? "The runtime dashboard facade returned no agent registrations."
+                : "No local agent fixtures are available."
+            }
+            className="py-16"
+          />
+        </Card>
       )}
     </div>
   );

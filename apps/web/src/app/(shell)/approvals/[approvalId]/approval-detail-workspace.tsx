@@ -54,9 +54,9 @@ function Details({ items, fullWidth = [] }: { items: Record<string, React.ReactN
   return (
     <dl className="grid gap-4 sm:grid-cols-2">
       {Object.entries(items).map(([label, value]) => (
-        <div key={label} className={fullWidth.includes(label) ? "grid gap-1 sm:col-span-2" : "grid gap-1"}>
+        <div key={label} className={fullWidth.includes(label) ? "grid min-w-0 gap-1 sm:col-span-2" : "grid min-w-0 gap-1"}>
           <dt className="font-mono text-[10px] font-semibold uppercase tracking-wide text-foreground-tertiary">{label}</dt>
-          <dd className="break-words text-sm leading-relaxed text-foreground">{value}</dd>
+          <dd className="min-w-0 break-words text-sm leading-relaxed text-foreground [overflow-wrap:anywhere]">{value}</dd>
         </div>
       ))}
     </dl>
@@ -229,7 +229,7 @@ export function ApprovalDetailWorkspace({ approval, requestedId, presentationSta
         identifier={current.id}
         description={current.action}
         icon={ShieldAlert}
-        meta={<><RiskChip risk={current.risk as RiskLevel} plain /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
+        meta={<><RiskChip risk={current.risk as RiskLevel} plain className="text-xs" /><StateChip state={current.state} className="text-xs" />{actionable && <ReviewProgressTag progress={current.reviewProgress} />}</>}
         actions={<Button asChild variant="ghost" size="sm"><Link href={returnTo}><ArrowLeft className="size-4" aria-hidden="true" />{returnLabel}</Link></Button>}
       />
       <Notice runtimeMode={runtimeMode} />

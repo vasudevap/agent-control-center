@@ -1,4 +1,9 @@
 import type {
+  AgentHealth,
+  AgentRecord,
+  AgentStatus,
+} from "@/app/(shell)/agents/agent-data";
+import type {
   AuthenticationType,
   ConnectorRecord,
   ConnectorStatus,
@@ -65,9 +70,17 @@ export interface DashboardAgent {
   slug: string;
   display_name: string;
   description: string;
+  version?: string;
   status: string;
   risk_level: string;
+  capabilities?: string[];
+  allowed_tools?: string[];
+  required_connectors?: string[];
   supports_manual_run: boolean;
+  supports_scheduled_run?: boolean;
+  health_status?: string;
+  health_checked_at?: string | null;
+  last_error_code?: string | null;
 }
 
 export interface DashboardRun {
@@ -247,6 +260,91 @@ export const checkConnectionHealth = (
     },
   );
 
+export function toAgentRecords(
+  agents: DashboardAgent[],
+  runs: DashboardRun[] = [],
+): AgentRecord[] {
+  const latestRunByAgent = new Map<string, DashboardRun>();
+  for (const run of runs) {
+    const current = latestRunByAgent.get(run.agent_id);
+    if (
+      !current ||
+      +new Date(run.created_at) > +new Date(current.created_at)
+    ) {
+      latestRunByAgent.set(run.agent_id, run);
+    }
+  }
+
+  return agents.map((agent) => {
+    const latestRun = latestRunByAgent.get(agent.agent_id);
+    const lastRunAt = latestRun?.created_at ?? agent.health_checked_at ?? "";
+    const hasSchedule = agent.supports_scheduled_run === true;
+    const currentIssue = agent.last_error_code
+      ? `Runtime health reported ${agent.last_error_code}.`
+      : undefined;
+
+    return {
+      id: agent.agent_id,
+      name: agent.display_name,
+      description: agent.description,
+      status: agentStatus(agent, latestRun),
+      health: agentHealth(agent.health_status),
+      owner: "Atlas Runtime",
+      lastRun: latestRun ? lastCheckLabel(latestRun.created_at) : "No runs recorded",
+      lastRunAt: lastRunAt || "1970-01-01T00:00:00.000Z",
+      nextRun: hasSchedule ? "Schedule configured" : "Not scheduled",
+      nextRunAt: undefined,
+      version: agent.version ?? "Runtime descriptor",
+      currentIssue,
+      issueSummary: currentIssue,
+      responsibilities: [agent.description],
+      capabilities: agent.capabilities ?? [],
+      connectors: agent.required_connectors ?? [],
+      permissions: agent.allowed_tools ?? [],
+      recentActivity: latestRun
+        ? [`Latest runtime run ${latestRun.run_id} is ${latestRun.status}.`]
+        : ["No runtime run history is recorded for this agent."],
+    };
+  });
+}
+
+export function fleetPulseFromRuntime(
+  agents: AgentRecord[],
+  approvals: ApprovalRecord[],
+  alerts: AlertRecord[],
+) {
+  return {
+    totalAgents: agents.length,
+    healthyAgents: agents.filter((agent) => agent.health === "healthy").length,
+    degradedAgents: agents.filter((agent) => agent.health === "degraded").length,
+    offlineAgents: agents.filter((agent) => agent.health === "offline").length,
+    runningAgents: agents.filter(
+      (agent) => agent.status === "running" || agent.status === "active",
+    ).length,
+    pendingApprovals: approvals.filter((approval) => approval.state === "Pending")
+      .length,
+    activeAlerts: alerts.filter((alert) => alert.status === "active").length,
+  };
+}
+
+export function ownerDisplayName(session: DashboardSession | null) {
+  return (
+    session?.user.display_name?.trim() ||
+    session?.user.email?.split("@")[0]?.trim() ||
+    "Owner"
+  );
+}
+
+export function ownerInitials(session: DashboardSession | null) {
+  const displayName = ownerDisplayName(session);
+  const parts = displayName
+    .split(/\s+/)
+    .map((part) => part[0])
+    .filter(Boolean);
+  return (parts.length > 1 ? `${parts[0]}${parts[1]}` : displayName.slice(0, 2))
+    .toUpperCase();
+}
+
 export function toConnectorRecords(
   descriptors: DashboardConnectorDescriptor[],
   connections: DashboardConnection[],
@@ -421,6 +519,23 @@ function connectorStatus(
   if (connection.health_status === "degraded") return "degraded";
   if (connection.health_status === "unhealthy") return "offline";
   return descriptor.status === "active" ? "degraded" : "offline";
+}
+
+function agentStatus(
+  agent: DashboardAgent,
+  latestRun: DashboardRun | undefined,
+): AgentStatus {
+  if (latestRun?.status === "running") return "running";
+  if (latestRun?.status === "queued") return "queued";
+  if (agent.status === "disabled" || agent.status === "retired") return "paused";
+  return "active";
+}
+
+function agentHealth(value: string | undefined): AgentHealth {
+  if (value === "healthy") return "healthy";
+  if (value === "degraded" || value === "unknown") return "degraded";
+  if (value === "unhealthy") return "offline";
+  return "degraded";
 }
 
 function authenticationType(value: string): AuthenticationType {

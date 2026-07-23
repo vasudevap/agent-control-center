@@ -25,9 +25,9 @@ import {
   isQueueApproval,
   type ApprovalRecord,
 } from "@/app/(shell)/approvals/approval-data";
-import { MOCK_AGENTS, type AgentHealth } from "@/app/(shell)/agents/agent-data";
+import type { AgentHealth, AgentRecord } from "@/app/(shell)/agents/agent-data";
+import type { AlertRecord } from "@/app/(shell)/alerts/alert-data";
 import { cn } from "@/lib/utils";
-import { mockAlerts } from "../data/mock-data";
 
 function alertToRisk(
   severity: "critical" | "high" | "warning" | "information",
@@ -61,7 +61,11 @@ interface AttentionItem {
   href: string;
 }
 
-function buildAttentionItems(approvals: ApprovalRecord[]): AttentionItem[] {
+function buildAttentionItems(
+  approvals: ApprovalRecord[],
+  agents: AgentRecord[],
+  alerts: AlertRecord[],
+): AttentionItem[] {
   const items: AttentionItem[] = [];
 
   approvals.filter(isQueueApproval).forEach((approval) => {
@@ -94,7 +98,7 @@ function buildAttentionItems(approvals: ApprovalRecord[]): AttentionItem[] {
     });
   });
 
-  mockAlerts.forEach((alert) => {
+  alerts.forEach((alert) => {
     const severity: Severity =
       alert.severity === "critical"
         ? 0
@@ -117,7 +121,7 @@ function buildAttentionItems(approvals: ApprovalRecord[]): AttentionItem[] {
     });
   });
 
-  MOCK_AGENTS.filter(
+  agents.filter(
     (agent) => agent.health === "degraded" || agent.health === "offline",
   ).forEach((agent) => {
     const severity: Severity = agent.health === "offline" ? 0 : 2;
@@ -166,8 +170,16 @@ function buildAttentionItems(approvals: ApprovalRecord[]): AttentionItem[] {
  * feed across three unrelated entity types; the ranking is the value
  * it adds, so it is not exposed as a user-controlled sort.
  */
-export function AttentionQueue({ approvals }: { approvals: ApprovalRecord[] }) {
-  const items = buildAttentionItems(approvals);
+export function AttentionQueue({
+  approvals,
+  agents,
+  alerts,
+}: {
+  approvals: ApprovalRecord[];
+  agents: AgentRecord[];
+  alerts: AlertRecord[];
+}) {
+  const items = buildAttentionItems(approvals, agents, alerts);
 
   return (
     <Card>

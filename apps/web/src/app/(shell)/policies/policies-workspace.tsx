@@ -81,7 +81,13 @@ function PolicyDetails({ policy }: { policy: PolicyRecord }) {
   );
 }
 
-export function PoliciesWorkspace({ policies }: { policies: PolicyRecord[] }) {
+export function PoliciesWorkspace({
+  policies,
+  runtimeUnavailable = false,
+}: {
+  policies: PolicyRecord[];
+  runtimeUnavailable?: boolean;
+}) {
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<PolicyStatus | "all">("all");
   const [type, setType] = React.useState<PolicyType | "all">("all");
@@ -156,6 +162,27 @@ export function PoliciesWorkspace({ policies }: { policies: PolicyRecord[] }) {
         Workspace-wide declaration
       </span>
     );
+
+  if (runtimeUnavailable) {
+    return (
+      <div className="flex flex-col gap-5">
+        <PageHeader
+          eyebrow="Governance"
+          title="Policies"
+          description="Runtime policy inventory is not available in this release."
+          icon={ShieldCheck}
+        />
+        <Card>
+          <EmptyState
+            icon={ShieldCheck}
+            title="Live policy data is not available"
+            description="No accepted dashboard facade or policy-engine read contract exists for this page yet, so fictional policy declarations are not shown on the live surface."
+            className="py-16"
+          />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5">
