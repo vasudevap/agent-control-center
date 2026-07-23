@@ -12,7 +12,7 @@ describe("AttentionQueue", () => {
       action: "Review the server-serialized approval fixture.",
     };
 
-    render(<AttentionQueue approvals={[approval]} />);
+    render(<AttentionQueue approvals={[approval]} agents={[]} alerts={[]} />);
 
     expect(
       screen.getByText("Review the server-serialized approval fixture."),
@@ -23,7 +23,7 @@ describe("AttentionQueue", () => {
   });
 
   it("routes every alert to its canonical Alerts fixture destination", () => {
-    render(<AttentionQueue approvals={[]} />);
+    render(<AttentionQueue approvals={[]} agents={[]} alerts={ALERT_FIXTURES} />);
 
     ALERT_FIXTURES.forEach((alert) => {
       expect(

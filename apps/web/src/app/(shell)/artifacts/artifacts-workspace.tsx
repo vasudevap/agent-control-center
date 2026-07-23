@@ -109,8 +109,10 @@ function Pair({
 
 export function ArtifactsWorkspace({
   artifacts = ARTIFACT_FIXTURES,
+  runtimeUnavailable = false,
 }: {
   artifacts?: ArtifactRecord[];
+  runtimeUnavailable?: boolean;
 }) {
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<ArtifactStatus | "all">("all");
@@ -136,6 +138,28 @@ export function ArtifactsWorkspace({
       setDirection("asc");
     }
   };
+
+  if (runtimeUnavailable) {
+    return (
+      <div className="flex flex-col gap-5">
+        <PageHeader
+          eyebrow="Outputs"
+          title="Artifacts"
+          description="Runtime artifact metadata is not available in this release."
+          icon={Package}
+        />
+        <Card>
+          <EmptyState
+            icon={Package}
+            title="Live artifact data is not available"
+            description="No accepted dashboard facade or artifact-store read contract exists for this page yet, so fictional artifact metadata is not shown on the live surface."
+            className="py-16"
+          />
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <PageHeader

@@ -1,9 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { FLEET_PULSE } from "./nav-items";
+import * as React from "react";
 import { RuntimeHealthIndicator } from "./runtime-health-indicator";
 import { cn } from "@/lib/utils";
+import {
+  dashboardApiBaseUrl,
+  fleetPulseFromRuntime,
+  readDashboardAgents,
+  readDashboardApprovals,
+  readDashboardMonitoring,
+  readDashboardRuns,
+  readDashboardSession,
+  toAgentRecords,
+  toApprovalRecords,
+  toMonitoringAlerts,
+} from "@/lib/dashboard-runtime";
 
 /**
  * Persistent operator status strip. This is the exploration's central
@@ -49,7 +61,51 @@ function ClusterDivider() {
 }
 
 export function StatusBar() {
-  const needsAttention = FLEET_PULSE.degradedAgents + FLEET_PULSE.offlineAgents;
+  const [pulse, setPulse] = React.useState(() =>
+    fleetPulseFromRuntime([], [], []),
+  );
+  const [state, setState] = React.useState<"unconfigured" | "loading" | "live" | "unavailable">(
+    "unconfigured",
+  );
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!dashboardApiBaseUrl()) {
+        setState("unconfigured");
+        return;
+      }
+      setState("loading");
+      try {
+        await readDashboardSession();
+        const [runtimeAgents, runtimeRuns, runtimeApprovals, monitoring] =
+          await Promise.all([
+            readDashboardAgents(),
+            readDashboardRuns(),
+            readDashboardApprovals("pending"),
+            readDashboardMonitoring(),
+          ]);
+        if (!cancelled) {
+          setPulse(
+            fleetPulseFromRuntime(
+              toAgentRecords(runtimeAgents, runtimeRuns),
+              toApprovalRecords(runtimeApprovals),
+              toMonitoringAlerts(monitoring),
+            ),
+          );
+          setState("live");
+        }
+      } catch {
+        if (!cancelled) setState("unavailable");
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const needsAttention = pulse.degradedAgents + pulse.offlineAgents;
 
   return (
     <div
@@ -59,14 +115,29 @@ export function StatusBar() {
     >
       <div className="flex flex-1 items-center gap-2.5 overflow-x-auto">
         <div className="flex items-center gap-1">
-          <PulseItem href="/agents" tone="neutral" label="agents" value={FLEET_PULSE.totalAgents} />
-          <PulseItem href="/agents" tone="brand" label="running" value={FLEET_PULSE.runningAgents} />
+          <PulseItem href="/agents" tone="neutral" label="agents" value={pulse.totalAgents} />
+          <PulseItem href="/agents" tone="brand" label="running" value={pulse.runningAgents} />
           {needsAttention > 0 && <PulseItem href="/agents" tone="warning" label="need attention" value={needsAttention} />}
         </div>
         <ClusterDivider />
-        <PulseItem href="/approvals" tone={FLEET_PULSE.pendingApprovals > 0 ? "warning" : "neutral"} label="pending approvals" value={FLEET_PULSE.pendingApprovals} />
+        <PulseItem href="/approvals" tone={pulse.pendingApprovals > 0 ? "warning" : "neutral"} label="pending approvals" value={pulse.pendingApprovals} />
         <ClusterDivider />
-        <PulseItem href="/alerts" tone={FLEET_PULSE.activeAlerts > 0 ? "error" : "neutral"} label="active alerts" value={FLEET_PULSE.activeAlerts} />
+        <PulseItem href="/alerts" tone={pulse.activeAlerts > 0 ? "error" : "neutral"} label="active alerts" value={pulse.activeAlerts} />
+        {state === "loading" && (
+          <span className="shrink-0 text-[11px] text-foreground-tertiary">
+            Loading live metrics...
+          </span>
+        )}
+        {state === "unavailable" && (
+          <span className="shrink-0 text-[11px] text-warning">
+            Live metrics unavailable
+          </span>
+        )}
+        {state === "unconfigured" && (
+          <span className="shrink-0 text-[11px] text-foreground-tertiary">
+            Live metrics not configured
+          </span>
+        )}
       </div>
       <RuntimeHealthIndicator />
     </div>

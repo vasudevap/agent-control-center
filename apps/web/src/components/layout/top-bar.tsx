@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, LogOut, Settings, User } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { MobileNavDrawer } from "./mobile-nav-drawer";
@@ -17,11 +17,61 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { FLEET_PULSE } from "./nav-items";
+import {
+  dashboardApiBaseUrl,
+  dashboardSignInUrl,
+  ownerDisplayName,
+  ownerInitials,
+  readDashboardSession,
+  type DashboardSession,
+} from "@/lib/dashboard-runtime";
 
 export function TopBar() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [session, setSession] = useState<DashboardSession | null>(null);
+  const [sessionState, setSessionState] = useState<
+    "fixture" | "loading" | "live" | "unauthenticated" | "unavailable"
+  >("fixture");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadSession() {
+      if (!dashboardApiBaseUrl()) {
+        setSessionState("fixture");
+        return;
+      }
+      setSessionState("loading");
+      try {
+        const runtimeSession = await readDashboardSession();
+        if (!cancelled) {
+          setSession(runtimeSession);
+          setSessionState("live");
+        }
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setSessionState("unauthenticated");
+        } else {
+          setSessionState("unavailable");
+        }
+      }
+    }
+    void loadSession();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const displayName = ownerDisplayName(session);
+  const initials = ownerInitials(session);
+  const accountLabel =
+    session?.user.email ??
+    (sessionState === "unauthenticated" ? "Owner sign-in required" : displayName);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -50,7 +100,7 @@ export function TopBar() {
 
           <ThemeToggle />
 
-          <NotificationsMenu unreadCount={FLEET_PULSE.activeAlerts} />
+          <NotificationsMenu unreadCount={0} />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -59,29 +109,38 @@ export function TopBar() {
                 aria-label="User menu"
               >
                 <Avatar className="size-7">
-                  <AvatarFallback>OP</AvatarFallback>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <span className="hidden text-sm font-medium text-foreground sm:inline">
-                  Operator
+                  {displayName}
                 </span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>operator@atlas.dev</DropdownMenuLabel>
+              <DropdownMenuLabel>{accountLabel}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <User className="size-4" />
-                Profile
+                {sessionState === "live" ? "Profile" : "Session unavailable"}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Settings className="size-4" />
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="size-4" />
-                Sign out
-              </DropdownMenuItem>
+              {sessionState === "unauthenticated" && dashboardSignInUrl() ? (
+                <DropdownMenuItem asChild>
+                  <a href={dashboardSignInUrl()}>
+                    <User className="size-4" />
+                    Sign in with Google
+                  </a>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem>
+                  <LogOut className="size-4" />
+                  Sign out
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

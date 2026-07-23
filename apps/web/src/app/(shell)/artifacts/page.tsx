@@ -1,5 +1,5 @@
 import { ArtifactsWorkspace } from "./artifacts-workspace";
 
 export default function ArtifactsPage() {
-  return <ArtifactsWorkspace />;
+  return <ArtifactsWorkspace artifacts={[]} runtimeUnavailable />;
 }
