@@ -81,6 +81,8 @@ function NavLink({
 
 export function SidebarNav({ onNavigate, expanded = false }: { onNavigate?: () => void; expanded?: boolean }) {
   const pathname = usePathname();
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -91,7 +93,7 @@ export function SidebarNav({ onNavigate, expanded = false }: { onNavigate?: () =
               Operations
             </p>
             {OPERATIONS_NAV_ITEMS.map((item) => (
-              <NavLink key={item.href} item={item} active={pathname === item.href} onNavigate={onNavigate} expanded={expanded} />
+              <NavLink key={item.href} item={item} active={isActive(item.href)} onNavigate={onNavigate} expanded={expanded} />
             ))}
           </div>
 
@@ -100,13 +102,13 @@ export function SidebarNav({ onNavigate, expanded = false }: { onNavigate?: () =
               Governance
             </p>
             {GOVERNANCE_NAV_ITEMS.map((item) => (
-              <NavLink key={item.href} item={item} active={pathname === item.href} onNavigate={onNavigate} expanded={expanded} />
+              <NavLink key={item.href} item={item} active={isActive(item.href)} onNavigate={onNavigate} expanded={expanded} />
             ))}
           </div>
         </div>
 
         <Separator className="my-1.5" />
-        <NavLink item={SETTINGS_NAV_ITEM} active={pathname === SETTINGS_NAV_ITEM.href} onNavigate={onNavigate} expanded={expanded} />
+        <NavLink item={SETTINGS_NAV_ITEM} active={isActive(SETTINGS_NAV_ITEM.href)} onNavigate={onNavigate} expanded={expanded} />
       </nav>
     </TooltipProvider>
   );

@@ -11,6 +11,7 @@ import {
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -169,17 +170,10 @@ export function PoliciesWorkspace({
         <PageHeader
           eyebrow="Governance"
           title="Policies"
-          description="Runtime policy inventory is not available in this release."
+          description="Review policy declarations, scope, and agent assignment."
           icon={ShieldCheck}
         />
-        <Card>
-          <EmptyState
-            icon={ShieldCheck}
-            title="Live policy data is not available"
-            description="No accepted dashboard facade or policy-engine read contract exists for this page yet, so fictional policy declarations are not shown on the live surface."
-            className="py-16"
-          />
-        </Card>
+        <SignedOutState description="Sign in to load runtime policy data from the Atlas API." />
       </div>
     );
   }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { APPROVALS_ICON } from "@/components/layout/nav-items";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -14,10 +15,9 @@ import { RiskChip, riskRank, type RiskLevel } from "@/components/risk/risk-indic
 import { cn } from "@/lib/utils";
 import {
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   type DashboardRuntimeMode,
   readDashboardApprovals,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   toApprovalRecords,
 } from "@/lib/dashboard-runtime";
 import { isQueueApproval, type ApprovalRecord } from "./approval-data";
@@ -93,7 +93,9 @@ function stateFromParams(params: URLSearchParams): CollectionState {
 
 export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: { approvals: ApprovalRecord[]; presentationState?: Presentation }) {
   const [runtimeMode, setRuntimeMode] =
-    React.useState<DashboardRuntimeMode>("fixture");
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : "fixture",
+    );
   const [liveApprovals, setLiveApprovals] = React.useState<ApprovalRecord[]>([]);
   const initialState = React.useMemo(() => stateFromParams(new URLSearchParams()), []);
   const [view, setView] = React.useState<View>(initialState.view);
@@ -114,7 +116,7 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
       }
       setRuntimeMode("loading");
       try {
-        await readDashboardSession();
+        await readDashboardSessionOrRequireSignIn();
         const runtimeApprovals = await readDashboardApprovals(
           view === "queue" ? "pending" : "approved",
         );
@@ -234,21 +236,13 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
   return (
     <div className="flex min-w-0 flex-col gap-5">
       <PageHeader eyebrow="Governance" title="Approvals" icon={APPROVALS_ICON} description="Review and authorize proposed actions before an agent may proceed." />
+      {runtimeMode !== "unauthenticated" && (
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Approval metadata is loaded from the
             owner-authenticated Atlas API dashboard facade. Sensitive payloads
             stay server-side.
-          </>
-        ) : runtimeMode === "unauthenticated" ? (
-          <>
-            <strong>Owner sign-in required.</strong> Runtime approvals are
-            blocked until the owner session is established.{" "}
-            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
-              Sign in with Google
-            </a>
-            .
           </>
         ) : runtimeMode === "loading" ? (
           "Loading owner-authenticated approval metadata..."
@@ -261,11 +255,12 @@ export function ApprovalsWorkspace({ approvals, presentationState = "ready" }: {
           </>
         )}
       </div>
+      )}
 
       {effectivePresentation === "loading" ? (
         <div className="grid gap-3"><Skeleton className="h-32 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : runtimeMode === "unauthenticated" ? (
-        <StateCard title="Owner sign-in required" detail="Sign in to load runtime approval records from the Atlas API." action={<Button asChild><a href={dashboardSignInUrl()}>Sign in with Google</a></Button>} />
+        <SignedOutState description="Sign in to load runtime approval records from the Atlas API." />
       ) : effectivePresentation === "error" ? (
         <StateCard title="Approval data is unavailable" detail={runtimeMode === "error" ? "The owner-authenticated dashboard facade could not return approval metadata." : "This controlled error state did not contact a real approval service."} />
       ) : (

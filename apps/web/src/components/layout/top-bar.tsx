@@ -6,6 +6,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { MobileNavDrawer } from "./mobile-nav-drawer";
 import { NotificationsMenu } from "./notifications-menu";
 import { SearchField } from "@/components/ui/search-field";
+import { GoogleLogo } from "@/components/brand/google-logo";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -128,10 +129,10 @@ export function TopBar() {
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {sessionState === "unauthenticated" && dashboardSignInUrl() ? (
+              {sessionState !== "live" && dashboardSignInUrl() ? (
                 <DropdownMenuItem asChild>
                   <a href={dashboardSignInUrl()}>
-                    <User className="size-4" />
+                    <GoogleLogo />
                     Sign in with Google
                   </a>
                 </DropdownMenuItem>

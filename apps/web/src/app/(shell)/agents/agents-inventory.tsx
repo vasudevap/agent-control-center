@@ -5,10 +5,9 @@ import Link from "next/link";
 import { Bot, CircleOff, FilterX } from "lucide-react";
 import {
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   readDashboardAgents,
   readDashboardRuns,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   toAgentRecords,
   type DashboardRuntimeMode,
 } from "@/lib/dashboard-runtime";
@@ -24,6 +23,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { ErrorState } from "@/components/state/error-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -207,7 +207,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
       setRuntimeMode("loading");
       setViewState("loading");
       try {
-        await readDashboardSession();
+        await readDashboardSessionOrRequireSignIn();
         const [runtimeAgents, runtimeRuns] = await Promise.all([
           readDashboardAgents(),
           readDashboardRuns(),
@@ -272,26 +272,21 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
       {viewState === "loading" && <InventorySkeleton />}
 
       {viewState === "error" && (
-        <Card>
-          <ErrorState
-            title={runtimeMode === "unauthenticated" ? "Owner sign-in required" : "Agents inventory could not be displayed"}
-            description={
-              runtimeMode === "unauthenticated"
-                ? "Sign in to load runtime agent registrations from the Atlas API."
-                : runtimeRequired && !dashboardApiBaseUrl()
+        runtimeMode === "unauthenticated" ? (
+          <SignedOutState description="Sign in to load runtime agent registrations from the Atlas API." />
+        ) : (
+          <Card>
+            <ErrorState
+              title="Agents inventory could not be displayed"
+              description={
+                runtimeRequired && !dashboardApiBaseUrl()
                   ? "No runtime API base URL is configured for this build, so the live Agents inventory cannot be displayed."
                   : "The owner-authenticated dashboard facade could not return agent registrations. No agent operation was started."
-            }
-            className="py-16"
-          />
-          {runtimeMode === "unauthenticated" && dashboardSignInUrl() && (
-            <div className="flex justify-center pb-6">
-              <Button asChild>
-                <a href={dashboardSignInUrl()}>Sign in with Google</a>
-              </Button>
-            </div>
-          )}
-        </Card>
+              }
+              className="py-16"
+            />
+          </Card>
+        )
       )}
 
       {viewState === "loaded" && activeAgents.length > 0 && (

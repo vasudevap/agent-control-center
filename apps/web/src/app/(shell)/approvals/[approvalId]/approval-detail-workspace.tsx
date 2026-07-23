@@ -26,18 +26,18 @@ import {
 
 function Notice({ runtimeMode }: { runtimeMode: DashboardRuntimeMode }) {
   return (
-    <Card className="border-info-border bg-info-bg">
-      <CardContent className="flex gap-2.5 p-3 text-xs leading-relaxed text-info">
-        <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+    <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
+      <div className="flex gap-2.5">
+        <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-info" aria-hidden="true" />
         {runtimeMode === "live" ? (
-          <p><strong>Live runtime.</strong> This approval metadata is loaded from the owner-authenticated Atlas API dashboard facade. Decision controls are not enabled until a safe mutation facade is accepted.</p>
+          <p><strong>Live runtime.</strong> Approval metadata is loaded from the owner-authenticated Atlas API dashboard facade. Decision controls are not enabled until a safe mutation facade is accepted.</p>
         ) : runtimeMode === "unauthenticated" ? (
           <p><strong>Owner sign-in required.</strong> Runtime approval detail is blocked until the owner session is established. <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>Sign in with Google</a>.</p>
         ) : (
           <p><strong>Frontend prototype.</strong> Any decision is a session-only local simulation. It does not affect a real agent, runtime, service, policy engine, audit system, or persisted record.</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

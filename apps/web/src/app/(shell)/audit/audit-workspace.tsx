@@ -12,6 +12,7 @@ import {
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -30,10 +31,9 @@ import {
 } from "@/components/ui/table";
 import {
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   type DashboardRuntimeMode,
   readDashboardAudit,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   toAuditEvents,
 } from "@/lib/dashboard-runtime";
 
@@ -83,7 +83,9 @@ function EventDetails({ event }: { event: AuditEvent }) {
 
 export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
   const [runtimeMode, setRuntimeMode] =
-    React.useState<DashboardRuntimeMode>("fixture");
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : "fixture",
+    );
   const [liveEvents, setLiveEvents] = React.useState<AuditEvent[]>([]);
   const [query, setQuery] = React.useState("");
   const [action, setAction] = React.useState<AuditAction | "all">("all");
@@ -103,7 +105,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
       }
       setRuntimeMode("loading");
       try {
-        await readDashboardSession();
+        await readDashboardSessionOrRequireSignIn();
         const runtimeEvents = await readDashboardAudit();
         if (!cancelled) {
           setLiveEvents(toAuditEvents(runtimeEvents));
@@ -193,7 +195,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
         description={
           runtimeMode === "live"
             ? "Inspect metadata-only Atlas audit events and correlation context."
-            : "Inspect fictional governance history and correlation context."
+            : "Inspect governance history and correlation context."
         }
         icon={ClipboardList}
         meta={
@@ -203,21 +205,16 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           </span>
         }
       />
+      {runtimeMode === "unauthenticated" && (
+        <SignedOutState description="Sign in to load runtime audit events from the Atlas API." />
+      )}
+      {runtimeMode !== "unauthenticated" && (
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Audit events are loaded from the
             owner-authenticated Atlas API dashboard facade. This view exposes
             metadata only.
-          </>
-        ) : runtimeMode === "unauthenticated" ? (
-          <>
-            <strong>Owner sign-in required.</strong> Runtime audit evidence is
-            blocked until the owner session is established.{" "}
-            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
-              Sign in with Google
-            </a>
-            .
           </>
         ) : runtimeMode === "loading" ? (
           "Loading owner-authenticated audit metadata..."
@@ -231,6 +228,8 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           </>
         )}
       </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchField
           value={query}
@@ -313,6 +312,9 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           {runtimeMode === "live" ? "runtime events" : "fictional events"}
         </p>
       </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
+      <>
       {visible.length === 0 ? (
         <Card>
           <EmptyState
@@ -461,6 +463,8 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
             ))}
           </ul>
         </>
+      )}
+      </>
       )}
     </div>
   );

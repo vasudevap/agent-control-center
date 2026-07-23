@@ -144,8 +144,21 @@ export class DashboardApiError extends Error {
   }
 }
 
+const LOCAL_DASHBOARD_API_BASE_URL = "https://api.atlas.grafley.com";
+
 export function dashboardApiBaseUrl() {
-  return process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
+  const configuredUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
+  if (configuredUrl) return configuredUrl;
+
+  if (
+    process.env.NODE_ENV === "development" &&
+    typeof window !== "undefined" &&
+    ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)
+  ) {
+    return LOCAL_DASHBOARD_API_BASE_URL;
+  }
+
+  return "";
 }
 
 export function dashboardSignInUrl() {
@@ -187,6 +200,21 @@ export async function dashboardRequest<T>(
 
 export const readDashboardSession = () =>
   dashboardRequest<DashboardSession>("/api/v1/dashboard/session");
+
+export async function readDashboardSessionOrRequireSignIn() {
+  try {
+    return await readDashboardSession();
+  } catch (error) {
+    if (error instanceof DashboardApiError && error.status === 401) {
+      throw error;
+    }
+    throw new DashboardApiError(
+      401,
+      "owner_session_missing",
+      "Owner session is not authorized.",
+    );
+  }
+}
 
 export const readDashboardConnectors = () =>
   dashboardRequest<{

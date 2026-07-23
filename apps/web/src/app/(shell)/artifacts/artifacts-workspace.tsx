@@ -12,6 +12,7 @@ import {
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -145,17 +146,10 @@ export function ArtifactsWorkspace({
         <PageHeader
           eyebrow="Outputs"
           title="Artifacts"
-          description="Runtime artifact metadata is not available in this release."
+          description="Review runtime artifact metadata and lineage for agent outputs."
           icon={Package}
         />
-        <Card>
-          <EmptyState
-            icon={Package}
-            title="Live artifact data is not available"
-            description="No accepted dashboard facade or artifact-store read contract exists for this page yet, so fictional artifact metadata is not shown on the live surface."
-            className="py-16"
-          />
-        </Card>
+        <SignedOutState description="Sign in to load runtime artifact metadata from the Atlas API." />
       </div>
     );
   }

@@ -13,18 +13,18 @@ import {
 import {
   createDashboardRun,
   dashboardApiBaseUrl,
-  dashboardSignInUrl,
   type DashboardAgent,
   type DashboardRuntimeMode,
   readDashboardAgents,
   readDashboardRuns,
-  readDashboardSession,
+  readDashboardSessionOrRequireSignIn,
   toRunRecords,
 } from "@/lib/dashboard-runtime";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
 import { ErrorState } from "@/components/state/error-state";
+import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -131,7 +131,9 @@ export function RunsWorkspace({
   state?: ViewState;
 }) {
   const [runtimeMode, setRuntimeMode] =
-    React.useState<DashboardRuntimeMode>("fixture");
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : "fixture",
+    );
   const [liveRuns, setLiveRuns] = React.useState<RunRecord[]>([]);
   const [agents, setAgents] = React.useState<DashboardAgent[]>([]);
   const [csrfToken, setCsrfToken] = React.useState("");
@@ -149,7 +151,7 @@ export function RunsWorkspace({
     }
     setRuntimeMode("loading");
     try {
-      const session = await readDashboardSession();
+      const session = await readDashboardSessionOrRequireSignIn();
       const [runtimeAgents, runtimeRuns] = await Promise.all([
         readDashboardAgents(),
         readDashboardRuns(),
@@ -211,24 +213,19 @@ export function RunsWorkspace({
         description={
           runtimeMode === "live"
             ? "Inspect owner-authenticated Atlas runtime execution history and start synthetic manual runs."
-            : "Inspect fictional execution history across the Atlas agent fleet."
+            : "Inspect execution history across the Atlas agent fleet."
         }
         icon={Workflow}
       />
-      <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
+      {runtimeMode === "unauthenticated" && (
+        <SignedOutState description="Sign in to load runtime run history from the Atlas API." />
+      )}
+      {runtimeMode !== "unauthenticated" && (
+        <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Runs are loaded from the Atlas API
             dashboard facade. Manual starts use owner CSRF and idempotency.
-          </>
-        ) : runtimeMode === "unauthenticated" ? (
-          <>
-            <strong>Owner sign-in required.</strong> Runtime run history is
-            blocked until the owner session is established.{" "}
-            <a className="font-medium text-brand hover:underline" href={dashboardSignInUrl()}>
-              Sign in with Google
-            </a>
-            .
           </>
         ) : runtimeMode === "loading" ? (
           "Loading owner-authenticated run data..."
@@ -241,10 +238,14 @@ export function RunsWorkspace({
             fictional local fixtures.
           </>
         )}
-      </div>
+        </div>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <p className="sr-only" aria-live="polite">
         {notice}
       </p>
+      )}
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
         <SearchField
           value={query}
@@ -313,7 +314,10 @@ export function RunsWorkspace({
           {runtimeMode === "live" ? "runtime runs" : "fictional runs"}
         </p>
       </div>
+      )}
 
+      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
+      <>
       {viewState === "error" ? (
         <Card>
           <ErrorState
@@ -489,6 +493,8 @@ export function RunsWorkspace({
             ))}
           </ul>
         </>
+      )}
+      </>
       )}
     </div>
   );
