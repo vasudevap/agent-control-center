@@ -23,6 +23,10 @@ import {
   readDashboardSessionOrRequireSignIn,
   toMonitoringAlerts,
 } from "@/lib/dashboard-runtime";
+import {
+  controlCenterAgentHref,
+  controlCenterExecutionHref,
+} from "@/lib/control-center-routes";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
@@ -91,16 +95,10 @@ function Severity({ severity }: { severity: AlertSeverity }) {
 
 function AlertDetails({
   alert,
-  status,
-  onSimulate,
   defaultOpen,
-  canSimulate = true,
 }: {
   alert: AlertRecord;
-  status: AlertStatus;
-  onSimulate: () => void;
   defaultOpen?: boolean;
-  canSimulate?: boolean;
 }) {
   return (
     <details
@@ -133,17 +131,12 @@ function AlertDetails({
         <div className="flex flex-wrap gap-2">
           {alert.sourceAgentId && (
             <Button asChild variant="secondary" size="sm">
-              <Link href={`/agents/${alert.sourceAgentId}`}>View agent</Link>
+              <Link href={controlCenterAgentHref(alert.sourceAgentId)}>View agent</Link>
             </Button>
           )}
           {alert.relatedRunId && (
             <Button asChild variant="secondary" size="sm">
-              <Link href={`/runs/${alert.relatedRunId}`}>View run</Link>
-            </Button>
-          )}
-          {status === "active" && canSimulate && (
-            <Button type="button" size="sm" onClick={onSimulate}>
-              Simulate investigation
+              <Link href={controlCenterExecutionHref(alert.relatedRunId)}>View run</Link>
             </Button>
           )}
         </div>
@@ -170,10 +163,6 @@ export function AlertsWorkspace({
   const [source, setSource] = React.useState("all");
   const [sort, setSort] = React.useState<SortKey>("severity");
   const [direction, setDirection] = React.useState<SortDirection>("asc");
-  const [simulated, setSimulated] = React.useState<Record<string, AlertStatus>>(
-    {},
-  );
-  const [announcement, setAnnouncement] = React.useState("");
   React.useEffect(() => {
     let cancelled = false;
     async function loadRuntime() {
@@ -209,11 +198,7 @@ export function AlertsWorkspace({
   }, []);
 
   const activeAlerts = runtimeMode === "live" ? liveAlerts : alerts;
-  const records = activeAlerts.map((alert) => ({
-    ...alert,
-    status:
-      runtimeMode === "live" ? alert.status : simulated[alert.id] ?? alert.status,
-  }));
+  const records = activeAlerts;
   const normalized = query.trim().toLowerCase();
   const visible = records
     .filter(
@@ -263,13 +248,6 @@ export function AlertsWorkspace({
       setDirection("asc");
     }
   };
-  const simulate = (alert: AlertRecord) => {
-    setSimulated((current) => ({ ...current, [alert.id]: "investigating" }));
-    setAnnouncement(
-      `Simulated investigation for ${alert.id}. Refreshing the page restores the fixture.`,
-    );
-  };
-
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
@@ -304,11 +282,6 @@ export function AlertsWorkspace({
           </>
         )}
       </div>
-      )}
-      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
-      <p className="sr-only" aria-live="polite">
-        {announcement}
-      </p>
       )}
       {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -453,10 +426,7 @@ export function AlertsWorkspace({
                       </p>
                       <AlertDetails
                         alert={alert}
-                        status={alert.status}
-                        onSimulate={() => simulate(alert)}
                         defaultOpen={initialAlertId === alert.id}
-                        canSimulate={runtimeMode !== "live"}
                       />
                     </TableCell>
                     <TableCell className="align-top text-xs">
@@ -511,10 +481,7 @@ export function AlertsWorkspace({
                     </dl>
                     <AlertDetails
                       alert={alert}
-                      status={alert.status}
-                      onSimulate={() => simulate(alert)}
                       defaultOpen={initialAlertId === alert.id}
-                      canSimulate={runtimeMode !== "live"}
                     />
                   </CardContent>
                 </Card>

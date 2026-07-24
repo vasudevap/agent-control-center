@@ -5,9 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { LayoutDashboard } from "lucide-react";
 import { AttentionQueue } from "./attention-queue";
 import { ActiveRunsSection } from "./active-runs-section";
-import { UpcomingScheduleSection } from "./upcoming-schedule-section";
 import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
-import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
 import { mockAlerts } from "../data/mock-data";
 import { Card } from "@/components/ui/card";
 import { ErrorState } from "@/components/state/error-state";
@@ -16,12 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   dashboardApiBaseUrl,
   readDashboardAgents,
-  readDashboardApprovals,
   readDashboardMonitoring,
   readDashboardRuns,
   readDashboardSessionOrRequireSignIn,
   toAgentRecords,
-  toApprovalRecords,
   toMonitoringAlerts,
   type DashboardRuntimeMode,
 } from "@/lib/dashboard-runtime";
@@ -32,7 +28,6 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
       runtimeRequired ? (dashboardApiBaseUrl() ? "loading" : "error") : "fixture",
     );
   const [agents, setAgents] = React.useState(MOCK_AGENTS);
-  const [approvals, setApprovals] = React.useState(APPROVAL_FIXTURES);
   const [alerts, setAlerts] = React.useState(mockAlerts);
 
   React.useEffect(() => {
@@ -45,16 +40,14 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
       setRuntimeMode("loading");
       try {
         await readDashboardSessionOrRequireSignIn();
-        const [runtimeAgents, runtimeRuns, runtimeApprovals, monitoring] =
+        const [runtimeAgents, runtimeRuns, monitoring] =
           await Promise.all([
             readDashboardAgents(),
             readDashboardRuns(),
-            readDashboardApprovals("pending"),
             readDashboardMonitoring(),
           ]);
         if (!cancelled) {
           setAgents(toAgentRecords(runtimeAgents, runtimeRuns));
-          setApprovals(toApprovalRecords(runtimeApprovals));
           setAlerts(toMonitoringAlerts(monitoring));
           setRuntimeMode("live");
         }
@@ -119,12 +112,11 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
       {runtimeMode !== "loading" && runtimeMode !== "unauthenticated" && runtimeMode !== "error" && (
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="min-w-0 flex flex-col gap-6 xl:col-span-2">
-          <AttentionQueue approvals={approvals} agents={agents} alerts={alerts} />
+          <AttentionQueue agents={agents} alerts={alerts} />
         </div>
 
         <div className="min-w-0 flex flex-col gap-6">
           <ActiveRunsSection agents={agents} />
-          <UpcomingScheduleSection agents={agents} />
         </div>
       </div>
       )}

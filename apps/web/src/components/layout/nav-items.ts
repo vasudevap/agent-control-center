@@ -1,16 +1,13 @@
 import {
+  Activity,
   LayoutDashboard,
   Bot,
   Workflow,
   CheckSquare,
   Bell,
-  Plug,
-  ShieldCheck,
-  Package,
-  ScrollText,
-  Settings,
   type LucideIcon,
 } from "lucide-react";
+import { CONTROL_CENTER_ROUTES } from "@/lib/control-center-routes";
 
 export const APPROVALS_ICON = CheckSquare;
 
@@ -22,19 +19,9 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Overview", href: "/", icon: LayoutDashboard },
-  { label: "Agents", href: "/agents", icon: Bot },
-  { label: "Runs", href: "/runs", icon: Workflow },
-  { label: "Approvals", href: "/approvals", icon: APPROVALS_ICON },
-  { label: "Alerts", href: "/alerts", icon: Bell },
-  { label: "Connectors", href: "/connectors", icon: Plug },
-  { label: "Policies", href: "/policies", icon: ShieldCheck },
-  { label: "Artifacts", href: "/artifacts", icon: Package },
-  { label: "Audit", href: "/audit", icon: ScrollText },
+  { label: "Overview", href: CONTROL_CENTER_ROUTES.overview, icon: LayoutDashboard },
+  { label: "Agents", href: CONTROL_CENTER_ROUTES.agents, icon: Bot },
+  { label: "Executions", href: CONTROL_CENTER_ROUTES.executions, icon: Workflow },
+  { label: "Alerts", href: CONTROL_CENTER_ROUTES.alerts, icon: Bell },
+  { label: "Activity", href: CONTROL_CENTER_ROUTES.activity, icon: Activity },
 ];
-
-export const SETTINGS_NAV_ITEM: NavItem = {
-  label: "Settings",
-  href: "/settings",
-  icon: Settings,
-};

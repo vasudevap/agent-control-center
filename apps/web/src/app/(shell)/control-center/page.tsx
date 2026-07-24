@@ -1,5 +1,5 @@
 import { OverviewDashboard } from "@/features/overview/components/overview-dashboard";
 
-export default function OverviewPage() {
+export default function ControlCenterPage() {
   return <OverviewDashboard runtimeRequired />;
 }

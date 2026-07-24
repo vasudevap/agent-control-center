@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MobileNavDrawer } from "./mobile-nav-drawer";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/agents",
+  usePathname: () => "/control-center/agents",
 }));
 
 describe("MobileNavDrawer", () => {
@@ -12,8 +12,17 @@ describe("MobileNavDrawer", () => {
 
     expect(screen.getByRole("dialog", { name: "Navigation" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-label", "Overview");
+    expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("href", "/control-center");
+    expect(screen.getByRole("link", { name: "Agents" })).toHaveAttribute("href", "/control-center/agents");
     expect(screen.getByText("Overview")).not.toHaveClass("hidden");
     expect(screen.getByRole("link", { name: "Agents" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute("aria-label", "Settings");
+    expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
+      "Overview",
+      "Agents",
+      "Executions",
+      "Alerts",
+      "Activity",
+    ]);
+    expect(screen.queryByRole("link", { name: "Settings" })).not.toBeInTheDocument();
   });
 });

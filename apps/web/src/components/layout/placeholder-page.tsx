@@ -1,7 +1,7 @@
 import { Construction, type LucideIcon } from "lucide-react";
 import { PageHeader } from "./page-header";
 import { Breadcrumb, type BreadcrumbItem } from "./breadcrumb";
-import { NAV_ITEMS, SETTINGS_NAV_ITEM } from "./nav-items";
+import { NAV_ITEMS } from "./nav-items";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/state/empty-state";
 
@@ -42,7 +42,7 @@ export interface PlaceholderPageProps {
 export function PlaceholderPage({ title, description, breadcrumb, icon }: PlaceholderPageProps) {
   const navIcon =
     icon ??
-    [...NAV_ITEMS, SETTINGS_NAV_ITEM].find((item) => item.label === title)?.icon;
+    NAV_ITEMS.find((item) => item.label === title)?.icon;
 
   return (
     <div className="flex flex-col gap-8">

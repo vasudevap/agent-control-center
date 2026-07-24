@@ -1,5 +1,5 @@
-import { ALERT_FIXTURES } from "./alert-data";
-import { AlertsWorkspace } from "./alerts-workspace";
+import { redirect } from "next/navigation";
+import { CONTROL_CENTER_ROUTES, controlCenterAlertHref } from "@/lib/control-center-routes";
 
 export default async function AlertsPage({
   searchParams,
@@ -7,5 +7,5 @@ export default async function AlertsPage({
   searchParams: Promise<{ alert?: string }>;
 }) {
   const { alert } = await searchParams;
-  return <AlertsWorkspace alerts={ALERT_FIXTURES} initialAlertId={alert} />;
+  redirect(alert ? controlCenterAlertHref(alert) : CONTROL_CENTER_ROUTES.alerts);
 }

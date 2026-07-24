@@ -32,6 +32,10 @@ import {
   readDashboardSession,
   toRunRecords,
 } from "@/lib/dashboard-runtime";
+import {
+  CONTROL_CENTER_ROUTES,
+  controlCenterAgentHref,
+} from "@/lib/control-center-routes";
 
 function Fact({
   label,
@@ -123,7 +127,7 @@ export function RunDetailWorkspace({
     return (
       <div className="grid gap-5">
         <Breadcrumb
-          items={[{ label: "Runs", href: "/runs" }, { label: requestedId }]}
+        items={[{ label: "Executions", href: CONTROL_CENTER_ROUTES.executions }, { label: requestedId }]}
         />
         <PageHeader
           eyebrow="Run"
@@ -141,9 +145,9 @@ export function RunDetailWorkspace({
           }
           actions={
             <Button asChild size="sm" variant="secondary">
-              <Link href="/runs">
+              <Link href={CONTROL_CENTER_ROUTES.executions}>
                 <ArrowLeft aria-hidden="true" />
-                Return to runs
+                Return to executions
               </Link>
             </Button>
           }
@@ -159,7 +163,7 @@ export function RunDetailWorkspace({
             ) : runtimeMode === "error" ? (
               "Runtime detail lookup failed or the run is unavailable."
             ) : (
-              "No service lookup occurred. Choose a fixture from the Runs inventory."
+              "No service lookup occurred. Choose a fixture from the Executions inventory."
             )}
           </CardContent>
         </Card>
@@ -169,7 +173,7 @@ export function RunDetailWorkspace({
   return (
     <div className="grid gap-5">
       <Breadcrumb
-        items={[{ label: "Runs", href: "/runs" }, { label: currentRun.id }]}
+        items={[{ label: "Executions", href: CONTROL_CENTER_ROUTES.executions }, { label: currentRun.id }]}
       />
       <PageHeader
         eyebrow="Run"
@@ -180,9 +184,9 @@ export function RunDetailWorkspace({
         meta={<StatusBadge status={currentRun.status} plain />}
         actions={
           <Button asChild size="sm" variant="ghost">
-            <Link href="/runs">
+            <Link href={CONTROL_CENTER_ROUTES.executions}>
               <ArrowLeft aria-hidden="true" />
-              Back to runs
+              Back to executions
             </Link>
           </Button>
         }
@@ -220,7 +224,7 @@ export function RunDetailWorkspace({
                 <Fact label="Agent">
                   <Link
                     className="text-brand hover:underline"
-                    href={`/agents/${currentRun.agent.id}`}
+                    href={controlCenterAgentHref(currentRun.agent.id)}
                   >
                     {currentRun.agent.name}
                   </Link>
