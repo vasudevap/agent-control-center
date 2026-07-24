@@ -8,7 +8,6 @@ import { ActiveRunsSection } from "./active-runs-section";
 import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
 import { mockAlerts } from "../data/mock-data";
 import { Card } from "@/components/ui/card";
-import { ErrorState } from "@/components/state/error-state";
 import { EmptyState } from "@/components/state/empty-state";
 import { SignedOutState } from "@/components/state/signed-out-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -98,12 +97,13 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
         <SignedOutState description="Sign in to load runtime overview data from the Atlas API." />
       ) : runtimeMode === "error" ? (
         <Card>
-          <ErrorState
-            title="Overview data is unavailable"
+          <EmptyState
+            icon={LayoutDashboard}
+            title="Nothing to display yet"
             description={
               runtimeRequired && !dashboardApiBaseUrl()
-                ? "No runtime API base URL is configured for this build, so the live overview cannot be displayed."
-                : "The owner-authenticated Atlas APIs could not return live overview data."
+                ? "Runtime overview will appear once the Atlas API is configured for this build."
+                : "Overview data will appear once the live runtime connection is available."
             }
             className="py-12"
           />

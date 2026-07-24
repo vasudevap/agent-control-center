@@ -1,4 +1,5 @@
-import { ErrorState } from "@/components/state/error-state";
+import { LogIn } from "lucide-react";
+import { EmptyState } from "@/components/state/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { dashboardSignInUrl } from "@/lib/dashboard-runtime";
@@ -13,21 +14,22 @@ export function SignedOutState({ description }: SignedOutStateProps) {
 
   return (
     <Card>
-      <ErrorState
+      <EmptyState
+        icon={LogIn}
         title="Owner sign-in required"
         description={description}
         className="py-12"
+        action={
+          signInUrl ? (
+            <Button asChild>
+              <a href={signInUrl}>
+                <GoogleLogo />
+                Sign in with Google
+              </a>
+            </Button>
+          ) : undefined
+        }
       />
-      {signInUrl && (
-        <div className="flex justify-center pb-6">
-          <Button asChild>
-            <a href={signInUrl}>
-              <GoogleLogo />
-              Sign in with Google
-            </a>
-          </Button>
-        </div>
-      )}
     </Card>
   );
 }

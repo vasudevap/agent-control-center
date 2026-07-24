@@ -9,7 +9,7 @@ import { RUN_FIXTURES } from "@/app/(shell)/runs/run-data";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ErrorState } from "@/components/state/error-state";
+import { EmptyState } from "@/components/state/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { SignedOutState } from "@/components/state/signed-out-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -282,11 +282,12 @@ export function AgentDetailWorkspace({
   if (!agent || runtimeMode === "error") {
     return (
       <Card>
-        <ErrorState
-          title="Agent unavailable"
+        <EmptyState
+          icon={Bot}
+          title="Nothing to display yet"
           description={
             runtimeRequired
-              ? "This active control-center surface could not load a live agent record from the Atlas API."
+              ? "Agent details will appear once an enrolled agent is available."
               : "This agent could not be displayed."
           }
           className="py-12"
