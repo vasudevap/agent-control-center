@@ -79,6 +79,7 @@ def seed_owner(session: Session) -> User:
         allowed_tools=["gmail.modify"],
         required_connectors=["gmail"],
         supports_manual_run=True,
+        owner_user_id=OWNER_ID,
     )
     session.commit()
     return user

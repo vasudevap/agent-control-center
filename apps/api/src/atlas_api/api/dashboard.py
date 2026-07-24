@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal, cast
@@ -16,7 +18,11 @@ from atlas_api.core.authorization import (
     authorize,
 )
 from atlas_api.core.config import Settings
-from atlas_api.core.contracts import PaginationParameters, success_payload
+from atlas_api.core.contracts import (
+    PaginationParameters,
+    success_payload,
+    validate_idempotency_key,
+)
 from atlas_api.core.correlation import get_correlation_id
 from atlas_api.core.errors import ApiError
 from atlas_api.core.owner_sessions import (
@@ -30,7 +36,13 @@ from atlas_api.core.owner_sessions import (
 )
 from atlas_api.models.audit import AuditEvent
 from atlas_api.models.external_client import User
-from atlas_api.services.agent_registry import list_agent_registrations
+from atlas_api.models.idempotency import ApiIdempotencyRecord
+from atlas_api.services.agent_registry import (
+    enroll_owner_agent,
+    get_owner_agent_registration,
+    list_agent_registrations,
+    update_owner_agent_metadata,
+)
 from atlas_api.services.approval_contracts import get_approval, list_approvals
 from atlas_api.services.audit import AuditEventInput, record_audit_event
 from atlas_api.services.connectors import (
@@ -56,6 +68,29 @@ class ConnectorOAuthStartRequest(BaseModel):
 
 class RuntimeSmokeSeedRequest(BaseModel):
     scope: Literal["hosted_mvp_smoke"] = "hosted_mvp_smoke"
+
+
+class AgentEnrollmentRequest(BaseModel):
+    slug: str = Field(min_length=3, max_length=120)
+    display_name: str = Field(min_length=1, max_length=160)
+    description: str = Field(min_length=1, max_length=500)
+    environment: str = Field(min_length=1, max_length=80)
+    monitoring_mode: Literal["heartbeat", "activity_only"] = "heartbeat"
+    heartbeat_interval_seconds: int | None = Field(default=60, ge=30, le=3600)
+    tags: list[str] = Field(default_factory=list, max_length=12)
+    repository_url: str | None = Field(default=None, max_length=500)
+    deployment_url: str | None = Field(default=None, max_length=500)
+    expected_version: str | None = Field(default=None, max_length=80)
+
+
+class AgentMetadataUpdateRequest(BaseModel):
+    display_name: str | None = Field(default=None, min_length=1, max_length=160)
+    description: str | None = Field(default=None, min_length=1, max_length=500)
+    environment: str | None = Field(default=None, min_length=1, max_length=80)
+    tags: list[str] | None = Field(default=None, max_length=12)
+    repository_url: str | None = Field(default=None, max_length=500)
+    deployment_url: str | None = Field(default=None, max_length=500)
+    expected_version: str | None = Field(default=None, max_length=80)
 
 
 def _settings_from_request(request: Request) -> Settings:
@@ -220,6 +255,7 @@ def read_dashboard_agents(
             pagination=PaginationParameters(cursor=cursor, limit=limit),
             status=status,
             active_surface_only=True,
+            owner_user_id=principal.user_id,
         )
         _audit_dashboard(
             session,
@@ -237,6 +273,151 @@ def read_dashboard_agents(
                 "correlation_id": get_correlation_id(),
                 "next_cursor": page.next_cursor,
             },
+        )
+
+
+@router.post("/agents")
+def enroll_dashboard_agent(
+    payload: AgentEnrollmentRequest,
+    request: Request,
+    settings: SettingsDependency,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    key = validate_idempotency_key(idempotency_key)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="agent",
+            action="create",
+            risk_level="medium",
+        )
+        _record_enrollment_idempotency(
+            session,
+            owner_user_id=principal.user_id,
+            idempotency_key=key,
+            payload=payload.model_dump(mode="json"),
+        )
+        result = enroll_owner_agent(
+            session,
+            owner_user_id=principal.user_id,
+            settings=settings,
+            slug=payload.slug,
+            display_name=payload.display_name,
+            description=payload.description,
+            environment=payload.environment,
+            monitoring_mode=payload.monitoring_mode,
+            heartbeat_interval_seconds=payload.heartbeat_interval_seconds,
+            tags=payload.tags,
+            repository_url=payload.repository_url,
+            deployment_url=payload.deployment_url,
+            expected_version=payload.expected_version,
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="enroll_agent",
+            result="succeeded",
+            resource_type="agent",
+            resource_id=result.agent.agent_id,
+            metadata={
+                "idempotency_key": key,
+                "credential_id": result.issued_credential.credential.credential_id,
+            },
+        )
+        session.commit()
+        return success_payload(
+            {
+                "agent": _agent_payload(result.agent),
+                "credential": {
+                    "credential_id": (
+                        result.issued_credential.credential.credential_id
+                    ),
+                    "credential_lookup_id": (
+                        result.issued_credential.credential.credential_lookup_id
+                    ),
+                    "scope": result.issued_credential.credential.scope,
+                    "plaintext_token": result.issued_credential.plaintext_token,
+                },
+            },
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.get("/agents/{agent_id}")
+def read_dashboard_agent(
+    agent_id: str,
+    request: Request,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+) -> dict[str, object]:
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=None,
+            require_csrf=False,
+            resource="agent",
+            action="read",
+            risk_level="low",
+        )
+        agent = get_owner_agent_registration(
+            session,
+            owner_user_id=principal.user_id,
+            agent_id=agent_id,
+        )
+        session.commit()
+        return success_payload(
+            _agent_payload(agent),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.patch("/agents/{agent_id}")
+def update_dashboard_agent(
+    agent_id: str,
+    payload: AgentMetadataUpdateRequest,
+    request: Request,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    key = validate_idempotency_key(idempotency_key)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="agent",
+            action="update",
+            risk_level="medium",
+        )
+        agent = update_owner_agent_metadata(
+            session,
+            owner_user_id=principal.user_id,
+            agent_id=agent_id,
+            **payload.model_dump(exclude_unset=True),
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="update_agent",
+            result="succeeded",
+            resource_type="agent",
+            resource_id=agent.agent_id,
+            metadata={"idempotency_key": key},
+        )
+        session.commit()
+        return success_payload(
+            _agent_payload(agent),
+            meta={"correlation_id": get_correlation_id()},
         )
 
 
@@ -556,7 +737,7 @@ def read_dashboard_monitoring(
 ) -> dict[str, object]:
     session_factory = _require_session_factory(request)
     with session_factory() as session:
-        _authorized_dashboard_owner(
+        principal = _authorized_dashboard_owner(
             session,
             session_token=session_token,
             csrf_token=None,
@@ -571,6 +752,7 @@ def read_dashboard_monitoring(
             pagination=PaginationParameters(cursor=None, limit=100),
             status=None,
             active_surface_only=True,
+            owner_user_id=principal.user_id,
         )
         session.commit()
         return success_payload(
@@ -679,6 +861,41 @@ def _audit_dashboard(
     )
 
 
+def _record_enrollment_idempotency(
+    session: Session,
+    *,
+    owner_user_id: str,
+    idempotency_key: str,
+    payload: dict[str, object],
+) -> None:
+    request_hash = hashlib.sha256(
+        json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    ).hexdigest()
+    existing = session.scalar(
+        select(ApiIdempotencyRecord).where(
+            ApiIdempotencyRecord.actor_id == owner_user_id,
+            ApiIdempotencyRecord.operation == "dashboard.enroll_agent",
+            ApiIdempotencyRecord.idempotency_key == idempotency_key,
+        )
+    )
+    if existing is not None:
+        raise ApiError(
+            409,
+            "agent_enrollment_idempotency_replay_unavailable",
+            "Agent enrollment credentials cannot be replayed.",
+        )
+    session.add(
+        ApiIdempotencyRecord(
+            actor_id=owner_user_id,
+            operation="dashboard.enroll_agent",
+            idempotency_key=idempotency_key,
+            request_hash=request_hash,
+            resource_type="agent",
+            resource_id=None,
+        )
+    )
+
+
 def _user_payload(user: User) -> dict[str, object]:
     return {
         "user_id": user.user_id,
@@ -738,6 +955,21 @@ def _agent_payload(agent: Any) -> dict[str, object]:
         "health_status": agent.health_status,
         "health_checked_at": agent.health_checked_at,
         "last_error_code": agent.last_error_code,
+        "owner_user_id": agent.owner_user_id,
+        "registration_source": agent.registration_source,
+        "active_surface_visible": agent.active_surface_visible,
+        "lifecycle_status": agent.lifecycle_status,
+        "environment": agent.environment,
+        "monitoring_mode": agent.monitoring_mode,
+        "heartbeat_interval_seconds": agent.heartbeat_interval_seconds,
+        "tags": agent.tags,
+        "repository_url": agent.repository_url,
+        "deployment_url": agent.deployment_url,
+        "expected_version": agent.expected_version,
+        "observed_health": agent.observed_health,
+        "reported_health": agent.reported_health,
+        "last_agent_version": agent.last_agent_version,
+        "last_build_sha": agent.last_build_sha,
     }
 
 
