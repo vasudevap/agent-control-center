@@ -4,8 +4,8 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Annotated, Any, cast
 
-from fastapi import APIRouter, Depends, Query, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, Header, Query, Request, Response
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from atlas_api.core.auth import ExternalClientPrincipal, verify_external_client
@@ -15,13 +15,21 @@ from atlas_api.core.authorization import (
     Channel,
     authorize,
 )
+from atlas_api.core.config import Settings
 from atlas_api.core.contracts import PaginationParameters, success_payload
 from atlas_api.core.correlation import get_correlation_id
 from atlas_api.core.errors import ApiError
 from atlas_api.models.agent import AgentRegistration
+from atlas_api.services.agent_credentials import verify_agent_token
 from atlas_api.services.agent_registry import (
     get_agent_registration,
     list_agent_registrations,
+)
+from atlas_api.services.agent_telemetry import (
+    MAX_TELEMETRY_BODY_BYTES,
+    accept_execution,
+    accept_heartbeat,
+    require_credential_for_agent,
 )
 from atlas_api.services.audit import AuditEventInput, record_audit_event
 
@@ -91,6 +99,53 @@ ExternalClientDependency = Annotated[
     ExternalClientPrincipal,
     Depends(verify_external_client),
 ]
+
+
+class HeartbeatCheckPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=80)
+    status: str = Field(pattern="^(healthy|degraded|unhealthy)$")
+    error_code: str | None = Field(default=None, max_length=120)
+
+
+class AgentHeartbeatRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    event_id: str = Field(min_length=1, max_length=120)
+    contract_version: str = Field(min_length=1, max_length=40)
+    sent_at: datetime
+    environment: str = Field(min_length=1, max_length=80)
+    status: str = Field(pattern="^(healthy|degraded|unhealthy)$")
+    checks: list[HeartbeatCheckPayload] = Field(default_factory=list, max_length=20)
+    agent_version: str | None = Field(default=None, max_length=80)
+    build_sha: str | None = Field(default=None, max_length=80)
+
+
+class AgentExecutionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    contract_version: str = Field(min_length=1, max_length=40)
+    representation_hash: str = Field(min_length=1, max_length=128)
+    status: str = Field(
+        pattern="^(accepted|running|succeeded|failed|cancelled|timed_out)$"
+    )
+    trigger: str = Field(min_length=1, max_length=80)
+    started_at: datetime | None = None
+    finished_at: datetime | None = None
+    duration_ms: int | None = Field(default=None, ge=0)
+    summary: str | None = Field(default=None, max_length=500)
+    error_code: str | None = Field(default=None, max_length=120)
+    correlation_id: str | None = Field(default=None, max_length=160)
+    agent_version: str | None = Field(default=None, max_length=80)
+    build_sha: str | None = Field(default=None, max_length=80)
+
+
+def _settings_from_request(request: Request) -> Settings:
+    return cast("Settings", request.app.state.settings)
+
+
+SettingsDependency = Annotated[Settings, Depends(_settings_from_request)]
 
 
 def _session_factory_from_request(request: Request) -> Callable[[], Session] | None:
@@ -229,6 +284,104 @@ def read_agent_health(
         )
 
 
+@router.post("/{agent_id}/heartbeats", status_code=202)
+def ingest_agent_heartbeat(
+    agent_id: str,
+    payload: AgentHeartbeatRequest,
+    request: Request,
+    settings: SettingsDependency,
+    authorization: Annotated[str | None, Header(alias="Authorization")] = None,
+) -> dict[str, object]:
+    _enforce_body_size(request)
+    token = _bearer_token(authorization)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        credential = verify_agent_token(session, token=token, settings=settings)
+        credential, agent = require_credential_for_agent(
+            session,
+            credential=credential,
+            agent_id=agent_id,
+        )
+        accepted = accept_heartbeat(
+            session,
+            agent=agent,
+            credential=credential,
+            event_id=payload.event_id,
+            contract_version=payload.contract_version,
+            sent_at=payload.sent_at,
+            environment=payload.environment,
+            reported_status=cast(Any, payload.status),
+            checks=[item.model_dump(mode="json") for item in payload.checks],
+            agent_version=payload.agent_version,
+            build_sha=payload.build_sha,
+            payload=payload.model_dump(mode="json"),
+        )
+        session.commit()
+        return success_payload(
+            {
+                "heartbeat_id": accepted.heartbeat.heartbeat_id,
+                "agent_id": accepted.heartbeat.agent_id,
+                "event_id": accepted.heartbeat.event_id,
+                "received_at": accepted.heartbeat.received_at,
+                "replayed": accepted.replayed,
+            },
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.put("/{agent_id}/executions/{execution_id}")
+def ingest_agent_execution(
+    agent_id: str,
+    execution_id: str,
+    payload: AgentExecutionRequest,
+    request: Request,
+    response: Response,
+    settings: SettingsDependency,
+    authorization: Annotated[str | None, Header(alias="Authorization")] = None,
+) -> dict[str, object]:
+    _enforce_body_size(request)
+    token = _bearer_token(authorization)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        credential = verify_agent_token(session, token=token, settings=settings)
+        credential, agent = require_credential_for_agent(
+            session,
+            credential=credential,
+            agent_id=agent_id,
+        )
+        accepted = accept_execution(
+            session,
+            agent=agent,
+            credential=credential,
+            external_execution_id=execution_id,
+            contract_version=payload.contract_version,
+            representation_hash=payload.representation_hash,
+            status=payload.status,
+            trigger=payload.trigger,
+            started_at=payload.started_at,
+            finished_at=payload.finished_at,
+            duration_ms=payload.duration_ms,
+            summary=payload.summary,
+            error_code=payload.error_code,
+            correlation_id=payload.correlation_id,
+            agent_version=payload.agent_version,
+            build_sha=payload.build_sha,
+            payload=payload.model_dump(mode="json"),
+        )
+        response.status_code = 201 if accepted.created else 200
+        session.commit()
+        return success_payload(
+            {
+                "agent_execution_id": accepted.execution.agent_execution_id,
+                "agent_id": accepted.execution.agent_id,
+                "external_execution_id": accepted.execution.external_execution_id,
+                "status": accepted.execution.status,
+                "created": accepted.created,
+            },
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
 def _require_session_factory(request: Request) -> Callable[[], Session]:
     session_factory = _session_factory_from_request(request)
     if session_factory is None:
@@ -238,6 +391,35 @@ def _require_session_factory(request: Request) -> Callable[[], Session]:
             message="Agent registry storage is not configured.",
         )
     return session_factory
+
+
+def _bearer_token(authorization: str | None) -> str:
+    if authorization is None or not authorization.startswith("Bearer "):
+        raise ApiError(401, "agent_credential_missing", "Agent credential missing.")
+    token = authorization.removeprefix("Bearer ").strip()
+    if not token:
+        raise ApiError(401, "agent_credential_missing", "Agent credential missing.")
+    return token
+
+
+def _enforce_body_size(request: Request) -> None:
+    content_length = request.headers.get("content-length")
+    if content_length is None:
+        return
+    try:
+        size = int(content_length)
+    except ValueError:
+        raise ApiError(
+            422,
+            "agent_telemetry_content_length_invalid",
+            "Content length is invalid.",
+        ) from None
+    if size > MAX_TELEMETRY_BODY_BYTES:
+        raise ApiError(
+            413,
+            "agent_telemetry_payload_too_large",
+            "Telemetry payload is too large.",
+        )
 
 
 def _authorize_agent_registry(
