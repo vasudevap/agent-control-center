@@ -25,7 +25,6 @@ import {
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
 import { StatusBadge } from "@/components/badge/status-badge";
-import { ErrorState } from "@/components/state/error-state";
 import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -467,13 +466,10 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
           <SignedOutState description="Sign in to load runtime agent registrations from the Atlas API." />
         ) : (
           <Card>
-            <ErrorState
-              title="Agents inventory could not be displayed"
-              description={
-                runtimeRequired && !dashboardApiBaseUrl()
-                  ? "No runtime API base URL is configured for this build, so the live Agents inventory cannot be displayed."
-                  : "The owner-authenticated Atlas APIs could not return agent registrations. No agent operation was started."
-              }
+            <EmptyState
+              icon={CircleOff}
+              title="Nothing to display yet"
+              description="Agent registrations will appear here once agents are enrolled."
               className="py-16"
             />
           </Card>
@@ -524,12 +520,8 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
         <Card>
           <EmptyState
             icon={CircleOff}
-            title="No agents are registered"
-            description={
-              runtimeMode === "live"
-                  ? "No owner-visible agents have been enrolled yet."
-                : "No local agent fixtures are available."
-            }
+            title="Nothing to display yet"
+            description="Agent registrations will appear here once agents are enrolled."
             className="py-16"
           />
         </Card>
