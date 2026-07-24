@@ -2,25 +2,28 @@
 
 ## Current Handoff Snapshot
 
-As of 2026-07-17:
+As of 2026-07-24:
 
-- The frontend-only Atlas prototype surfaces are present as of the merged Work
-  Order 014 consistency milestone.
-- WO-007 remains `Design Review Locked` and WO-008 remains `Frontend Prototype
-  Authorized`; do not silently mark either artifact completed.
-- All frontend data is deterministic local fixture data. State-changing controls
-  are explicitly simulated and do not call backend services.
-- TypeScript, component-test, lint, and production-build commands are defined at
-  the repository root.
-- Backend services, authentication, persistence, connector execution, policy
-  evaluation, operational audit storage, and the Gmail agent are not
-  implemented.
-- ADR-003 is accepted for the governed external approval decision channel.
-- ADR-004 is accepted for the general external product client API and webhook
-  contract.
-- The next implementation-planning artifact is the Phase 3 Platform Foundation
-  Engineering Specification. No backend implementation should begin before that
-  specification and its Work Order satisfy the Definition of Ready.
+- ADP-006 has merged WO-064 through WO-070 for the Agent Visibility and
+  Lifecycle MVP.
+- Root `/` is the public Atlas landing page. The active authenticated product
+  shell is rooted at `/control-center`.
+- Active MVP navigation is limited to Overview, Agents, Executions, Alerts, and
+  Activity under `/control-center`.
+- Owner-enrolled agents use one-time Atlas telemetry credentials. Atlas accepts
+  authenticated heartbeats and execution summaries, derives observed health,
+  opens/resolves alerts, records material activity, and supports owner
+  lifecycle actions: rotate credential, disconnect, reconnect, and archive.
+- Atlas does not host, deploy, schedule, execute, pause, resume, stop, or
+  maintain external agent runtimes.
+- WO-071 is blocked. Hosted API readiness reports
+  `agent_credential_pepper_missing` and
+  `agent_credential_pepper_key_id_missing`; production Render environment
+  values must be provisioned outside the repository before hosted
+  reference-agent verification can complete.
+- Do not record owner subject values, cookies, generated agent tokens, provider
+  credentials, database URLs, or credential pepper values in source, logs,
+  screenshots, pull requests, or chat.
 
 Recommended orientation order:
 
@@ -31,6 +34,8 @@ Recommended orientation order:
 5. `docs/decisions/README.md`
 6. `docs/governance/README.md`
 7. This handoff guide
+8. `docs/implementation-plans/ADP-006-agent-visibility-lifecycle-mvp.md`
+9. `docs/reviews/WO-071-hosted-reference-agent-verification-and-adp-closeout-blocker-report.md`
 
 ## Frontend Design and Maintenance Guide
 

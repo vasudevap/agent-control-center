@@ -90,26 +90,26 @@ agent-control-center/
 
 # Current Implementation
 
-`apps/web` contains the completed frontend-only Atlas prototype as of the merged
-Work Order 014 consistency milestone. It includes the shared shell, responsive
-navigation, light and dark themes, Agents, Agent Detail, Approvals, Runs,
-Artifacts, Alerts, Audit, Connectors, Policies, and Settings. Data and
-state-changing interactions remain deterministic local fixtures or clearly
-labeled simulations.
+`apps/web` now serves a public Atlas landing page at `/` and the authenticated
+Agent Visibility MVP under `/control-center`. Active product navigation is
+limited to Overview, Agents, Executions, Alerts, and Activity. Legacy prototype
+surfaces remain quarantined outside the active navigation.
 
-`apps/api` contains the WO-015 backend foundation: FastAPI app startup, health
-endpoints, configuration loading, structured errors, correlation IDs,
-external-client authentication scaffolding, SQLAlchemy models, Alembic
-migration foundation, and local webhook delivery scaffolding.
+`apps/api` contains the FastAPI backend foundation, owner identity/session
+boundary, PostgreSQL migrations, owner-enrolled agent registry, one-time agent
+credential issuance, authenticated heartbeat and execution ingestion, derived
+health evaluation, alert lifecycle, activity, and owner-controlled lifecycle
+actions for credential rotation, disconnect, reconnect, and archive.
 
-WO-019 adds a provider-neutral, owner-only session foundation: configured owner
-subject validation, opaque hash-stored sessions, expiry/revocation, strict
-cookie helpers, and CSRF support. Real identity-provider integration and
-frontend login remain intentionally deferred.
+Atlas remains a visibility and trust-lifecycle control center. It does not
+host, deploy, schedule, execute, pause, resume, stop, or maintain external
+agent runtimes.
 
-Operational business APIs, real authentication sessions, production
-persistence, connector execution, policy evaluation, operational audit storage,
-and agent runtime services are not implemented.
+ADP-006 has merged WO-064 through WO-070. WO-071 hosted reference-agent
+verification is blocked until the production Render API environment is
+provisioned with `ATLAS_API_AGENT_CREDENTIAL_PEPPER` and
+`ATLAS_API_AGENT_CREDENTIAL_PEPPER_KEY_ID`; do not record secret values in the
+repository, logs, screenshots, pull request text, or chat.
 
 From the repository root:
 
@@ -155,11 +155,10 @@ Frontend component tests use Vitest, React Testing Library, and jsdom. Run
 colocated with feature code using the `*.test.ts` or `*.test.tsx` suffix.
 
 ES-000 is closed. ES-001 establishes the engineering-governance and
-continuous-integration baseline for subsequent approved work. The Phase 3
-master implementation plan coordinates the remaining backend platform
-foundation increments before additional code work proceeds, and WO-016 records
-the infrastructure provisioning and environment strategy for the next backend
-increments.
+continuous-integration baseline for subsequent approved work. ES-009 governs
+the current Agent Visibility and Lifecycle MVP; ADP-006 remains blocked at
+WO-071 hosted verification until the hosted credential configuration gap is
+resolved.
 
 # Engineering Governance and CI
 
@@ -282,21 +281,15 @@ Notion serves as the operational workspace for:
 
 # Current Status
 
-The architecture, product design, engineering governance, and frontend-only
-prototype are documented and complete for the current milestone. ES-000 through
-ES-002 are complete. The work-order index preserves the exact status of each
-delivery artifact, including WO-007 at Design Review Locked and WO-008 at
-Frontend Prototype Authorized.
+The architecture, product design, engineering governance, hosted foundation,
+owner identity boundary, and Agent Visibility MVP through WO-070 are documented
+and merged. The work-order index preserves the exact status of each delivery
+artifact, including WO-071 as blocked on hosted API credential configuration.
 
-ADR-003 is accepted for the governed external approval decision channel.
-ADR-004 is accepted for the general external product client contract. ADR-005
-is accepted for governed draft-support knowledge and ask-instead-of-guess
-behavior. The next implementation phase is the Phase 3 backend foundation,
-whose first backend foundation is implemented and merged through WO-015.
-The remaining Phase 3 implementation sequence is drafted in the Phase 3 master
-implementation plan and work-order backlog under `docs/implementation-plans/`.
-WO-016 has documented the infrastructure provisioning and environment strategy;
-live provisioning remains separately unauthorized.
+ADR-008 and ADR-009 govern the active Atlas Agent Visibility MVP: Atlas is not
+an agent runtime host or scheduler, and active lifecycle controls remain bounded
+to enrollment, telemetry trust, health, alerts, activity, credential rotation,
+disconnect, reconnect, and archive.
 
 ---
 
