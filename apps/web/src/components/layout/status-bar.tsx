@@ -60,6 +60,7 @@ function ClusterDivider() {
 }
 
 export function StatusBar() {
+  const apiBaseUrl = dashboardApiBaseUrl();
   const [pulse, setPulse] = React.useState(() =>
     fleetPulseFromRuntime([], [], []),
   );
@@ -135,7 +136,7 @@ export function StatusBar() {
           </span>
         )}
       </div>
-      <RuntimeHealthIndicator />
+      <RuntimeHealthIndicator apiBaseUrl={apiBaseUrl} />
     </div>
   );
 }

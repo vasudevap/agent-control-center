@@ -214,14 +214,20 @@ export class DashboardApiError extends Error {
 }
 
 const LOCAL_DASHBOARD_API_BASE_URL = "https://api.atlas.grafley.com";
+const PRODUCTION_DASHBOARD_HOST = "atlas.grafley.com";
 
 export function dashboardApiBaseUrl() {
   const configuredUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
   if (configuredUrl) return configuredUrl;
 
+  if (typeof window === "undefined") return "";
+
+  if (window.location.hostname === PRODUCTION_DASHBOARD_HOST) {
+    return LOCAL_DASHBOARD_API_BASE_URL;
+  }
+
   if (
     process.env.NODE_ENV === "development" &&
-    typeof window !== "undefined" &&
     ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)
   ) {
     return LOCAL_DASHBOARD_API_BASE_URL;

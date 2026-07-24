@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DashboardApiError,
   archiveDashboardAgent,
+  dashboardApiBaseUrl,
   dashboardRequest,
   dashboardSignInUrl,
   disconnectDashboardAgent,
@@ -23,6 +24,21 @@ describe("dashboard runtime facade client", () => {
     await expect(dashboardRequest("/api/v1/dashboard/session")).rejects.toMatchObject({
       code: "dashboard_api_unconfigured",
       status: 0,
+    });
+  });
+
+  it("uses the accepted production API origin when the hosted build omits the public variable", () => {
+    const originalLocation = window.location;
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { hostname: "atlas.grafley.com" },
+    });
+
+    expect(dashboardApiBaseUrl()).toBe("https://api.atlas.grafley.com");
+
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: originalLocation,
     });
   });
 
