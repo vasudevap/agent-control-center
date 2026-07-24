@@ -38,9 +38,20 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
         context.actor_kind is ActorKind.HUMAN_OWNER
         and context.channel is Channel.DASHBOARD
         and context.resource
-        in {"agent", "connector", "agent_run", "approval", "audit", "monitoring"}
+        in {
+            "agent",
+            "agent_activity",
+            "agent_alert",
+            "agent_execution",
+            "agent_run",
+            "approval",
+            "audit",
+            "connector",
+            "monitoring",
+        }
         and context.action
         in {
+            "acknowledge",
             "list",
             "read",
             "read_evidence",

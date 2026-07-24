@@ -4,8 +4,8 @@ import {
   dashboardRequest,
   dashboardSignInUrl,
   toAuditEvents,
+  toAlertRecords,
   toConnectorRecords,
-  toMonitoringAlerts,
   toRunRecords,
 } from "./dashboard-runtime";
 
@@ -88,19 +88,22 @@ describe("dashboard runtime facade client", () => {
     const runs = toRunRecords(
       [
         {
-          run_id: "run_123",
+          agent_execution_id: "run_123",
           agent_id: "agt_123",
-          status: "queued",
-          trigger_source: "manual",
-          correlation_id: "corr_123",
-          timeout_seconds: 300,
-          retry_count: 0,
-          failure_reason_code: null,
+          external_execution_id: "external_run_123",
+          status: "accepted",
+          trigger: "manual",
           started_at: null,
-          completed_at: null,
-          cancelled_at: null,
-          created_at: "2026-07-22T00:00:00.000Z",
-          updated_at: "2026-07-22T00:00:00.000Z",
+          finished_at: null,
+          duration_ms: null,
+          summary: null,
+          error_code: null,
+          correlation_id: "corr_123",
+          agent_version: null,
+          build_sha: null,
+          first_reported_at: "2026-07-22T00:00:00.000Z",
+          last_reported_at: "2026-07-22T00:00:00.000Z",
+          terminal_at: null,
         },
       ],
       [
@@ -117,28 +120,36 @@ describe("dashboard runtime facade client", () => {
     );
     const audit = toAuditEvents([
       {
-        audit_event_id: "aud_123",
-        event_type: "dashboard.list_connectors",
-        actor_type: "human_owner",
-        actor_id: "usr_123",
-        channel: "dashboard",
-        action: "list_connectors",
-        resource_type: "connector",
-        resource_id: "gmail",
-        result: "succeeded",
-        reason_code: null,
+        activity_event_id: "act_123",
+        agent_id: "agt_123",
+        source_type: "agent_execution",
+        source_id: "run_123",
+        event_type: "execution_reported",
+        severity: "info",
+        summary: "Execution was reported.",
         correlation_id: "corr_123",
-        redaction_state: "redacted",
+        actor_type: "agent_runtime",
+        actor_id: "agt_123",
         metadata_json: { count: 1 },
         occurred_at: "2026-07-22T00:00:00.000Z",
       },
     ]);
-    const alerts = toMonitoringAlerts({
-      readiness_status: "ready",
-      readiness_problem_count: 0,
-      agent_count: 1,
-      runtime_origin: "atlas-api",
-    });
+    const alerts = toAlertRecords([
+      {
+        alert_id: "alt_123",
+        agent_id: "agt_123",
+        condition_key: "agent:heartbeat_late",
+        status: "resolved",
+        severity: "info",
+        first_seen_at: "2026-07-22T00:00:00.000Z",
+        last_seen_at: "2026-07-22T00:00:00.000Z",
+        acknowledged_at: null,
+        acknowledged_by_user_id: null,
+        resolved_at: "2026-07-22T00:00:00.000Z",
+        resolved_reason: "heartbeat recovered",
+        evidence_json: { observed_health: "online" },
+      },
+    ]);
 
     expect(JSON.stringify({ connectors, runs, audit, alerts })).not.toMatch(
       new RegExp(["secret", "token", "refresh", "access", "grant"].join("|"), "i"),
@@ -150,11 +161,11 @@ describe("dashboard runtime facade client", () => {
       status: "queued",
     });
     expect(audit[0]).toMatchObject({
-      action: "list_connectors",
+      action: "execution_reported",
       result: "succeeded",
     });
     expect(alerts[0]).toMatchObject({
-      id: "runtime-readiness",
+      id: "alt_123",
       status: "resolved",
     });
   });
@@ -221,19 +232,22 @@ describe("dashboard runtime facade client", () => {
     const runs = toRunRecords(
       [
         {
-          run_id: "run_smoke",
+          agent_execution_id: "run_smoke",
           agent_id: "agt_smoke",
+          external_execution_id: "external_run_smoke",
           status: "succeeded",
-          trigger_source: "manual",
-          correlation_id: "corr_smoke",
-          timeout_seconds: 300,
-          retry_count: 0,
-          failure_reason_code: null,
+          trigger: "manual",
           started_at: "2026-07-22T00:00:00.000Z",
-          completed_at: "2026-07-22T00:00:05.000Z",
-          cancelled_at: null,
-          created_at: "2026-07-22T00:00:00.000Z",
-          updated_at: "2026-07-22T00:00:05.000Z",
+          finished_at: "2026-07-22T00:00:05.000Z",
+          duration_ms: 5000,
+          summary: "Smoke execution succeeded.",
+          error_code: null,
+          correlation_id: "corr_smoke",
+          agent_version: null,
+          build_sha: null,
+          first_reported_at: "2026-07-22T00:00:00.000Z",
+          last_reported_at: "2026-07-22T00:00:05.000Z",
+          terminal_at: "2026-07-22T00:00:05.000Z",
         },
       ],
       [

@@ -14,11 +14,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   dashboardApiBaseUrl,
   readDashboardAgents,
-  readDashboardMonitoring,
+  readDashboardAlerts,
   readDashboardRuns,
   readDashboardSessionOrRequireSignIn,
   toAgentRecords,
-  toMonitoringAlerts,
+  toAlertRecords,
   type DashboardRuntimeMode,
 } from "@/lib/dashboard-runtime";
 
@@ -40,15 +40,15 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
       setRuntimeMode("loading");
       try {
         await readDashboardSessionOrRequireSignIn();
-        const [runtimeAgents, runtimeRuns, monitoring] =
+        const [runtimeAgents, runtimeRuns, runtimeAlerts] =
           await Promise.all([
             readDashboardAgents(),
             readDashboardRuns(),
-            readDashboardMonitoring(),
+            readDashboardAlerts(),
           ]);
         if (!cancelled) {
           setAgents(toAgentRecords(runtimeAgents, runtimeRuns));
-          setAlerts(toMonitoringAlerts(monitoring));
+          setAlerts(toAlertRecords(runtimeAlerts));
           setRuntimeMode("live");
         }
       } catch (error) {
@@ -85,8 +85,8 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
 
       {runtimeMode === "live" ? (
         <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-          <strong>Live runtime.</strong> Overview data is loaded from the Atlas
-          API dashboard facade.
+          <strong>Live runtime.</strong> Overview data is loaded from
+          owner-authenticated agent, execution, and alert APIs.
         </div>
       ) : runtimeMode === "loading" ? (
         <div className="grid gap-3">
@@ -102,7 +102,7 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
             description={
               runtimeRequired && !dashboardApiBaseUrl()
                 ? "No runtime API base URL is configured for this build, so the live overview cannot be displayed."
-                : "The owner-authenticated dashboard facade could not return live overview data."
+                : "The owner-authenticated Atlas APIs could not return live overview data."
             }
             className="py-12"
           />

@@ -76,19 +76,23 @@ function SectionCard({
 export function RunDetailWorkspace({
   run,
   requestedId,
+  runtimeRequired = false,
 }: {
   run?: RunRecord;
   requestedId: string;
+  runtimeRequired?: boolean;
 }) {
   const [runtimeMode, setRuntimeMode] =
-    React.useState<DashboardRuntimeMode>("fixture");
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : runtimeRequired ? "error" : "fixture",
+    );
   const [liveRun, setLiveRun] = React.useState<RunRecord | undefined>();
 
   React.useEffect(() => {
     let cancelled = false;
     async function loadRuntime() {
       if (!dashboardApiBaseUrl()) {
-        setRuntimeMode("fixture");
+        setRuntimeMode(runtimeRequired ? "error" : "fixture");
         return;
       }
       setRuntimeMode("loading");
@@ -111,7 +115,7 @@ export function RunDetailWorkspace({
         ) {
           setRuntimeMode("unauthenticated");
         } else {
-          setRuntimeMode(run ? "fixture" : "error");
+          setRuntimeMode(runtimeRequired || !run ? "error" : "fixture");
         }
       }
     }
@@ -119,7 +123,7 @@ export function RunDetailWorkspace({
     return () => {
       cancelled = true;
     };
-  }, [requestedId, run]);
+  }, [requestedId, run, runtimeRequired]);
 
   const currentRun = runtimeMode === "live" ? liveRun : run;
 
@@ -130,8 +134,8 @@ export function RunDetailWorkspace({
         items={[{ label: "Executions", href: CONTROL_CENTER_ROUTES.executions }, { label: requestedId }]}
         />
         <PageHeader
-          eyebrow="Run"
-          title="Run unavailable"
+          eyebrow="Execution"
+          title="Execution unavailable"
           identifier={requestedId}
           icon={Workflow}
           description={
@@ -140,7 +144,7 @@ export function RunDetailWorkspace({
               : runtimeMode === "unauthenticated"
                 ? "Owner sign-in is required before runtime detail can be loaded."
                 : runtimeMode === "error"
-                  ? "The hosted runtime did not return this run detail."
+                  ? "The hosted runtime did not return this execution detail."
                   : "This identifier is not represented by the local prototype fixtures."
           }
           actions={
@@ -159,9 +163,9 @@ export function RunDetailWorkspace({
                 Sign in with Google
               </a>
             ) : runtimeMode === "loading" ? (
-              "Loading runtime run detail..."
+              "Loading runtime execution detail..."
             ) : runtimeMode === "error" ? (
-              "Runtime detail lookup failed or the run is unavailable."
+              "Runtime detail lookup failed or the execution is unavailable."
             ) : (
               "No service lookup occurred. Choose a fixture from the Executions inventory."
             )}
@@ -176,7 +180,7 @@ export function RunDetailWorkspace({
         items={[{ label: "Executions", href: CONTROL_CENTER_ROUTES.executions }, { label: currentRun.id }]}
       />
       <PageHeader
-        eyebrow="Run"
+        eyebrow="Execution"
         title={currentRun.agent.name}
         identifier={currentRun.id}
         description={currentRun.summary}
@@ -195,7 +199,7 @@ export function RunDetailWorkspace({
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Metadata is loaded from the
-            owner-authenticated Atlas API dashboard facade. Logs and step bodies
+            owner-authenticated execution visibility API. Logs and step bodies
             remain redacted unless a safe runtime contract exposes them.
           </>
         ) : (
@@ -353,7 +357,7 @@ export function RunDetailWorkspace({
             title="Operational log excerpts"
             description={
               runtimeMode === "live"
-                ? "Runtime logs are not exposed by this safe dashboard facade."
+                ? "Runtime logs are not exposed by the safe execution visibility API."
                 : "Fictional troubleshooting context, distinct from audit history."
             }
           >

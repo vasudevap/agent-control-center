@@ -2,14 +2,28 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, ShieldCheck } from "lucide-react";
+import { Bot, ChevronDown, ShieldCheck } from "lucide-react";
 import type { AgentRecord } from "../agent-data";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { RUN_FIXTURES } from "@/app/(shell)/runs/run-data";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ErrorState } from "@/components/state/error-state";
+import { PageHeader } from "@/components/layout/page-header";
+import { SignedOutState } from "@/components/state/signed-out-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { controlCenterExecutionHref } from "@/lib/control-center-routes";
+import {
+  dashboardApiBaseUrl,
+  readDashboardAgents,
+  readDashboardRuns,
+  readDashboardSessionOrRequireSignIn,
+  toAgentRecords,
+  toRunRecords,
+  type DashboardRuntimeMode,
+} from "@/lib/dashboard-runtime";
+import { CONTROL_CENTER_ROUTES, controlCenterExecutionHref } from "@/lib/control-center-routes";
 import { cn } from "@/lib/utils";
 
 type TabId = "activity" | "governance";
@@ -78,17 +92,125 @@ function SystemPromptDisclosure({ agent }: { agent: AgentRecord }) {
  *    Detail, so the two most important object-detail screens in
  *    Atlas share one layout language instead of two unrelated ones.
  */
-export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
+export function AgentDetailWorkspace({
+  agent: initialAgent,
+  requestedId,
+  runtimeRequired = false,
+}: {
+  agent?: AgentRecord;
+  requestedId?: string;
+  runtimeRequired?: boolean;
+}) {
   const [activeTab, setActiveTab] = React.useState<TabId>("activity");
-  const runs = RUN_FIXTURES.filter((run) => run.agent.id === agent.id).slice(0, 3);
+  const [runtimeMode, setRuntimeMode] =
+    React.useState<DashboardRuntimeMode>(() =>
+      dashboardApiBaseUrl() ? "loading" : runtimeRequired ? "error" : "fixture",
+    );
+  const [liveAgent, setLiveAgent] = React.useState<AgentRecord | null>(null);
+  const [liveRuns, setLiveRuns] = React.useState(RUN_FIXTURES);
+  const agentId = requestedId ?? initialAgent?.id ?? "";
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime() {
+      if (!agentId) return;
+      if (!dashboardApiBaseUrl()) {
+        setRuntimeMode(runtimeRequired ? "error" : "fixture");
+        return;
+      }
+      setRuntimeMode("loading");
+      try {
+        await readDashboardSessionOrRequireSignIn();
+        const [runtimeAgents, runtimeRuns] = await Promise.all([
+          readDashboardAgents(),
+          readDashboardRuns(),
+        ]);
+        if (cancelled) return;
+        const agents = toAgentRecords(runtimeAgents, runtimeRuns);
+        setLiveAgent(agents.find((agent) => agent.id === agentId) ?? null);
+        setLiveRuns(toRunRecords(runtimeRuns, runtimeAgents));
+        setRuntimeMode("live");
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          (error as { status: number }).status === 401
+        ) {
+          setRuntimeMode("unauthenticated");
+        } else {
+          setRuntimeMode("error");
+        }
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, [agentId, runtimeRequired]);
+
+  const agent = runtimeMode === "live" ? liveAgent : initialAgent;
+  const runs = (runtimeMode === "live" ? liveRuns : RUN_FIXTURES)
+    .filter((run) => run.agent.id === agentId)
+    .slice(0, 3);
 
   const tabs: Array<{ id: TabId; label: string; count?: number }> = [
     { id: "activity", label: "Activity" },
     { id: "governance", label: "Governance" },
   ];
 
+  if (runtimeMode === "loading") {
+    return (
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  if (runtimeMode === "unauthenticated") {
+    return <SignedOutState description="Sign in to load this agent from the Atlas API." />;
+  }
+
+  if (!agent || runtimeMode === "error") {
+    return (
+      <Card>
+        <ErrorState
+          title="Agent unavailable"
+          description={
+            runtimeRequired
+              ? "This active control-center surface could not load a live agent record from the Atlas API."
+              : "This agent could not be displayed."
+          }
+          className="py-12"
+        />
+      </Card>
+    );
+  }
+
   return (
-    <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        eyebrow="Agent"
+        title={agent.name}
+        identifier={agent.id}
+        icon={Bot}
+        description={agent.description}
+        actions={
+          <Button asChild variant="ghost" size="sm" className="w-full justify-start sm:w-auto">
+            <Link href={CONTROL_CENTER_ROUTES.agents}>Back to Agents</Link>
+          </Button>
+        }
+      />
+
+      {runtimeMode === "live" && (
+        <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
+          <strong>Live runtime.</strong> Agent identity, observed health, and
+          execution history are loaded from owner-authenticated Atlas APIs.
+        </div>
+      )}
+
+      <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
       <aside className="grid content-start gap-4">
         <div className="sticky top-[calc(var(--statusbar-height)+var(--topbar-height)+1rem)] grid content-start gap-4">
           <Card>
@@ -99,9 +221,13 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
             <CardContent className="pt-3 sm:pt-3">
               <dl className="divide-y divide-border-subtle">
                 <SidebarFact label="Health" value={<StatusBadge status={agent.health} plain />} />
+                <SidebarFact label="Observed" value={agent.observedHealth ?? "Fixture health"} />
+                <SidebarFact label="Reported" value={agent.reportedHealth ?? "Fixture health"} />
                 <SidebarFact label="Status" value={<StatusBadge status={agent.status} plain />} />
                 <SidebarFact label="Owner" value={agent.owner} />
+                <SidebarFact label="Environment" value={agent.environment ?? agent.owner} />
                 <SidebarFact label="Version" value={agent.version} />
+                <SidebarFact label="Build" value={agent.buildSha ?? "Unreported"} />
                 <SidebarFact label="Last run" value={agent.lastRun} />
                 <SidebarFact label="Next run" value={agent.nextRun} />
                 <SidebarFact label="Change control" value="Approval required" />
@@ -153,7 +279,11 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
             <div className="flex flex-col gap-4">
               <div>
                 <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Execution history</h2>
-                <p className="text-xs text-foreground-secondary">Recent fictional runs for investigation context.</p>
+                <p className="text-xs text-foreground-secondary">
+                  {runtimeMode === "live"
+                    ? "Recent owner-visible executions reported by this agent."
+                    : "Recent fictional runs for investigation context."}
+                </p>
               </div>
               <div className="overflow-hidden rounded-atlas-md border border-border-default">
                 <Table>
@@ -174,7 +304,13 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                           <StatusBadge status={run.status} plain className="text-xs" />
                         </TableCell>
                         <TableCell className="hidden max-w-xs truncate text-xs text-foreground-secondary sm:table-cell">{run.summary}</TableCell>
-                        <TableCell className="hidden text-xs text-foreground-secondary md:table-cell">{run.artifactIds.length ? `${run.artifactIds.length} artifact fixture` : "No artifact fixture"}</TableCell>
+                        <TableCell className="hidden text-xs text-foreground-secondary md:table-cell">
+                          {runtimeMode === "live"
+                            ? run.error?.code ?? "Reported summary only"
+                            : run.artifactIds.length
+                              ? `${run.artifactIds.length} artifact fixture`
+                              : "No artifact fixture"}
+                        </TableCell>
                         <TableCell className="text-xs text-foreground-secondary">{run.duration}</TableCell>
                       </TableRow>
                     ))}
@@ -221,6 +357,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import { AUDIT_FIXTURES } from "@/app/(shell)/audit/audit-data";
-import { AuditWorkspace } from "@/app/(shell)/audit/audit-workspace";
+import { redirect } from "next/navigation";
+import { CONTROL_CENTER_ROUTES } from "@/lib/control-center-routes";
 
 export default function ControlCenterAuditPage() {
-  return <AuditWorkspace events={AUDIT_FIXTURES} />;
+  redirect(CONTROL_CENTER_ROUTES.activity);
 }

@@ -7,5 +7,11 @@ export default async function ControlCenterAlertsPage({
   searchParams: Promise<{ alert?: string }>;
 }) {
   const { alert } = await searchParams;
-  return <AlertsWorkspace alerts={ALERT_FIXTURES} initialAlertId={alert} />;
+  return (
+    <AlertsWorkspace
+      alerts={ALERT_FIXTURES}
+      initialAlertId={alert}
+      runtimeRequired
+    />
+  );
 }

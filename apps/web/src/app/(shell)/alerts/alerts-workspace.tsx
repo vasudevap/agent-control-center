@@ -17,11 +17,12 @@ import {
   type AlertStatus,
 } from "./alert-data";
 import {
+  acknowledgeDashboardAlert,
   dashboardApiBaseUrl,
   type DashboardRuntimeMode,
-  readDashboardMonitoring,
+  readDashboardAlerts,
   readDashboardSessionOrRequireSignIn,
-  toMonitoringAlerts,
+  toAlertRecords,
 } from "@/lib/dashboard-runtime";
 import {
   controlCenterAgentHref,
@@ -96,9 +97,11 @@ function Severity({ severity }: { severity: AlertSeverity }) {
 function AlertDetails({
   alert,
   defaultOpen,
+  action,
 }: {
   alert: AlertRecord;
   defaultOpen?: boolean;
+  action?: React.ReactNode;
 }) {
   return (
     <details
@@ -139,6 +142,7 @@ function AlertDetails({
               <Link href={controlCenterExecutionHref(alert.relatedRunId)}>View run</Link>
             </Button>
           )}
+          {action}
         </div>
       </div>
     </details>
@@ -148,15 +152,20 @@ function AlertDetails({
 export function AlertsWorkspace({
   alerts,
   initialAlertId,
+  runtimeRequired = false,
 }: {
   alerts: AlertRecord[];
   initialAlertId?: string;
+  runtimeRequired?: boolean;
 }) {
   const [runtimeMode, setRuntimeMode] =
     React.useState<DashboardRuntimeMode>(() =>
-      dashboardApiBaseUrl() ? "loading" : "fixture",
+      dashboardApiBaseUrl() ? "loading" : runtimeRequired ? "error" : "fixture",
     );
   const [liveAlerts, setLiveAlerts] = React.useState<AlertRecord[]>([]);
+  const [csrfToken, setCsrfToken] = React.useState("");
+  const [acknowledgingId, setAcknowledgingId] = React.useState<string | null>(null);
+  const [actionFeedback, setActionFeedback] = React.useState<string | null>(null);
   const [query, setQuery] = React.useState("");
   const [severity, setSeverity] = React.useState<AlertSeverity | "all">("all");
   const [status, setStatus] = React.useState<AlertStatus | "all">("all");
@@ -167,15 +176,16 @@ export function AlertsWorkspace({
     let cancelled = false;
     async function loadRuntime() {
       if (!dashboardApiBaseUrl()) {
-        setRuntimeMode("fixture");
+        setRuntimeMode(runtimeRequired ? "error" : "fixture");
         return;
       }
       setRuntimeMode("loading");
       try {
-        await readDashboardSessionOrRequireSignIn();
-        const monitoring = await readDashboardMonitoring();
+        const session = await readDashboardSessionOrRequireSignIn();
+        const runtimeAlerts = await readDashboardAlerts();
         if (!cancelled) {
-          setLiveAlerts(toMonitoringAlerts(monitoring));
+          setCsrfToken(session.csrf_token);
+          setLiveAlerts(toAlertRecords(runtimeAlerts));
           setRuntimeMode("live");
         }
       } catch (error) {
@@ -195,7 +205,37 @@ export function AlertsWorkspace({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [runtimeRequired]);
+
+  const acknowledge = async (alert: AlertRecord) => {
+    if (!csrfToken || runtimeMode !== "live") return;
+    setAcknowledgingId(alert.id);
+    setActionFeedback(null);
+    try {
+      const updated = await acknowledgeDashboardAlert(alert.id, csrfToken);
+      const [record] = toAlertRecords([updated]);
+      setLiveAlerts((current) =>
+        current.map((item) => (item.id === record.id ? record : item)),
+      );
+      setActionFeedback(`Acknowledged ${alert.title}.`);
+    } catch {
+      setActionFeedback("Alert acknowledgement failed. Try again after refreshing the live session.");
+    } finally {
+      setAcknowledgingId(null);
+    }
+  };
+
+  const acknowledgeAction = (alert: AlertRecord) =>
+    runtimeMode === "live" && alert.status === "active" ? (
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => void acknowledge(alert)}
+        disabled={acknowledgingId === alert.id}
+      >
+        {acknowledgingId === alert.id ? "Acknowledging..." : "Acknowledge"}
+      </Button>
+    ) : null;
 
   const activeAlerts = runtimeMode === "live" ? liveAlerts : alerts;
   const records = activeAlerts;
@@ -255,25 +295,27 @@ export function AlertsWorkspace({
         title="Alerts"
         description={
           runtimeMode === "live"
-            ? "Review lightweight hosted runtime monitoring posture from the Atlas API."
+            ? "Review persisted alert lifecycle state reported by the Atlas runtime."
             : "Triage operational signals across the Atlas runtime."
         }
         icon={BellRing}
       />
       {runtimeMode === "unauthenticated" && (
-        <SignedOutState description="Sign in to load runtime alert monitoring from the Atlas API." />
+        <SignedOutState description="Sign in to load runtime alerts from the Atlas API." />
       )}
       {runtimeMode !== "unauthenticated" && (
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
-            <strong>Live runtime.</strong> Monitoring evidence is loaded from
-            the owner-authenticated Atlas API dashboard facade.
+            <strong>Live runtime.</strong> Alert state is loaded from the
+            owner-authenticated alert lifecycle API.
           </>
         ) : runtimeMode === "loading" ? (
-          "Loading owner-authenticated monitoring posture..."
+          "Loading owner-authenticated alerts..."
         ) : runtimeMode === "error" ? (
-          "Runtime monitoring is unavailable. Fixture alerts remain quarantined from release evidence."
+          runtimeRequired
+            ? "Runtime alerts are unavailable, so this active control-center surface cannot display fixture fallback data."
+            : "Runtime alerts are unavailable. Fixture alerts remain quarantined from release evidence."
         ) : (
           <>
             <strong>Frontend prototype.</strong> No runtime API base URL is
@@ -282,6 +324,11 @@ export function AlertsWorkspace({
           </>
         )}
       </div>
+      )}
+      {actionFeedback && runtimeMode === "live" && (
+        <p className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-2 text-sm text-foreground">
+          {actionFeedback}
+        </p>
       )}
       {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -360,9 +407,11 @@ export function AlertsWorkspace({
             title={hasFilters ? "No alerts match these filters" : "No alerts"}
             description={
               hasFilters
-                ? "Clear filters to restore the fictional alert inventory."
+                ? runtimeMode === "live"
+                  ? "Clear filters to restore the runtime alert inventory."
+                  : "Clear filters to restore the fictional alert inventory."
                 : runtimeMode === "live"
-                  ? "No runtime monitoring alerts are available."
+                  ? "No active or historical runtime alerts are available."
                   : "No alert fixtures are available."
             }
             action={
@@ -427,6 +476,7 @@ export function AlertsWorkspace({
                       <AlertDetails
                         alert={alert}
                         defaultOpen={initialAlertId === alert.id}
+                        action={acknowledgeAction(alert)}
                       />
                     </TableCell>
                     <TableCell className="align-top text-xs">
@@ -482,6 +532,7 @@ export function AlertsWorkspace({
                     <AlertDetails
                       alert={alert}
                       defaultOpen={initialAlertId === alert.id}
+                      action={acknowledgeAction(alert)}
                     />
                   </CardContent>
                 </Card>

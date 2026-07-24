@@ -11,19 +11,19 @@ describe("RunsWorkspace", () => {
     render(<RunsWorkspace />);
 
     expect(
-      screen.getByText(`6 of ${RUN_FIXTURES.length} fictional runs`),
+      screen.getByText(`6 of ${RUN_FIXTURES.length} fictional executions`),
     ).toBeInTheDocument();
     await user.type(
-      screen.getByRole("searchbox", { name: "Search runs" }),
+      screen.getByRole("searchbox", { name: "Search executions" }),
       "connector",
     );
     expect(
-      screen.getByText(`2 of ${RUN_FIXTURES.length} fictional runs`),
+      screen.getByText(`2 of ${RUN_FIXTURES.length} fictional executions`),
     ).toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText("Status"), "failed");
     await user.selectOptions(screen.getByLabelText("Trigger"), "Scheduled");
     expect(
-      screen.getByText(`1 of ${RUN_FIXTURES.length} fictional runs`),
+      screen.getByText(`1 of ${RUN_FIXTURES.length} fictional executions`),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("link", { name: /run-2026-07-05-011/i })[0],
@@ -31,7 +31,7 @@ describe("RunsWorkspace", () => {
 
     await user.click(screen.getByRole("button", { name: "Clear filters" }));
     expect(
-      screen.getByText(`6 of ${RUN_FIXTURES.length} fictional runs`),
+      screen.getByText(`6 of ${RUN_FIXTURES.length} fictional executions`),
     ).toBeInTheDocument();
   });
 
@@ -80,7 +80,7 @@ describe("RunDetailWorkspace", () => {
   it("keeps unknown runs visibly unavailable without a service lookup", () => {
     render(<RunDetailWorkspace requestedId="run-missing" />);
     expect(
-      screen.getByRole("heading", { name: "Run unavailable" }),
+      screen.getByRole("heading", { name: "Execution unavailable" }),
     ).toBeInTheDocument();
     expect(screen.getByText(/No service lookup occurred/i)).toBeInTheDocument();
   });

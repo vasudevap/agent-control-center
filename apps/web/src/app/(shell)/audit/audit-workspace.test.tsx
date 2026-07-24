@@ -10,7 +10,7 @@ describe("AuditWorkspace", () => {
     render(<AuditWorkspace events={AUDIT_FIXTURES} />);
 
     expect(
-      screen.getByRole("table", { name: "Audit event history" }),
+      screen.getByRole("table", { name: "Activity event history" }),
     ).toBeInTheDocument();
     await user.selectOptions(
       screen.getByLabelText("Action"),
@@ -31,7 +31,7 @@ describe("AuditWorkspace", () => {
     render(<AuditWorkspace events={AUDIT_FIXTURES} />);
 
     expect(
-      screen.getByText(/not operational audit records or a system of record/i),
+      screen.getByText(/not operational activity records or a system of record/i),
     ).toBeInTheDocument();
     await user.click(screen.getAllByText("View event details")[0]);
     expect(
