@@ -49,6 +49,16 @@ describe("AgentDetailWorkspace active surface", () => {
     expect(screen.getByRole("button", { name: "Governance" })).toBeInTheDocument();
   });
 
+  it("uses a neutral empty state when a live agent record is not available", () => {
+    render(<AgentDetailWorkspace requestedId="agt_missing" runtimeRequired />);
+
+    expect(screen.getByText("Nothing to display yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Agent details will appear once an enrolled agent is available."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("rotates live credentials from the control-center detail page", async () => {
     const user = userEvent.setup();
     const lifecycleUuid = "00000000-0000-4000-8000-000000000000" as ReturnType<

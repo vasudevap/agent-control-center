@@ -38,6 +38,7 @@ async function expectSignedOutPage(description: string, hiddenTable: string) {
     "href",
     SIGN_IN_URL,
   );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.queryByRole("table", { name: hiddenTable })).not.toBeInTheDocument();
 }
 
