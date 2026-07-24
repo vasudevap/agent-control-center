@@ -1,6 +1,6 @@
 # Work Order 067: Heartbeat and Execution Ingestion
 
-**Status:** Completed - Local Validation Passed
+**Status:** Completed - Merged
 **Work Order ID:** WO-067
 **Type:** Agent telemetry ingestion
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-24

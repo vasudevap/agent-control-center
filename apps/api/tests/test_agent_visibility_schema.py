@@ -52,6 +52,11 @@ def agent_registration(
         configuration_schema={},
         active_surface_visible=active_surface_visible,
         registration_source=registration_source,
+        lifecycle_status="pending",
+        monitoring_mode="heartbeat",
+        heartbeat_interval_seconds=60,
+        observed_health="never_seen",
+        reported_health="unknown",
     )
 
 

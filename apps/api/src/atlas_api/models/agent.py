@@ -160,7 +160,6 @@ class AgentRegistration(TimestampMixin, Base):
     heartbeat_interval_seconds: Mapped[int | None] = mapped_column(
         Integer,
         nullable=True,
-        default=60,
     )
     tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     repository_url: Mapped[str | None] = mapped_column(String(500), nullable=True)

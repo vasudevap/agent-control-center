@@ -37,6 +37,7 @@ from atlas_api.core.owner_sessions import (
 from atlas_api.models.audit import AuditEvent
 from atlas_api.models.external_client import User
 from atlas_api.models.idempotency import ApiIdempotencyRecord
+from atlas_api.services.agent_health_evaluator import evaluator_freshness
 from atlas_api.services.agent_registry import (
     enroll_owner_agent,
     get_owner_agent_registration,
@@ -747,6 +748,15 @@ def read_dashboard_monitoring(
             risk_level="low",
         )
         problems = settings.readiness_problems()
+        evaluator: dict[str, object] = {
+            "enabled": settings.agent_health_evaluator_enabled,
+            "status": "disabled",
+        }
+        if settings.agent_health_evaluator_enabled:
+            freshness = evaluator_freshness(session)
+            evaluator = {"enabled": True, **freshness}
+            if freshness["status"] != "fresh":
+                problems.append(f"agent_health_evaluator_{freshness['status']}")
         agent_page = list_agent_registrations(
             session,
             pagination=PaginationParameters(cursor=None, limit=100),
@@ -759,8 +769,10 @@ def read_dashboard_monitoring(
             {
                 "readiness_status": "ready" if not problems else "not_ready",
                 "readiness_problem_count": len(problems),
+                "readiness_problems": problems,
                 "agent_count": len(agent_page.agents),
                 "runtime_origin": "atlas-api",
+                "agent_health_evaluator": evaluator,
             },
             meta={"correlation_id": get_correlation_id()},
         )

@@ -20,6 +20,7 @@ from atlas_api.core.contracts import PaginationParameters, success_payload
 from atlas_api.core.correlation import get_correlation_id
 from atlas_api.core.errors import ApiError
 from atlas_api.models.agent import AgentRegistration
+from atlas_api.services.agent_alerts import record_security_ingestion_alert
 from atlas_api.services.agent_credentials import verify_agent_token
 from atlas_api.services.agent_registry import (
     get_agent_registration,
@@ -302,20 +303,28 @@ def ingest_agent_heartbeat(
             credential=credential,
             agent_id=agent_id,
         )
-        accepted = accept_heartbeat(
-            session,
-            agent=agent,
-            credential=credential,
-            event_id=payload.event_id,
-            contract_version=payload.contract_version,
-            sent_at=payload.sent_at,
-            environment=payload.environment,
-            reported_status=cast(Any, payload.status),
-            checks=[item.model_dump(mode="json") for item in payload.checks],
-            agent_version=payload.agent_version,
-            build_sha=payload.build_sha,
-            payload=payload.model_dump(mode="json"),
-        )
+        try:
+            accepted = accept_heartbeat(
+                session,
+                agent=agent,
+                credential=credential,
+                event_id=payload.event_id,
+                contract_version=payload.contract_version,
+                sent_at=payload.sent_at,
+                environment=payload.environment,
+                reported_status=cast(Any, payload.status),
+                checks=[item.model_dump(mode="json") for item in payload.checks],
+                agent_version=payload.agent_version,
+                build_sha=payload.build_sha,
+                payload=payload.model_dump(mode="json"),
+            )
+        except ApiError as error:
+            _persist_security_ingestion_rejection(
+                session,
+                agent=agent,
+                error=error,
+            )
+            raise
         session.commit()
         return success_payload(
             {
@@ -349,25 +358,33 @@ def ingest_agent_execution(
             credential=credential,
             agent_id=agent_id,
         )
-        accepted = accept_execution(
-            session,
-            agent=agent,
-            credential=credential,
-            external_execution_id=execution_id,
-            contract_version=payload.contract_version,
-            representation_hash=payload.representation_hash,
-            status=payload.status,
-            trigger=payload.trigger,
-            started_at=payload.started_at,
-            finished_at=payload.finished_at,
-            duration_ms=payload.duration_ms,
-            summary=payload.summary,
-            error_code=payload.error_code,
-            correlation_id=payload.correlation_id,
-            agent_version=payload.agent_version,
-            build_sha=payload.build_sha,
-            payload=payload.model_dump(mode="json"),
-        )
+        try:
+            accepted = accept_execution(
+                session,
+                agent=agent,
+                credential=credential,
+                external_execution_id=execution_id,
+                contract_version=payload.contract_version,
+                representation_hash=payload.representation_hash,
+                status=payload.status,
+                trigger=payload.trigger,
+                started_at=payload.started_at,
+                finished_at=payload.finished_at,
+                duration_ms=payload.duration_ms,
+                summary=payload.summary,
+                error_code=payload.error_code,
+                correlation_id=payload.correlation_id,
+                agent_version=payload.agent_version,
+                build_sha=payload.build_sha,
+                payload=payload.model_dump(mode="json"),
+            )
+        except ApiError as error:
+            _persist_security_ingestion_rejection(
+                session,
+                agent=agent,
+                error=error,
+            )
+            raise
         response.status_code = 201 if accepted.created else 200
         session.commit()
         return success_payload(
@@ -420,6 +437,28 @@ def _enforce_body_size(request: Request) -> None:
             "agent_telemetry_payload_too_large",
             "Telemetry payload is too large.",
         )
+
+
+def _persist_security_ingestion_rejection(
+    session: Session,
+    *,
+    agent: AgentRegistration,
+    error: ApiError,
+) -> None:
+    categories = {
+        "agent_contract_version_unsupported": "contract_version",
+        "agent_telemetry_secret_rejected": "secret_pattern",
+    }
+    category = categories.get(error.code)
+    if category is None:
+        return
+    record_security_ingestion_alert(
+        session,
+        agent_id=agent.agent_id,
+        category=category,
+        reason_code=error.code,
+    )
+    session.commit()
 
 
 def _authorize_agent_registry(

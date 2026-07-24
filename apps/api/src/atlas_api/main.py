@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+import asyncio
+import os
+from collections.abc import AsyncIterator, Callable
+from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from sqlalchemy import create_engine
@@ -20,6 +23,11 @@ from atlas_api.core.config import Settings, get_settings
 from atlas_api.core.correlation import CorrelationIdMiddleware
 from atlas_api.core.errors import register_exception_handlers
 from atlas_api.db.config import require_database_url
+from atlas_api.services.agent_health_evaluator import (
+    EVALUATOR_TICK_INTERVAL_SECONDS,
+    evaluate_agent_health_once,
+    record_evaluator_error,
+)
 
 OPENAPI_TAGS = [
     {"name": "health", "description": "Unversioned infrastructure health checks."},
@@ -61,9 +69,14 @@ def create_app(
         version="0.1.0",
         description="Backend foundation for the Agent Control Center.",
         openapi_tags=OPENAPI_TAGS,
+        lifespan=_agent_health_evaluator_lifespan(
+            settings=resolved_settings,
+            session_factory=resolved_session_factory,
+        ),
     )
     app.state.settings = resolved_settings
     app.state.session_factory = resolved_session_factory
+    app.state.agent_health_evaluator_task = None
     if resolved_settings.frontend_origin:
         app.add_middleware(
             CORSMiddleware,
@@ -124,6 +137,60 @@ def _configure_openapi(app: FastAPI) -> None:
         return schema
 
     app.openapi = custom_openapi  # type: ignore[method-assign]
+
+
+def _agent_health_evaluator_lifespan(
+    *,
+    settings: Settings,
+    session_factory: Callable[[], Session] | None,
+) -> Callable[[FastAPI], AbstractAsyncContextManager[None, bool | None]] | None:
+    if not settings.agent_health_evaluator_enabled or session_factory is None:
+        return None
+
+    holder_id = f"{settings.app_name}:{os.getpid()}"
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        app.state.agent_health_evaluator_task = asyncio.create_task(
+            _agent_health_evaluator_loop(
+                session_factory=session_factory,
+                holder_id=holder_id,
+            )
+        )
+        try:
+            yield
+        finally:
+            task = app.state.agent_health_evaluator_task
+            if task is not None:
+                task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await task
+
+    return lifespan
+
+
+async def _agent_health_evaluator_loop(
+    *,
+    session_factory: Callable[[], Session],
+    holder_id: str,
+) -> None:
+    while True:
+        try:
+            with session_factory() as session:
+                evaluate_agent_health_once(session, holder_id=holder_id)
+                session.commit()
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:  # pragma: no cover - defensive runtime guard
+            with suppress(Exception):
+                with session_factory() as session:
+                    record_evaluator_error(
+                        session,
+                        holder_id=holder_id,
+                        error_code=exc.__class__.__name__,
+                    )
+                    session.commit()
+        await asyncio.sleep(EVALUATOR_TICK_INTERVAL_SECONDS)
 
 
 app = create_app()
