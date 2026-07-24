@@ -1,13 +1,13 @@
 # Work Order 071: Hosted Reference-Agent Verification and ADP Closeout
 
-**Status:** Accepted - Authorized, blocked on WO-070 completion
+**Status:** Blocked - Hosted credential configuration missing
 **Work Order ID:** WO-071
 **Type:** Hosted MVP verification and program closeout
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-24
 **Engineering Specification:** [ES-009](../engineering-specifications/ES-009-agent-visibility-and-lifecycle-mvp.md)
 **Governing ADP:** [ADP-006](../implementation-plans/ADP-006-agent-visibility-lifecycle-mvp.md)
-**Prerequisites:** WO-070 accepted and complete
-**Review Record:** To be created during implementation
+**Prerequisites:** WO-070 completed and merged
+**Review Record:** [WO-071 Blocker Report](../reviews/WO-071-hosted-reference-agent-verification-and-adp-closeout-blocker-report.md)
 
 ## 1. Purpose
 
@@ -86,3 +86,17 @@ Order scope.
 Stop before public launch, release tagging, provider writes not already
 authorized, production business data use, exposing secrets, changing hosting
 topology, or weakening CI/rollback requirements.
+
+## 9. Current Blocker
+
+Hosted public readiness on 2026-07-24 returns `not_ready` because the Render
+API environment is missing the agent credential pepper configuration required
+for owner enrollment and one-time credential issuance:
+
+- `agent_credential_pepper_missing`
+- `agent_credential_pepper_key_id_missing`
+
+WO-071 cannot honestly complete hosted enrollment, telemetry, lifecycle, or
+archive verification until those production environment values are provisioned
+outside the repository. Do not record the secret values in source, chat,
+screenshots, logs, or pull request text.

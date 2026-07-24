@@ -1,6 +1,6 @@
 # ADP-006: Agent Visibility and Lifecycle MVP
 
-**Status:** Authorized - In Progress
+**Status:** Blocked - Hosted credential configuration missing
 **Program ID:** ADP-006
 **Type:** Autonomous Delivery Program
 **Owner:** Repository Maintainer
@@ -49,8 +49,8 @@ Work Order stop-and-ask trigger applies.
 | 4 | `WO-067: Heartbeat and Execution Ingestion` | Completed - Merged | Implement authenticated heartbeat and execution ingestion with replay, bounds, redaction, and rate limits | Independent agents can submit accepted telemetry without Atlas runtime control |
 | 5 | `WO-068: Health Evaluator and Alert Lifecycle` | Completed - Merged | Implement leased evaluator, derived health, alerts, activity, and freshness readiness | Atlas derives observed health and alert state from accepted telemetry |
 | 6 | `WO-069: Live Dashboard Integration` | Completed - Merged | Replace active UI fixtures with live Overview, Agents, Agent Detail, Executions, Alerts, and Activity | Active dashboard surfaces render live ES-009 data and required states |
-| 7 | `WO-070: Disconnect, Reconnect, Archive, and Credential Closeout` | Completed - Local Validation Passed | Complete lifecycle actions, credential rotation/overlap, rejection, retained history, and UI confirmations | Trust lifecycle is owner-controlled without deleting history or stopping external runtimes |
-| 8 | `WO-071: Hosted Reference-Agent Verification and ADP Closeout` | Accepted - Authorized, blocked on WO-070 completion | Validate hosted behavior with curl, Python, and TypeScript clients; record closeout evidence | ES-009 success criteria are proven through hosted live verification |
+| 7 | `WO-070: Disconnect, Reconnect, Archive, and Credential Closeout` | Completed - Merged | Complete lifecycle actions, credential rotation/overlap, rejection, retained history, and UI confirmations | Trust lifecycle is owner-controlled without deleting history or stopping external runtimes |
+| 8 | `WO-071: Hosted Reference-Agent Verification and ADP Closeout` | Blocked - Hosted credential configuration missing | Validate hosted behavior with curl, Python, and TypeScript clients; record closeout evidence | ES-009 success criteria are proven through hosted live verification |
 
 ## 4. Dependency Sequence
 
@@ -145,6 +145,13 @@ Each completed Work Order must leave repository evidence:
 - hosted evidence where relevant;
 - secret scans for touched source and docs where credentials are in scope;
 - rollback notes and residual risks.
+
+Current WO-071 hosted evidence is blocked because the production Render API
+readiness endpoint reports `agent_credential_pepper_missing` and
+`agent_credential_pepper_key_id_missing`. Owner enrollment and one-time agent
+credential issuance fail closed without those values, so ADP-006 cannot close
+until they are provisioned outside the repository and hosted verification is
+rerun.
 
 ## 9. Completion Definition
 

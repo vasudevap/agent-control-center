@@ -103,14 +103,11 @@ Build the platform infrastructure.
 
 ## Status
 
-In progress. ES-004 and WO-015 define, authorize, implement, and merge the
-first backend Platform Foundation scope. Queue, Scheduler, broader
-authentication, and operational platform services remain future Phase 3
-increments. The remaining Phase 3 work is drafted in the master implementation
-plan and work-order backlog under `docs/implementation-plans/`; those planning
-artifacts do not authorize code by themselves. WO-016 documents the
-infrastructure provisioning and environment strategy; live provisioning remains
-separately unauthorized.
+In progress. The backend foundation, owner identity/session boundary,
+PostgreSQL migration foundation, hosted deployment path, and Agent Visibility
+MVP service layer through WO-070 are implemented. Queue, Scheduler, broader
+multi-user authentication, and operational platform services remain future
+increments.
 
 ---
 
@@ -176,6 +173,20 @@ Create the reusable agent platform.
 - Ask-Instead-of-Guess Question and Answer API
 - Knowledge Question, Answer, and Re-confirmation Webhook Contracts
 - Health Monitoring
+
+## Status
+
+In progress. ES-009 and ADP-006 re-scoped the active MVP to honest Agent
+Visibility and Trust Lifecycle behavior. WO-064 through WO-070 are merged:
+active navigation is rooted under `/control-center`, owner-enrolled agents use
+one-time Atlas telemetry credentials, external runtimes can submit heartbeats
+and executions, Atlas derives observed health and alerts, and owners can rotate
+credentials, disconnect, reconnect, and archive without Atlas claiming runtime
+control.
+
+WO-071 hosted reference-agent verification is blocked until the production
+Render API environment is provisioned with the missing agent credential pepper
+settings.
 
 ---
 
