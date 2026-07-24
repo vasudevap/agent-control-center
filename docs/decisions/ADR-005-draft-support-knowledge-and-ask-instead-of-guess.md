@@ -1,6 +1,6 @@
 # ADR-005 - Draft-Support Knowledge and Ask-Instead-of-Guess
 
-**Status:** Accepted
+**Status:** Superseded by `ADR-008 - Atlas Agent Visibility and Lifecycle Control Center`
 **Date:** 2026-07-17
 **Decision Owners:** Architecture and Security Review
 **Review Owner:** Repository Maintainer
@@ -11,6 +11,10 @@
 **Related Decisions:** `ADR-002 - Human Approvals Decision Integrity and Continuation`, `ADR-003 - Governed External Approval Decision Channel`, and `ADR-004 - Governed External Product Client Contract`
 
 ---
+
+> Historical decision: retained as evidence for the original governed
+> knowledge, Gmail drafting, and external-product-client direction. It no
+> longer governs the active MVP.
 
 ## Context
 

@@ -2,6 +2,30 @@
 
 This directory contains migrated Atlas implementation work orders. They record authorized scope and completion status; they do not override accepted architecture or design decisions.
 
+Work Orders 001 through 063 are retained as delivery evidence for the product
+and architecture authority under which they were accepted. No existing Work
+Order authorizes implementation of ADR-008 or ADR-009.
+
+ES-009 is accepted for the Agent Visibility and Lifecycle MVP. Deferred
+execution-platform, Gmail, connector, approval, knowledge, scheduling, queue,
+webhook, policy, and artifact capabilities must not be reactivated by
+interpreting a historical Work Order as current authority.
+
+Work Orders 064 through 071 are proposed for the ES-009 Agent Visibility and
+Lifecycle MVP under ADP-006:
+
+- WO-064: Active Navigation and Synthetic Fixture Quarantine
+- WO-065: Agent Visibility Schema and Migration Foundation
+- WO-066: Owner Enrollment and Agent Credentials
+- WO-067: Heartbeat and Execution Ingestion
+- WO-068: Health Evaluator and Alert Lifecycle
+- WO-069: Live Dashboard Integration
+- WO-070: Disconnect, Reconnect, Archive, and Credential Closeout
+- WO-071: Hosted Reference-Agent Verification and ADP Closeout
+
+They require maintainer acceptance and explicit autonomous execution-window
+authorization before implementation begins.
+
 Work Order 005 is the approved application-shell baseline now implemented in `apps/web`.
 
 Work Order 006 implemented the approved Agents Inventory and is `Completed`.

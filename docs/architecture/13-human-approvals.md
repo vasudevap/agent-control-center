@@ -1,5 +1,9 @@
 # Atlas Human Approvals Architecture
 
+> **Deferred capability.** Human approvals are not part of the active
+> agent-visibility MVP. This accepted architecture is retained for a future
+> separately authorized approval capability.
+
 **Status:** Approved
 **Version:** 1.1
 **Date:** 2026-07-17

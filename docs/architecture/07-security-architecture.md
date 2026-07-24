@@ -1,5 +1,9 @@
 # Security Architecture
 
+> **Legacy broad security baseline.** Reusable controls remain valid. The active
+> agent trust boundary and per-agent credential model are governed by ADR-009
+> and the Agent Visibility MVP Target Architecture.
+
 ## 1. Purpose
 
 This document defines the security architecture for the Agent Control Center.

@@ -1,6 +1,6 @@
 # ADR-004 - Governed External Product Client Contract
 
-**Status:** Accepted
+**Status:** Superseded by `ADR-008 - Atlas Agent Visibility and Lifecycle Control Center`
 **Date:** 2026-07-16
 **Updated:** 2026-07-17
 **Decision Owners:** Architecture and Security Review
@@ -12,6 +12,9 @@
 **Related Decision:** `ADR-003 - Governed External Approval Decision Channel`
 
 ---
+
+> Historical decision: retained as evidence for the original Atlas
+> external-product-client direction. It no longer governs the active MVP.
 
 ## Context
 

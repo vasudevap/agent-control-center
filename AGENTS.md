@@ -36,15 +36,22 @@ The current Atlas architecture and governance lane uses `5.5 · High · Standard
 
 # Project Purpose
 
-The Agent Control Center is an enterprise-inspired platform for creating, governing, scheduling, monitoring, and operating AI agents.
+The Agent Control Center is an enterprise-inspired visibility and lifecycle
+control center for AI agents built, deployed, scheduled, and operated outside
+Atlas.
 
 The project has three equal objectives:
 
-1. Build a production-quality productivity platform.
+1. Build a production-quality platform for agent enrollment, trust lifecycle,
+   health, execution visibility, alerts, and activity.
 2. Learn enterprise AI architecture through implementation.
 3. Produce a professional portfolio demonstrating Enterprise and AI Solution Architecture.
 
 Every contribution should support these objectives.
+
+The active MVP is governed by ADR-008 and ADR-009. Atlas does not host, deploy,
+schedule, execute, pause, resume, stop, or maintain external agent runtimes.
+Future control-plane capabilities require separate accepted authority.
 
 ---
 
@@ -233,12 +240,9 @@ The model never authorizes actions.
 
 Agents may only use tools explicitly assigned to them.
 
-Do not bypass:
-
-- Tool Registry
-- Connector Runtime
-- Policy Engine
-- Approval Service
+Do not bypass an accepted platform boundary. Tool Registry, Connector Runtime,
+Policy Engine, Approval Service, and Atlas-owned execution are deferred
+capabilities rather than active MVP dependencies.
 
 ---
 
@@ -246,22 +250,27 @@ Do not bypass:
 
 Every new agent should:
 
-- register itself
-- declare capabilities
-- declare required connectors
-- declare required tools
-- declare required permissions
-- declare risk level
-- expose health
-- support structured outputs
+- be enrolled by the Atlas owner;
+- use a credential scoped to its Atlas identity;
+- call the versioned Atlas REST API from its external runtime;
+- send authenticated heartbeats where heartbeat monitoring is selected;
+- report bounded execution summaries using stable identities;
+- declare version, build, environment, and structured health checks;
+- keep provider credentials, business configuration, tools, schedules, and
+  runtime control outside Atlas;
+- exclude secrets and unnecessary business content from telemetry;
+- tolerate bounded retries and idempotent replay;
+- support credential rotation and immediate Atlas rejection after disconnect.
 
-Do not create one-off agents that bypass platform contracts.
+Do not create agent-specific Atlas routes or schemas that bypass the published
+agent integration contract.
 
 ---
 
 # Connector Standards
 
-Every connector should:
+Connectors are outside the active MVP. If a future accepted capability
+reactivates them, every connector should:
 
 - implement the connector contract
 - support health checks
@@ -397,6 +406,23 @@ All contributions must follow the canonical engineering controls under `docs/gov
 
 Do not bypass, disable, or weaken required CI. Failed required checks block merge. Exceptions must follow the documented exception process and must not silently change architecture, product, design, or security authority.
 
+## GitHub Actions free-tier discipline
+
+GitHub Actions provides merge and release evidence. It is not the primary debugging loop.
+
+For every source-bearing implementation:
+
+1. Run focused local checks while iterating.
+2. Before the first push, run the complete local Node, Python, PostgreSQL migration, test, lint, typecheck, and build validation represented in `.github/workflows/ci.yml`.
+3. Record the commands and results in the pull request description.
+4. Consolidate changes and push once per coherent review update. Do not push merely to discover failures in GitHub.
+5. Keep work local until the full local suite is green. A draft pull request is not permission to spend hosted minutes on unfinished validation.
+6. Do not manually rerun successful or superseded workflows.
+7. Do not change CI workflows, required checks, branch protection, runner selection, deployment controls, credentials, or security scanning without explicit owner authorization.
+8. Never weaken or bypass a required check because the Actions allowance is exhausted. Wait for the allowance reset or use an owner-approved self-hosted runner.
+
+Until the path-aware `ci-gate` workflow is confirmed on `main`, assume every pushed pull request update may run the full hosted suite.
+
 ---
 
 # Commit Messages
@@ -484,45 +510,44 @@ architectural decision lacks an accepted authority, or when required CI fails.
 
 ## Project Status Reporting
 
-When the user asks for a status, use this compact format and update percentages from repository evidence:
+When the user asks for status, use this compact format and update percentages
+from repository evidence:
 
-`**Completed:** Stage 1: Requirements and Architecture | 100%`
+`**Completed:** Stage 6: Live Product Integration | 100%`
 
 | Stage | Sequence | % |
 |---|---|---:|
-| 2. Governance | Architecture Review | 0% |
-| | Security Review | 0% |
-| | Resolve findings | 0% |
-| | Accept ADR-005 | 0% |
-| 3. Foundation | Knowledge persistence and versioning | 0% |
-| | API and authentication foundation | 0% |
-| | Webhook delivery foundation | 0% |
-| 4. Contract | Fact CRUD, confirmation, and volatility | 0% |
-| | Question and answer lifecycle | 0% |
-| | `facts_used` evidence and revalidation | 0% |
-| | Audit and webhook contracts | 0% |
-| 5. Gmail Agent | Ask instead of guess | 0% |
-| | Learn from validated answers | 0% |
-| | Learn from confirmed sends | 0% |
-| | Enforce clinical-source exclusion | 0% |
-| 6. Verification | Contract and integration tests | 0% |
-| | Security and privacy validation | 0% |
-| | End-to-end workflow verification | 0% |
+| 1. Engineering readiness | Accept ES-009 and Work Orders | 100% |
+| 2. Honest active surface | Reduce navigation and quarantine simulations | 100% |
+| 3. Enrollment | Agent registration and credentials | 100% |
+| | Credential rotation and revocation | 100% |
+| 4. Telemetry | Heartbeat ingestion | 100% |
+| | Execution ingestion | 100% |
+| 5. Health | Derived health evaluator | 100% |
+| | Alert lifecycle | 100% |
+| 6. Product | Live active dashboard surfaces | 100% |
+| 7. Verification | Hosted reference-agent acceptance blocked on hosted API credential configuration | 0% |
 
 ---
 
 # Long-Term Vision
 
-The repository should evolve into an enterprise-quality AI platform demonstrating:
+The repository should evolve into an enterprise-quality agent operations
+product demonstrating:
 
 - Solution Architecture
 - Enterprise Architecture
 - AI Architecture
 - Secure AI Systems
-- Agent Governance
+- Agent identity and trust lifecycle
+- Agent integration contracts
 - Agent Operations
 - Observability
-- Human-in-the-loop workflows
-- Production-ready integrations
+- Secure telemetry ingestion
+- Honest control-plane boundaries
+
+Human-in-the-loop workflows, production connectors, scheduling, orchestration,
+and runtime control remain possible future capabilities rather than active MVP
+commitments.
 
 The quality of the architecture is more important than the quantity of implemented features.

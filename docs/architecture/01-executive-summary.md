@@ -1,5 +1,10 @@
 # Executive Summary
 
+> **Legacy architecture baseline.** The active MVP is governed by ADR-008,
+> ADR-009, and
+> [`14-agent-visibility-mvp-target-architecture.md`](./14-agent-visibility-mvp-target-architecture.md).
+> This document is retained for historical and future-capability context.
+
 ## 1. Purpose
 
 The Agent Control Center is a centralized platform for registering, scheduling, executing, monitoring, governing, and auditing AI agents.

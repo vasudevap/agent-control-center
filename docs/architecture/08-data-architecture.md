@@ -1,5 +1,10 @@
 # Data Architecture
 
+> **Legacy broad data baseline.** The active MVP data domains are agent
+> registration, credentials, heartbeats, reported executions, derived health,
+> alerts, activity, audit, and owner sessions. Existing additional tables are
+> retained but dormant.
+
 ## 1. Purpose
 
 This document defines the data architecture for the Agent Control Center.

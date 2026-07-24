@@ -1,5 +1,10 @@
 # Deployment Architecture
 
+> **Legacy broad deployment baseline.** Netlify, Render API, and PostgreSQL
+> remain reusable. Atlas workers, execution scheduling, connector runtime, and
+> job dispatch are outside the active MVP; see the Agent Visibility MVP Target
+> Architecture.
+
 ## 1. Purpose
 
 This document defines how the Agent Control Center is deployed across local development, Netlify, Render, and external service providers.

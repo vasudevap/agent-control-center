@@ -1,5 +1,9 @@
 # Atlas Human Approvals Functional Specification
 
+> **Deferred capability.** This specification is retained for possible future
+> approval work. It is outside the active Agent Visibility MVP governed by
+> ADR-008 and ADR-009.
+
 **Status:** Approved
 **Version:** 1.1
 **Date:** 2026-07-13

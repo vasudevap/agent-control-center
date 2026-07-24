@@ -1,5 +1,9 @@
 # Agent Runtime Architecture
 
+> **Deferred Atlas-owned runtime architecture.** In the active MVP, agent
+> runtimes are external and call Atlas through the contract in ADR-009 and
+> `docs/specifications/agent-integration-api.md`.
+
 ## 1. Purpose
 
 This document defines the runtime architecture used to execute agents within the Agent Control Center.

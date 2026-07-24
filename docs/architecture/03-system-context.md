@@ -1,5 +1,10 @@
 # System Context
 
+> **Legacy architecture baseline.** The active system context is defined in
+> [`14-agent-visibility-mvp-target-architecture.md`](./14-agent-visibility-mvp-target-architecture.md).
+> MushingMule, Gmail execution, and Atlas-owned workers are outside the active
+> MVP.
+
 ## 1. Purpose
 
 This document defines the system context for the Agent Control Center using a C4 Level 1 perspective.

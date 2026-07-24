@@ -1,5 +1,11 @@
 # MVP Release Boundary and Phase Gates
 
+> **Historical release boundary.** This document records acceptance and hosted
+> cutover of the original Gmail/execution-platform candidate. It is superseded
+> for active planning by ADR-008, ADR-009, the Agent Visibility MVP Product
+> Requirements, and
+> [`atlas-agent-visibility-mvp-reset.md`](./atlas-agent-visibility-mvp-reset.md).
+
 **Status:** Phase 7 Complete - MVP Release Candidate Accepted
 **Owner:** Repository Maintainer
 **Created:** 2026-07-18

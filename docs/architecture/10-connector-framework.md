@@ -1,5 +1,9 @@
 # Connector Framework
 
+> **Deferred capability.** Atlas does not manage agent connectors or provider
+> credentials in the active MVP. This document is retained for a future
+> separately authorized connector capability.
+
 ## 1. Purpose
 
 This document defines the connector framework for the Agent Control Center.

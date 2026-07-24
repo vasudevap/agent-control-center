@@ -7,7 +7,13 @@ Specifications, Work Orders, or review records. They coordinate sequencing,
 dependencies, agent handoff structure, and completion gates across multiple
 future implementation increments.
 
-Current plans:
+Active plan:
+
+- [Atlas Agent Visibility MVP Reset](./atlas-agent-visibility-mvp-reset.md)
+- [ADP-006: Agent Visibility and Lifecycle MVP](./ADP-006-agent-visibility-lifecycle-mvp.md)
+
+Historical execution-platform plans are retained as closeout evidence. They do
+not authorize new work that conflicts with ADR-008 or ADR-009:
 
 - [Phase 3 Platform Foundation Master Plan](./phase-3-platform-foundation-master-plan.md)
 - [Phase 3 Target Architecture](./phase-3-platform-foundation-target-architecture.md)

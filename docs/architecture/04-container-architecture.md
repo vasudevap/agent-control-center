@@ -1,5 +1,10 @@
 # Container Architecture
 
+> **Legacy architecture baseline.** The active MVP container model is defined
+> in
+> [`14-agent-visibility-mvp-target-architecture.md`](./14-agent-visibility-mvp-target-architecture.md).
+> Queue, worker, connector runtime, and execution containers are deferred.
+
 ## 1. Purpose
 
 This document defines the C4 Level 2 container architecture for the Agent Control Center.

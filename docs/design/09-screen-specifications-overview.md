@@ -1,5 +1,9 @@
 # Atlas Screen Specifications — Part 1
 
+> **Legacy screen baseline.** Active Overview, Agents, Agent Detail, and
+> Executions responsibilities are defined in
+> `12-agent-visibility-mvp-experience.md`.
+
 **Status:** Draft  
 **Version:** 1.0  
 **Owner:** Product Design
