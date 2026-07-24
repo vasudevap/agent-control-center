@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Boxes } from "lucide-react";
-import { NAV_ITEMS, SETTINGS_NAV_ITEM } from "./nav-items";
-import { Separator } from "@/components/ui/separator";
+import { NAV_ITEMS } from "./nav-items";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CONTROL_CENTER_ROOT } from "@/lib/control-center-routes";
 import { cn } from "@/lib/utils";
-
-const OPERATIONS_NAV_ITEMS = NAV_ITEMS.slice(0, 5);
-const GOVERNANCE_NAV_ITEMS = NAV_ITEMS.slice(5);
 
 /**
  * Active state uses a left accent bar plus weight/color change rather
@@ -82,7 +79,10 @@ function NavLink({
 export function SidebarNav({ onNavigate, expanded = false }: { onNavigate?: () => void; expanded?: boolean }) {
   const pathname = usePathname();
   const isActive = (href: string) =>
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+    pathname === href ||
+    (href !== "/" &&
+      href !== CONTROL_CENTER_ROOT &&
+      pathname.startsWith(`${href}/`));
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -92,23 +92,11 @@ export function SidebarNav({ onNavigate, expanded = false }: { onNavigate?: () =
             <p className={cn("px-3 pb-1 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-foreground-tertiary", expanded ? "block" : "hidden lg:block")}>
               Operations
             </p>
-            {OPERATIONS_NAV_ITEMS.map((item) => (
-              <NavLink key={item.href} item={item} active={isActive(item.href)} onNavigate={onNavigate} expanded={expanded} />
-            ))}
-          </div>
-
-          <div className="flex flex-col gap-0.5 border-t border-border-subtle pt-3">
-            <p className={cn("px-3 pb-1 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-foreground-tertiary", expanded ? "block" : "hidden lg:block")}>
-              Governance
-            </p>
-            {GOVERNANCE_NAV_ITEMS.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <NavLink key={item.href} item={item} active={isActive(item.href)} onNavigate={onNavigate} expanded={expanded} />
             ))}
           </div>
         </div>
-
-        <Separator className="my-1.5" />
-        <NavLink item={SETTINGS_NAV_ITEM} active={isActive(SETTINGS_NAV_ITEM.href)} onNavigate={onNavigate} expanded={expanded} />
       </nav>
     </TooltipProvider>
   );

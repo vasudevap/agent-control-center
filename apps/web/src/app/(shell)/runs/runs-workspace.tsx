@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { FilterX, Play, Workflow } from "lucide-react";
+import { FilterX, Workflow } from "lucide-react";
 import {
   RUN_FIXTURES,
   RUN_STATUS_LABELS,
@@ -11,15 +11,14 @@ import {
   type RunTrigger,
 } from "./run-data";
 import {
-  createDashboardRun,
   dashboardApiBaseUrl,
-  type DashboardAgent,
   type DashboardRuntimeMode,
   readDashboardAgents,
   readDashboardRuns,
   readDashboardSessionOrRequireSignIn,
   toRunRecords,
 } from "@/lib/dashboard-runtime";
+import { controlCenterExecutionHref } from "@/lib/control-center-routes";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
@@ -135,9 +134,6 @@ export function RunsWorkspace({
       dashboardApiBaseUrl() ? "loading" : "fixture",
     );
   const [liveRuns, setLiveRuns] = React.useState<RunRecord[]>([]);
-  const [agents, setAgents] = React.useState<DashboardAgent[]>([]);
-  const [csrfToken, setCsrfToken] = React.useState("");
-  const [notice, setNotice] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<RunStatus | "all">("all");
   const [trigger, setTrigger] = React.useState<RunTrigger | "all">("all");
@@ -151,13 +147,11 @@ export function RunsWorkspace({
     }
     setRuntimeMode("loading");
     try {
-      const session = await readDashboardSessionOrRequireSignIn();
+      await readDashboardSessionOrRequireSignIn();
       const [runtimeAgents, runtimeRuns] = await Promise.all([
         readDashboardAgents(),
         readDashboardRuns(),
       ]);
-      setCsrfToken(session.csrf_token);
-      setAgents(runtimeAgents);
       setLiveRuns(toRunRecords(runtimeRuns, runtimeAgents));
       setRuntimeMode("live");
       setViewState("loaded");
@@ -183,7 +177,6 @@ export function RunsWorkspace({
   }, [loadRuntime]);
 
   const activeRuns = runtimeMode === "live" ? liveRuns : runs;
-  const manualAgents = agents.filter((agent) => agent.supports_manual_run);
   const visibleRuns = sortRuns(
     filterRuns(activeRuns, query, status, trigger),
     sort,
@@ -209,10 +202,10 @@ export function RunsWorkspace({
     <div className="flex flex-col gap-5">
       <PageHeader
         eyebrow="Operations"
-        title="Runs"
+        title="Executions"
         description={
           runtimeMode === "live"
-            ? "Inspect owner-authenticated Atlas runtime execution history and start synthetic manual runs."
+            ? "Inspect owner-authenticated external-agent execution history reported to Atlas."
             : "Inspect execution history across the Atlas agent fleet."
         }
         icon={Workflow}
@@ -225,7 +218,8 @@ export function RunsWorkspace({
         {runtimeMode === "live" ? (
           <>
             <strong>Live runtime.</strong> Runs are loaded from the Atlas API
-            dashboard facade. Manual starts use owner CSRF and idempotency.
+            dashboard facade. Atlas is observing reported executions, not
+            dispatching agent work.
           </>
         ) : runtimeMode === "loading" ? (
           "Loading owner-authenticated run data..."
@@ -239,11 +233,6 @@ export function RunsWorkspace({
           </>
         )}
         </div>
-      )}
-      {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
-      <p className="sr-only" aria-live="polite">
-        {notice}
-      </p>
       )}
       {runtimeMode !== "unauthenticated" && runtimeMode !== "loading" && (
       <div className="flex flex-col gap-3 rounded-atlas-lg border border-border-default bg-surface p-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -293,22 +282,6 @@ export function RunsWorkspace({
             Clear filters
           </Button>
         )}
-        {runtimeMode === "live" && manualAgents.length > 0 && (
-          <Button
-            size="sm"
-            onClick={async () => {
-              const created = await createDashboardRun(
-                manualAgents[0].agent_id,
-                csrfToken,
-              );
-              setNotice(`Runtime run ${created.run_id} was queued.`);
-              await loadRuntime();
-            }}
-          >
-            <Play aria-hidden="true" />
-            Start {manualAgents[0].display_name}
-          </Button>
-        )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
           {visibleRuns.length} of {activeRuns.length}{" "}
           {runtimeMode === "live" ? "runtime runs" : "fictional runs"}
@@ -321,8 +294,8 @@ export function RunsWorkspace({
       {viewState === "error" ? (
         <Card>
           <ErrorState
-            title="Runs unavailable"
-            description="This controlled fixture state simulates a recoverable display error."
+            title="Executions unavailable"
+            description="Execution history could not be displayed."
             onRetry={() => setViewState("loaded")}
           />
         </Card>
@@ -330,11 +303,11 @@ export function RunsWorkspace({
         <Card>
           <EmptyState
             icon={Workflow}
-            title={hasFilters ? "No runs match these filters" : "No runs yet"}
+            title={hasFilters ? "No executions match these filters" : "No executions yet"}
             description={
               hasFilters
                 ? "Clear filters to restore the fictional history."
-                : "Run history will appear when fixtures are added."
+                : "Execution history will appear when records are reported."
             }
             action={
               hasFilters ? (
@@ -349,7 +322,7 @@ export function RunsWorkspace({
         <>
           <Card className="hidden overflow-hidden md:block">
             <Table className="table-fixed">
-              <caption className="sr-only">Runs inventory</caption>
+              <caption className="sr-only">Executions inventory</caption>
               <TableHeader>
                 <TableRow>
                   <TableHead
@@ -435,7 +408,7 @@ export function RunsWorkspace({
                     </TableCell>
                     <TableCell className="min-w-0 overflow-hidden text-xs">
                       <Link
-                        href={`/runs/${run.id}`}
+                        href={controlCenterExecutionHref(run.id)}
                         className="relative z-10 block overflow-hidden font-mono font-medium text-foreground after:absolute after:inset-0 after:content-[''] hover:text-brand"
                       >
                         <span className="block truncate">{run.id}</span>
@@ -468,7 +441,7 @@ export function RunsWorkspace({
                   <CardContent className="grid gap-4 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <Link
-                        href={`/runs/${run.id}`}
+                        href={controlCenterExecutionHref(run.id)}
                         className="font-mono text-sm font-semibold text-foreground after:absolute after:inset-0 after:content-['']"
                       >
                         {run.id}

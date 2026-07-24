@@ -13,7 +13,6 @@ from atlas_api.core.config import Settings
 from atlas_api.core.owner_sessions import SESSION_COOKIE_NAME, issue_owner_session
 from atlas_api.db.base import Base
 from atlas_api.main import create_app
-from atlas_api.models.agent import AgentRegistration
 from atlas_api.models.approval import ApprovalRequest
 from atlas_api.models.audit import AuditEvent
 from atlas_api.models.connector import ConnectorConnection
@@ -35,7 +34,7 @@ def database_factory() -> sessionmaker[Session]:
     return sessionmaker(engine)
 
 
-def dashboard_settings() -> Settings:
+def dashboard_settings(*, enable_synthetic_smoke_seed: bool = False) -> Settings:
     return Settings(
         environment="test",
         external_client_id="dashboard-client",
@@ -46,6 +45,7 @@ def dashboard_settings() -> Settings:
         google_oauth_redirect_uri="https://atlas.grafley.com/oauth/google/callback",
         owner_identity_subject="google-owner-subject",
         frontend_origin="https://atlas.grafley.com",
+        enable_synthetic_smoke_seed=enable_synthetic_smoke_seed,
     )
 
 
@@ -88,6 +88,13 @@ def authenticated_client(
     database_factory: sessionmaker[Session],
 ) -> tuple[TestClient, str]:
     settings = dashboard_settings()
+    return authenticated_client_with_settings(database_factory, settings)
+
+
+def authenticated_client_with_settings(
+    database_factory: sessionmaker[Session],
+    settings: Settings,
+) -> tuple[TestClient, str]:
     client = TestClient(
         create_app(settings, database_factory),
         base_url="https://api.atlas.grafley.com",
@@ -159,50 +166,30 @@ def test_dashboard_connector_and_run_facade_use_owner_scope(
     assert runs.json()["data"] == []
 
 
-def test_dashboard_state_change_requires_rotated_csrf(
+def test_dashboard_manual_run_creation_is_not_an_active_facade_route(
     database_factory: sessionmaker[Session],
 ) -> None:
-    client, stale_csrf = authenticated_client(database_factory)
-    with database_factory() as session:
-        agent_id = session.scalar(
-            select(AgentRegistration.agent_id).where(
-                AgentRegistration.slug == "gmail-agent"
-            )
-        )
-    assert agent_id is not None
-    session_response = client.get("/api/v1/dashboard/session")
-    csrf_token = session_response.json()["data"]["csrf_token"]
+    client, _ = authenticated_client(database_factory)
 
-    denied = client.post(
+    response = client.post(
         "/api/v1/dashboard/runs",
-        json={"agent_id": "missing-agent"},
+        json={"agent_id": "agent_123"},
         headers={
-            "X-Atlas-CSRF-Token": stale_csrf,
+            "X-Atlas-CSRF-Token": "csrf-token",
             "Idempotency-Key": "dashboard-run-0001",
         },
     )
-    created = client.post(
-        "/api/v1/dashboard/runs",
-        json={"agent_id": agent_id},
-        headers={
-            "X-Atlas-CSRF-Token": csrf_token,
-            "Idempotency-Key": "dashboard-run-0002",
-        },
-    )
 
-    assert denied.status_code == 401
-    assert denied.json()["error"]["code"] == "owner_session_csrf_invalid"
-    assert created.status_code == 200
-    assert created.json()["data"]["agent_id"] == agent_id
-    detail = client.get(f"/api/v1/dashboard/runs/{created.json()['data']['run_id']}")
-    assert detail.status_code == 200
-    assert detail.json()["data"]["run_id"] == created.json()["data"]["run_id"]
+    assert response.status_code == 405
 
 
 def test_dashboard_smoke_seed_creates_synthetic_runtime_evidence(
     database_factory: sessionmaker[Session],
 ) -> None:
-    client, _ = authenticated_client(database_factory)
+    client, _ = authenticated_client_with_settings(
+        database_factory,
+        dashboard_settings(enable_synthetic_smoke_seed=True),
+    )
     session_response = client.get("/api/v1/dashboard/session")
     csrf_token = session_response.json()["data"]["csrf_token"]
 
@@ -264,7 +251,10 @@ def test_dashboard_smoke_seed_creates_synthetic_runtime_evidence(
 def test_dashboard_smoke_seed_requires_csrf_and_idempotency(
     database_factory: sessionmaker[Session],
 ) -> None:
-    client, _ = authenticated_client(database_factory)
+    client, _ = authenticated_client_with_settings(
+        database_factory,
+        dashboard_settings(enable_synthetic_smoke_seed=True),
+    )
     session_response = client.get("/api/v1/dashboard/session")
     csrf_token = session_response.json()["data"]["csrf_token"]
 
@@ -288,7 +278,10 @@ def test_dashboard_smoke_seed_requires_csrf_and_idempotency(
 def test_dashboard_smoke_seed_is_idempotent(
     database_factory: sessionmaker[Session],
 ) -> None:
-    client, _ = authenticated_client(database_factory)
+    client, _ = authenticated_client_with_settings(
+        database_factory,
+        dashboard_settings(enable_synthetic_smoke_seed=True),
+    )
     session_response = client.get("/api/v1/dashboard/session")
     csrf_token = session_response.json()["data"]["csrf_token"]
     headers = {
@@ -319,6 +312,26 @@ def test_dashboard_smoke_seed_is_idempotent(
         assert len(list(session.scalars(select(ConnectorConnection)))) == 2
         assert len(list(session.scalars(select(AgentRun)))) == 1
         assert len(list(session.scalars(select(ApprovalRequest)))) == 1
+
+
+def test_dashboard_smoke_seed_is_disabled_by_default(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, _ = authenticated_client(database_factory)
+    session_response = client.get("/api/v1/dashboard/session")
+    csrf_token = session_response.json()["data"]["csrf_token"]
+
+    response = client.post(
+        "/api/v1/dashboard/smoke-seed",
+        json={"scope": "hosted_mvp_smoke"},
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "dashboard-smoke-seed-disabled",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "dashboard_smoke_seed_disabled"
 
 
 def test_dashboard_audit_and_monitoring_are_metadata_only(

@@ -249,16 +249,6 @@ export const readDashboardAudit = () =>
 export const readDashboardMonitoring = () =>
   dashboardRequest<DashboardMonitoring>("/api/v1/dashboard/monitoring");
 
-export const createDashboardRun = (agentId: string, csrfToken: string) =>
-  dashboardRequest<DashboardRun>("/api/v1/dashboard/runs", {
-    method: "POST",
-    body: JSON.stringify({ agent_id: agentId }),
-    headers: {
-      "Idempotency-Key": `dashboard-${crypto.randomUUID()}`,
-      "X-Atlas-CSRF-Token": csrfToken,
-    },
-  });
-
 export const startConnectorOAuth = (
   connector: ConnectorRecord,
   csrfToken: string,

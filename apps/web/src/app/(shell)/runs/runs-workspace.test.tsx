@@ -27,7 +27,7 @@ describe("RunsWorkspace", () => {
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("link", { name: /run-2026-07-05-011/i })[0],
-    ).toHaveAttribute("href", "/runs/run-2026-07-05-011");
+    ).toHaveAttribute("href", "/control-center/runs/run-2026-07-05-011");
 
     await user.click(screen.getByRole("button", { name: "Clear filters" }));
     expect(
@@ -39,7 +39,7 @@ describe("RunsWorkspace", () => {
     const user = userEvent.setup();
     const { unmount } = render(<RunsWorkspace />);
     expect(
-      screen.getByRole("table", { name: "Runs inventory" }),
+      screen.getByRole("table", { name: "Executions inventory" }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Agent" }));
     expect(
@@ -48,10 +48,10 @@ describe("RunsWorkspace", () => {
 
     unmount();
     render(<RunsWorkspace state="error" />);
-    expect(screen.getByRole("alert")).toHaveTextContent("Runs unavailable");
+    expect(screen.getByRole("alert")).toHaveTextContent("Executions unavailable");
     await user.click(screen.getByRole("button", { name: "Try again" }));
     expect(
-      screen.getByRole("table", { name: "Runs inventory" }),
+      screen.getByRole("table", { name: "Executions inventory" }),
     ).toBeInTheDocument();
   });
 });

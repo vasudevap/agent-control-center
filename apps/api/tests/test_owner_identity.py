@@ -182,7 +182,7 @@ def test_owner_oidc_callback_issues_owner_session_when_subject_is_bound() -> Non
 
     assert callback.status_code == 303
     assert callback.headers["location"] == (
-        "https://atlas.grafley.com?owner_session=signed_in"
+        "https://atlas.grafley.com/control-center?owner_session=signed_in"
     )
     assert "atlas_owner_session=" in callback.headers["set-cookie"]
     assert "provider-code" not in callback.text

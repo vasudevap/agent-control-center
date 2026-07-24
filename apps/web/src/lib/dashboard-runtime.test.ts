@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DashboardApiError,
-  createDashboardRun,
   dashboardRequest,
   dashboardSignInUrl,
   toAuditEvents,
@@ -51,52 +50,6 @@ describe("dashboard runtime facade client", () => {
     );
     expect(dashboardSignInUrl()).toBe(
       "https://api.atlas.grafley.com/auth/owner/google/start",
-    );
-  });
-
-  it("sends CSRF and idempotency headers for controlled manual runs", async () => {
-    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.atlas.grafley.com");
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(
-      "11111111-1111-4111-8111-111111111111",
-    );
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          data: {
-            run_id: "run_123",
-            agent_id: "agt_123",
-            status: "queued",
-            trigger_source: "manual",
-            correlation_id: "corr_123",
-            timeout_seconds: 300,
-            retry_count: 0,
-            failure_reason_code: null,
-            started_at: null,
-            completed_at: null,
-            cancelled_at: null,
-            created_at: "2026-07-22T00:00:00.000Z",
-            updated_at: "2026-07-22T00:00:00.000Z",
-          },
-        }),
-        { status: 200 },
-      ),
-    );
-    vi.stubGlobal("fetch", fetchMock);
-
-    await createDashboardRun("agt_123", "csrf-token");
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      "https://api.atlas.grafley.com/api/v1/dashboard/runs",
-      expect.objectContaining({
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({ agent_id: "agt_123" }),
-        headers: expect.objectContaining({
-          "X-Atlas-CSRF-Token": "csrf-token",
-          "Idempotency-Key":
-            "dashboard-11111111-1111-4111-8111-111111111111",
-        }),
-      }),
     );
   });
 

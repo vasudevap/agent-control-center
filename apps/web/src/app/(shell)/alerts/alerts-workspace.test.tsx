@@ -38,8 +38,7 @@ describe("AlertsWorkspace", () => {
     ).toBeInTheDocument();
   });
 
-  it("labels local simulation explicitly and restores canonical relationships", async () => {
-    const user = userEvent.setup();
+  it("routes alert details without exposing local investigation simulation", () => {
     const alert = ALERT_FIXTURES[0];
     render(
       <AlertsWorkspace alerts={ALERT_FIXTURES} initialAlertId={alert.id} />,
@@ -48,15 +47,9 @@ describe("AlertsWorkspace", () => {
     expect(screen.getAllByText(alert.evidence)[0]).toBeVisible();
     expect(
       screen.getAllByRole("link", { name: "View run" })[0],
-    ).toHaveAttribute("href", `/runs/${alert.relatedRunId}`);
-    await user.click(
-      screen.getAllByRole("button", { name: "Simulate investigation" })[0],
-    );
+    ).toHaveAttribute("href", `/control-center/runs/${alert.relatedRunId}`);
     expect(
-      screen.getByText(
-        `Simulated investigation for ${alert.id}. Refreshing the page restores the fixture.`,
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText("Investigating")[0]).toBeInTheDocument();
+      screen.queryByRole("button", { name: "Simulate investigation" }),
+    ).not.toBeInTheDocument();
   });
 });

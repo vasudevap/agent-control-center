@@ -94,7 +94,7 @@ export function TopBar() {
             <SearchField
               value={searchValue}
               onChange={setSearchValue}
-              placeholder="Search agents, approvals, artifacts..."
+              placeholder="Search agents, executions, alerts..."
               aria-label="Search"
             />
           </div>
