@@ -15,10 +15,14 @@ import { SignedOutState } from "@/components/state/signed-out-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
+  archiveDashboardAgent,
   dashboardApiBaseUrl,
+  disconnectDashboardAgent,
   readDashboardAgents,
   readDashboardRuns,
   readDashboardSessionOrRequireSignIn,
+  reconnectDashboardAgent,
+  rotateDashboardAgentCredential,
   toAgentRecords,
   toRunRecords,
   type DashboardRuntimeMode,
@@ -27,6 +31,7 @@ import { CONTROL_CENTER_ROUTES, controlCenterExecutionHref } from "@/lib/control
 import { cn } from "@/lib/utils";
 
 type TabId = "activity" | "governance";
+type LifecycleAction = "rotate" | "disconnect" | "reconnect" | "archive";
 
 function SidebarFact({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -75,6 +80,57 @@ function SystemPromptDisclosure({ agent }: { agent: AgentRecord }) {
   );
 }
 
+const LIFECYCLE_ACTIONS: Record<
+  LifecycleAction,
+  {
+    label: string;
+    confirm: string;
+    success: string;
+    variant: "secondary" | "destructive";
+  }
+> = {
+  rotate: {
+    label: "Rotate credential",
+    confirm:
+      "Rotate this agent credential? Atlas will issue a new one-time token and keep the previous token valid for exactly 24 hours.",
+    success:
+      "Credential rotated. Copy the new token now; Atlas will not show it again.",
+    variant: "secondary",
+  },
+  disconnect: {
+    label: "Disconnect",
+    confirm:
+      "Disconnect this agent from Atlas? Atlas will immediately revoke telemetry credentials. The external runtime may still be running outside Atlas.",
+    success:
+      "Agent disconnected. Credentials were revoked and telemetry is now rejected.",
+    variant: "secondary",
+  },
+  reconnect: {
+    label: "Reconnect",
+    confirm:
+      "Reconnect this agent? Atlas will issue a new one-time credential and wait for the next heartbeat before marking it connected.",
+    success:
+      "Agent reconnected. Copy the new token now; the agent remains pending until heartbeat.",
+    variant: "secondary",
+  },
+  archive: {
+    label: "Archive",
+    confirm:
+      "Archive this agent? Atlas will revoke credentials, hide it from default active views, and retain history. The external runtime may still exist outside Atlas.",
+    success:
+      "Agent archived. It is hidden from default active views and history is retained.",
+    variant: "destructive",
+  },
+};
+
+function lifecycleLabel(value?: string) {
+  if (!value) return "Unknown";
+  return value
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 /**
  * Three deliberate departures from the baseline detail page:
  *
@@ -108,6 +164,16 @@ export function AgentDetailWorkspace({
     );
   const [liveAgent, setLiveAgent] = React.useState<AgentRecord | null>(null);
   const [liveRuns, setLiveRuns] = React.useState(RUN_FIXTURES);
+  const [csrfToken, setCsrfToken] = React.useState("");
+  const [lifecycleBusy, setLifecycleBusy] =
+    React.useState<LifecycleAction | null>(null);
+  const [lifecycleMessage, setLifecycleMessage] = React.useState("");
+  const [lifecycleError, setLifecycleError] = React.useState("");
+  const [lifecycleCredential, setLifecycleCredential] = React.useState<{
+    plaintextToken: string;
+    scope: string;
+    credentialId: string;
+  } | null>(null);
   const agentId = requestedId ?? initialAgent?.id ?? "";
 
   React.useEffect(() => {
@@ -120,12 +186,13 @@ export function AgentDetailWorkspace({
       }
       setRuntimeMode("loading");
       try {
-        await readDashboardSessionOrRequireSignIn();
+        const session = await readDashboardSessionOrRequireSignIn();
         const [runtimeAgents, runtimeRuns] = await Promise.all([
           readDashboardAgents(),
           readDashboardRuns(),
         ]);
         if (cancelled) return;
+        setCsrfToken(session.csrf_token);
         const agents = toAgentRecords(runtimeAgents, runtimeRuns);
         setLiveAgent(agents.find((agent) => agent.id === agentId) ?? null);
         setLiveRuns(toRunRecords(runtimeRuns, runtimeAgents));
@@ -148,6 +215,46 @@ export function AgentDetailWorkspace({
       cancelled = true;
     };
   }, [agentId, runtimeRequired]);
+
+  const handleLifecycleAction = React.useCallback(
+    async (action: LifecycleAction) => {
+      if (!agentId || !csrfToken || lifecycleBusy) return;
+      const config = LIFECYCLE_ACTIONS[action];
+      if (!window.confirm(config.confirm)) return;
+
+      setLifecycleBusy(action);
+      setLifecycleMessage("");
+      setLifecycleError("");
+      setLifecycleCredential(null);
+      try {
+        const response =
+          action === "rotate"
+            ? await rotateDashboardAgentCredential(agentId, csrfToken)
+            : action === "disconnect"
+              ? await disconnectDashboardAgent(agentId, csrfToken)
+              : action === "reconnect"
+                ? await reconnectDashboardAgent(agentId, csrfToken)
+                : await archiveDashboardAgent(agentId, csrfToken);
+        const [updatedAgent] = toAgentRecords([response.agent]);
+        setLiveAgent(updatedAgent ?? null);
+        if (response.credential) {
+          setLifecycleCredential({
+            plaintextToken: response.credential.plaintext_token,
+            scope: response.credential.scope,
+            credentialId: response.credential.credential_id,
+          });
+        }
+        setLifecycleMessage(config.success);
+      } catch {
+        setLifecycleError(
+          "Lifecycle action failed. Refresh the live agent state and try again.",
+        );
+      } finally {
+        setLifecycleBusy(null);
+      }
+    },
+    [agentId, csrfToken, lifecycleBusy],
+  );
 
   const agent = runtimeMode === "live" ? liveAgent : initialAgent;
   const runs = (runtimeMode === "live" ? liveRuns : RUN_FIXTURES)
@@ -188,6 +295,10 @@ export function AgentDetailWorkspace({
     );
   }
 
+  const lifecycleStatus = agent.lifecycleStatus ?? "unknown";
+  const isDisconnected = lifecycleStatus === "disconnected";
+  const isArchived = lifecycleStatus === "archived";
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -224,6 +335,7 @@ export function AgentDetailWorkspace({
                 <SidebarFact label="Observed" value={agent.observedHealth ?? "Fixture health"} />
                 <SidebarFact label="Reported" value={agent.reportedHealth ?? "Fixture health"} />
                 <SidebarFact label="Status" value={<StatusBadge status={agent.status} plain />} />
+                <SidebarFact label="Lifecycle" value={lifecycleLabel(lifecycleStatus)} />
                 <SidebarFact label="Owner" value={agent.owner} />
                 <SidebarFact label="Environment" value={agent.environment ?? agent.owner} />
                 <SidebarFact label="Version" value={agent.version} />
@@ -237,6 +349,103 @@ export function AgentDetailWorkspace({
               )}
             </CardContent>
           </Card>
+
+          {runtimeMode === "live" && (
+            <Card>
+              <CardHeader divided>
+                <CardTitle>Lifecycle controls</CardTitle>
+                <CardDescription>
+                  Owner-authorized credential and visibility actions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3 pt-3 sm:pt-3">
+                <p className="text-xs leading-relaxed text-foreground-secondary">
+                  Atlas controls the enrolled identity and telemetry credential.
+                  It does not start, stop, or delete external agent runtimes.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    variant={LIFECYCLE_ACTIONS.rotate.variant}
+                    size="sm"
+                    disabled={Boolean(lifecycleBusy) || isDisconnected || isArchived}
+                    onClick={() => void handleLifecycleAction("rotate")}
+                  >
+                    {lifecycleBusy === "rotate" ? "Rotating…" : LIFECYCLE_ACTIONS.rotate.label}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={LIFECYCLE_ACTIONS.disconnect.variant}
+                    size="sm"
+                    disabled={Boolean(lifecycleBusy) || isDisconnected || isArchived}
+                    onClick={() => void handleLifecycleAction("disconnect")}
+                  >
+                    {lifecycleBusy === "disconnect" ? "Disconnecting…" : LIFECYCLE_ACTIONS.disconnect.label}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={LIFECYCLE_ACTIONS.reconnect.variant}
+                    size="sm"
+                    disabled={Boolean(lifecycleBusy) || !isDisconnected}
+                    onClick={() => void handleLifecycleAction("reconnect")}
+                  >
+                    {lifecycleBusy === "reconnect" ? "Reconnecting…" : LIFECYCLE_ACTIONS.reconnect.label}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={LIFECYCLE_ACTIONS.archive.variant}
+                    size="sm"
+                    disabled={Boolean(lifecycleBusy) || isArchived}
+                    onClick={() => void handleLifecycleAction("archive")}
+                  >
+                    {lifecycleBusy === "archive" ? "Archiving…" : LIFECYCLE_ACTIONS.archive.label}
+                  </Button>
+                </div>
+                {lifecycleMessage && (
+                  <p className="rounded-atlas-sm border border-success-border bg-success-bg px-3 py-2 text-xs leading-relaxed text-success">
+                    {lifecycleMessage}
+                  </p>
+                )}
+                {lifecycleError && (
+                  <p className="rounded-atlas-sm border border-error-border bg-error-bg px-3 py-2 text-xs leading-relaxed text-error">
+                    {lifecycleError}
+                  </p>
+                )}
+                {lifecycleCredential && (
+                  <div className="grid gap-2 rounded-atlas-md border border-warning-border bg-warning-bg p-3">
+                    <div>
+                      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-warning">
+                        One-time credential
+                      </p>
+                      <p className="text-xs leading-relaxed text-foreground-secondary">
+                        Copy this token into the external agent runtime now.
+                        Atlas only displays it once.
+                      </p>
+                    </div>
+                    <textarea
+                      readOnly
+                      rows={4}
+                      value={lifecycleCredential.plaintextToken}
+                      aria-label="One-time agent credential"
+                      className="w-full resize-none rounded-atlas-sm border border-border-default bg-surface px-2 py-2 font-mono text-xs text-foreground"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        void navigator.clipboard?.writeText(
+                          lifecycleCredential.plaintextToken,
+                        );
+                      }}
+                    >
+                      Copy credential
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader divided>

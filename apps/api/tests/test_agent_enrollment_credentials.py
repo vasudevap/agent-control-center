@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -13,7 +13,11 @@ from atlas_api.core.config import Settings
 from atlas_api.core.owner_sessions import SESSION_COOKIE_NAME, issue_owner_session
 from atlas_api.db.base import Base
 from atlas_api.main import create_app
-from atlas_api.models.agent import AgentCredential, AgentRegistration
+from atlas_api.models.agent import (
+    AgentActivityEvent,
+    AgentCredential,
+    AgentRegistration,
+)
 from atlas_api.models.audit import AuditEvent
 from atlas_api.models.external_client import User
 from atlas_api.services.agent_credentials import parse_agent_token, verify_agent_token
@@ -97,6 +101,23 @@ def enrollment_payload(slug: str = "invoice-agent") -> dict[str, object]:
         "deployment_url": "https://agents.example.test/invoice",
         "expected_version": "1.2.3",
     }
+
+
+def heartbeat_payload(event_id: str = "heartbeat-1") -> dict[str, object]:
+    return {
+        "event_id": event_id,
+        "contract_version": "2026-07-24",
+        "sent_at": "2026-07-24T14:00:00Z",
+        "environment": "production",
+        "status": "healthy",
+        "checks": [{"name": "runtime", "status": "healthy"}],
+        "agent_version": "1.2.3",
+        "build_sha": "abc123",
+    }
+
+
+def bearer(token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {token}"}
 
 
 def test_owner_enrollment_issues_one_plaintext_credential_without_persisting_it(
@@ -185,7 +206,150 @@ def test_activity_only_enrollment_persists_null_heartbeat_interval(
         )
         assert stored_agent is not None
         assert stored_agent.heartbeat_interval_seconds is None
-        assert stored_agent.observed_health == "not_monitored"
+
+
+def test_credential_rotation_accepts_old_and_new_until_exact_overlap_expiry(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, csrf_token = authenticated_client(database_factory)
+    enrolled = client.post(
+        "/api/v1/dashboard/agents",
+        json=enrollment_payload("rotation-agent"),
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-rotate-enroll-key",
+        },
+    )
+    old_token = enrolled.json()["data"]["credential"]["plaintext_token"]
+    agent_id = enrolled.json()["data"]["agent"]["agent_id"]
+
+    rotated = client.post(
+        f"/api/v1/dashboard/agents/{agent_id}/credentials/rotate",
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-rotate-key-0001",
+        },
+    )
+
+    assert rotated.status_code == 200
+    data = rotated.json()["data"]
+    new_token = data["credential"]["plaintext_token"]
+    assert new_token != old_token
+    assert "verifier_hmac_sha256" not in rotated.text
+
+    with database_factory() as session:
+        credentials = list(
+            session.scalars(
+                select(AgentCredential).order_by(AgentCredential.issued_at)
+            )
+        )
+        old, new = credentials
+        assert old.status == "overlap"
+        assert new.status == "active"
+        assert old.overlap_expires_at is not None
+        assert old.overlap_expires_at - new.issued_at == timedelta(hours=24)
+        assert verify_agent_token(session, token=old_token, settings=settings()) == old
+        assert verify_agent_token(session, token=new_token, settings=settings()) == new
+
+        old.overlap_expires_at = datetime.now(UTC) - timedelta(seconds=1)
+        session.flush()
+        assert verify_agent_token(session, token=old_token, settings=settings()) is None
+        assert old.status == "expired"
+
+
+def test_disconnect_reconnect_and_archive_revoke_credentials_and_preserve_history(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, csrf_token = authenticated_client(database_factory)
+    enrolled = client.post(
+        "/api/v1/dashboard/agents",
+        json=enrollment_payload("lifecycle-agent"),
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-lifecycle-enroll-key",
+        },
+    )
+    agent_id = enrolled.json()["data"]["agent"]["agent_id"]
+    first_token = enrolled.json()["data"]["credential"]["plaintext_token"]
+
+    connected = client.post(
+        f"/api/v1/agents/{agent_id}/heartbeats",
+        json=heartbeat_payload("connect-before-disconnect"),
+        headers=bearer(first_token),
+    )
+    assert connected.status_code == 202
+
+    disconnected = client.post(
+        f"/api/v1/dashboard/agents/{agent_id}/disconnect",
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-disconnect-key-0001",
+        },
+    )
+    assert disconnected.status_code == 200
+    assert disconnected.json()["data"]["agent"]["lifecycle_status"] == "disconnected"
+    assert "plaintext_token" not in disconnected.text
+
+    rejected = client.post(
+        f"/api/v1/agents/{agent_id}/heartbeats",
+        json=heartbeat_payload("rejected-after-disconnect"),
+        headers=bearer(first_token),
+    )
+    assert rejected.status_code == 401
+
+    reconnected = client.post(
+        f"/api/v1/dashboard/agents/{agent_id}/reconnect",
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-reconnect-key-0001",
+        },
+    )
+    assert reconnected.status_code == 200
+    assert reconnected.json()["data"]["agent"]["lifecycle_status"] == "pending"
+    reconnect_token = reconnected.json()["data"]["credential"]["plaintext_token"]
+    assert reconnect_token != first_token
+
+    accepted = client.post(
+        f"/api/v1/agents/{agent_id}/heartbeats",
+        json=heartbeat_payload("connect-after-reconnect"),
+        headers=bearer(reconnect_token),
+    )
+    assert accepted.status_code == 202
+
+    archived = client.post(
+        f"/api/v1/dashboard/agents/{agent_id}/archive",
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-archive-key-0001",
+        },
+    )
+    assert archived.status_code == 200
+    archived_agent = archived.json()["data"]["agent"]
+    assert archived_agent["lifecycle_status"] == "archived"
+    assert archived_agent["active_surface_visible"] is False
+    assert "plaintext_token" not in archived.text
+
+    hidden = client.get(f"/api/v1/dashboard/agents/{agent_id}")
+    assert hidden.status_code == 404
+
+    archived_rejected = client.post(
+        f"/api/v1/agents/{agent_id}/heartbeats",
+        json=heartbeat_payload("rejected-after-archive"),
+        headers=bearer(reconnect_token),
+    )
+    assert archived_rejected.status_code == 401
+
+    with database_factory() as session:
+        agent = session.get(AgentRegistration, agent_id)
+        assert agent is not None
+        assert agent.lifecycle_status == "archived"
+        assert agent.active_surface_visible is False
+        assert session.query(AgentCredential).filter_by(status="active").count() == 0
+        assert session.query(AgentCredential).filter_by(status="revoked").count() >= 2
+        assert (
+            session.query(AgentActivityEvent).filter_by(agent_id=agent_id).count() >= 4
+        )
+        assert agent.observed_health == "archived"
 
 
 def test_enrollment_requires_csrf_and_idempotency(

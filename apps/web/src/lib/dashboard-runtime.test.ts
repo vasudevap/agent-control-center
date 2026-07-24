@@ -1,8 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DashboardApiError,
+  archiveDashboardAgent,
   dashboardRequest,
   dashboardSignInUrl,
+  disconnectDashboardAgent,
+  reconnectDashboardAgent,
+  rotateDashboardAgentCredential,
   toAuditEvents,
   toAlertRecords,
   toConnectorRecords,
@@ -50,6 +54,68 @@ describe("dashboard runtime facade client", () => {
     );
     expect(dashboardSignInUrl()).toBe(
       "https://api.atlas.grafley.com/auth/owner/google/start",
+    );
+  });
+
+  it("posts agent lifecycle actions with CSRF and idempotency headers", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.atlas.grafley.com/");
+    const lifecycleUuid = "00000000-0000-4000-8000-000000000000" as ReturnType<
+      typeof crypto.randomUUID
+    >;
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(lifecycleUuid);
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: {
+            agent: {
+              agent_id: "agt_123",
+              slug: "agent-one",
+              display_name: "Agent One",
+              description: "Lifecycle test agent",
+              status: "active",
+              risk_level: "low",
+              supports_manual_run: false,
+              lifecycle_status: "pending",
+              active_surface_visible: true,
+            },
+          },
+        }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await rotateDashboardAgentCredential("agt_123", "csrf-token");
+    await disconnectDashboardAgent("agt_123", "csrf-token");
+    await reconnectDashboardAgent("agt_123", "csrf-token");
+    await archiveDashboardAgent("agt_123", "csrf-token");
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://api.atlas.grafley.com/api/v1/dashboard/agents/agt_123/credentials/rotate",
+      expect.objectContaining({
+        method: "POST",
+        credentials: "include",
+        headers: expect.objectContaining({
+          "X-Atlas-CSRF-Token": "csrf-token",
+          "Idempotency-Key": `agent-lifecycle-${lifecycleUuid}`,
+        }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "https://api.atlas.grafley.com/api/v1/dashboard/agents/agt_123/disconnect",
+      expect.any(Object),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
+      "https://api.atlas.grafley.com/api/v1/dashboard/agents/agt_123/reconnect",
+      expect.any(Object),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      4,
+      "https://api.atlas.grafley.com/api/v1/dashboard/agents/agt_123/archive",
+      expect.any(Object),
     );
   });
 

@@ -1,9 +1,10 @@
 # WO-069 Live Dashboard Integration Implementation Report
 
 **Work Order:** [WO-069](../work-orders/069-live-dashboard-integration.md)
-**Status:** Completed - Local Validation Passed
+**Status:** Completed - Merged
 **Implemented:** 2026-07-24
-**Commit:** This commit
+**Commit:** 24b4ed23301512a7d356d3a556f823fd9db8b4c3
+**Pull Request:** [#122](https://github.com/vasudevap/agent-control-center/pull/122)
 
 ## Summary
 

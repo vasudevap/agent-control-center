@@ -39,9 +39,13 @@ from atlas_api.models.external_client import User
 from atlas_api.models.idempotency import ApiIdempotencyRecord
 from atlas_api.services.agent_health_evaluator import evaluator_freshness
 from atlas_api.services.agent_registry import (
+    archive_owner_agent,
+    disconnect_owner_agent,
     enroll_owner_agent,
     get_owner_agent_registration,
     list_agent_registrations,
+    reconnect_owner_agent,
+    rotate_owner_agent_credential,
     update_owner_agent_metadata,
 )
 from atlas_api.services.approval_contracts import get_approval, list_approvals
@@ -418,6 +422,188 @@ def update_dashboard_agent(
         session.commit()
         return success_payload(
             _agent_payload(agent),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.post("/agents/{agent_id}/credentials/rotate")
+def rotate_dashboard_agent_credential(
+    agent_id: str,
+    request: Request,
+    settings: SettingsDependency,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    key = validate_idempotency_key(idempotency_key)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="agent",
+            action="rotate",
+            risk_level="medium",
+        )
+        result = rotate_owner_agent_credential(
+            session,
+            owner_user_id=principal.user_id,
+            agent_id=agent_id,
+            settings=settings,
+            actor_id=principal.user_id,
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="rotate_agent_credential",
+            result="succeeded",
+            resource_type="agent",
+            resource_id=result.agent.agent_id,
+            metadata={
+                "idempotency_key": key,
+                "credential_id": result.issued_credential.credential.credential_id
+                if result.issued_credential
+                else None,
+            },
+        )
+        session.commit()
+        return success_payload(
+            _agent_lifecycle_payload(result),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.post("/agents/{agent_id}/disconnect")
+def disconnect_dashboard_agent(
+    agent_id: str,
+    request: Request,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    key = validate_idempotency_key(idempotency_key)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="agent",
+            action="disconnect",
+            risk_level="medium",
+        )
+        result = disconnect_owner_agent(
+            session,
+            owner_user_id=principal.user_id,
+            agent_id=agent_id,
+            actor_id=principal.user_id,
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="disconnect_agent",
+            result="succeeded",
+            resource_type="agent",
+            resource_id=result.agent.agent_id,
+            metadata={"idempotency_key": key},
+        )
+        session.commit()
+        return success_payload(
+            _agent_lifecycle_payload(result),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.post("/agents/{agent_id}/reconnect")
+def reconnect_dashboard_agent(
+    agent_id: str,
+    request: Request,
+    settings: SettingsDependency,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    key = validate_idempotency_key(idempotency_key)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="agent",
+            action="reconnect",
+            risk_level="medium",
+        )
+        result = reconnect_owner_agent(
+            session,
+            owner_user_id=principal.user_id,
+            agent_id=agent_id,
+            settings=settings,
+            actor_id=principal.user_id,
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="reconnect_agent",
+            result="succeeded",
+            resource_type="agent",
+            resource_id=result.agent.agent_id,
+            metadata={
+                "idempotency_key": key,
+                "credential_id": result.issued_credential.credential.credential_id
+                if result.issued_credential
+                else None,
+            },
+        )
+        session.commit()
+        return success_payload(
+            _agent_lifecycle_payload(result),
+            meta={"correlation_id": get_correlation_id()},
+        )
+
+
+@router.post("/agents/{agent_id}/archive")
+def archive_dashboard_agent(
+    agent_id: str,
+    request: Request,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
+    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
+) -> dict[str, object]:
+    key = validate_idempotency_key(idempotency_key)
+    session_factory = _require_session_factory(request)
+    with session_factory() as session:
+        principal = _authorized_dashboard_owner(
+            session,
+            session_token=session_token,
+            csrf_token=csrf_token,
+            require_csrf=True,
+            resource="agent",
+            action="archive",
+            risk_level="medium",
+        )
+        result = archive_owner_agent(
+            session,
+            owner_user_id=principal.user_id,
+            agent_id=agent_id,
+            actor_id=principal.user_id,
+        )
+        _audit_dashboard(
+            session,
+            principal,
+            action="archive_agent",
+            result="succeeded",
+            resource_type="agent",
+            resource_id=result.agent.agent_id,
+            metadata={"idempotency_key": key},
+        )
+        session.commit()
+        return success_payload(
+            _agent_lifecycle_payload(result),
             meta={"correlation_id": get_correlation_id()},
         )
 
@@ -983,6 +1169,20 @@ def _agent_payload(agent: Any) -> dict[str, object]:
         "last_agent_version": agent.last_agent_version,
         "last_build_sha": agent.last_build_sha,
     }
+
+
+def _agent_lifecycle_payload(result: Any) -> dict[str, object]:
+    payload: dict[str, object] = {"agent": _agent_payload(result.agent)}
+    if result.issued_credential is not None:
+        payload["credential"] = {
+            "credential_id": result.issued_credential.credential.credential_id,
+            "credential_lookup_id": (
+                result.issued_credential.credential.credential_lookup_id
+            ),
+            "scope": result.issued_credential.credential.scope,
+            "plaintext_token": result.issued_credential.plaintext_token,
+        }
+    return payload
 
 
 def _run_payload(run: Any) -> dict[str, object]:

@@ -17,9 +17,12 @@ from atlas_api.core.contracts import (
 from atlas_api.core.errors import ApiError
 from atlas_api.db.base import utc_now
 from atlas_api.models.agent import AgentRegistration
+from atlas_api.services.agent_activity import record_agent_activity
 from atlas_api.services.agent_credentials import (
     IssuedAgentCredential,
     issue_agent_credential,
+    revoke_agent_credentials,
+    rotate_agent_credential,
 )
 
 ALLOWED_AGENT_STATUSES = frozenset({"active", "disabled", "retired"})
@@ -47,6 +50,12 @@ class AgentRegistryPage:
 class AgentEnrollmentResult:
     agent: AgentRegistration
     issued_credential: IssuedAgentCredential
+
+
+@dataclass(frozen=True)
+class AgentCredentialLifecycleResult:
+    agent: AgentRegistration
+    issued_credential: IssuedAgentCredential | None = None
 
 
 def list_agent_registrations(
@@ -219,6 +228,175 @@ def update_owner_agent_metadata(
         agent.expected_version = expected_version
     session.flush()
     return agent
+
+
+def rotate_owner_agent_credential(
+    session: Session,
+    *,
+    owner_user_id: str,
+    agent_id: str,
+    settings: Settings,
+    actor_id: str,
+) -> AgentCredentialLifecycleResult:
+    agent = get_owner_agent_registration(
+        session,
+        owner_user_id=owner_user_id,
+        agent_id=agent_id,
+    )
+    if agent.lifecycle_status in {"disconnected", "archived"}:
+        raise ApiError(
+            409,
+            "agent_lifecycle_rotation_not_allowed",
+            "Disconnected or archived agents cannot rotate credentials.",
+        )
+    issued = rotate_agent_credential(session, agent=agent, settings=settings)
+    now = utc_now()
+    agent.last_activity_at = now
+    record_agent_activity(
+        session,
+        agent_id=agent.agent_id,
+        event_type="credential_rotated",
+        summary="Owner rotated the agent telemetry credential with 24-hour overlap.",
+        source_type="agent_credential",
+        source_id=issued.credential.credential_id,
+        actor_type="human_owner",
+        actor_id=actor_id,
+        metadata={
+            "new_credential_id": issued.credential.credential_id,
+            "overlap_hours": 24,
+        },
+        occurred_at=now,
+    )
+    session.flush()
+    return AgentCredentialLifecycleResult(agent=agent, issued_credential=issued)
+
+
+def disconnect_owner_agent(
+    session: Session,
+    *,
+    owner_user_id: str,
+    agent_id: str,
+    actor_id: str,
+) -> AgentCredentialLifecycleResult:
+    agent = get_owner_agent_registration(
+        session,
+        owner_user_id=owner_user_id,
+        agent_id=agent_id,
+    )
+    if agent.lifecycle_status == "archived":
+        raise ApiError(
+            409,
+            "agent_archived",
+            "Archived agents cannot be disconnected.",
+        )
+    now = utc_now()
+    revoked = revoke_agent_credentials(session, agent=agent, now=now)
+    agent.lifecycle_status = "disconnected"
+    agent.observed_health = "disconnected"
+    agent.disconnected_at = now
+    agent.last_activity_at = now
+    record_agent_activity(
+        session,
+        agent_id=agent.agent_id,
+        event_type="agent_disconnected",
+        summary=(
+            "Owner disconnected the agent in Atlas; "
+            "external runtime may still be running."
+        ),
+        source_type="agent",
+        source_id=agent.agent_id,
+        actor_type="human_owner",
+        actor_id=actor_id,
+        metadata={"revoked_credential_count": len(revoked)},
+        occurred_at=now,
+    )
+    session.flush()
+    return AgentCredentialLifecycleResult(agent=agent)
+
+
+def reconnect_owner_agent(
+    session: Session,
+    *,
+    owner_user_id: str,
+    agent_id: str,
+    settings: Settings,
+    actor_id: str,
+) -> AgentCredentialLifecycleResult:
+    agent = get_owner_agent_registration(
+        session,
+        owner_user_id=owner_user_id,
+        agent_id=agent_id,
+    )
+    if agent.lifecycle_status != "disconnected":
+        raise ApiError(
+            409,
+            "agent_reconnect_not_allowed",
+            "Only disconnected agents can be reconnected.",
+        )
+    now = utc_now()
+    revoke_agent_credentials(session, agent=agent, now=now)
+    agent.lifecycle_status = "pending"
+    agent.observed_health = (
+        "not_monitored" if agent.monitoring_mode == "activity_only" else "never_seen"
+    )
+    agent.active_surface_visible = True
+    agent.last_activity_at = now
+    issued = issue_agent_credential(session, agent=agent, settings=settings, now=now)
+    record_agent_activity(
+        session,
+        agent_id=agent.agent_id,
+        event_type="agent_reconnected",
+        summary=(
+            "Owner reconnected the agent in Atlas and "
+            "issued a new one-time credential."
+        ),
+        source_type="agent_credential",
+        source_id=issued.credential.credential_id,
+        actor_type="human_owner",
+        actor_id=actor_id,
+        metadata={"credential_id": issued.credential.credential_id},
+        occurred_at=now,
+    )
+    session.flush()
+    return AgentCredentialLifecycleResult(agent=agent, issued_credential=issued)
+
+
+def archive_owner_agent(
+    session: Session,
+    *,
+    owner_user_id: str,
+    agent_id: str,
+    actor_id: str,
+) -> AgentCredentialLifecycleResult:
+    agent = get_owner_agent_registration(
+        session,
+        owner_user_id=owner_user_id,
+        agent_id=agent_id,
+    )
+    now = utc_now()
+    revoked = revoke_agent_credentials(session, agent=agent, now=now)
+    agent.lifecycle_status = "archived"
+    agent.observed_health = "archived"
+    agent.active_surface_visible = False
+    agent.archived_at = now
+    agent.last_activity_at = now
+    record_agent_activity(
+        session,
+        agent_id=agent.agent_id,
+        event_type="agent_archived",
+        summary=(
+            "Owner archived the agent in Atlas; history is retained and "
+            "active views hide it by default."
+        ),
+        source_type="agent",
+        source_id=agent.agent_id,
+        actor_type="human_owner",
+        actor_id=actor_id,
+        metadata={"revoked_credential_count": len(revoked)},
+        occurred_at=now,
+    )
+    session.flush()
+    return AgentCredentialLifecycleResult(agent=agent)
 
 
 def create_agent_registration(
