@@ -219,6 +219,7 @@ def read_dashboard_agents(
             session,
             pagination=PaginationParameters(cursor=cursor, limit=limit),
             status=status,
+            active_surface_only=True,
         )
         _audit_dashboard(
             session,
@@ -569,6 +570,7 @@ def read_dashboard_monitoring(
             session,
             pagination=PaginationParameters(cursor=None, limit=100),
             status=None,
+            active_surface_only=True,
         )
         session.commit()
         return success_payload(

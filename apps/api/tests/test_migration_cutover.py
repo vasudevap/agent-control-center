@@ -52,7 +52,7 @@ def test_upgrade_outputs_sanitized_evidence_and_reaches_head(
     assert payload["database_url_configured"] is True
     assert payload["environment"] == "test"
     assert payload["migration_required_before"] is True
-    assert payload["repository_head"] == "0017_gmail_send_outcomes"
+    assert payload["repository_head"] == "0018_agent_visibility_lifecycle_mvp"
     assert payload["revision_after"] == payload["repository_head"]
     assert payload["upgrade_performed"] is True
     assert payload["authority_ticket"] == "WO-057-maintainer-approval"

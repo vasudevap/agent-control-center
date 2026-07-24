@@ -1,6 +1,15 @@
 """SQLAlchemy platform foundation models."""
 
-from atlas_api.models.agent import AgentRegistration
+from atlas_api.models.agent import (
+    AgentActivityEvent,
+    AgentAlert,
+    AgentCredential,
+    AgentExecution,
+    AgentHealthEvaluatorLease,
+    AgentHeartbeat,
+    AgentIngestionRateLimit,
+    AgentRegistration,
+)
 from atlas_api.models.approval import (
     ApprovalDecision,
     ApprovalRequest,
@@ -27,6 +36,13 @@ from atlas_api.models.schedule import JobSchedule, ScheduleOccurrence
 
 __all__ = [
     "AgentRegistration",
+    "AgentActivityEvent",
+    "AgentAlert",
+    "AgentCredential",
+    "AgentExecution",
+    "AgentHealthEvaluatorLease",
+    "AgentHeartbeat",
+    "AgentIngestionRateLimit",
     "ApprovalDecision",
     "ApprovalRequest",
     "ApiIdempotencyRecord",

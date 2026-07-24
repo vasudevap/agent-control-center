@@ -39,6 +39,7 @@ def list_agent_registrations(
     *,
     pagination: PaginationParameters,
     status: str | None = None,
+    active_surface_only: bool = False,
 ) -> AgentRegistryPage:
     if status is not None and status not in ALLOWED_AGENT_STATUSES:
         raise ApiError(
@@ -49,6 +50,8 @@ def list_agent_registrations(
     query = select(AgentRegistration)
     if status is not None:
         query = query.where(AgentRegistration.status == status)
+    if active_surface_only:
+        query = query.where(AgentRegistration.active_surface_visible.is_(True))
     query = _apply_cursor(query, pagination.cursor)
     query = query.order_by(AgentRegistration.created_at, AgentRegistration.agent_id)
     rows = list(session.scalars(query.limit(pagination.limit + 1)))
