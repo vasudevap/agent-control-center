@@ -47,6 +47,7 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
             "read_health",
             "start_oauth",
             "create",
+            "update",
         }
         and context.risk_level in {"low", "medium"}
     ):

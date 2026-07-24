@@ -20,6 +20,8 @@ def test_production_like_environments_require_release_configuration(
     environment: str,
 ) -> None:
     assert Settings(environment=environment).readiness_problems() == [
+        "agent_credential_pepper_key_id_missing",
+        "agent_credential_pepper_missing",
         "database_url_missing",
         "external_client_id_missing",
         "external_client_key_id_missing",
@@ -61,6 +63,8 @@ def test_production_like_readiness_passes_with_required_release_configuration(
         owner_identity_subject="owner@example.test",
         webhook_signing_key_id="atlas-webhook-current",
         webhook_signing_secret="example-webhook-signing-secret",
+        agent_credential_pepper="example-agent-credential-pepper",
+        agent_credential_pepper_key_id="atlas-agent-pepper-current",
     )
 
     assert settings.readiness_problems() == []
@@ -130,6 +134,8 @@ def test_secret_settings_are_redacted() -> None:
         ),
         owner_oidc_bootstrap_email="owner@example.test",
         owner_oidc_transaction_secret="example-owner-oidc-transaction-secret",
+        agent_credential_pepper="example-agent-credential-pepper",
+        agent_credential_pepper_key_id="atlas-agent-pepper-current",
     )
 
     assert settings.redacted == {
@@ -159,6 +165,9 @@ def test_secret_settings_are_redacted() -> None:
         "owner_session_absolute_hours": 12,
         "frontend_origin_configured": False,
         "enable_synthetic_smoke_seed": False,
+        "agent_credential_pepper": "***",
+        "agent_credential_pepper_key_id_configured": True,
+        "agent_health_evaluator_enabled": False,
     }
 
 

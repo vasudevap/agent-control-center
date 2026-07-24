@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     owner_session_absolute_hours: int = Field(default=12, ge=1, le=168)
     frontend_origin: str | None = None
     enable_synthetic_smoke_seed: bool = False
+    agent_credential_pepper: SecretStr | None = None
+    agent_credential_pepper_key_id: str | None = None
+    agent_health_evaluator_enabled: bool = False
 
     model_config = SettingsConfigDict(
         env_prefix="ATLAS_API_",
@@ -112,6 +115,13 @@ class Settings(BaseSettings):
             "owner_session_absolute_hours": self.owner_session_absolute_hours,
             "frontend_origin_configured": self.frontend_origin is not None,
             "enable_synthetic_smoke_seed": self.enable_synthetic_smoke_seed,
+            "agent_credential_pepper": self._redact(
+                self.agent_credential_pepper
+            ),
+            "agent_credential_pepper_key_id_configured": (
+                self.agent_credential_pepper_key_id is not None
+            ),
+            "agent_health_evaluator_enabled": self.agent_health_evaluator_enabled,
         }
 
     @staticmethod
@@ -139,6 +149,10 @@ class Settings(BaseSettings):
             "owner_identity_subject_missing": self.owner_identity_subject,
             "webhook_signing_key_id_missing": self.webhook_signing_key_id,
             "webhook_signing_secret_missing": self.webhook_signing_secret,
+            "agent_credential_pepper_missing": self.agent_credential_pepper,
+            "agent_credential_pepper_key_id_missing": (
+                self.agent_credential_pepper_key_id
+            ),
         }
         return [problem for problem, value in required_values.items() if not value]
 

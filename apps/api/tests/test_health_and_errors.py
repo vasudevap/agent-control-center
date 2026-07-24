@@ -84,6 +84,8 @@ def test_readiness_reports_production_like_configuration_without_values() -> Non
     assert body["status"] == "not_ready"
     assert body["checks"] == {"configuration": "failed"}
     assert body["problems"] == [
+        "agent_credential_pepper_key_id_missing",
+        "agent_credential_pepper_missing",
         "database_url_missing",
         "external_client_id_missing",
         "external_client_key_id_missing",
