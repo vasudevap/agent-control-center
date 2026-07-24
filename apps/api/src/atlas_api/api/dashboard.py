@@ -39,18 +39,13 @@ from atlas_api.services.connectors import (
     list_connector_types,
     start_oauth_connection,
 )
-from atlas_api.services.runs import create_manual_run, get_run, list_runs
+from atlas_api.services.runs import get_run, list_runs
 from atlas_api.services.smoke_seed import (
     RuntimeSmokeSeedResult,
     seed_hosted_runtime_smoke,
 )
 
 router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
-
-
-class ManualRunRequest(BaseModel):
-    agent_id: str = Field(min_length=1, max_length=64)
-    timeout_seconds: int = Field(default=300, ge=30, le=3600)
 
 
 class ConnectorOAuthStartRequest(BaseModel):
@@ -395,51 +390,23 @@ def read_dashboard_run(
         )
 
 
-@router.post("/runs")
-def create_dashboard_run(
-    payload: ManualRunRequest,
-    request: Request,
-    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
-    session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
-    csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
-) -> dict[str, object]:
-    from atlas_api.core.contracts import validate_idempotency_key
-
-    session_factory = _require_session_factory(request)
-    with session_factory() as session:
-        principal = _authorized_dashboard_owner(
-            session,
-            session_token=session_token,
-            csrf_token=csrf_token,
-            require_csrf=True,
-            resource="agent_run",
-            action="create",
-            risk_level="medium",
-        )
-        run = create_manual_run(
-            session,
-            owner_user_id=principal.user_id,
-            agent_id=payload.agent_id,
-            idempotency_key=validate_idempotency_key(idempotency_key),
-            correlation_id=get_correlation_id() or "correlation_unavailable",
-            timeout_seconds=payload.timeout_seconds,
-        )
-        session.commit()
-        return success_payload(
-            _run_payload(run),
-            meta={"correlation_id": get_correlation_id()},
-        )
-
-
 @router.post("/smoke-seed")
 def seed_dashboard_runtime_smoke(
     payload: RuntimeSmokeSeedRequest,
     request: Request,
+    settings: SettingsDependency,
     idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     session_token: Annotated[str | None, Cookie(alias=SESSION_COOKIE_NAME)] = None,
     csrf_token: Annotated[str | None, Header(alias="X-Atlas-CSRF-Token")] = None,
 ) -> dict[str, object]:
     from atlas_api.core.contracts import validate_idempotency_key
+
+    if not settings.enable_synthetic_smoke_seed:
+        raise ApiError(
+            404,
+            "dashboard_smoke_seed_disabled",
+            "Synthetic dashboard smoke seeding is disabled.",
+        )
 
     session_factory = _require_session_factory(request)
     with session_factory() as session:

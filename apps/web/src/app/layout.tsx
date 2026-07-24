@@ -3,8 +3,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Atlas — Agent Control Center",
-  description: "The unified control plane for your AI workforce.",
+  title: "Atlas - Agent Visibility Control Center",
+  description:
+    "A secure control center for external AI agent visibility, trust lifecycle, health, alerts, and reported work.",
 };
 
 export default function RootLayout({

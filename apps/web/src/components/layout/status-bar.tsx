@@ -8,14 +8,13 @@ import {
   dashboardApiBaseUrl,
   fleetPulseFromRuntime,
   readDashboardAgents,
-  readDashboardApprovals,
   readDashboardMonitoring,
   readDashboardRuns,
   readDashboardSession,
   toAgentRecords,
-  toApprovalRecords,
   toMonitoringAlerts,
 } from "@/lib/dashboard-runtime";
+import { CONTROL_CENTER_ROUTES } from "@/lib/control-center-routes";
 
 /**
  * Persistent operator status strip. This is the exploration's central
@@ -78,18 +77,17 @@ export function StatusBar() {
       setState("loading");
       try {
         await readDashboardSession();
-        const [runtimeAgents, runtimeRuns, runtimeApprovals, monitoring] =
+        const [runtimeAgents, runtimeRuns, monitoring] =
           await Promise.all([
             readDashboardAgents(),
             readDashboardRuns(),
-            readDashboardApprovals("pending"),
             readDashboardMonitoring(),
           ]);
         if (!cancelled) {
           setPulse(
             fleetPulseFromRuntime(
               toAgentRecords(runtimeAgents, runtimeRuns),
-              toApprovalRecords(runtimeApprovals),
+              [],
               toMonitoringAlerts(monitoring),
             ),
           );
@@ -115,14 +113,12 @@ export function StatusBar() {
     >
       <div className="flex flex-1 items-center gap-2.5 overflow-x-auto">
         <div className="flex items-center gap-1">
-          <PulseItem href="/agents" tone="neutral" label="agents" value={pulse.totalAgents} />
-          <PulseItem href="/agents" tone="brand" label="running" value={pulse.runningAgents} />
-          {needsAttention > 0 && <PulseItem href="/agents" tone="warning" label="need attention" value={needsAttention} />}
+          <PulseItem href={CONTROL_CENTER_ROUTES.agents} tone="neutral" label="agents" value={pulse.totalAgents} />
+          <PulseItem href={CONTROL_CENTER_ROUTES.agents} tone="brand" label="running" value={pulse.runningAgents} />
+          {needsAttention > 0 && <PulseItem href={CONTROL_CENTER_ROUTES.agents} tone="warning" label="need attention" value={needsAttention} />}
         </div>
         <ClusterDivider />
-        <PulseItem href="/approvals" tone={pulse.pendingApprovals > 0 ? "warning" : "neutral"} label="pending approvals" value={pulse.pendingApprovals} />
-        <ClusterDivider />
-        <PulseItem href="/alerts" tone={pulse.activeAlerts > 0 ? "error" : "neutral"} label="active alerts" value={pulse.activeAlerts} />
+        <PulseItem href={CONTROL_CENTER_ROUTES.alerts} tone={pulse.activeAlerts > 0 ? "error" : "neutral"} label="active alerts" value={pulse.activeAlerts} />
         {state === "loading" && (
           <span className="shrink-0 text-[11px] text-foreground-tertiary">
             Loading live metrics...

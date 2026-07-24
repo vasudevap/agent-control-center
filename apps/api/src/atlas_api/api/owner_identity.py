@@ -167,8 +167,8 @@ def _issue_owner_session_response(
 def _dashboard_login_redirect(settings: Settings) -> str:
     if settings.frontend_origin:
         query = urlencode({"owner_session": "signed_in"})
-        return f"{settings.frontend_origin.rstrip('/')}?{query}"
-    return "/"
+        return f"{settings.frontend_origin.rstrip('/')}/control-center?{query}"
+    return "/control-center"
 
 
 def _completion_response(

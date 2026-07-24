@@ -56,7 +56,7 @@ describe("signed-out workspace states", () => {
       name: "Runs",
       ui: <RunsWorkspace />,
       description: "Sign in to load runtime run history from the Atlas API.",
-      table: "Runs inventory",
+      table: "Executions inventory",
     },
     {
       name: "Alerts",

@@ -158,6 +158,7 @@ def test_secret_settings_are_redacted() -> None:
         "owner_session_idle_minutes": 30,
         "owner_session_absolute_hours": 12,
         "frontend_origin_configured": False,
+        "enable_synthetic_smoke_seed": False,
     }
 
 

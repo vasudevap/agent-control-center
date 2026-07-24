@@ -1,5 +1,6 @@
-import { RunsWorkspace } from "./runs-workspace";
+import { redirect } from "next/navigation";
+import { CONTROL_CENTER_ROUTES } from "@/lib/control-center-routes";
 
 export default function RunsPage() {
-  return <RunsWorkspace />;
+  redirect(CONTROL_CENTER_ROUTES.executions);
 }

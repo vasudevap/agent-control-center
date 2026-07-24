@@ -11,6 +11,7 @@ import {
   toAgentRecords,
   type DashboardRuntimeMode,
 } from "@/lib/dashboard-runtime";
+import { controlCenterAgentHref } from "@/lib/control-center-routes";
 import {
   HEALTH_LABELS,
   MOCK_AGENTS,
@@ -88,7 +89,7 @@ function AgentIdentity({ agent }: { agent: AgentRecord }) {
   const issueLabel = agent.issueSummary ?? agent.currentIssue;
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <Link href={`/agents/${agent.id}`} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
+      <Link href={controlCenterAgentHref(agent.id)} className="relative z-10 w-fit font-medium text-foreground underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-brand hover:underline">
         {agent.name}
       </Link>
       <p className="max-w-md truncate text-xs text-foreground-secondary">{agent.description}</p>
@@ -141,7 +142,7 @@ function MobileAgentsList({ agents }: { agents: AgentRecord[] }) {
   return (
     <div className="grid gap-2.5 md:hidden" aria-label="Agents inventory summaries">
       {agents.map((agent) => (
-        <Link key={agent.id} href={`/agents/${agent.id}`} className="block rounded-atlas-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring" aria-label={`${agent.name} details`}>
+        <Link key={agent.id} href={controlCenterAgentHref(agent.id)} className="block rounded-atlas-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring" aria-label={`${agent.name} details`}>
           <Card className="transition-colors hover:bg-surface-hover">
             <CardContent className="flex flex-col gap-3 p-4">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">

@@ -5,16 +5,14 @@ import Link from "next/link";
 import { ChevronDown, ShieldCheck } from "lucide-react";
 import type { AgentRecord } from "../agent-data";
 import { StatusBadge } from "@/components/badge/status-badge";
-import { APPROVAL_FIXTURES } from "@/app/(shell)/approvals/approval-data";
 import { RUN_FIXTURES } from "@/app/(shell)/runs/run-data";
-import { RiskChip, type RiskLevel } from "@/components/risk/risk-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { EmptyState } from "@/components/state/empty-state";
+import { controlCenterExecutionHref } from "@/lib/control-center-routes";
 import { cn } from "@/lib/utils";
 
-type TabId = "activity" | "approvals" | "governance";
+type TabId = "activity" | "governance";
 
 function SidebarFact({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -83,11 +81,9 @@ function SystemPromptDisclosure({ agent }: { agent: AgentRecord }) {
 export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
   const [activeTab, setActiveTab] = React.useState<TabId>("activity");
   const runs = RUN_FIXTURES.filter((run) => run.agent.id === agent.id).slice(0, 3);
-  const approvals = APPROVAL_FIXTURES.filter((approval) => approval.agent.id === agent.id && approval.state === "Pending");
 
   const tabs: Array<{ id: TabId; label: string; count?: number }> = [
     { id: "activity", label: "Activity" },
-    { id: "approvals", label: "Human Approvals", count: approvals.length },
     { id: "governance", label: "Governance" },
   ];
 
@@ -173,7 +169,7 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                   <TableBody>
                     {runs.map((run) => (
                       <TableRow key={run.id} className="relative">
-                        <TableCell className="text-xs text-foreground-secondary"><Link href={`/runs/${run.id}`} className="relative z-10 font-medium text-brand after:absolute after:inset-0 after:content-[''] hover:underline">{new Date(run.startedAt).toLocaleString()}</Link></TableCell>
+                        <TableCell className="text-xs text-foreground-secondary"><Link href={controlCenterExecutionHref(run.id)} className="relative z-10 font-medium text-brand after:absolute after:inset-0 after:content-[''] hover:underline">{new Date(run.startedAt).toLocaleString()}</Link></TableCell>
                         <TableCell className="text-xs">
                           <StatusBadge status={run.status} plain className="text-xs" />
                         </TableCell>
@@ -185,30 +181,6 @@ export function AgentDetailWorkspace({ agent }: { agent: AgentRecord }) {
                   </TableBody>
                 </Table>
               </div>
-            </div>
-          )}
-
-          {activeTab === "approvals" && (
-            <div className="flex flex-col gap-4">
-              <div>
-                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground-secondary">Pending human review</h2>
-                <p className="text-xs text-foreground-secondary">Requests routed to canonical Approval Detail. Nothing here decides in place.</p>
-              </div>
-              {approvals.length > 0 ? (
-                <ul className="grid gap-2">
-                  {approvals.map((approval) => (
-                    <li key={approval.id}>
-                      <Link href={`/approvals/${approval.id}`} className="flex items-center gap-3 rounded-atlas-md border border-border-default bg-surface-secondary px-4 py-3 transition-colors hover:bg-surface-hover">
-                        <RiskChip risk={approval.risk as RiskLevel} plain />
-                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{approval.action}</span>
-                        <ShieldCheck className="size-4 shrink-0 text-foreground-tertiary" aria-hidden="true" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <EmptyState icon={ShieldCheck} title="No human approvals are pending" description="This agent has no open approval requests." className="py-10" />
-              )}
             </div>
           )}
 

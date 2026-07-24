@@ -17,16 +17,14 @@ import {
 import { EmptyState } from "@/components/state/empty-state";
 import {
   RiskChip,
-  riskRank,
   type RiskLevel,
 } from "@/components/risk/risk-indicator";
-import { getExpiryPresentation } from "@/app/(shell)/approvals/approval-presentation";
-import {
-  isQueueApproval,
-  type ApprovalRecord,
-} from "@/app/(shell)/approvals/approval-data";
 import type { AgentHealth, AgentRecord } from "@/app/(shell)/agents/agent-data";
 import type { AlertRecord } from "@/app/(shell)/alerts/alert-data";
+import {
+  controlCenterAgentHref,
+  controlCenterAlertHref,
+} from "@/lib/control-center-routes";
 import { cn } from "@/lib/utils";
 
 function alertToRisk(
@@ -45,8 +43,7 @@ function healthToRisk(health: AgentHealth): { risk: RiskLevel; label: string } {
 }
 
 type Severity = 0 | 1 | 2 | 3;
-type ItemKind = "Approval" | "Alert" | "Agent health";
-type MetaUrgency = "imminent" | "nearing";
+type ItemKind = "Alert" | "Agent health";
 
 interface AttentionItem {
   key: string;
@@ -57,46 +54,14 @@ interface AttentionItem {
   kind: ItemKind;
   source: string;
   meta: string;
-  metaUrgency?: MetaUrgency;
   href: string;
 }
 
 function buildAttentionItems(
-  approvals: ApprovalRecord[],
   agents: AgentRecord[],
   alerts: AlertRecord[],
 ): AttentionItem[] {
   const items: AttentionItem[] = [];
-
-  approvals.filter(isQueueApproval).forEach((approval) => {
-    const expiry = getExpiryPresentation(
-      approval.expiresAt,
-      approval.requestedAt,
-    );
-    const urgent =
-      expiry.urgency === "imminent" || expiry.urgency === "nearing";
-    const severity: Severity =
-      riskRank(approval.risk) >= 3
-        ? 0
-        : urgent
-          ? (Math.max(0, riskRank(approval.risk) - 1) as Severity)
-          : ((3 - riskRank(approval.risk)) as Severity);
-    items.push({
-      key: `approval-${approval.id}`,
-      severity,
-      risk: approval.risk as RiskLevel,
-      chipLabel: approval.risk,
-      title: approval.action,
-      kind: "Approval",
-      source: approval.agent.name,
-      meta: expiry.label,
-      metaUrgency:
-        expiry.urgency === "imminent" || expiry.urgency === "nearing"
-          ? expiry.urgency
-          : undefined,
-      href: `/approvals/${approval.id}`,
-    });
-  });
 
   alerts.forEach((alert) => {
     const severity: Severity =
@@ -117,7 +82,7 @@ function buildAttentionItems(
       kind: "Alert",
       source: alert.source,
       meta: alert.timestamp,
-      href: `/alerts?alert=${alert.id}`,
+      href: controlCenterAlertHref(alert.id),
     });
   });
 
@@ -135,7 +100,7 @@ function buildAttentionItems(
       kind: "Agent health",
       source: agent.name,
       meta: agent.lastRun,
-      href: `/agents/${agent.id}`,
+      href: controlCenterAgentHref(agent.id),
     });
   });
 
@@ -143,8 +108,8 @@ function buildAttentionItems(
 }
 
 /**
- * The baseline Overview presents Pending Approvals, Alerts, and Fleet
- * Health as three separate cards competing for attention, even though
+ * The baseline Overview presented Pending Approvals, Alerts, and Fleet
+ * Health as separate cards competing for attention, even though
  * the design principles state a primary screen should answer one
  * operational question ("what requires my attention right now?").
  * This merges all three attention-worthy signal types into one ranked
@@ -152,9 +117,9 @@ function buildAttentionItems(
  * available as its own denser table below for full-roster scanning;
  * this panel is specifically the triage view.
  *
- * Every entry is a link to its real destination. None decide anything
- * inline: approvals route to canonical Approval Detail, matching the
- * hard product requirement that decisions occur only there.
+ * Every entry is a link to its active destination. None decide anything
+ * inline, and deferred approval workflows are not part of this active
+ * MVP queue.
  *
  * Header is the shaded/"actionable" treatment: every row here routes
  * somewhere, so the card is a queue you act on, not a status you read.
@@ -171,15 +136,13 @@ function buildAttentionItems(
  * it adds, so it is not exposed as a user-controlled sort.
  */
 export function AttentionQueue({
-  approvals,
   agents,
   alerts,
 }: {
-  approvals: ApprovalRecord[];
   agents: AgentRecord[];
   alerts: AlertRecord[];
 }) {
-  const items = buildAttentionItems(approvals, agents, alerts);
+  const items = buildAttentionItems(agents, alerts);
 
   return (
     <Card>
@@ -190,7 +153,7 @@ export function AttentionQueue({
         <div>
           <CardTitle>Attention queue</CardTitle>
           <CardDescription>
-            Approvals, alerts, and agent health ranked by urgency
+            Alerts and agent health ranked by urgency
           </CardDescription>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -230,7 +193,7 @@ export function AttentionQueue({
         <EmptyState
           icon={ShieldAlert}
           title="Nothing needs attention"
-          description="No pending approvals, active alerts, or degraded agents right now."
+          description="No active alerts or degraded agents right now."
           className="py-10"
         />
       ) : (
@@ -254,16 +217,7 @@ export function AttentionQueue({
                   <span className="font-mono text-[10px] font-medium uppercase tracking-wide text-foreground-tertiary">
                     {item.kind}
                   </span>
-                  <span
-                    className={cn(
-                      "text-[11px]",
-                      item.metaUrgency === "imminent"
-                        ? "font-semibold text-error"
-                        : item.metaUrgency === "nearing"
-                          ? "font-semibold text-warning"
-                          : "text-foreground-tertiary",
-                    )}
-                  >
+                  <span className={cn("text-[11px]", "text-foreground-tertiary")}>
                     {item.meta}
                   </span>
                 </div>
