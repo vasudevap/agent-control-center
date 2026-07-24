@@ -12,7 +12,6 @@ import {
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
-import { SignedOutState } from "@/components/state/signed-out-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -110,10 +109,8 @@ function Pair({
 
 export function ArtifactsWorkspace({
   artifacts = ARTIFACT_FIXTURES,
-  runtimeUnavailable = false,
 }: {
   artifacts?: ArtifactRecord[];
-  runtimeUnavailable?: boolean;
 }) {
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<ArtifactStatus | "all">("all");
@@ -139,20 +136,6 @@ export function ArtifactsWorkspace({
       setDirection("asc");
     }
   };
-
-  if (runtimeUnavailable) {
-    return (
-      <div className="flex flex-col gap-5">
-        <PageHeader
-          eyebrow="Outputs"
-          title="Artifacts"
-          description="Review runtime artifact metadata and lineage for agent outputs."
-          icon={Package}
-        />
-        <SignedOutState description="Sign in to load runtime artifact metadata from the Atlas API." />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-5">

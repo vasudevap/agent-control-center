@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { FilterX, ShieldCheck } from "lucide-react";
 import {
+  POLICY_FIXTURES,
   type PolicyRecord,
   type PolicyStatus,
   type PolicyType,
@@ -11,7 +12,6 @@ import {
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
-import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchField } from "@/components/ui/search-field";
@@ -83,11 +83,9 @@ function PolicyDetails({ policy }: { policy: PolicyRecord }) {
 }
 
 export function PoliciesWorkspace({
-  policies,
-  runtimeUnavailable = false,
+  policies = POLICY_FIXTURES,
 }: {
-  policies: PolicyRecord[];
-  runtimeUnavailable?: boolean;
+  policies?: PolicyRecord[];
 }) {
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<PolicyStatus | "all">("all");
@@ -163,20 +161,6 @@ export function PoliciesWorkspace({
         Workspace-wide declaration
       </span>
     );
-
-  if (runtimeUnavailable) {
-    return (
-      <div className="flex flex-col gap-5">
-        <PageHeader
-          eyebrow="Governance"
-          title="Policies"
-          description="Review policy declarations, scope, and agent assignment."
-          icon={ShieldCheck}
-        />
-        <SignedOutState description="Sign in to load runtime policy data from the Atlas API." />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-5">

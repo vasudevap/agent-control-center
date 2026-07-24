@@ -4,12 +4,10 @@ import { AlertsWorkspace } from "./alerts/alerts-workspace";
 import { ALERT_FIXTURES } from "./alerts/alert-data";
 import { ApprovalsWorkspace } from "./approvals/approvals-workspace";
 import { APPROVAL_FIXTURES } from "./approvals/approval-data";
-import { ArtifactsWorkspace } from "./artifacts/artifacts-workspace";
 import { AuditWorkspace } from "./audit/audit-workspace";
 import { AUDIT_FIXTURES } from "./audit/audit-data";
 import { ConnectorsWorkspace } from "./connectors/connectors-workspace";
 import { CONNECTOR_FIXTURES } from "./connectors/connector-data";
-import { PoliciesWorkspace } from "./policies/policies-workspace";
 import { RunsWorkspace } from "./runs/runs-workspace";
 
 const API_BASE_URL = "https://api.atlas.grafley.com";
@@ -90,30 +88,4 @@ describe("signed-out workspace states", () => {
     await expectSignedOutPage(description, table);
   });
 
-  it.each([
-    {
-      name: "Policies",
-      ui: <PoliciesWorkspace policies={[]} runtimeUnavailable />,
-      description: "Sign in to load runtime policy data from the Atlas API.",
-      unavailableText: "Live policy data is not available",
-    },
-    {
-      name: "Artifacts",
-      ui: <ArtifactsWorkspace artifacts={[]} runtimeUnavailable />,
-      description: "Sign in to load runtime artifact metadata from the Atlas API.",
-      unavailableText: "Live artifact data is not available",
-    },
-  ])("$name uses the shared sign-in card for runtime-unavailable signed-out pages", ({ ui, description, unavailableText }) => {
-    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", API_BASE_URL);
-
-    render(ui);
-
-    expect(screen.getByText("Owner sign-in required")).toBeInTheDocument();
-    expect(screen.getByText(description)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Sign in with Google" })).toHaveAttribute(
-      "href",
-      SIGN_IN_URL,
-    );
-    expect(screen.queryByText(unavailableText)).not.toBeInTheDocument();
-  });
 });
