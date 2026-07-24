@@ -11,7 +11,11 @@ import type {
 import type { RunRecord, RunStatus, RunTrigger } from "@/app/(shell)/runs/run-data";
 import type { ApprovalRecord, ApprovalState } from "@/app/(shell)/approvals/approval-data";
 import type { AuditEvent, AuditResult } from "@/app/(shell)/audit/audit-data";
-import type { AlertRecord } from "@/app/(shell)/alerts/alert-data";
+import type {
+  AlertRecord,
+  AlertSeverity,
+  AlertStatus,
+} from "@/app/(shell)/alerts/alert-data";
 
 export type DashboardRuntimeMode =
   | "fixture"
@@ -81,22 +85,91 @@ export interface DashboardAgent {
   health_status?: string;
   health_checked_at?: string | null;
   last_error_code?: string | null;
+  owner_user_id?: string | null;
+  lifecycle_status?: string;
+  environment?: string;
+  monitoring_mode?: "heartbeat" | "activity_only";
+  heartbeat_interval_seconds?: number | null;
+  tags?: string[];
+  repository_url?: string | null;
+  deployment_url?: string | null;
+  expected_version?: string | null;
+  observed_health?: string;
+  reported_health?: string;
+  last_agent_version?: string | null;
+  last_build_sha?: string | null;
 }
 
 export interface DashboardRun {
-  run_id: string;
+  agent_execution_id: string;
   agent_id: string;
+  external_execution_id: string;
   status: string;
-  trigger_source: string;
-  correlation_id: string | null;
-  timeout_seconds: number;
-  retry_count: number;
-  failure_reason_code: string | null;
+  trigger: string;
   started_at: string | null;
-  completed_at: string | null;
-  cancelled_at: string | null;
-  created_at: string;
-  updated_at: string;
+  finished_at: string | null;
+  duration_ms: number | null;
+  summary: string | null;
+  error_code: string | null;
+  correlation_id: string | null;
+  agent_version: string | null;
+  build_sha: string | null;
+  first_reported_at: string;
+  last_reported_at: string;
+  terminal_at: string | null;
+}
+
+export interface DashboardAlert {
+  alert_id: string;
+  agent_id: string;
+  condition_key: string;
+  status: "open" | "acknowledged" | "resolved";
+  severity: "info" | "warning" | "error" | "critical";
+  first_seen_at: string;
+  last_seen_at: string;
+  acknowledged_at: string | null;
+  acknowledged_by_user_id: string | null;
+  resolved_at: string | null;
+  resolved_reason: string | null;
+  evidence_json: Record<string, unknown>;
+}
+
+export interface DashboardActivityEvent {
+  activity_event_id: string;
+  agent_id: string | null;
+  source_type: string;
+  source_id: string;
+  event_type: string;
+  severity: "info" | "warning" | "error" | "critical";
+  summary: string;
+  correlation_id: string | null;
+  actor_type: string;
+  actor_id: string | null;
+  metadata_json: Record<string, unknown>;
+  occurred_at: string;
+}
+
+export interface DashboardEnrollmentRequest {
+  slug: string;
+  display_name: string;
+  description: string;
+  environment: string;
+  monitoring_mode: "heartbeat" | "activity_only";
+  heartbeat_interval_seconds: number | null;
+  tags?: string[];
+  repository_url?: string | null;
+  deployment_url?: string | null;
+  expected_version?: string | null;
+}
+
+export interface DashboardEnrollmentResponse {
+  agent: DashboardAgent;
+  credential: {
+    credential_id: string;
+    credential_lookup_id: string;
+    plaintext_token: string;
+    scope: string;
+  };
 }
 
 export interface DashboardApproval {
@@ -107,23 +180,6 @@ export interface DashboardApproval {
   action_reference: string;
   expires_at: string | null;
   created_at: string;
-}
-
-export interface DashboardAuditEvent {
-  audit_event_id: string;
-  event_type: string;
-  actor_type: string;
-  actor_id: string;
-  channel: string;
-  action: string;
-  resource_type: string;
-  resource_id: string | null;
-  result: string;
-  reason_code: string | null;
-  correlation_id: string | null;
-  redaction_state: string;
-  metadata_json: Record<string, unknown>;
-  occurred_at: string;
 }
 
 export interface DashboardMonitoring {
@@ -233,11 +289,11 @@ export const readDashboardAgents = () =>
   dashboardRequest<DashboardAgent[]>("/api/v1/dashboard/agents");
 
 export const readDashboardRuns = () =>
-  dashboardRequest<DashboardRun[]>("/api/v1/dashboard/runs");
+  dashboardRequest<DashboardRun[]>("/api/v1/executions");
 
 export const readDashboardRun = (runId: string) =>
   dashboardRequest<DashboardRun>(
-    `/api/v1/dashboard/runs/${encodeURIComponent(runId)}`,
+    `/api/v1/executions/${encodeURIComponent(runId)}`,
   );
 
 export const readDashboardApprovals = (status = "pending") =>
@@ -251,7 +307,32 @@ export const readDashboardApproval = (approvalId: string) =>
   );
 
 export const readDashboardAudit = () =>
-  dashboardRequest<DashboardAuditEvent[]>("/api/v1/dashboard/audit");
+  dashboardRequest<DashboardActivityEvent[]>("/api/v1/activity");
+
+export const readDashboardAlerts = () =>
+  dashboardRequest<DashboardAlert[]>("/api/v1/alerts");
+
+export const acknowledgeDashboardAlert = (alertId: string, csrfToken: string) =>
+  dashboardRequest<DashboardAlert>(
+    `/api/v1/alerts/${encodeURIComponent(alertId)}/acknowledge`,
+    {
+      method: "POST",
+      headers: { "X-Atlas-CSRF-Token": csrfToken },
+    },
+  );
+
+export const enrollDashboardAgent = (
+  payload: DashboardEnrollmentRequest,
+  csrfToken: string,
+) =>
+  dashboardRequest<DashboardEnrollmentResponse>("/api/v1/dashboard/agents", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {
+      "X-Atlas-CSRF-Token": csrfToken,
+      "Idempotency-Key": `agent-enroll-${crypto.randomUUID()}`,
+    },
+  });
 
 export const readDashboardMonitoring = () =>
   dashboardRequest<DashboardMonitoring>("/api/v1/dashboard/monitoring");
@@ -294,7 +375,7 @@ export function toAgentRecords(
     const current = latestRunByAgent.get(run.agent_id);
     if (
       !current ||
-      +new Date(run.created_at) > +new Date(current.created_at)
+      +new Date(run.last_reported_at) > +new Date(current.last_reported_at)
     ) {
       latestRunByAgent.set(run.agent_id, run);
     }
@@ -302,24 +383,47 @@ export function toAgentRecords(
 
   return agents.map((agent) => {
     const latestRun = latestRunByAgent.get(agent.agent_id);
-    const lastRunAt = latestRun?.created_at ?? agent.health_checked_at ?? "";
+    const observedHealth = agent.observed_health ?? agent.health_status;
+    const reportedHealth = agent.reported_health ?? "unknown";
+    const lastRunAt =
+      latestRun?.last_reported_at ?? agent.health_checked_at ?? "";
     const hasSchedule = agent.supports_scheduled_run === true;
-    const currentIssue = agent.last_error_code
-      ? `Runtime health reported ${agent.last_error_code}.`
-      : undefined;
+      const currentIssue =
+        observedHealth && !["online", "not_monitored"].includes(observedHealth)
+          ? `Observed health is ${observedHealth}.`
+          : reportedHealth && ["degraded", "unhealthy"].includes(reportedHealth)
+            ? `Agent reported ${reportedHealth} health.`
+            : agent.last_error_code
+              ? `Runtime health reported ${agent.last_error_code}.`
+              : undefined;
 
     return {
       id: agent.agent_id,
       name: agent.display_name,
       description: agent.description,
       status: agentStatus(agent, latestRun),
-      health: agentHealth(agent.health_status),
-      owner: "Atlas Runtime",
-      lastRun: latestRun ? lastCheckLabel(latestRun.created_at) : "No runs recorded",
+      health: agentHealth(observedHealth, reportedHealth),
+      observedHealth: healthLabel(observedHealth ?? "unknown"),
+      reportedHealth: healthLabel(reportedHealth ?? "unknown"),
+      owner: agent.environment ?? "Owner enrolled",
+      environment: agent.environment ?? "production",
+      lastRun: latestRun
+        ? lastCheckLabel(latestRun.last_reported_at)
+        : "No executions recorded",
       lastRunAt: lastRunAt || "1970-01-01T00:00:00.000Z",
-      nextRun: hasSchedule ? "Schedule configured" : "Not scheduled",
+      nextRun:
+        agent.monitoring_mode === "heartbeat" && agent.heartbeat_interval_seconds
+          ? `Heartbeat every ${agent.heartbeat_interval_seconds}s`
+          : hasSchedule
+            ? "Schedule configured"
+            : "Activity only",
       nextRunAt: undefined,
-      version: agent.version ?? "Runtime descriptor",
+      version:
+        agent.last_agent_version ??
+        agent.expected_version ??
+        agent.version ??
+        "Unreported",
+      buildSha: agent.last_build_sha,
       currentIssue,
       issueSummary: currentIssue,
       responsibilities: [agent.description],
@@ -327,8 +431,10 @@ export function toAgentRecords(
       connectors: agent.required_connectors ?? [],
       permissions: agent.allowed_tools ?? [],
       recentActivity: latestRun
-        ? [`Latest runtime run ${latestRun.run_id} is ${latestRun.status}.`]
-        : ["No runtime run history is recorded for this agent."],
+        ? [
+            `Latest reported execution ${latestRun.external_execution_id} is ${latestRun.status}.`,
+          ]
+        : ["No reported execution history is recorded for this agent."],
     };
   });
 }
@@ -416,30 +522,32 @@ export function toRunRecords(
   const agentById = new Map(agents.map((agent) => [agent.agent_id, agent]));
   return runs.map((run) => {
     const agent = agentById.get(run.agent_id);
-    const startedAt = run.started_at ?? run.created_at;
+    const startedAt = run.started_at ?? run.first_reported_at;
     return {
-      id: run.run_id,
+      id: run.agent_execution_id,
       agent: {
         id: run.agent_id,
         name: agent?.display_name ?? run.agent_id,
       },
       status: runStatus(run.status),
-      trigger: runTrigger(run.trigger_source),
+      trigger: runTrigger(run.trigger),
       startedAt,
-      completedAt: run.completed_at ?? undefined,
-      duration: durationLabel(startedAt, run.completed_at),
-      retryCount: run.retry_count,
+      completedAt: run.finished_at ?? undefined,
+      duration: durationLabel(startedAt, run.finished_at, run.duration_ms),
+      retryCount: 0,
       correlationId: run.correlation_id ?? "correlation_unavailable",
-      summary: run.failure_reason_code
-        ? `Runtime run recorded failure code ${run.failure_reason_code}.`
-        : `Runtime ${run.trigger_source} run is ${run.status}.`,
+      summary:
+        run.summary ??
+        (run.error_code
+          ? `Agent execution recorded failure code ${run.error_code}.`
+          : `Agent-reported ${run.trigger} execution is ${run.status}.`),
       costEstimate: "Not estimated",
-      error: run.failure_reason_code
+      error: run.error_code
         ? {
-            code: run.failure_reason_code,
-            category: "Runtime",
+            code: run.error_code,
+            category: "Agent reported",
             retryable: false,
-            summary: "Runtime reported a normalized failure reason.",
+            summary: "Agent reported a normalized failure reason.",
           }
         : undefined,
       approvalIds: [],
@@ -485,21 +593,36 @@ export function toApprovalRecords(approvals: DashboardApproval[]): ApprovalRecor
   }));
 }
 
-export function toAuditEvents(events: DashboardAuditEvent[]): AuditEvent[] {
+export function toAuditEvents(events: DashboardActivityEvent[]): AuditEvent[] {
   return events.map((event) => ({
-    id: event.audit_event_id,
+    id: event.activity_event_id,
     occurredAt: event.occurred_at,
-    actor: event.actor_id,
+    actor: event.actor_id ?? event.actor_type,
     actorType: event.actor_type === "human_owner" ? "Human" : event.actor_type,
-    action: event.action || event.event_type,
-    result: auditResult(event.result),
-    resourceType: event.resource_type,
-    resourceId: event.resource_id ?? "resource_unavailable",
-    summary: `${event.event_type} ${event.result}.`,
-    reason: event.reason_code
-      ? `Reason code: ${event.reason_code}. Redaction: ${event.redaction_state}.`
-      : `Redaction: ${event.redaction_state}.`,
+    action: event.event_type,
+    result: activityResult(event.severity),
+    resourceType: event.source_type,
+    resourceId: event.source_id,
+    summary: event.summary,
+    reason: `Material activity event ${event.event_type}.`,
     correlationId: event.correlation_id ?? "correlation_unavailable",
+  }));
+}
+
+export function toAlertRecords(alerts: DashboardAlert[]): AlertRecord[] {
+  return alerts.map((alert) => ({
+    id: alert.alert_id,
+    severity: alertSeverity(alert.severity),
+    status: alertStatus(alert.status),
+    title: alertTitle(alert),
+    description: alertDescription(alert),
+    timestamp: lastCheckLabel(alert.last_seen_at),
+    raisedAt: alert.first_seen_at,
+    source: alert.agent_id,
+    sourceAgentId: alert.agent_id,
+    category: "Runtime",
+    evidence: JSON.stringify(alert.evidence_json),
+    correlationId: alert.condition_key,
   }));
 }
 
@@ -518,7 +641,7 @@ export function toMonitoringAlerts(monitoring: DashboardMonitoring): AlertRecord
       raisedAt: new Date().toISOString(),
       source: monitoring.runtime_origin,
       category: "Runtime",
-      evidence: `${monitoring.agent_count} agent registration(s) visible through the owner-authenticated dashboard facade.`,
+      evidence: `${monitoring.agent_count} agent registration(s) visible through owner-authenticated Atlas APIs.`,
       correlationId: "runtime-monitoring",
     },
   ];
@@ -551,16 +674,32 @@ function agentStatus(
   latestRun: DashboardRun | undefined,
 ): AgentStatus {
   if (latestRun?.status === "running") return "running";
-  if (latestRun?.status === "queued") return "queued";
+  if (latestRun?.status === "accepted") return "queued";
+  if (agent.lifecycle_status === "disconnected" || agent.lifecycle_status === "archived") {
+    return "paused";
+  }
   if (agent.status === "disabled" || agent.status === "retired") return "paused";
   return "active";
 }
 
-function agentHealth(value: string | undefined): AgentHealth {
-  if (value === "healthy") return "healthy";
-  if (value === "degraded" || value === "unknown") return "degraded";
-  if (value === "unhealthy") return "offline";
+function agentHealth(
+  observedValue: string | undefined,
+  reportedValue: string | undefined,
+): AgentHealth {
+  if (observedValue === "online" && reportedValue !== "unhealthy") return "healthy";
+  if (
+    observedValue === "offline" ||
+    observedValue === "disconnected" ||
+    observedValue === "archived" ||
+    reportedValue === "unhealthy"
+  ) {
+    return "offline";
+  }
   return "degraded";
+}
+
+function healthLabel(value: string) {
+  return value.replace(/_/g, " ");
 }
 
 function authenticationType(value: string): AuthenticationType {
@@ -572,12 +711,15 @@ function authenticationType(value: string): AuthenticationType {
 
 function runStatus(value: string): RunStatus {
   if (
-    value === "queued" ||
+    value === "accepted" ||
     value === "running" ||
     value === "succeeded" ||
     value === "failed" ||
-    value === "cancelled"
+    value === "cancelled" ||
+    value === "timed_out"
   ) {
+    if (value === "accepted") return "queued";
+    if (value === "timed_out") return "timed-out";
     return value;
   }
   return "waiting";
@@ -598,11 +740,32 @@ function approvalState(value: string): ApprovalState {
   return "Pending";
 }
 
-function auditResult(value: string): AuditResult {
-  if (value === "approved" || value === "rejected" || value === "failed") {
-    return value;
-  }
-  return "succeeded";
+function activityResult(severity: DashboardActivityEvent["severity"]): AuditResult {
+  return severity === "critical" || severity === "error" ? "failed" : "succeeded";
+}
+
+function alertSeverity(severity: DashboardAlert["severity"]): AlertSeverity {
+  if (severity === "critical") return "critical";
+  if (severity === "error") return "high";
+  if (severity === "warning") return "warning";
+  return "information";
+}
+
+function alertStatus(status: DashboardAlert["status"]): AlertStatus {
+  if (status === "resolved") return "resolved";
+  if (status === "acknowledged") return "investigating";
+  return "active";
+}
+
+function alertTitle(alert: DashboardAlert) {
+  const condition = alert.condition_key.split(":").at(-1) ?? "alert";
+  return condition.replace(/-/g, " ");
+}
+
+function alertDescription(alert: DashboardAlert) {
+  if (alert.resolved_reason) return `Resolved: ${alert.resolved_reason}.`;
+  if (alert.acknowledged_at) return "Acknowledged; source condition remains tracked.";
+  return "Active source condition detected by Atlas.";
 }
 
 function lastCheckLabel(value: string | null) {
@@ -610,7 +773,17 @@ function lastCheckLabel(value: string | null) {
   return new Date(value).toLocaleString();
 }
 
-function durationLabel(startedAt: string, completedAt: string | null) {
+function durationLabel(
+  startedAt: string,
+  completedAt: string | null,
+  durationMs?: number | null,
+) {
+  if (durationMs != null) {
+    const seconds = Math.round(durationMs / 1000);
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m ${seconds % 60}s`;
+  }
   if (!completedAt) return "In progress";
   const seconds = Math.max(
     0,

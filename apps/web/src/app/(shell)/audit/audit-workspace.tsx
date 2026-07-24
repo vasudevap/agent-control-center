@@ -81,10 +81,16 @@ function EventDetails({ event }: { event: AuditEvent }) {
   );
 }
 
-export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
+export function AuditWorkspace({
+  events,
+  runtimeRequired = false,
+}: {
+  events: AuditEvent[];
+  runtimeRequired?: boolean;
+}) {
   const [runtimeMode, setRuntimeMode] =
     React.useState<DashboardRuntimeMode>(() =>
-      dashboardApiBaseUrl() ? "loading" : "fixture",
+      dashboardApiBaseUrl() ? "loading" : runtimeRequired ? "error" : "fixture",
     );
   const [liveEvents, setLiveEvents] = React.useState<AuditEvent[]>([]);
   const [query, setQuery] = React.useState("");
@@ -100,7 +106,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
     let cancelled = false;
     async function loadRuntime() {
       if (!dashboardApiBaseUrl()) {
-        setRuntimeMode("fixture");
+        setRuntimeMode(runtimeRequired ? "error" : "fixture");
         return;
       }
       setRuntimeMode("loading");
@@ -128,9 +134,9 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [runtimeRequired]);
 
-  const activeEvents = runtimeMode === "live" ? liveEvents : events;
+  const activeEvents = runtimeMode === "live" ? liveEvents : runtimeRequired ? [] : events;
   const normalized = query.trim().toLowerCase();
   const visible = activeEvents
     .filter(
@@ -190,11 +196,11 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
-        eyebrow="Governance"
-        title="Audit"
+        eyebrow="Operations"
+        title="Activity"
         description={
           runtimeMode === "live"
-            ? "Inspect metadata-only Atlas audit events and correlation context."
+            ? "Inspect metadata-only material activity events and correlation context."
             : "Inspect governance history and correlation context."
         }
         icon={ClipboardList}
@@ -206,24 +212,26 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
         }
       />
       {runtimeMode === "unauthenticated" && (
-        <SignedOutState description="Sign in to load runtime audit events from the Atlas API." />
+        <SignedOutState description="Sign in to load runtime activity events from the Atlas API." />
       )}
       {runtimeMode !== "unauthenticated" && (
       <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
-            <strong>Live runtime.</strong> Audit events are loaded from the
-            owner-authenticated Atlas API dashboard facade. This view exposes
+            <strong>Live runtime.</strong> Activity events are loaded from the
+            owner-authenticated Atlas API activity route. This view exposes
             metadata only.
           </>
         ) : runtimeMode === "loading" ? (
-          "Loading owner-authenticated audit metadata..."
+          "Loading owner-authenticated activity metadata..."
         ) : runtimeMode === "error" ? (
-          "Runtime audit metadata is unavailable. Fixture history remains quarantined from release evidence."
+          runtimeRequired
+            ? "Runtime activity metadata is unavailable, so this active control-center surface cannot display fixture fallback history."
+            : "Runtime activity metadata is unavailable. Fixture history remains quarantined from release evidence."
         ) : (
           <>
             <strong>Frontend prototype.</strong> No runtime API base URL is
-            configured for this build; these examples are not operational audit
+            configured for this build; these examples are not operational activity
             records or a system of record.
           </>
         )}
@@ -234,7 +242,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
         <SearchField
           value={query}
           onChange={setQuery}
-          placeholder="Search audit events"
+          placeholder="Search activity events"
           className="w-full sm:max-w-sm"
         />
         <label htmlFor="audit-action" className="sr-only">
@@ -320,14 +328,16 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
           <EmptyState
             icon={ClipboardList}
             title={
-              hasFilters ? "No events match these filters" : "No audit events"
+              hasFilters ? "No events match these filters" : "No activity events"
             }
             description={
               hasFilters
-                ? "Clear filters to restore the fictional history."
+                ? runtimeMode === "live"
+                  ? "Clear filters to restore the runtime activity history."
+                  : "Clear filters to restore the fictional history."
                 : runtimeMode === "live"
-                  ? "No runtime audit events are available."
-                  : "No audit fixtures are available."
+                  ? "No runtime activity events are available."
+                  : "No activity fixtures are available."
             }
             action={
               hasFilters ? (
@@ -342,7 +352,7 @@ export function AuditWorkspace({ events }: { events: AuditEvent[] }) {
         <>
           <Card className="hidden overflow-hidden md:block">
             <Table>
-              <caption className="sr-only">Audit event history</caption>
+              <caption className="sr-only">Activity event history</caption>
               <TableHeader>
                 <TableRow>
                   {(

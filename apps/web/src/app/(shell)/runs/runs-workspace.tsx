@@ -125,13 +125,15 @@ function FieldPair({
 export function RunsWorkspace({
   runs = RUN_FIXTURES,
   state = "loaded",
+  runtimeRequired = false,
 }: {
   runs?: RunRecord[];
   state?: ViewState;
+  runtimeRequired?: boolean;
 }) {
   const [runtimeMode, setRuntimeMode] =
     React.useState<DashboardRuntimeMode>(() =>
-      dashboardApiBaseUrl() ? "loading" : "fixture",
+      dashboardApiBaseUrl() ? "loading" : runtimeRequired ? "error" : "fixture",
     );
   const [liveRuns, setLiveRuns] = React.useState<RunRecord[]>([]);
   const [query, setQuery] = React.useState("");
@@ -142,7 +144,8 @@ export function RunsWorkspace({
   const [viewState, setViewState] = React.useState(state);
   const loadRuntime = React.useCallback(async () => {
     if (!dashboardApiBaseUrl()) {
-      setRuntimeMode("fixture");
+      setRuntimeMode(runtimeRequired ? "error" : "fixture");
+      setViewState(runtimeRequired ? "error" : "loaded");
       return;
     }
     setRuntimeMode("loading");
@@ -167,7 +170,7 @@ export function RunsWorkspace({
         setViewState("error");
       }
     }
-  }, []);
+  }, [runtimeRequired]);
 
   React.useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -176,7 +179,7 @@ export function RunsWorkspace({
     return () => window.clearTimeout(timeout);
   }, [loadRuntime]);
 
-  const activeRuns = runtimeMode === "live" ? liveRuns : runs;
+  const activeRuns = runtimeMode === "live" ? liveRuns : runtimeRequired ? [] : runs;
   const visibleRuns = sortRuns(
     filterRuns(activeRuns, query, status, trigger),
     sort,
@@ -211,20 +214,22 @@ export function RunsWorkspace({
         icon={Workflow}
       />
       {runtimeMode === "unauthenticated" && (
-        <SignedOutState description="Sign in to load runtime run history from the Atlas API." />
+        <SignedOutState description="Sign in to load runtime execution history from the Atlas API." />
       )}
       {runtimeMode !== "unauthenticated" && (
         <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
         {runtimeMode === "live" ? (
           <>
-            <strong>Live runtime.</strong> Runs are loaded from the Atlas API
-            dashboard facade. Atlas is observing reported executions, not
+            <strong>Live runtime.</strong> Executions are loaded from the Atlas
+            API execution visibility route. Atlas is observing reported executions, not
             dispatching agent work.
           </>
         ) : runtimeMode === "loading" ? (
-          "Loading owner-authenticated run data..."
+          "Loading owner-authenticated execution data..."
         ) : runtimeMode === "error" ? (
-          "Runtime run data is unavailable. Fixture history remains quarantined from release evidence."
+          runtimeRequired
+            ? "Runtime execution data is unavailable, so this active control-center surface cannot display fixture fallback history."
+            : "Runtime execution data is unavailable. Fixture history remains quarantined from release evidence."
         ) : (
           <>
             <strong>Frontend prototype.</strong> No runtime API base URL is
@@ -239,7 +244,7 @@ export function RunsWorkspace({
         <SearchField
           value={query}
           onChange={setQuery}
-          placeholder="Search runs"
+          placeholder="Search executions"
           className="w-full sm:max-w-sm"
         />
         <label className="sr-only" htmlFor="run-status">
@@ -284,7 +289,7 @@ export function RunsWorkspace({
         )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
           {visibleRuns.length} of {activeRuns.length}{" "}
-          {runtimeMode === "live" ? "runtime runs" : "fictional runs"}
+          {runtimeMode === "live" ? "runtime executions" : "fictional executions"}
         </p>
       </div>
       )}
@@ -296,7 +301,7 @@ export function RunsWorkspace({
           <ErrorState
             title="Executions unavailable"
             description="Execution history could not be displayed."
-            onRetry={() => setViewState("loaded")}
+            onRetry={() => void loadRuntime()}
           />
         </Card>
       ) : visibleRuns.length === 0 ? (
@@ -306,7 +311,9 @@ export function RunsWorkspace({
             title={hasFilters ? "No executions match these filters" : "No executions yet"}
             description={
               hasFilters
-                ? "Clear filters to restore the fictional history."
+                ? runtimeMode === "live"
+                  ? "Clear filters to restore the runtime execution history."
+                  : "Clear filters to restore the fictional history."
                 : "Execution history will appear when records are reported."
             }
             action={

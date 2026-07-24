@@ -5,7 +5,8 @@ export const CONTROL_CENTER_ROUTES = {
   agents: `${CONTROL_CENTER_ROOT}/agents`,
   executions: `${CONTROL_CENTER_ROOT}/runs`,
   alerts: `${CONTROL_CENTER_ROOT}/alerts`,
-  activity: `${CONTROL_CENTER_ROOT}/audit`,
+  activity: `${CONTROL_CENTER_ROOT}/activity`,
+  legacyAudit: `${CONTROL_CENTER_ROOT}/audit`,
 } as const;
 
 export const controlCenterAgentHref = (agentId: string) =>

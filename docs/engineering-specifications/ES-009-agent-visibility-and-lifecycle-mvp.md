@@ -417,7 +417,7 @@ lifecycle actions continue to write durable `audit_events`.
 | `apps/web/src/app/(shell)/agents/[agentId]/agent-operational-controls.tsx` | Remove from active route. Replace with credential/lifecycle controls only. |
 | `apps/web/src/app/(shell)/control-center/alerts/**` | Canonical active alert reads and acknowledgement route under `/control-center/alerts`. Legacy `/alerts` may redirect here. |
 | `apps/web/src/app/(shell)/control-center/runs/**` | Canonical active execution inventory/detail for agent-reported executions under `/control-center/runs`. Legacy `/runs` may redirect here until `/executions` is introduced. |
-| `apps/web/src/app/(shell)/control-center/audit/**` | Canonical active material activity surface under `/control-center/audit`. Legacy `/audit` may redirect here until `/activity` is introduced. |
+| `apps/web/src/app/(shell)/control-center/activity/**` | Canonical active material activity surface under `/control-center/activity`. Legacy `/audit` and `/control-center/audit` may redirect here. |
 | `apps/web/src/lib/dashboard-runtime.ts` | Replace fixture-friendly runtime functions with live agent, execution, alert, activity, enrollment, credential, and lifecycle client functions. |
 | `apps/web/src/components/layout/status-bar.tsx` and `top-bar.tsx` | Remove active approvals/runs monitoring assumptions; show API/session/evaluator readiness only. |
 | `apps/web/src/app/(shell)/runs/*`, `approvals/*`, `connectors/*`, `policies/*`, `artifacts/*`, `audit/*`, `settings/*` | Dormant routes. They may remain in source but must be inaccessible from normal nav and must not be used as active MVP evidence. |

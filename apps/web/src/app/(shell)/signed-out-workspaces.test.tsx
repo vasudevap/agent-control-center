@@ -53,13 +53,13 @@ describe("signed-out workspace states", () => {
     {
       name: "Runs",
       ui: <RunsWorkspace />,
-      description: "Sign in to load runtime run history from the Atlas API.",
+      description: "Sign in to load runtime execution history from the Atlas API.",
       table: "Executions inventory",
     },
     {
       name: "Alerts",
       ui: <AlertsWorkspace alerts={ALERT_FIXTURES} />,
-      description: "Sign in to load runtime alert monitoring from the Atlas API.",
+      description: "Sign in to load runtime alerts from the Atlas API.",
       table: "Alerts inventory",
     },
     {
@@ -75,10 +75,10 @@ describe("signed-out workspace states", () => {
       table: "Connector inventory",
     },
     {
-      name: "Audit",
+      name: "Activity",
       ui: <AuditWorkspace events={AUDIT_FIXTURES} />,
-      description: "Sign in to load runtime audit events from the Atlas API.",
-      table: "Audit event history",
+      description: "Sign in to load runtime activity events from the Atlas API.",
+      table: "Activity event history",
     },
   ])("$name replaces fixture content with the shared sign-in card", async ({ ui, description, table }) => {
     stubOwnerSessionMissing();

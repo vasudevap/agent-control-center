@@ -5,10 +5,12 @@ import Link from "next/link";
 import { Bot, CircleOff, FilterX } from "lucide-react";
 import {
   dashboardApiBaseUrl,
+  enrollDashboardAgent,
   readDashboardAgents,
   readDashboardRuns,
   readDashboardSessionOrRequireSignIn,
   toAgentRecords,
+  type DashboardEnrollmentResponse,
   type DashboardRuntimeMode,
 } from "@/lib/dashboard-runtime";
 import { controlCenterAgentHref } from "@/lib/control-center-routes";
@@ -182,12 +184,188 @@ function InventorySkeleton() {
   );
 }
 
+function EnrollmentPanel({
+  csrfToken,
+  onEnrolled,
+}: {
+  csrfToken: string;
+  onEnrolled: (agent: AgentRecord) => void;
+}) {
+  const [slug, setSlug] = React.useState("");
+  const [displayName, setDisplayName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [environment, setEnvironment] = React.useState("production");
+  const [monitoringMode, setMonitoringMode] =
+    React.useState<"heartbeat" | "activity_only">("heartbeat");
+  const [heartbeatInterval, setHeartbeatInterval] = React.useState("300");
+  const [expectedVersion, setExpectedVersion] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
+  const [credential, setCredential] =
+    React.useState<DashboardEnrollmentResponse["credential"] | null>(null);
+  const [message, setMessage] = React.useState<string | null>(null);
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      const response = await enrollDashboardAgent(
+        {
+          slug: slug.trim(),
+          display_name: displayName.trim(),
+          description: description.trim(),
+          environment: environment.trim() || "production",
+          monitoring_mode: monitoringMode,
+          heartbeat_interval_seconds:
+            monitoringMode === "heartbeat"
+              ? Number(heartbeatInterval) || 300
+              : null,
+          expected_version: expectedVersion.trim() || null,
+        },
+        csrfToken,
+      );
+      setCredential(response.credential);
+      const [agentRecord] = toAgentRecords([response.agent]);
+      if (agentRecord) onEnrolled(agentRecord);
+      setSlug("");
+      setDisplayName("");
+      setDescription("");
+      setExpectedVersion("");
+      setMessage("Agent enrolled. Copy the credential token now; Atlas will not show it again.");
+    } catch {
+      setMessage("Enrollment failed. Check the fields and try again with a fresh owner session.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardContent className="grid gap-4 p-4 sm:p-5">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">Enroll external agent</h2>
+          <p className="mt-1 text-xs text-foreground-secondary">
+            Register an owner-visible agent and issue its one-time Atlas credential.
+          </p>
+        </div>
+        <form className="grid gap-3 lg:grid-cols-2" onSubmit={submit}>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary">
+            Slug
+            <input
+              required
+              value={slug}
+              onChange={(event) => setSlug(event.target.value)}
+              placeholder="daily-briefing-agent"
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary">
+            Display name
+            <input
+              required
+              value={displayName}
+              onChange={(event) => setDisplayName(event.target.value)}
+              placeholder="Daily Briefing Agent"
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary lg:col-span-2">
+            Description
+            <input
+              required
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              placeholder="Reports heartbeat and execution summaries from its external runtime."
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary">
+            Environment
+            <input
+              required
+              value={environment}
+              onChange={(event) => setEnvironment(event.target.value)}
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary">
+            Expected version
+            <input
+              value={expectedVersion}
+              onChange={(event) => setExpectedVersion(event.target.value)}
+              placeholder="Optional"
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary">
+            Monitoring mode
+            <select
+              value={monitoringMode}
+              onChange={(event) =>
+                setMonitoringMode(event.target.value as "heartbeat" | "activity_only")
+              }
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand"
+            >
+              <option value="heartbeat">Heartbeat</option>
+              <option value="activity_only">Activity only</option>
+            </select>
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-foreground-secondary">
+            Heartbeat interval seconds
+            <input
+              type="number"
+              min="60"
+              disabled={monitoringMode === "activity_only"}
+              value={heartbeatInterval}
+              onChange={(event) => setHeartbeatInterval(event.target.value)}
+              className="h-9 rounded-atlas-sm border border-border-default bg-surface px-3 text-sm text-foreground outline-none focus:border-brand disabled:opacity-60"
+            />
+          </label>
+          <div className="flex flex-wrap items-center gap-3 lg:col-span-2">
+            <Button type="submit" size="sm" disabled={submitting || !csrfToken}>
+              {submitting ? "Enrolling..." : "Enroll agent"}
+            </Button>
+            {message && (
+              <p className="text-xs text-foreground-secondary" role="status">
+                {message}
+              </p>
+            )}
+          </div>
+        </form>
+        {credential && (
+          <div className="grid gap-2 rounded-atlas-md border border-warning-border bg-warning-bg p-3 text-xs">
+            <p className="font-medium text-warning">
+              One-time credential. Copy it before leaving this page.
+            </p>
+            <textarea
+              readOnly
+              value={credential.plaintext_token}
+              className="min-h-20 resize-y rounded-atlas-sm border border-border-default bg-surface p-2 font-mono text-[11px] text-foreground"
+              aria-label="One-time agent credential token"
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="w-fit"
+              onClick={() => void navigator.clipboard?.writeText(credential.plaintext_token)}
+            >
+              Copy token
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtimeRequired = false }: AgentsInventoryProps) {
   const [runtimeMode, setRuntimeMode] =
     React.useState<DashboardRuntimeMode>(() =>
       runtimeRequired ? (dashboardApiBaseUrl() ? "loading" : "error") : "fixture",
     );
   const [liveAgents, setLiveAgents] = React.useState<AgentRecord[]>([]);
+  const [csrfToken, setCsrfToken] = React.useState("");
   const [viewState, setViewState] = React.useState<InventoryState>(() =>
     runtimeRequired ? (dashboardApiBaseUrl() ? "loading" : "error") : state,
   );
@@ -208,12 +386,13 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
       setRuntimeMode("loading");
       setViewState("loading");
       try {
-        await readDashboardSessionOrRequireSignIn();
+        const session = await readDashboardSessionOrRequireSignIn();
         const [runtimeAgents, runtimeRuns] = await Promise.all([
           readDashboardAgents(),
           readDashboardRuns(),
         ]);
         if (!cancelled) {
+          setCsrfToken(session.csrf_token);
           setLiveAgents(toAgentRecords(runtimeAgents, runtimeRuns));
           setRuntimeMode("live");
           setViewState("loaded");
@@ -264,10 +443,21 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
 
       {runtimeMode === "live" && (
         <div className="rounded-atlas-md border border-info-border bg-info-bg px-4 py-3 text-sm text-foreground">
-          <strong>Live runtime.</strong> Agent registrations, health, and latest
-          run state are loaded from the owner-authenticated Atlas API dashboard
-          facade.
+          <strong>Live runtime.</strong> Agent registrations, observed health, and
+          latest execution state are loaded from owner-authenticated Atlas APIs.
         </div>
+      )}
+
+      {runtimeMode === "live" && (
+        <EnrollmentPanel
+          csrfToken={csrfToken}
+          onEnrolled={(agent) =>
+            setLiveAgents((current) => [
+              agent,
+              ...current.filter((item) => item.id !== agent.id),
+            ])
+          }
+        />
       )}
 
       {viewState === "loading" && <InventorySkeleton />}
@@ -282,7 +472,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
               description={
                 runtimeRequired && !dashboardApiBaseUrl()
                   ? "No runtime API base URL is configured for this build, so the live Agents inventory cannot be displayed."
-                  : "The owner-authenticated dashboard facade could not return agent registrations. No agent operation was started."
+                  : "The owner-authenticated Atlas APIs could not return agent registrations. No agent operation was started."
               }
               className="py-16"
             />
@@ -337,7 +527,7 @@ export function AgentsInventory({ agents = MOCK_AGENTS, state = "loaded", runtim
             title="No agents are registered"
             description={
               runtimeMode === "live"
-                ? "The runtime dashboard facade returned no agent registrations."
+                  ? "No owner-visible agents have been enrolled yet."
                 : "No local agent fixtures are available."
             }
             className="py-16"

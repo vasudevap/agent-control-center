@@ -14,12 +14,16 @@ export interface AgentRecord {
   description: string;
   status: AgentStatus;
   health: AgentHealth;
+  observedHealth?: string;
+  reportedHealth?: string;
   owner: string;
+  environment?: string;
   lastRun: string;
   lastRunAt: string;
   nextRun: string;
   nextRunAt?: string;
   version: string;
+  buildSha?: string | null;
   currentIssue?: string;
   issueSummary?: string;
   responsibilities: string[];

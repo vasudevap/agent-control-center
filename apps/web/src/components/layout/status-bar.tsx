@@ -8,11 +8,11 @@ import {
   dashboardApiBaseUrl,
   fleetPulseFromRuntime,
   readDashboardAgents,
-  readDashboardMonitoring,
+  readDashboardAlerts,
   readDashboardRuns,
   readDashboardSession,
   toAgentRecords,
-  toMonitoringAlerts,
+  toAlertRecords,
 } from "@/lib/dashboard-runtime";
 import { CONTROL_CENTER_ROUTES } from "@/lib/control-center-routes";
 
@@ -77,18 +77,18 @@ export function StatusBar() {
       setState("loading");
       try {
         await readDashboardSession();
-        const [runtimeAgents, runtimeRuns, monitoring] =
+        const [runtimeAgents, runtimeRuns, runtimeAlerts] =
           await Promise.all([
             readDashboardAgents(),
             readDashboardRuns(),
-            readDashboardMonitoring(),
+            readDashboardAlerts(),
           ]);
         if (!cancelled) {
           setPulse(
             fleetPulseFromRuntime(
               toAgentRecords(runtimeAgents, runtimeRuns),
               [],
-              toMonitoringAlerts(monitoring),
+              toAlertRecords(runtimeAlerts),
             ),
           );
           setState("live");

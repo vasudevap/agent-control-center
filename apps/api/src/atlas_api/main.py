@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from starlette.middleware.cors import CORSMiddleware
 
 from atlas_api.api.agent_registry import router as agent_registry_router
+from atlas_api.api.agent_visibility import router as agent_visibility_router
 from atlas_api.api.approvals import approval_router, manual_router
 from atlas_api.api.connectors import router as connectors_router
 from atlas_api.api.dashboard import router as dashboard_router
@@ -37,6 +38,10 @@ OPENAPI_TAGS = [
         "description": "Signed external-client boundary probes.",
     },
     {"name": "agents", "description": "Generic agent registry contracts."},
+    {
+        "name": "agent-visibility",
+        "description": "Owner-authenticated agent visibility MVP reads.",
+    },
     {"name": "approvals", "description": "Generic approval decision contracts."},
     {"name": "connectors", "description": "Connector OAuth and health contracts."},
     {
@@ -95,6 +100,7 @@ def create_app(
     register_exception_handlers(app)
     app.include_router(router)
     app.include_router(agent_registry_router)
+    app.include_router(agent_visibility_router)
     app.include_router(approval_router)
     app.include_router(manual_router)
     app.include_router(connectors_router)
