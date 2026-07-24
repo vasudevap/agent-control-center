@@ -308,13 +308,13 @@ export function RunsWorkspace({
         <Card>
           <EmptyState
             icon={Workflow}
-            title={hasFilters ? "No executions match these filters" : "No executions yet"}
+            title={hasFilters ? "No executions match these filters" : "Nothing to display yet"}
             description={
               hasFilters
                 ? runtimeMode === "live"
                   ? "Clear filters to restore the runtime execution history."
                   : "Clear filters to restore the fictional history."
-                : "Execution history will appear when records are reported."
+                : "No executions have been reported."
             }
             action={
               hasFilters ? (

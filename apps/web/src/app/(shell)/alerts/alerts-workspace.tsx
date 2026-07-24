@@ -237,7 +237,8 @@ export function AlertsWorkspace({
       </Button>
     ) : null;
 
-  const activeAlerts = runtimeMode === "live" ? liveAlerts : alerts;
+  const activeAlerts =
+    runtimeMode === "live" ? liveAlerts : runtimeMode === "fixture" ? alerts : [];
   const records = activeAlerts;
   const normalized = query.trim().toLowerCase();
   const visible = records
@@ -394,7 +395,11 @@ export function AlertsWorkspace({
         )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
           {visible.length} of {activeAlerts.length}{" "}
-          {runtimeMode === "live" ? "runtime alerts" : "fictional alerts"}
+          {runtimeMode === "live"
+            ? "runtime alerts"
+            : runtimeMode === "fixture"
+              ? "fictional alerts"
+              : "alerts"}
         </p>
       </div>
       )}
@@ -404,15 +409,17 @@ export function AlertsWorkspace({
         <Card>
           <EmptyState
             icon={BellRing}
-            title={hasFilters ? "No alerts match these filters" : "No alerts"}
+            title={hasFilters ? "No alerts match these filters" : "Nothing to display yet"}
             description={
               hasFilters
                 ? runtimeMode === "live"
                   ? "Clear filters to restore the runtime alert inventory."
                   : "Clear filters to restore the fictional alert inventory."
                 : runtimeMode === "live"
-                  ? "No active or historical runtime alerts are available."
-                  : "No alert fixtures are available."
+                  ? "No alerts have been raised."
+                  : runtimeMode === "fixture"
+                    ? "No alert fixtures are available."
+                    : "Live alerts could not be loaded. Try again after resolving the connection issue."
             }
             action={
               hasFilters ? (

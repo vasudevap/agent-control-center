@@ -1,10 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ALERT_FIXTURES } from "./alert-data";
 import { AlertsWorkspace } from "./alerts-workspace";
 
 describe("AlertsWorkspace", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
   it("filters deterministic local alerts and exposes a semantic sortable inventory", async () => {
     const user = userEvent.setup();
     render(<AlertsWorkspace alerts={ALERT_FIXTURES} />);
@@ -51,5 +57,40 @@ describe("AlertsWorkspace", () => {
     expect(
       screen.queryByRole("button", { name: "Simulate investigation" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows an intentional empty state for a live account with no alerts", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.atlas.grafley.com");
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              data: {
+                authenticated: true,
+                csrf_token: "csrf-token",
+                user: {
+                  user_id: "owner-1",
+                  email: "owner@example.com",
+                  display_name: "Owner",
+                  identity_provider: "google",
+                  status: "active",
+                },
+              },
+            }),
+          ),
+        )
+        .mockResolvedValueOnce(new Response(JSON.stringify({ data: [] }))),
+    );
+
+    render(<AlertsWorkspace alerts={ALERT_FIXTURES} runtimeRequired />);
+
+    expect(
+      await screen.findByText("Nothing to display yet"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("No alerts have been raised.")).toBeInTheDocument();
+    expect(screen.queryByText(ALERT_FIXTURES[0].title)).not.toBeInTheDocument();
   });
 });
