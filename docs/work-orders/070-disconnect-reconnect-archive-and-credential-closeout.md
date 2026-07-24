@@ -1,13 +1,13 @@
 # Work Order 070: Disconnect, Reconnect, Archive, and Credential Closeout
 
-**Status:** Accepted - Authorized, blocked on WO-069 completion
+**Status:** Completed - Local Validation Passed
 **Work Order ID:** WO-070
 **Type:** Agent trust lifecycle closeout
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-24
 **Engineering Specification:** [ES-009](../engineering-specifications/ES-009-agent-visibility-and-lifecycle-mvp.md)
 **Governing ADP:** [ADP-006](../implementation-plans/ADP-006-agent-visibility-lifecycle-mvp.md)
-**Prerequisites:** WO-069 accepted and complete
-**Review Record:** To be created during implementation
+**Prerequisites:** WO-069 completed and merged
+**Review Record:** [WO-070 Implementation Report](../reviews/WO-070-disconnect-reconnect-archive-and-credential-closeout-implementation-report.md)
 
 ## 1. Purpose
 
@@ -26,6 +26,8 @@ confirmation states.
 - Preserve heartbeats, executions, alerts, activity, and audit history.
 - Add tests for old/new credential acceptance during overlap and rejection
   after expiry, disconnect, archive, and token/path mismatch.
+- Keep all active lifecycle UI under `/control-center/agents/...`; root `/`
+  remains the public Atlas landing page.
 
 ## 3. Expected File Scope
 
@@ -52,6 +54,8 @@ secret entry are out of scope.
   become connected.
 - Archive hides the agent from default active views without deleting history.
 - Activity and audit evidence are created without plaintext secrets.
+- Active frontend controls remain rooted under `/control-center`; no lifecycle
+  controls are introduced on the public landing page.
 
 ## 6. Verification
 

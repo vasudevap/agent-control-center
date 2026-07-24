@@ -98,6 +98,7 @@ export interface DashboardAgent {
   reported_health?: string;
   last_agent_version?: string | null;
   last_build_sha?: string | null;
+  active_surface_visible?: boolean;
 }
 
 export interface DashboardRun {
@@ -170,6 +171,11 @@ export interface DashboardEnrollmentResponse {
     plaintext_token: string;
     scope: string;
   };
+}
+
+export interface DashboardLifecycleResponse {
+  agent: DashboardAgent;
+  credential?: DashboardEnrollmentResponse["credential"];
 }
 
 export interface DashboardApproval {
@@ -334,6 +340,32 @@ export const enrollDashboardAgent = (
     },
   });
 
+const agentLifecycleRequest = (agentId: string, path: string, csrfToken: string) =>
+  dashboardRequest<DashboardLifecycleResponse>(
+    `/api/v1/dashboard/agents/${encodeURIComponent(agentId)}${path}`,
+    {
+      method: "POST",
+      headers: {
+        "X-Atlas-CSRF-Token": csrfToken,
+        "Idempotency-Key": `agent-lifecycle-${crypto.randomUUID()}`,
+      },
+    },
+  );
+
+export const rotateDashboardAgentCredential = (
+  agentId: string,
+  csrfToken: string,
+) => agentLifecycleRequest(agentId, "/credentials/rotate", csrfToken);
+
+export const disconnectDashboardAgent = (agentId: string, csrfToken: string) =>
+  agentLifecycleRequest(agentId, "/disconnect", csrfToken);
+
+export const reconnectDashboardAgent = (agentId: string, csrfToken: string) =>
+  agentLifecycleRequest(agentId, "/reconnect", csrfToken);
+
+export const archiveDashboardAgent = (agentId: string, csrfToken: string) =>
+  agentLifecycleRequest(agentId, "/archive", csrfToken);
+
 export const readDashboardMonitoring = () =>
   dashboardRequest<DashboardMonitoring>("/api/v1/dashboard/monitoring");
 
@@ -403,6 +435,8 @@ export function toAgentRecords(
       description: agent.description,
       status: agentStatus(agent, latestRun),
       health: agentHealth(observedHealth, reportedHealth),
+      lifecycleStatus: agent.lifecycle_status,
+      activeSurfaceVisible: agent.active_surface_visible,
       observedHealth: healthLabel(observedHealth ?? "unknown"),
       reportedHealth: healthLabel(reportedHealth ?? "unknown"),
       owner: agent.environment ?? "Owner enrolled",

@@ -52,10 +52,14 @@ def authorize(context: AuthorizationContext) -> AuthorizationDecision:
         and context.action
         in {
             "acknowledge",
+            "archive",
             "list",
             "read",
             "read_evidence",
             "read_health",
+            "reconnect",
+            "disconnect",
+            "rotate",
             "start_oauth",
             "create",
             "update",

@@ -14,6 +14,8 @@ export interface AgentRecord {
   description: string;
   status: AgentStatus;
   health: AgentHealth;
+  lifecycleStatus?: string;
+  activeSurfaceVisible?: boolean;
   observedHealth?: string;
   reportedHealth?: string;
   owner: string;
