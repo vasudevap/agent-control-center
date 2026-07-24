@@ -22,7 +22,6 @@ import { controlCenterExecutionHref } from "@/lib/control-center-routes";
 import { StatusBadge } from "@/components/badge/status-badge";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/state/empty-state";
-import { ErrorState } from "@/components/state/error-state";
 import { SignedOutState } from "@/components/state/signed-out-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -293,10 +292,10 @@ export function RunsWorkspace({
       <>
       {viewState === "error" ? (
         <Card>
-          <ErrorState
-            title="Executions unavailable"
-            description="Execution history could not be displayed."
-            onRetry={() => setViewState("loaded")}
+          <EmptyState
+            icon={Workflow}
+            title="Nothing to display yet"
+            description="Execution history will appear when records are reported."
           />
         </Card>
       ) : visibleRuns.length === 0 ? (

@@ -106,4 +106,14 @@ describe("AgentsInventory", () => {
     expect(agentHeader).toHaveAttribute("aria-sort", "ascending");
     expect(within(table).getAllByRole("link")[0]).toHaveTextContent("Alpha Support Agent");
   });
+
+  it("uses a neutral empty state when no agent registrations are configured", () => {
+    render(<AgentsInventory agents={[]} />);
+
+    expect(screen.getByText("Nothing to display yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Agent registrations will appear here once agents are enrolled."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
 });

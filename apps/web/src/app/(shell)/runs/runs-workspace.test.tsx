@@ -35,7 +35,7 @@ describe("RunsWorkspace", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders semantic sortable inventory and a recoverable controlled error", async () => {
+  it("renders semantic sortable inventory and a neutral empty state when no executions are available", async () => {
     const user = userEvent.setup();
     const { unmount } = render(<RunsWorkspace />);
     expect(
@@ -48,11 +48,11 @@ describe("RunsWorkspace", () => {
 
     unmount();
     render(<RunsWorkspace state="error" />);
-    expect(screen.getByRole("alert")).toHaveTextContent("Executions unavailable");
-    await user.click(screen.getByRole("button", { name: "Try again" }));
+    expect(screen.getByText("Nothing to display yet")).toBeInTheDocument();
     expect(
-      screen.getByRole("table", { name: "Executions inventory" }),
+      screen.getByText("Execution history will appear when records are reported."),
     ).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });
 
