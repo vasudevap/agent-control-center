@@ -136,7 +136,8 @@ export function AuditWorkspace({
     };
   }, [runtimeRequired]);
 
-  const activeEvents = runtimeMode === "live" ? liveEvents : runtimeRequired ? [] : events;
+  const activeEvents =
+    runtimeMode === "live" ? liveEvents : runtimeMode === "fixture" ? events : [];
   const normalized = query.trim().toLowerCase();
   const visible = activeEvents
     .filter(
@@ -317,7 +318,11 @@ export function AuditWorkspace({
         )}
         <p className="text-xs text-foreground-secondary sm:ml-auto">
           {visible.length} of {activeEvents.length}{" "}
-          {runtimeMode === "live" ? "runtime events" : "fictional events"}
+          {runtimeMode === "live"
+            ? "runtime events"
+            : runtimeMode === "fixture"
+              ? "fictional events"
+              : "events"}
         </p>
       </div>
       )}
@@ -328,7 +333,7 @@ export function AuditWorkspace({
           <EmptyState
             icon={ClipboardList}
             title={
-              hasFilters ? "No events match these filters" : "No activity events"
+              hasFilters ? "No events match these filters" : "Nothing to display yet"
             }
             description={
               hasFilters
@@ -336,8 +341,10 @@ export function AuditWorkspace({
                   ? "Clear filters to restore the runtime activity history."
                   : "Clear filters to restore the fictional history."
                 : runtimeMode === "live"
-                  ? "No runtime activity events are available."
-                  : "No activity fixtures are available."
+                  ? "No activity has been recorded."
+                  : runtimeMode === "fixture"
+                    ? "No activity fixtures are available."
+                    : "Live activity could not be loaded. Try again after resolving the connection issue."
             }
             action={
               hasFilters ? (

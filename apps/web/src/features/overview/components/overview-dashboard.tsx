@@ -9,6 +9,7 @@ import { MOCK_AGENTS } from "@/app/(shell)/agents/agent-data";
 import { mockAlerts } from "../data/mock-data";
 import { Card } from "@/components/ui/card";
 import { ErrorState } from "@/components/state/error-state";
+import { EmptyState } from "@/components/state/empty-state";
 import { SignedOutState } from "@/components/state/signed-out-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -109,7 +110,16 @@ export function OverviewDashboard({ runtimeRequired = false }: { runtimeRequired
         </Card>
       ) : null}
 
-      {runtimeMode !== "loading" && runtimeMode !== "unauthenticated" && runtimeMode !== "error" && (
+      {runtimeMode === "live" && agents.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={LayoutDashboard}
+            title="Nothing to display yet"
+            description="No agents have been enrolled, so there is no activity, execution history, or alert data to show."
+            className="py-16"
+          />
+        </Card>
+      ) : runtimeMode !== "loading" && runtimeMode !== "unauthenticated" && runtimeMode !== "error" && (
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="min-w-0 flex flex-col gap-6 xl:col-span-2">
           <AttentionQueue agents={agents} alerts={alerts} />

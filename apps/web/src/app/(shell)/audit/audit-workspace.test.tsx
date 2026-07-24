@@ -1,10 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AUDIT_FIXTURES } from "./audit-data";
 import { AuditWorkspace } from "./audit-workspace";
 
 describe("AuditWorkspace", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
   it("filters fictional history and sorts by true values", async () => {
     const user = userEvent.setup();
     render(<AuditWorkspace events={AUDIT_FIXTURES} />);
@@ -40,5 +46,40 @@ describe("AuditWorkspace", () => {
     expect(
       screen.queryByRole("button", { name: /edit|delete|export/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows an intentional empty state for a live account with no activity", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.atlas.grafley.com");
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              data: {
+                authenticated: true,
+                csrf_token: "csrf-token",
+                user: {
+                  user_id: "owner-1",
+                  email: "owner@example.com",
+                  display_name: "Owner",
+                  identity_provider: "google",
+                  status: "active",
+                },
+              },
+            }),
+          ),
+        )
+        .mockResolvedValueOnce(new Response(JSON.stringify({ data: [] }))),
+    );
+
+    render(<AuditWorkspace events={AUDIT_FIXTURES} runtimeRequired />);
+
+    expect(
+      await screen.findByText("Nothing to display yet"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("No activity has been recorded.")).toBeInTheDocument();
+    expect(screen.queryByText(AUDIT_FIXTURES[0].summary)).not.toBeInTheDocument();
   });
 });
