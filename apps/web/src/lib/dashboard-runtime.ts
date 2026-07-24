@@ -129,8 +129,15 @@ export interface DashboardAuditEvent {
 export interface DashboardMonitoring {
   readiness_status: "ready" | "not_ready";
   readiness_problem_count: number;
+  readiness_problems?: string[];
   agent_count: number;
   runtime_origin: string;
+  agent_health_evaluator?: {
+    enabled: boolean;
+    status: string;
+    last_completed_at?: string | null;
+    stale_after_seconds?: number;
+  };
 }
 
 export class DashboardApiError extends Error {

@@ -19,6 +19,7 @@ from atlas_api.models.agent import (
     AgentIngestionRateLimit,
     AgentRegistration,
 )
+from atlas_api.services.agent_activity import record_agent_activity
 
 MAX_TELEMETRY_BODY_BYTES = 64 * 1024
 SUPPORTED_CONTRACT_VERSION = "2026-07-24"
@@ -114,6 +115,8 @@ def accept_heartbeat(
         return AcceptedHeartbeat(heartbeat=existing, replayed=True)
 
     now = utc_now()
+    previous_reported_health = agent.reported_health
+    was_pending = agent.lifecycle_status == "pending"
     heartbeat = AgentHeartbeat(
         agent_id=agent.agent_id,
         credential_id=credential.credential_id,
@@ -134,9 +137,40 @@ def accept_heartbeat(
     agent.reported_health = reported_status
     agent.last_agent_version = agent_version
     agent.last_build_sha = build_sha
-    if agent.lifecycle_status == "pending":
+    if was_pending:
         agent.lifecycle_status = "connected"
         agent.first_connected_at = now
+        record_agent_activity(
+            session,
+            agent_id=agent.agent_id,
+            event_type="agent.first_connected",
+            summary="Agent sent its first accepted heartbeat.",
+            severity="info",
+            source_type="agent_heartbeat",
+            source_id=event_id,
+            occurred_at=now,
+        )
+    if previous_reported_health != reported_status and reported_status in {
+        "degraded",
+        "unhealthy",
+    }:
+        record_agent_activity(
+            session,
+            agent_id=agent.agent_id,
+            event_type="agent.reported_health.transition",
+            summary=(
+                f"Reported health changed from {previous_reported_health} "
+                f"to {reported_status}."
+            ),
+            severity="critical" if reported_status == "unhealthy" else "warning",
+            source_type="agent_heartbeat",
+            source_id=event_id,
+            metadata={
+                "from": previous_reported_health,
+                "to": reported_status,
+            },
+            occurred_at=now,
+        )
     session.flush()
     return AcceptedHeartbeat(heartbeat=heartbeat, replayed=False)
 
@@ -196,6 +230,7 @@ def accept_execution(
             )
         if existing.started_at is None and started_at is not None:
             existing.started_at = started_at
+        previous_status = existing.status
         existing.representation_hash = representation_hash
         existing.status = status
         existing.trigger = trigger
@@ -209,6 +244,22 @@ def accept_execution(
         existing.last_reported_at = now
         existing.terminal_at = terminal_at
         agent.last_activity_at = now
+        if (
+            previous_status not in TERMINAL_EXECUTION_STATUSES
+            and status in TERMINAL_EXECUTION_STATUSES
+        ):
+            record_agent_activity(
+                session,
+                agent_id=agent.agent_id,
+                event_type="agent.execution.terminal",
+                summary=f"Agent execution {external_execution_id} ended as {status}.",
+                severity="error" if status in {"failed", "timed_out"} else "info",
+                source_type="agent_execution",
+                source_id=external_execution_id,
+                correlation_id=correlation_id,
+                metadata={"status": status, "trigger": trigger},
+                occurred_at=now,
+            )
         session.flush()
         return AcceptedExecution(execution=existing, created=False)
 
@@ -232,6 +283,19 @@ def accept_execution(
     )
     session.add(execution)
     agent.last_activity_at = now
+    if status in TERMINAL_EXECUTION_STATUSES:
+        record_agent_activity(
+            session,
+            agent_id=agent.agent_id,
+            event_type="agent.execution.terminal",
+            summary=f"Agent execution {external_execution_id} ended as {status}.",
+            severity="error" if status in {"failed", "timed_out"} else "info",
+            source_type="agent_execution",
+            source_id=external_execution_id,
+            correlation_id=correlation_id,
+            metadata={"status": status, "trigger": trigger},
+            occurred_at=now,
+        )
     session.flush()
     return AcceptedExecution(execution=execution, created=True)
 

@@ -13,6 +13,8 @@ from atlas_api.core.config import Settings
 from atlas_api.db.base import Base
 from atlas_api.main import create_app
 from atlas_api.models.agent import (
+    AgentActivityEvent,
+    AgentAlert,
     AgentCredential,
     AgentExecution,
     AgentHeartbeat,
@@ -84,6 +86,10 @@ def seed_agent_with_token(
             configuration_schema={},
             owner_user_id=user.user_id,
             lifecycle_status=lifecycle_status,
+            monitoring_mode="heartbeat",
+            heartbeat_interval_seconds=60,
+            observed_health="never_seen",
+            reported_health="unknown",
         )
         session.add_all([user, agent])
         session.flush()
@@ -303,6 +309,14 @@ def test_secret_like_telemetry_content_is_rejected(
 
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "agent_telemetry_secret_rejected"
+    with database_factory() as session:
+        alert = session.scalar(select(AgentAlert))
+        activity = session.scalar(select(AgentActivityEvent))
+        assert alert is not None
+        assert alert.condition_key == f"agent:{agent_id}:security-ingestion"
+        assert alert.status == "open"
+        assert activity is not None
+        assert activity.event_type == "agent.alert.opened"
 
 
 def test_arbitrary_extra_telemetry_fields_are_rejected(
@@ -350,6 +364,10 @@ def test_contract_version_and_payload_bounds_are_enforced(
         "agent_contract_version_unsupported"
     )
     assert bounds_response.status_code == 422
+    with database_factory() as session:
+        alert = session.scalar(select(AgentAlert))
+        assert alert is not None
+        assert alert.evidence_json["category"] == "contract_version"
 
 
 def test_heartbeat_rate_limit_enforces_route_and_global_windows(
@@ -420,11 +438,18 @@ def test_execution_upsert_is_idempotent_and_rejects_regressions(
     with database_factory() as session:
         execution = session.scalar(select(AgentExecution))
         agent = session.get(AgentRegistration, agent_id)
+        terminal_activity = session.scalar(
+            select(AgentActivityEvent).where(
+                AgentActivityEvent.event_type == "agent.execution.terminal",
+            )
+        )
         assert execution is not None
         assert agent is not None
         assert execution.status == "succeeded"
         assert execution.terminal_at is not None
         assert agent.last_activity_at is not None
+        assert terminal_activity is not None
+        assert terminal_activity.source_id == "external-run-1"
 
 
 def test_execution_rejects_immutable_started_at_conflict(

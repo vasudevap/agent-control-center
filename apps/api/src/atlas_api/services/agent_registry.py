@@ -273,6 +273,11 @@ def create_agent_registration(
         owner_user_id=owner_user_id,
         registration_source=registration_source,
         active_surface_visible=active_surface_visible,
+        lifecycle_status="pending",
+        monitoring_mode="heartbeat",
+        heartbeat_interval_seconds=60,
+        observed_health="never_seen",
+        reported_health="unknown",
     )
     session.add(agent)
     session.flush()

@@ -157,6 +157,37 @@ def test_owner_enrollment_issues_one_plaintext_credential_without_persisting_it(
     assert "verifier_hmac_sha256" not in read_response.text
 
 
+def test_activity_only_enrollment_persists_null_heartbeat_interval(
+    database_factory: sessionmaker[Session],
+) -> None:
+    client, csrf_token = authenticated_client(database_factory)
+    payload = enrollment_payload("activity-only-agent")
+    payload["monitoring_mode"] = "activity_only"
+    payload["heartbeat_interval_seconds"] = None
+
+    response = client.post(
+        "/api/v1/dashboard/agents",
+        json=payload,
+        headers={
+            "X-Atlas-CSRF-Token": csrf_token,
+            "Idempotency-Key": "agent-enroll-key-activity-only",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["data"]["agent"]["monitoring_mode"] == "activity_only"
+    assert response.json()["data"]["agent"]["heartbeat_interval_seconds"] is None
+    with database_factory() as session:
+        stored_agent = session.scalar(
+            select(AgentRegistration).where(
+                AgentRegistration.slug == "activity-only-agent",
+            )
+        )
+        assert stored_agent is not None
+        assert stored_agent.heartbeat_interval_seconds is None
+        assert stored_agent.observed_health == "not_monitored"
+
+
 def test_enrollment_requires_csrf_and_idempotency(
     database_factory: sessionmaker[Session],
 ) -> None:

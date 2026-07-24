@@ -1,6 +1,6 @@
 # Work Order 065: Agent Visibility Schema and Migration Foundation
 
-**Status:** Completed - Local Validation Passed
+**Status:** Completed - Merged
 **Work Order ID:** WO-065
 **Type:** Agent Visibility MVP persistence foundation
 **Implementation Authorization:** Granted by Repository Maintainer on 2026-07-24
