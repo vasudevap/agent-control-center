@@ -1,5 +1,9 @@
 # Atlas User Experience
 
+> **Legacy broad journey baseline.** Active journeys are enroll, connect,
+> monitor, investigate, rotate, disconnect, reconnect, and archive as defined
+> in the Agent Visibility MVP Experience.
+
 **Status:** Approved  
 **Version:** 1.0  
 **Owner:** Product Design  

@@ -1,6 +1,6 @@
 # ADR-003 - Governed External Approval Decision Channel
 
-**Status:** Accepted
+**Status:** Superseded by `ADR-008 - Atlas Agent Visibility and Lifecycle Control Center`
 **Date:** 2026-07-16
 **Decision Owners:** Architecture and Security Review
 **Review Owner:** Repository Maintainer
@@ -10,6 +10,10 @@
 **Scope:** Human Approvals trust boundary
 
 ---
+
+> Historical decision: retained as evidence for the original Atlas
+> execution-platform and external-product-client direction. It no longer
+> governs the active MVP.
 
 ## Context
 

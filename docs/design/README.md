@@ -2,9 +2,14 @@
 
 **Purpose**
 
-This directory contains the complete product design documentation for **Atlas**, the Enterprise Agent Control Center.
+This directory contains the product design documentation for **Atlas**, the
+Agent Control Center.
 
-These documents define **what the product should be**, **how it should behave**, and **how it should look and feel**. They intentionally stop short of implementation architecture, APIs, infrastructure, deployment, and runtime design, which are documented separately under `/docs/architecture`.
+The active MVP experience is defined by
+[`12-agent-visibility-mvp-experience.md`](./12-agent-visibility-mvp-experience.md)
+and DDR-003. Earlier product-domain, information-architecture, journey, and
+screen documents preserve the original execution-platform design and remain
+historical or future-capability references where they conflict.
 
 ---
 
@@ -57,57 +62,44 @@ Those belong in `/docs/architecture`.
 
 ---
 
-# Document Dependency
+# Active document dependency
 
 ```text
-00 Brand Strategy
-        │
-        ▼
-01 UI / UX Foundation
-        │
-        ▼
-02 Information Architecture
-        │
-        ▼
-03 User Experience
-        │
-        ▼
-04 Design Language
-        │
-        ▼
-05 Visual Identity
-        │
-        ▼
-06 Design System
-        │
-        ▼
-07 Component Library
-        │
-        ▼
-08 Screen Specifications
-        │
-        ▼
-09 Developer Handoff
+ADR-008 + ADR-009
+        |
+        v
+DDR-003
+        |
+        v
+12 Agent Visibility MVP Experience
+        |
+        +--> 01 Design Principles
+        +--> 05 Visual Identity
+        +--> 07 Design System
+        +--> 08 Component Library
 ```
 
-Each document assumes the decisions made in the documents above it.
+The original brand, domain, information architecture, journey, and screen
+documents remain legacy references where they conflict with this dependency.
 
 ---
 
 # Current Design Documents
 
-| Document | Purpose |
+| Document | Active status |
 |-----------|---------|
-| 00-brand.md | Defines the product's strategic identity, positioning, personality, and messaging. |
-| 01-ui-ux-foundation.md | Establishes the experience principles that govern every interaction. |
-| 02-information-architecture.md | Defines the product's domain model, navigation, and information structure. |
-| 03-user-experience.md | Defines workflows, task models, and interaction patterns. |
-| 04-design-language.md | Establishes typography, spacing, color philosophy, iconography, and motion. |
-| 05-visual-identity.md | Defines logo, wordmark, icon, and brand expression. |
-| 06-design-system.md | Documents tokens, layouts, reusable patterns, and accessibility rules. |
-| 07-component-library.md | Specifies reusable UI components and behaviors. |
-| 08-screen-specifications.md | Defines each production screen and its functional requirements. |
-| 09-developer-handoff.md | Provides implementation guidance for engineering. |
+| `12-agent-visibility-mvp-experience.md` | Active MVP experience and screen responsibilities |
+| `01-design-principles.md` | Active |
+| `05-visual-identity.md` | Active |
+| `07-design-system.md` | Active |
+| `08-component-library.md` | Active |
+| `00-brand.md` | Legacy broad positioning; revise during implementation |
+| `02-product-domain-model.md` | Legacy broad domain |
+| `03-information-architecture.md` | Superseded for active navigation |
+| `04-user-experience.md` | Legacy broad journeys |
+| `09-screen-specifications-overview.md` | Legacy screen baseline |
+| `10-screen-specifications-platform.md` | Legacy/deferred screen baseline |
+| `11-developer-handoff.md` | Legacy broad handoff |
 
 ---
 
@@ -157,26 +149,33 @@ Each Design Decision Record (DDR) should include:
 - Consequences
 - Status
 
+Active design decisions:
+
+- DDR-001 - Typography Direction
+- DDR-002 - Visual Language Direction
+- DDR-003 - Agent Visibility MVP Information Architecture
+
 ---
 
 # Canonical Terminology
 
 Use consistent terminology throughout the design documentation.
 
-Preferred examples:
+Active MVP examples:
 
 - Agent
-- Agent Fleet
-- Run
-- Connector
-- Policy
-- Approval
-- Artifact
-- Output
-- Workspace
-- Environment
+- Agent credential
+- Heartbeat
+- Execution
+- Observed health
+- Reported health
 - Alert
-- Incident
+- Activity
+- Environment
+- Version
+
+Run, Connector, Policy, Approval, Artifact, Output, and Workspace remain
+reserved future-capability terms.
 
 Avoid introducing synonyms unless they represent distinct concepts.
 

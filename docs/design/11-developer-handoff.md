@@ -1,5 +1,8 @@
 # Atlas Developer Handoff
 
+> **Legacy broad handoff.** Active route and workflow authority is defined by
+> DDR-003 and `12-agent-visibility-mvp-experience.md`.
+
 **Status:** Draft
 **Version:** 1.0
 **Owner:** Product Design

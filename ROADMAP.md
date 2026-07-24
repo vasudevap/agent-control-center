@@ -1,353 +1,212 @@
-# Agent Control Center Roadmap
+# Atlas Roadmap
 
----
+## Purpose
 
-# Purpose
+This roadmap defines the active delivery sequence for the Atlas agent
+visibility and lifecycle MVP.
 
-This roadmap defines the strategic evolution of the Agent Control Center.
+The original execution-platform roadmap is preserved through Git history,
+completed specifications, Work Orders, reviews, and the historical MVP release
+boundary document.
 
-It describes:
+## Product destination
 
-- major delivery phases
-- architectural milestones
-- learning objectives
-- portfolio objectives
+Atlas gives one owner reliable visibility into independently operated agents
+through:
 
-It intentionally does **not** define detailed implementation tasks.
+- enrollment and stable identity;
+- per-agent credentials;
+- heartbeats and execution reporting;
+- observed and reported health;
+- alerts and material activity;
+- credential rotation;
+- disconnect, reconnect, and archive.
 
-Detailed implementation is managed through the Product Backlog.
+## Stage 0 - Direction reset
 
----
+**Status:** Completed
 
-# Vision
+Deliverables:
 
-Create an enterprise-quality Agent Control Center capable of managing AI agents safely, consistently, and observably.
+- ADR-008 product boundary
+- ADR-009 enrollment and telemetry contract
+- Agent Visibility MVP Product Requirements
+- Agent Integration API
+- Active target architecture
+- DDR-003 and active product experience
+- Capability disposition and reset plan
+- Updated project, README, roadmap, and handoff
 
-The project should become:
+Exit criterion:
 
-- a daily productivity platform
-- an AI architecture learning laboratory
-- a professional portfolio
-- a reusable enterprise architecture reference
+- One unambiguous active product and architecture direction exists.
 
----
+## Stage 1 - Engineering readiness
 
-# Phase 1 — Architecture Foundation
+**Status:** Completed
 
-## Objectives
+Deliverables:
 
-Establish the architecture before implementation.
+- ES-009 Agent Visibility and Lifecycle MVP
+- Current-to-target route map
+- Schema and forward-migration design
+- Credential cryptography and rotation design
+- Telemetry validation and rate-control design
+- Health evaluator algorithm and lease model
+- Alert state machine
+- Active UI implementation map
+- Synthetic-data quarantine plan
+- Deployment, validation, and rollback plan
+- ADP-006 package
+- Work Order sequence `WO-064` through `WO-071`
 
-## Deliverables
+Exit criterion:
 
-- Project Charter
-- Repository Standards
-- Product Requirements
-- Architecture Documentation
-- Technology Strategy
-- Security Architecture
-- Data Architecture
-- Runtime Architecture
-- Connector Architecture
-- Deployment Architecture
-- Observability Architecture
+- Work Orders and ADP-006 meet the Definition of Ready, are accepted, and have
+  explicit execution-window authorization before implementation begins.
 
-## Status
+## Stage 2 - Honest active surface
 
-Completed
+**Status:** Completed
 
----
+Deliverables:
 
-# Phase 2 — Repository Foundation
+- Navigation reduced to Overview, Agents, Executions, Alerts, and Activity
+- Dormant pages removed from normal navigation
+- Simulated operational controls removed from active routes
+- Clear current-capability and empty-state language
+- Synthetic production seed path disabled from normal operation
 
-## Objectives
+Exit criterion:
 
-Prepare the repository for implementation.
+- The visible product does not claim capabilities that are not operational.
 
-## Deliverables
+## Stage 3 - Enrollment and trust lifecycle
 
-- ADR Process
-- Notion Provisioner
-- Coding Standards
-- Development Workflow
-- GitHub Repository
-- Repository Automation
+**Status:** Completed
 
-## Status
+Deliverables:
 
-Completed. ES-000 established and closed the canonical repository and frontend workspace. ES-001 established engineering governance, pull-request controls, continuous integration, release management, and dependency-risk tracking.
+- Owner-created registration
+- Stable agent identity
+- One-time per-agent credential
+- Non-reversible credential persistence
+- Credential rotation and expiry
+- Disconnect, reconnect, and archive
+- Lifecycle and credential audit evidence
 
----
+Exit criterion:
 
-# Phase 3 — Platform Foundation
+- The owner can establish, rotate, end, and restore an individual agent's
+  Atlas trust relationship.
 
-## Objectives
+## Stage 4 - Telemetry ingestion
 
-Build the platform infrastructure.
+**Status:** Completed
 
-## Deliverables
+Deliverables:
 
-- Backend
-- Authentication
-- PostgreSQL
-- Migrations
-- Configuration
-- Health Endpoints
-- Queue
-- Scheduler
-- Governed External Platform API Foundation
-- External Product Client Authentication Boundary
-- Outbound Webhook Delivery Foundation
-- Governed Knowledge Store Persistence Foundation
-- External Knowledge API Foundation
+- Heartbeat API
+- Execution API
+- Agent/path identity binding
+- Contract version validation
+- Idempotency and replay conflict handling
+- Payload and rate bounds
+- Redaction and prohibited-content rejection
+- Python, TypeScript, and curl examples
 
-## Status
+Exit criterion:
 
-In progress. The backend foundation, owner identity/session boundary,
-PostgreSQL migration foundation, hosted deployment path, and Agent Visibility
-MVP service layer through WO-070 are implemented. Queue, Scheduler, broader
-multi-user authentication, and operational platform services remain future
-increments.
+- Independent agents can safely report through the same public contract.
 
----
+## Stage 5 - Health and alerts
 
-# Phase 4 — Dashboard
+**Status:** Completed
 
-## Objectives
+Deliverables:
 
-Build the operational dashboard.
+- Observed connection-health model
+- Reported-health model
+- Activity-only monitoring mode
+- Scheduled health evaluator
+- Missed-heartbeat alerts
+- Reported-check alerts
+- Repeated-execution-failure alerts
+- Deduplication, acknowledgment, and recovery
+- Evaluator freshness monitoring
 
-## Deliverables
+Exit criterion:
 
-- Dashboard
-- Agent List
-- Status Cards
-- Logs
-- Outputs
-- Schedules
-- Settings
-- Dark Mode
-- Responsive Layout
+- Atlas detects and explains operational attention conditions without calling
+  an agent.
 
-## Status
+## Stage 6 - Live product integration
 
-Completed for the frontend-only milestone. Work Orders 005 through 012 deliver
-the application shell and the reviewed Agents, Agent Detail, Approvals, Runs,
-Artifacts, Alerts, Audit, Connectors, Policies, and Settings surfaces. Work
-Orders 013 and 014 complete cross-surface indicator and responsive consistency
-maintenance. All related pull requests are merged.
+**Status:** Completed
 
-WO-007 remains `Design Review Locked` and WO-008 remains `Frontend Prototype
-Authorized` in their governing records. This phase status does not silently
-close or broaden either artifact.
+Deliverables:
 
-The current dashboard uses deterministic local fixtures and clearly labeled
-simulations. It does not authorize or imply backend services, persistence,
-authentication, connector calls, policy evaluation, runtime execution, or
-operational audit storage.
+- Live Overview
+- Live Agents inventory
+- Live Agent Detail for database-backed agents
+- Live Executions and detail
+- Live Alerts
+- Live Activity
+- Loading, empty, error, stale, disconnected, archived, and partial states
+- No normal production fixture fallback
 
----
+Exit criterion:
 
-# Phase 5 — Agent Framework
+- Every active product surface is backed by the accepted runtime contract.
 
-## Objectives
+## Stage 7 - Hosted MVP verification
 
-Create the reusable agent platform.
+**Status:** Blocked
 
-## Deliverables
+Deliverables:
 
-- Agent Registry
-- Runtime
-- Tool Registry
-- Connector Runtime
+- Forward production migration
+- Hosted evaluator deployment
+- Synthetic-data quarantine
+- Three independent reference agents
+- Enrollment and first-connection evidence
+- Failure, recovery, rotation, disconnect, reconnect, and archive evidence
+- Security and privacy verification
+- Updated runbooks and rollback evidence
+- MVP acceptance report
+
+Current blocker:
+
+- The production Render API environment needs
+  `ATLAS_API_AGENT_CREDENTIAL_PEPPER` and
+  `ATLAS_API_AGENT_CREDENTIAL_PEPPER_KEY_ID` provisioned outside the
+  repository before hosted reference-agent verification can complete.
+
+Exit criterion:
+
+- All active PRD success criteria pass against the hosted environment.
+
+## Future capability shelves
+
+The following are intentionally unsequenced:
+
+- Atlas-directed commands
+- Agent deployment and runtime management
+- Scheduling and orchestration
+- Connectors and provider credentials
+- Human approvals
 - Policies
-- Approval Framework
-- External Pending-Approval and Evidence API
-- External Approve or Reject Decision API
-- Approval-Pending and Send-Outcome Webhooks
-- Held-for-Manual-Handling Non-Approval Webhook Contract
-- External Decision Channel Audit Provenance
-- Governed Knowledge Fact CRUD and Confirmation Contract
-- Fact Volatility and Re-confirmation Contract
-- Approval Evidence `facts_used` Contract
-- Ask-Instead-of-Guess Question and Answer API
-- Knowledge Question, Answer, and Re-confirmation Webhook Contracts
-- Health Monitoring
+- Knowledge
+- Artifacts
+- Webhooks
+- Cost and trace observability
+- Multi-user and multi-tenant operation
 
-## Status
+Reactivation requires a product requirement, architecture decision where
+applicable, accepted Engineering Specification, and bounded Work Orders.
 
-In progress. ES-009 and ADP-006 re-scoped the active MVP to honest Agent
-Visibility and Trust Lifecycle behavior. WO-064 through WO-070 are merged:
-active navigation is rooted under `/control-center`, owner-enrolled agents use
-one-time Atlas telemetry credentials, external runtimes can submit heartbeats
-and executions, Atlas derives observed health and alerts, and owners can rotate
-credentials, disconnect, reconnect, and archive without Atlas claiming runtime
-control.
+## Delivery rule
 
-WO-071 hosted reference-agent verification is blocked until the production
-Render API environment is provisioned with the missing agent credential pepper
-settings.
-
----
-
-# Phase 6 — Gmail Agent
-
-## Objectives
-
-Deliver the first production agent.
-
-## Deliverables
-
-- Gmail OAuth
-- Gmail Connector
-- Classification
-- Clinical and PHI classification suppression with hold or manual handling
-- Labels
-- Archive
-- Draft Replies
-- Ask-Instead-of-Guess Before Drafting
-- Learn Governed Facts From Human Answers
-- Learn Governed Facts From Confirmed Approved Sends
-- Attachment Saving
-- Google Drive Integration
-
-## Phase 6 Safety Requirement
-
-An inbound message classified as clinical or as containing protected health
-information must not produce an automatic draft or an approvable send. The
-Policy Engine must suppress drafting and route the message to a hold or manual
-handling outcome. Human approval is not an override for this suppression.
-
-This is a scope requirement for the Gmail Agent and Policy Engine engineering
-scope. It does not authorize any future release behavior that bypasses the
-accepted suppression gate.
-
-R8 applies the same suppression before knowledge retrieval, question creation,
-or learning from history. A suppressed clinical or
-protected-health-information message and its content must never become a
-knowledge fact or learning source. Ask-instead-of-guess questions are not
-approvals and confer no authorization.
-
----
-
-# Phase 7 — Operational Maturity
-
-## Objectives
-
-Make the Gmail Agent MVP Candidate operable for normal single-owner personal
-use on the approved deployment path, with release evidence, runbooks, recovery
-paths, monitoring, and accepted residual risk.
-
-## Deliverables
-
-- Controlled-account release verification or accepted deferral
-- Dashboard productization for MVP-critical operator workflows
-- Environment, OAuth, and secrets readiness
-- Netlify and Render deployment and migration readiness
-- Health, readiness, logs, metrics, alerts, and recovery paths
-- Release runbooks and rollback
-- MVP release candidate validation
-- MVP acceptance and Phase 7 closeout
-
----
-
-# Phase 8 — Advanced Agentic Workflows
-
-## Objectives
-
-Evaluate more advanced AI frameworks.
-
-Potential Deliverables
-
-- LangChain
-- LangGraph
-- MCP
-- LangSmith
-
-Adoption depends on architectural need rather than project schedule.
-
----
-
-# Phase 9 — Durable Orchestration
-
-Potential Deliverables
-
-- Temporal
-- Long-running workflows
-- Persistent checkpoints
-- Human approval continuation
-- Advanced scheduling
-
----
-
-# Phase 10 — Additional Agents
-
-Potential agents include:
-
-- Calendar Agent
-- Resume Agent
-- Recruiter Agent
-- Shopping Agent
-- Finance Agent
-- Travel Agent
-- Document Filing Agent
-- Local File Agent
-
----
-
-# Phase 11 — Enterprise Features
-
-Potential capabilities:
-
-- RBAC
-- Multi-user
-- Multi-tenant
-- Object Storage
-- Secret Manager
-- Advanced Monitoring
-- Policy Engine
-- Plugin Marketplace
-
----
-
-# Learning Roadmap
-
-Alongside implementation the project should develop practical experience in:
-
-- Enterprise Architecture
-- AI Architecture
-- OAuth
-- Security
-- Observability
-- LangChain
-- LangGraph
-- Temporal
-- MCP
-- OpenTelemetry
-- AI Governance
-
----
-
-# Portfolio Roadmap
-
-The project should produce:
-
-- Architecture diagrams
-- ADRs
-- Technology evaluations
-- Public GitHub repository
-- LinkedIn article series
-- Demonstration videos
-- Interview-ready examples
-
----
-
-# Success Criteria
-
-The roadmap is successful when:
-
-- The platform becomes useful in daily work.
-- Multiple agents operate through a shared control plane.
-- The implementation reflects the documented architecture.
-- Learning objectives are achieved.
-- Portfolio assets demonstrate enterprise architecture capability.
+Completed historical work remains evidence. It is not counted as completion of
+the new stages unless it directly satisfies the new acceptance criteria and is
+explicitly adopted by ES-009.

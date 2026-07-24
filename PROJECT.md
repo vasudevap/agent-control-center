@@ -1,266 +1,217 @@
-# Agent Control Center
+# Atlas Agent Control Center
 
-## 1. Project Purpose
+## 1. Project purpose
 
-The Agent Control Center is a practical productivity platform and applied AI architecture laboratory.
+Atlas is a single-owner agent visibility and lifecycle control center for AI
+agents built, deployed, scheduled, and operated outside Atlas.
 
-The project has four primary objectives:
+The project has three equal objectives:
 
-1. Build a useful platform for creating, scheduling, monitoring, governing, and operating AI agents.
-2. Develop hands-on proficiency in agentic architecture, orchestration, security, observability, governance, and modern AI development tools.
-3. Create portfolio and LinkedIn content that demonstrates enterprise architecture thinking and practical AI implementation experience.
-4. Serve as the governed backend platform for an external customer-facing control surface, initially MushingMule, through a single-reviewer external API and webhook contract.
+1. Build a useful production-quality control center for agent identity,
+   connection health, execution visibility, alerts, and trust lifecycle.
+2. Develop practical skill in enterprise AI architecture, API security,
+   observability, governance, and product delivery.
+3. Produce professional portfolio evidence demonstrating Enterprise and AI
+   Solution Architecture through honest system boundaries and working
+   implementation.
 
-## 2. Product Vision
+## 2. Product vision
 
-Create a centralized control plane where users can:
+Give an agent owner one calm, trustworthy place to answer:
 
-- View all registered agents.
-- Activate, pause, disable, or run agents on demand.
-- Schedule recurring and one-time agent executions.
-- Review agent health, status, next run, last run, and current issues.
-- Access logs, outputs, links, generated artifacts, and execution history.
-- Review and approve high-risk actions.
-- Manage integrations, plugins, credentials, and permissions.
-- Add future agents without redesigning the dashboard.
-- Operate agents through a consistent lifecycle and governance model.
+- Which agents are enrolled?
+- Which agents are currently connected, late, offline, or disconnected?
+- Which version and build is reporting?
+- What executions have agents reported?
+- What failed and what requires attention?
+- Which credentials remain trusted?
+- What changed, and when?
 
-## 3. Initial Use Case
+Atlas controls its relationship with an agent. It does not claim to control the
+agent's external runtime.
 
-The first production agent will be a Gmail Triage Agent.
+## 3. Active MVP
 
-It will eventually:
+The active MVP provides:
 
-- Connect securely to Gmail using OAuth.
-- Classify emails into categories such as family, friends, work, recruiters, shopping, subscriptions, receipts, and travel.
-- Apply Gmail labels.
-- Archive selected low-risk emails.
-- Create draft replies.
-- Save attachments to approved storage locations.
-- Route sensitive actions through a human approval process.
-- Record decisions, actions, outputs, and errors.
+- Google OIDC owner authentication
+- Agent enrollment
+- Stable Atlas agent identities
+- Per-agent credentials
+- Credential rotation and revocation
+- Authenticated heartbeat ingestion
+- Authenticated execution reporting
+- Observed and reported health
+- Alert creation, acknowledgment, and resolution
+- Agent lifecycle activity
+- Disconnect, reconnect, and archive
+- Overview, Agents, Executions, Alerts, and Activity surfaces
+- PostgreSQL persistence
+- Metadata-only audit evidence
+- Netlify and Render deployment
 
-## 4. Target Users
+## 4. Explicit MVP exclusions
 
-### Primary User
+The active MVP does not provide:
 
-The initial primary user is the project owner.
+- Agent source-code management
+- Agent deployment or process hosting
+- Atlas-initiated run, pause, resume, cancel, restart, or stop commands
+- Agent scheduling or orchestration
+- Queue workers for agent execution
+- Provider connector or credential management
+- Gmail or Google Drive agent behavior
+- Human approval workflows
+- Policy evaluation
+- Governed knowledge
+- Artifact content management
+- Prompt, model, or trace ingestion
+- Multi-user or multi-tenant operation
+- External product-client behavior
 
-### Future Users
+Existing implementations of excluded capabilities are retained as dormant or
+historical evidence until separately reactivated or removed.
 
-The architecture should support future use by:
+## 5. Primary user
 
-- Individual professionals.
-- Small consulting teams.
-- Enterprise architecture teams.
-- Operations teams managing internal AI agents.
-- Organizations requiring governed agent execution.
+The initial user is the repository owner, who builds or commissions agents and
+operates them in external environments.
 
-## 5. Core Capabilities
+Future teams, roles, organizations, and tenants require separate product and
+architecture decisions.
 
-The platform should provide:
+## 6. Operating model
 
-- Agent registry
-- Agent lifecycle management
-- Scheduling and orchestration
-- Manual run capability
-- Execution history
-- Centralized logging
-- Output and artifact management
-- Approval workflows
-- Plugin and connector management
-- Authentication and authorization
-- Secret and credential management
-- Health monitoring
-- Error handling and retries
-- Cost and usage tracking
-- Versioning
-- Auditability
-- Responsive dashboard
-- Light and dark modes
+The owner enrolls an agent in Atlas and receives:
 
-## 6. Design Principles
+- an Atlas API URL;
+- a stable `agent_id`;
+- a one-time agent credential;
+- the supported contract version;
+- the expected heartbeat settings.
 
-The solution will follow these principles:
+The owner configures those values in the external runtime. The agent calls
+Atlas over HTTPS.
+
+Atlas does not require an agent URL and does not initiate a connection to the
+agent in the MVP.
+
+## 7. Ownership boundaries
+
+| Concern | Owner |
+| --- | --- |
+| Agent code, deployment, process, schedule, tools, model, provider credentials, and business configuration | External agent environment |
+| Registration, agent credential lifecycle, accepted telemetry, derived health, alerts, lifecycle, activity, and audit | Atlas |
+| Version, build, checks, health report, and execution outcome | Agent report stored as untrusted reported state |
+| Last authenticated contact and missed-heartbeat calculation | Atlas observation |
+
+## 8. Active domain
+
+- Agent
+- Agent credential
+- Heartbeat
+- Execution
+- Health
+- Alert
+- Activity event
+- Audit event
+- Owner session
+
+`Execution` is work reported by an external agent. It is not a job dispatched
+by Atlas.
+
+## 9. Design principles
 
 - Architecture before implementation
-- Least-privilege access
-- Human approval for high-risk actions
-- Separation of control plane and agent execution
-- Clear system-of-record ownership
-- Explicit audit trails
-- Modular and extensible components
-- Frameworks introduced only when justified
-- Secure-by-design implementation
-- Observable and recoverable operations
-- Version-controlled documentation
-- Incremental delivery
-- Learning documented alongside implementation
+- Honest product boundaries
+- Least privilege
+- Explicit trust lifecycle
+- Observed state separated from reported state
+- Secure by design
+- Metadata minimization
+- Observable by default
+- History retained across disconnection
+- One generic contract for independent agents
+- Progressive complexity
+- Documentation as a product artifact
 
-## 7. Initial Scope
+## 10. Success criteria
 
-The initial project scope includes:
+The MVP succeeds when:
 
-- Notion workspace provisioner
-- Project documentation
-- Architecture decision records
-- Responsive dashboard
-- Backend API
-- PostgreSQL database
-- Agent registry
-- Scheduler
-- Worker execution model
-- Central logging
-- Approval queue
-- Gmail integration
-- Gmail Triage Agent
-- Google Drive attachment storage
-- Deployment to Netlify and Render
+- the owner can enroll an agent and receive a one-time credential;
+- a valid first heartbeat visibly connects the agent;
+- missed heartbeats create and resolve alerts;
+- reported health and observed health remain distinct;
+- execution updates are idempotent and visible;
+- credential rotation works without recoverable plaintext storage;
+- disconnect immediately rejects further telemetry without deleting history;
+- three independently built agents use the same published contract;
+- active product surfaces are service-backed and do not require synthetic
+  production data;
+- product language does not imply Atlas executed or stopped external work;
+- architecture, security, API, design, implementation, and evidence remain
+  synchronized.
 
-## 8. Out of Scope for the First MVP
+## 11. Technology baseline
 
-The first MVP will not include:
+| Area | Technology |
+| --- | --- |
+| Frontend | Next.js and strict TypeScript |
+| Backend | FastAPI and Python |
+| Database | PostgreSQL with SQLAlchemy and Alembic |
+| Owner identity | Google OIDC |
+| Agent authentication | Per-agent bearer credential over TLS |
+| Hosting | Netlify, Render API, Render PostgreSQL |
+| Health evaluation | Bounded scheduled evaluator |
+| Testing | Vitest, React Testing Library, Pytest, Ruff, MyPy |
+| Documentation | Markdown in Git |
 
-- Multi-tenant SaaS support
-- Billing and subscription management
-- Public plugin marketplace
-- Fully autonomous outbound communication
-- Automatic deletion of sensitive content
-- Enterprise SSO
-- Complex multi-agent collaboration
-- Temporal orchestration
-- LangGraph workflows
-- Native desktop application
-- Native mobile application
+Queues, Redis, LangChain, LangGraph, Temporal, MCP, and runtime frameworks are
+not part of the active MVP technology baseline.
 
-These may be introduced later through documented architecture decisions.
+## 12. Source of truth
 
-A future multi-product platform is a possible direction. Supporting multiple
-external product clients, client isolation, or broader platform operations will
-require separate architecture decisions and is not part of the first MVP.
+Authority follows:
 
-## 9. Success Criteria
+1. `AGENTS.md`
+2. Accepted ADRs and active architecture
+3. Accepted product and design specifications
+4. Accepted Engineering Specification and Work Order
+5. Governance procedures
+6. Recommendations and historical references
 
-The MVP will be considered successful when:
+Active direction:
 
-- The dashboard displays all registered agents.
-- An agent can be activated, paused, disabled, and run manually.
-- Scheduled runs execute reliably.
-- Run status, last run, next run, logs, and outputs are visible.
-- The Gmail Agent can classify and label emails.
-- Safe actions can execute automatically.
-- High-risk actions require explicit approval.
-- Every agent action is auditable.
-- Credentials are not exposed in code or logs.
-- The platform is deployed and accessible.
-- Architecture, decisions, lessons, and build progress are documented.
-- At least one LinkedIn article is published based on the project.
+- ADR-008
+- ADR-009
+- DDR-003
+- `docs/specifications/atlas-agent-visibility-mvp-requirements.md`
+- `docs/specifications/agent-integration-api.md`
+- `docs/architecture/14-agent-visibility-mvp-target-architecture.md`
+- `docs/design/12-agent-visibility-mvp-experience.md`
+- `docs/implementation-plans/atlas-agent-visibility-mvp-reset.md`
 
-## 10. Learning Objectives
+## 13. Historical direction
 
-The project will be used to develop practical knowledge of:
+The repository previously pursued an Atlas-owned execution platform with
+Gmail, connectors, approvals, knowledge, scheduling, queueing, and an external
+product-client contract.
 
-- Agent architecture
-- LLM tool calling
-- Agent workflows
-- LangChain
-- LangGraph
-- Temporal
-- Model Context Protocol
-- OAuth
-- API security
-- Secrets management
-- PostgreSQL
-- Redis and queues
-- FastAPI
-- Next.js
-- Docker
-- Render
-- Netlify
-- Observability
-- OpenTelemetry
-- LangSmith
-- Human-in-the-loop design
-- AI governance
-- Prompt and model evaluation
-- Production AI operations
+That work is retained as architecture, implementation, security, deployment,
+and learning evidence. ADR-003, ADR-004, and ADR-005 are superseded for active
+work by ADR-008. Completed specifications, Work Orders, reviews, migrations,
+and release records remain historical facts.
 
-## 11. Career and Portfolio Outcomes
+## 14. Current status
 
-The project should demonstrate the ability to:
+The direction reset is documented and accepted. ES-009, ADP-006, and WO-064
+through WO-070 are implemented and merged.
 
-- Design an enterprise-inspired AI control plane.
-- Translate business needs into architecture.
-- Define trust boundaries and security controls.
-- Govern agent permissions and actions.
-- Build auditable AI workflows.
-- Evaluate agent frameworks objectively.
-- Implement production-oriented integrations.
-- Communicate architecture through diagrams, ADRs, documentation, and articles.
-- Bridge enterprise architecture and hands-on engineering.
+The source now includes active owner enrollment, per-agent credentials,
+heartbeat ingestion, execution ingestion, derived health, alerts, material
+activity, and live product surfaces under `/control-center`.
 
-## 12. Delivery Approach
-
-The project follows the canonical phases in `ROADMAP.md`:
-
-1. Architecture Foundation
-2. Repository Foundation
-3. Platform Foundation
-4. Dashboard
-5. Agent Framework
-6. Gmail Agent
-7. Operational Maturity
-8. Advanced Agentic Workflows
-9. Durable Orchestration
-10. Additional Agents
-11. Enterprise Features
-
-## 13. Source of Truth
-
-The Git repository is the technical source of truth for:
-
-- Architecture documentation
-- ADRs
-- Specifications
-- Source code
-- Infrastructure configuration
-- Notion workspace definitions
-
-Notion is the operational and learning workspace for:
-
-- Progress tracking
-- Backlog management
-- Learning journal
-- Build log
-- Architecture review
-- Article pipeline
-- Project dashboards
-
-## 14. Current Status
-
-- Architecture, product requirements, brand, and product-design foundations are documented.
-- The canonical repository structure is established around `apps/web` and governed documentation under `docs/`.
-- The frontend-only Atlas prototype is present as of the merged Work Order 014
-  consistency milestone, with responsive light and dark themes, governed local
-  fixtures, and clearly labeled simulations.
-- The work-order index remains authoritative for individual artifact status,
-  including WO-007 at Design Review Locked and WO-008 at Frontend Prototype
-  Authorized.
-- ES-000 canonical repository consolidation is closed.
-- ES-001 is the approved engineering-governance baseline: short-lived branches, pull-request review, required CI, readiness/done criteria, release controls, and dependency-risk tracking govern subsequent work.
-- ES-002 established the frontend component-testing baseline.
-- ADR-003 is accepted for the governed external approval decision channel.
-- ADR-004 is accepted for the general external product client contract.
-- ADR-005 is accepted for governed draft-support knowledge and
-  ask-instead-of-guess behavior.
-- ES-004 and WO-015 accept, implement, and merge the first Phase 3 backend
-  Platform Foundation scope.
-- The Phase 3 master implementation plan drafts the remaining backend
-  architecture, work-order sequence, and future agent execution packet format
-  before additional code implementation proceeds.
-- WO-016 documents the infrastructure provisioning and environment strategy,
-  including the provider-native Netlify and Render path, PostgreSQL placement,
-  secrets/configuration ownership, and live-provisioning guardrails.
-- Operational authentication sessions, business APIs, connectors, agent
-  runtime, scheduler, queue, policy execution, and business workflows remain
-  future work subject to architecture and work-order approval.
+WO-071 hosted reference-agent verification remains blocked until the production
+Render API environment is provisioned with the required agent credential pepper
+configuration.

@@ -1,5 +1,9 @@
 # Atlas Brand Strategy
 
+> **Legacy broad product positioning.** Active MVP messaging is governed by
+> ADR-008 and the Agent Visibility MVP Experience. Claims that Atlas deploys,
+> executes, schedules, or governs an AI workforce are deferred.
+
 **Document status:** Approved foundation  
 **Version:** 1.0  
 **Product:** Atlas  

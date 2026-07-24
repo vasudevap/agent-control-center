@@ -1,5 +1,9 @@
 # Technology Strategy
 
+> **Legacy broad technology baseline.** Next.js, FastAPI, PostgreSQL, Netlify,
+> Render, tests, and migrations remain active. Queue, agent runtime frameworks,
+> connector execution, and orchestration are deferred for the active MVP.
+
 ## 1. Purpose
 
 This document defines the technology strategy for the Agent Control Center.

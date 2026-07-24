@@ -1,5 +1,9 @@
 # Atlas Product Domain Model
 
+> **Legacy broad domain model.** The active MVP domain is Agent, Agent
+> Credential, Heartbeat, Execution, Health, Alert, Activity, Audit, and Owner
+> Session as defined in the Agent Visibility MVP Experience.
+
 **Status:** Approved  
 **Version:** 1.0  
 **Owner:** Product Design

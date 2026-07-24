@@ -1,5 +1,9 @@
 # Architecture Principles
 
+> **Active with revised interpretation.** Apply these principles through
+> ADR-008, ADR-009, and the active Agent Visibility MVP Target Architecture.
+> References to an Atlas-owned execution plane describe a deferred capability.
+
 ## Purpose
 
 This document defines the architectural principles that guide every design and implementation decision within the Agent Control Center.

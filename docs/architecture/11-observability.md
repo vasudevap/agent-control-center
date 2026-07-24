@@ -1,5 +1,10 @@
 # Observability Architecture
 
+> **Legacy broad observability baseline.** The active MVP focuses on
+> authenticated heartbeats, reported executions, derived connection health,
+> alerts, activity, and platform readiness as defined in the Agent Visibility
+> MVP Target Architecture.
+
 ## 1. Purpose
 
 This document defines the observability architecture for the Agent Control Center.

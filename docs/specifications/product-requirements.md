@@ -1,5 +1,12 @@
 # Product Requirements Document
 
+> **Status: Superseded for active product work.** This document is retained as
+> the product record for the original Atlas execution-platform, Gmail,
+> approvals, connectors, knowledge, and external-product-client direction.
+> Active requirements are defined in
+> [`atlas-agent-visibility-mvp-requirements.md`](./atlas-agent-visibility-mvp-requirements.md)
+> under ADR-008 and ADR-009.
+
 ## 1. Product Name
 
 Agent Control Center

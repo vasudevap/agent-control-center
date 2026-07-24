@@ -2,6 +2,10 @@
 
 This directory contains durable review, handoff, and verification records migrated during ES-000.
 
+These records remain historical evidence and must not be rewritten to imply
+that they reviewed or accepted the ADR-008 product direction. Reviews for the
+Agent Visibility MVP will be added under ES-009 and its future Work Orders.
+
 The Work Order 005 handoff records the final approved application-shell implementation and its three post-review refinements. Accepted design decisions remain canonical under `docs/design/decisions/`; an identical duplicate of DDR-002 from the source review folder was not retained here.
 
 The ES-002 frontend-testing report records the implementation and validation evidence for the approved component-testing baseline.

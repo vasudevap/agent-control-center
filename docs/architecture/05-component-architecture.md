@@ -1,5 +1,10 @@
 # Component Architecture
 
+> **Legacy architecture baseline.** Active components are enrollment,
+> per-agent credentials, telemetry ingestion, health evaluation, alerts,
+> activity, and owner reads as defined in the Agent Visibility MVP Target
+> Architecture.
+
 ## 1. Purpose
 
 This document defines the C4 Level 3 component architecture for the Agent Control Center.

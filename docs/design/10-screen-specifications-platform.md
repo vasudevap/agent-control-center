@@ -1,5 +1,9 @@
 # Atlas Screen Specifications — Part 2
 
+> **Legacy screen baseline.** Alerts and Activity remain active under the Agent
+> Visibility MVP Experience. Approvals, Connectors, Policies, Artifacts, and
+> Settings are deferred.
+
 **Status:** Draft
 **Version:** 1.0
 **Owner:** Product Design

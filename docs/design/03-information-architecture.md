@@ -1,5 +1,8 @@
 # Atlas Information Architecture
 
+> **Superseded for active navigation by DDR-003.** This document preserves the
+> original execution-platform information architecture.
+
 **Status:** Approved  
 **Version:** 1.0  
 **Owner:** Product Design  

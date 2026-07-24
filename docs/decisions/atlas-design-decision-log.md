@@ -33,6 +33,19 @@ Summary:
 - Portfolio Admin is the layout and refinement benchmark.
 - Maintain Atlas branding and color system independently.
 
+## DDR-003 — Agent Visibility MVP Information Architecture
+
+Status: Accepted
+
+Summary:
+
+- Active navigation is Overview, Agents, Executions, Alerts, and Activity.
+- Runs are externally reported Executions.
+- Approvals, Connectors, Policies, Artifacts, Knowledge, Settings, schedules,
+  and manual run controls are deferred from active navigation.
+- Agent Detail centers identity, connection, health, version, executions,
+  alerts, activity, credential lifecycle, disconnect, and archive.
+
 ---
 
 # Proposed
@@ -49,7 +62,8 @@ None.
 
 # Decision Rules
 
-- Every architectural or design decision must be captured as a DDR.
+- Architectural decisions are captured as ADRs; product design decisions are
+  captured as DDRs.
 - Work Orders must not override accepted decisions.
 - If a decision changes, create a new DDR rather than editing history.
 - Claude should always consult this file before beginning a new Work Order.
@@ -75,4 +89,4 @@ Quality Benchmark:
 - Portfolio Admin
 - Graticule
 
-Last Updated: 2026-07-10
+Last Updated: 2026-07-23

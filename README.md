@@ -1,96 +1,61 @@
 # Atlas
 
-> Enterprise Agent Control Center and unified control plane for AI workforces.
+> Visibility, health, alerts, and lifecycle trust for agents you operate elsewhere.
 
----
+## What Atlas is
 
-# Vision
+Atlas is a single-owner agent visibility and lifecycle control center.
 
-The Agent Control Center is a practical productivity platform and an applied AI architecture laboratory.
+External agents call Atlas's REST API to report heartbeats and executions.
+Atlas authenticates each agent, derives connection health, creates alerts, and
+retains operational history.
 
-It has four complementary goals:
+Atlas does not deploy, schedule, execute, pause, resume, stop, or maintain
+external agent runtimes in the active MVP.
 
-1. Build a personal productivity platform powered by AI agents.
-2. Develop deep expertise in enterprise agentic architecture, governance, orchestration, and operations.
-3. Produce architecture documentation and implementation examples that demonstrate enterprise AI architecture skills.
-4. Serve as the governed backend platform for one external customer-facing product client acting for the single human owner and reviewer.
+## Active product direction
 
-Rather than building isolated AI scripts, the project focuses on building the infrastructure required to manage AI agents safely and consistently.
+The active MVP is governed by:
 
----
+- [ADR-008](./docs/decisions/ADR-008-atlas-agent-visibility-control-center.md)
+- [ADR-009](./docs/decisions/ADR-009-agent-enrollment-and-telemetry-contract.md)
+- [Product Requirements](./docs/specifications/atlas-agent-visibility-mvp-requirements.md)
+- [Agent Integration API](./docs/specifications/agent-integration-api.md)
+- [Target Architecture](./docs/architecture/14-agent-visibility-mvp-target-architecture.md)
+- [Product Experience](./docs/design/12-agent-visibility-mvp-experience.md)
+- [Reset Plan](./docs/implementation-plans/atlas-agent-visibility-mvp-reset.md)
 
-# Project Objectives
+## Target interaction
 
-The platform will eventually provide:
+```mermaid
+sequenceDiagram
+    participant Owner
+    participant Atlas
+    participant Agent as External Agent
 
-- Agent Registry
-- Agent Dashboard
-- Scheduling
-- Manual Execution
-- Health Monitoring
-- Logs
-- Outputs
-- Approval Workflows
-- Plugin Management
-- Connector Framework
-- Authentication
-- Authorization
-- Audit Logging
-- Cost Monitoring
-- Observability
-- AI Governance
-- Governed External Product API and Webhooks
-
-The first production agent will be a Gmail Triage Agent.
-
----
-
-# Architecture Philosophy
-
-The project follows several core principles:
-
-- Architecture before implementation
-- Security by design
-- Human approval for high-risk actions
-- Least privilege
-- Separation of control plane and execution plane
-- Framework independence
-- Progressive complexity
-- Documentation as a deliverable
-- Learning through implementation
-
----
-
-# Repository Structure
-
-```text
-agent-control-center/
-├── apps/
-│   ├── api/                  # Approved Atlas FastAPI backend foundation
-│   └── web/                  # Approved Atlas Next.js frontend baseline
-├── docs/
-│   ├── architecture/
-│   ├── design/
-│   ├── specifications/
-│   ├── engineering-specifications/
-│   ├── implementation-plans/
-│   ├── governance/
-│   ├── work-orders/
-│   ├── reviews/
-│   ├── decisions/
-│   ├── recommendations/
-│   └── references/
-├── .claude/                 # Claude-specific guidance
-├── AGENTS.md                # Tool-neutral repository guidance
-├── PROJECT.md
-└── ROADMAP.md
+    Owner->>Atlas: Enroll agent
+    Atlas-->>Owner: Agent ID and one-time credential
+    Owner->>Agent: Configure Atlas URL, ID, and credential
+    Agent->>Atlas: Heartbeats
+    Agent->>Atlas: Execution updates
+    Atlas->>Atlas: Derive health and alerts
+    Owner->>Atlas: Review agents, executions, alerts, and activity
+    Owner->>Atlas: Disconnect agent
+    Atlas->>Atlas: Revoke credentials and preserve history
 ```
 
----
+## Active MVP surfaces
 
-# Current Implementation
+- Overview
+- Agents
+- Agent Detail
+- Executions
+- Alerts
+- Activity
 
-`apps/web` now serves a public Atlas landing page at `/` and the authenticated
+## Current implementation
+
+`apps/web` serves a public Atlas landing page at `/` and the authenticated
 Agent Visibility MVP under `/control-center`. Active product navigation is
 limited to Overview, Agents, Executions, Alerts, and Activity. Legacy prototype
 surfaces remain quarantined outside the active navigation.
@@ -98,18 +63,44 @@ surfaces remain quarantined outside the active navigation.
 `apps/api` contains the FastAPI backend foundation, owner identity/session
 boundary, PostgreSQL migrations, owner-enrolled agent registry, one-time agent
 credential issuance, authenticated heartbeat and execution ingestion, derived
-health evaluation, alert lifecycle, activity, and owner-controlled lifecycle
-actions for credential rotation, disconnect, reconnect, and archive.
+health evaluation, alert lifecycle, material activity, and owner-controlled
+lifecycle actions for credential rotation, disconnect, reconnect, and archive.
 
-Atlas remains a visibility and trust-lifecycle control center. It does not
-host, deploy, schedule, execute, pause, resume, stop, or maintain external
-agent runtimes.
+The repository also retains historical foundations from the former
+execution-platform direction, including approvals, connectors, policies,
+artifacts, knowledge, Gmail workflows, queues, schedulers, and webhooks. Those
+capabilities are dormant or historical for the active MVP unless separately
+reactivated through accepted architecture and Work Orders.
 
 ADP-006 has merged WO-064 through WO-070. WO-071 hosted reference-agent
 verification is blocked until the production Render API environment is
 provisioned with `ATLAS_API_AGENT_CREDENTIAL_PEPPER` and
-`ATLAS_API_AGENT_CREDENTIAL_PEPPER_KEY_ID`; do not record secret values in the
+`ATLAS_API_AGENT_CREDENTIAL_PEPPER_KEY_ID`. Do not record secret values in the
 repository, logs, screenshots, pull request text, or chat.
+
+## Repository structure
+
+```text
+agent-control-center/
+├── apps/
+│   ├── api/                  # FastAPI and PostgreSQL backend
+│   └── web/                  # Next.js owner dashboard
+├── docs/
+│   ├── architecture/
+│   ├── decisions/
+│   ├── design/
+│   ├── specifications/
+│   ├── engineering-specifications/
+│   ├── implementation-plans/
+│   ├── work-orders/
+│   ├── reviews/
+│   └── governance/
+├── AGENTS.md
+├── PROJECT.md
+└── ROADMAP.md
+```
+
+## Local frontend
 
 From the repository root:
 
@@ -122,7 +113,7 @@ npm test
 npm run build
 ```
 
-The backend foundation lives in `apps/api`. From the repository root:
+## Local backend
 
 ```bash
 python3 -m venv apps/api/.venv
@@ -138,161 +129,29 @@ cd apps/api
 
 Alembic migration validation requires a developer-managed PostgreSQL 18
 database and an uncommitted `ATLAS_API_DATABASE_URL`; see
-[`apps/api/README.md`](./apps/api/README.md) for the canonical local commands.
+[apps/api/README.md](./apps/api/README.md) for the canonical local commands.
 GitHub Actions runs the migration smoke check against an ephemeral PostgreSQL 18
 service using disposable synthetic CI data.
 
-`apps/api/constraints.txt` is the canonical resolved backend dependency input
-for local and CI installs. Update it intentionally from a clean Python 3.12
-environment after the backend validation suite passes. The API uses the
-`ATLAS_API_` configuration prefix; its default `local` environment requires no
-database, while `staging`, `production`, or `ATLAS_API_REQUIRE_DATABASE=true`
-require `ATLAS_API_DATABASE_URL` for readiness.
+## Delivery governance
 
-Frontend component tests use Vitest, React Testing Library, and jsdom. Run
-`npm test` for the canonical one-shot suite or
-`npm --workspace @atlas/web run test:watch` during local development. Tests are
-colocated with feature code using the `*.test.ts` or `*.test.tsx` suffix.
+Repository changes follow:
 
-ES-000 is closed. ES-001 establishes the engineering-governance and
-continuous-integration baseline for subsequent approved work. ES-009 governs
-the current Agent Visibility and Lifecycle MVP; ADP-006 remains blocked at
-WO-071 hosted verification until the hosted credential configuration gap is
-resolved.
+- [Engineering governance](./docs/governance/engineering-governance.md)
+- [Definition of Ready](./docs/governance/definition-of-ready.md)
+- [Definition of Done](./docs/governance/definition-of-done.md)
+- [Pull request and review process](./docs/governance/pull-request-and-review-process.md)
 
-# Engineering Governance and CI
+Architecture-changing implementation requires accepted ADRs, an accepted
+Engineering Specification, and bounded Work Orders.
 
-Repository changes follow the [Atlas engineering-governance handbook](./docs/governance/README.md), including the [branching strategy](./docs/governance/branching-strategy.md), [pull-request process](./docs/governance/pull-request-and-review-process.md), [Definition of Ready](./docs/governance/definition-of-ready.md), and [Definition of Done](./docs/governance/definition-of-done.md).
+## Next implementation gate
 
-GitHub Actions runs frontend validation, backend typecheck, backend lint,
-backend tests, backend migration validation, and the production frontend build
-for pull requests targeting `main` and pushes to `main`.
+WO-071 is the next active gate: hosted reference-agent verification and ADP-006
+closeout. It remains blocked until the production API has the required
+agent-credential pepper configuration.
 
----
+## License and intent
 
-# Current Architecture Documentation
-
-The architecture documentation currently includes:
-
-- Executive Summary
-- Architecture Principles
-- System Context
-- Container Architecture
-- Component Architecture
-- Deployment Architecture
-- Security Architecture
-- Data Architecture
-- Agent Runtime
-- Connector Framework
-- Observability
-- Technology Strategy
-- Human Approvals
-
-See:
-
-```
-docs/architecture/
-```
-
-Cross-work-order implementation planning lives under:
-
-```text
-docs/implementation-plans/
-```
-
----
-
-# Current Technology Direction
-
-| Area                   | Technology               |
-| ---------------------- | ------------------------ |
-| Frontend               | Next.js + TypeScript     |
-| Backend                | FastAPI + Python         |
-| Database               | PostgreSQL               |
-| Hosting                | Netlify + Render         |
-| Agent Runtime          | Plain Python (initially) |
-| LLM                    | Direct Provider SDK      |
-| Authentication         | Google Identity          |
-| External Authorization | OAuth 2.0                |
-| Documentation          | Markdown + Notion        |
-
-Frameworks such as LangChain, LangGraph, MCP, and Temporal will be introduced only when architectural requirements justify their adoption.
-
----
-
-# Project Roadmap
-
-High-level phases:
-
-- Phase 1 - Architecture Foundation
-- Phase 2 - Repository Foundation
-- Phase 3 - Platform Foundation
-- Phase 4 - Dashboard
-- Phase 5 - Agent Framework
-- Phase 6 - Gmail Agent
-- Phase 7 - Operational Maturity
-- Phase 8 - Advanced Agentic Workflows
-- Phase 9 - Durable Orchestration
-- Phase 10 - Additional Agents
-- Phase 11 - Enterprise Features
-
----
-
-# Learning Goals
-
-This repository is intentionally used to learn:
-
-- Enterprise AI Architecture
-- Agent Design
-- Agent Governance
-- LangChain
-- LangGraph
-- Temporal
-- MCP
-- OAuth
-- Security Architecture
-- Observability
-- Prompt Engineering
-- AI Operations
-- AI Product Design
-
-Every implementation should improve both the platform and the author's architectural understanding.
-
----
-
-# Documentation Standards
-
-Architecture documentation is maintained before implementation.
-
-Major decisions are documented through Architecture Decision Records (ADRs).
-
-The Git repository is the technical source of truth.
-
-Notion serves as the operational workspace for:
-
-- Backlog
-- Learning Journal
-- Build Log
-- Architecture Review
-- LinkedIn Content Pipeline
-- Project Progress
-
----
-
-# Current Status
-
-The architecture, product design, engineering governance, hosted foundation,
-owner identity boundary, and Agent Visibility MVP through WO-070 are documented
-and merged. The work-order index preserves the exact status of each delivery
-artifact, including WO-071 as blocked on hosted API credential configuration.
-
-ADR-008 and ADR-009 govern the active Atlas Agent Visibility MVP: Atlas is not
-an agent runtime host or scheduler, and active lifecycle controls remain bounded
-to enrollment, telemetry trust, health, alerts, activity, credential rotation,
-disconnect, reconnect, and archive.
-
----
-
-# License
-
-This repository is currently intended for personal learning, portfolio development, and architectural research.
+This repository is intended for personal use, architectural learning, product
+development, and professional portfolio evidence.
